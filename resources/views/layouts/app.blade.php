@@ -13,39 +13,43 @@
     <link rel="stylesheet" href="{{ asset('admin/vendors/typicons.font/font/typicons.css') }}">
     <link rel="stylesheet" href="{{ asset('admin/vendors/css/vendor.bundle.base.css') }}">
     <!-- endinject --> 
-    <!-- plugin css for this page -->
-    <!-- End plugin css for this page -->
     <!-- inject:css -->
     <link rel="stylesheet" href="{{ asset('admin/css/vertical-layout-light/style.css') }}">
     <!-- endinject -->
     <link rel="shortcut icon" href="{{ asset('admin/images/favicon.png') }}" />
 
     <!-- Scripts -->
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    {{-- @vite(['resources/sass/app.scss', 'resources/js/app.js']) --}}
 </head>
 <body>
     <div id="app">
-        @yield('content')
+        <div class="container-scroller">
+            @include('layouts.partials._navbar')
+            <div class="container-fluid page-body-wrapper">
+                {{-- @include('layouts.partials._settings-panel') --}}
+                @include('layouts.partials._sidebar')
+                <div class="main-panel">   
+                    <div class="content-wrapper">
+                        <div class="text-center p-2" style="background-color: #067536;width:100%;margin-bottom:30px;">
+                            <img src="{{ asset('images/maip_banner_2023.png') }}" alt="banner"/>  
+                        </div>   
+                        <div class="row">
+                            @yield('content')
+                        </div>
+                    </div>
+                    @include('layouts.partials._footer')
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- base:js -->
     <script src="{{ asset('admin/vendors/js/vendor.bundle.base.js') }}"></script>
-    <!-- endinject -->
-    <!-- Plugin js for this page-->
-    <!-- End plugin js for this page-->
-    <!-- inject:js -->
+
     <script src="{{ asset('admin/js/off-canvas.js') }}"></script>
     <script src="{{ asset('admin/js/hoverable-collapse.js') }}"></script>
     <script src="{{ asset('admin/js/template.js') }}"></script>
     <script src="{{ asset('admin/js/settings.js') }}"></script>
     <script src="{{ asset('admin/js/todolist.js') }}"></script>
-    <!-- endinject -->
-    <!-- plugin js for this page -->
-    <script src="{{ asset('admin/vendors/progressbar.js/progressbar.min.js') }}"></script>
-    <script src="{{ asset('admin/vendors/chart.js/Chart.min.js') }}"></script>
-    <!-- End plugin js for this page -->
-    <!-- Custom js for this page-->
-    <script src="{{ asset('admin/js/dashboard.js?v=').date('His') }}"></script>
-    <!-- End custom js for this page-->
+
 </body>
 </html>

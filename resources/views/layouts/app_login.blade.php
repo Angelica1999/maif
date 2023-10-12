@@ -18,7 +18,7 @@
     <!-- inject:css -->
     <link rel="stylesheet" href="{{ asset('admin/css/vertical-layout-light/style.css') }}">
     <!-- endinject -->
-    <link rel="shortcut icon" href="{{ asset('admin/images/favicon.png') }}" />
+    <link rel="shortcut icon" href="{{ asset('images/doh.png') }}" />
 </head>
 <body>
     <div id="app">
@@ -28,8 +28,8 @@
                     <div class="row w-100 mx-0">
                         <div class="col-lg-4 mx-auto">
                             <div class="auth-form-light text-left py-5 px-4 px-sm-5">
-                                <div class="brand-logo">
-                                    <img src="{{ asset('admin/images/logo.svg') }}" alt="logo">
+                                <div class="brand-logo text-center">
+                                    <img src="{{ asset('images/doh-logo.png') }}" alt="logo" style="width: 90px; height: 90px;">
                                 </div>
                                 @yield('content')
                             </div>
