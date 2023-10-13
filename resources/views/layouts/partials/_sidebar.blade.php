@@ -17,14 +17,14 @@
       </div>
       <p class="sidebar-menu-title">Dash menu</p>
     </li>
-    <li class="nav-item active">
-      <a class="nav-link" href="index.html">
+    <li class="nav-item">
+      <a class="nav-link" href="{{ route('home') }}">
         <i class="typcn typcn-user-add-outline menu-icon"></i>
         <span class="menu-title">Patients</span>
       </a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="index.html">
+      <a class="nav-link" href="{{ route('fundsource') }}">
         <i class="typcn typcn-film menu-icon"></i>
         <span class="menu-title">Fundsource</span>
       </a>

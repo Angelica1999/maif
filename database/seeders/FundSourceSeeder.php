@@ -4,24 +4,27 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Patients;
+use App\Models\FundSource;
+use App\Models\Facility;
 use App\Models\User;
 
-class PatientsSeeder extends Seeder
+class FundSourceSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Patients::factory()
-         ->count(20)
+        FundSource::factory()
+        ->count(30)
         ->create()
-        ->each(function ($patients) {
+        ->each(function ($fundSource) {
+            $facility = Facility::where('hospital_type', 'private')->inRandomOrder()->first();
             $user = User::inRandomOrder()->first();
-            $patients->update([
+            $fundSource->update([
+                'facility_id' => $facility->id,
                 'created_by' => $user->id
             ]);
-        });;
+        });
     }
 }

@@ -63,6 +63,21 @@ return [
             ]) : [],
         ],
 
+        'cloud_mysql' => [
+            'driver' => 'mysql',
+            'host' => '180.232.110.41',
+            'port' => '3306',
+            'database' => 'doh_referral',
+            'username' => 'root',
+            'password' => 'HPCgqd68312',
+            'unix_socket' => '',
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => false,
+            'engine' => null,
+        ],
+
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DATABASE_URL'),

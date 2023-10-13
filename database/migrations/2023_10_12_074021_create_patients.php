@@ -18,15 +18,16 @@ return new class extends Migration
             $table->string('mname')->nullable();
             $table->date('dob')->nullable();
             $table->string('region')->nullabe();
+            $table->smallInteger('facility_id')->nullable();
             $table->smallInteger('province_id')->nullable();
             $table->smallInteger('muncity_id')->nullable();
-            $table->smallInteger('brgy_id')->nullable();
-            $table->smallInteger('facility_id')->nullable();
+            $table->smallInteger('barangay_id')->nullable();
             $table->string('proponent')->nullable();
             $table->decimal('amount', 20, 2)->nullable();
             $table->decimal('guaranteed_amount', 20, 2)->nullable();
             $table->decimal('actual_amount', 20, 2)->nullable();
             $table->decimal('remaining_balance', 20, 2)->nullable();
+            $table->smallInteger('created_by')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

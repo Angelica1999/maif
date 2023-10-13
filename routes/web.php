@@ -20,3 +20,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/patient/create', [App\Http\Controllers\HomeController::class, 'createPatient'])->name('patient.create');
+Route::post('/patient/create/save', [App\Http\Controllers\HomeController::class, 'createPatientSave'])->name('patient.create.save');
+
+Route::get('/fundsource', [App\Http\Controllers\FundSourceController::class, 'fundSource'])->name('fundsource');

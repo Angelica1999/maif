@@ -24,40 +24,19 @@
                 <thead>
                     <tr>
                         <th>
-                            Firstname
+                            SAA
                         </th>
                         <th>
-                            Middlename
+                            Proponent
                         </th>
                         <th>
-                            Lastname
-                        </th>
-                        <th>
-                            DOB
+                            Code
                         </th>
                         <th>
                             Facility
                         </th>
                         <th>
-                            Region
-                        </th>
-                        <th>
-                            Province
-                        </th>
-                        <th>
-                            Municipality
-                        </th>
-                        <th>
-                            Barangay
-                        </th>
-                        <th>
-                            Amount
-                        </th>
-                        <th>
-                            Guaranteed Amount
-                        </th>
-                        <th>
-                            Actual Amount
+                            Allocated Fund
                         </th>
                         <th>
                             Created By
@@ -65,47 +44,22 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($patients as $patient)
+                    @foreach($fundsources as $fund)
                         <tr>
                             <td >
-                                {{ $patient->fname }}
+                                {{ $fund->saa }}
                             </td>
                             <td>
-                                {{ $patient->mname }}
+                                {{ $fund->proponent }}
                             </td>
                             <td>
-                                {{ $patient->lname }}
+                                {{ $fund->facility_id }}
                             </td>
                             <td>
-                                {{ date("M j, Y",strtotime($patient->dob)) }}
-                                {{-- <small>({{ date("g:i a",strtotime($booking->start_time)) }})</small> --}}
+                                {{ $fund->alocated_funds }}
                             </td>
                             <td>
-                                {{ $patient->facility->description }}
-                            </td>
-                            <td>
-                                {{ $patient->region }}
-                            </td>
-                            <td>
-                                {{ $patient->province->description }}
-                            </td>
-                            <td>
-                                {{ $patient->muncity->description }}
-                            </td>
-                            <td>
-                                {{ $patient->barangay->description }}
-                            </td>
-                            <td>
-                                {{ number_format($patient->amount, 2, '.', ',') }}
-                            </td>
-                            <td>
-                                {{ number_format($patient->guaranteed_amount, 2, '.', ',') }}
-                            </td>
-                            <td>
-                                {{ number_format($patient->actual_amount, 2, '.', ',') }}
-                            </td>
-                            <td>
-                                {{ $patient->created_by }}
+                                {{ $fund->created_by }}
                             </td>
                             <td>
                                 <button type="button" class="btn btn-primary btn-sm">Print</button>
@@ -116,7 +70,7 @@
                 </table>
             </div>
             <div class="pl-5 pr-5 mt-5">
-                {!! $patients->appends(request()->query())->links('pagination::bootstrap-5') !!}
+                {!! $fundsources->appends(request()->query())->links('pagination::bootstrap-5') !!}
             </div>
         </div>
     </div>
