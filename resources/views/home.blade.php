@@ -6,7 +6,7 @@
     <div class="card">
         <div class="card-body">
             <form method="GET" action="{{ route('home') }}">
-                <div class="input-group float-right w-50">
+                <div class="input-group float-right w-50" style="min-width: 600px;">
                     <input type="text" class="form-control" name="keyword" placeholder="Patient name" value="{{ $keyword }}" aria-label="Recipient's username">
                         <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit">Search</button>
