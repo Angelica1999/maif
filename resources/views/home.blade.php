@@ -23,6 +23,7 @@
                 <table class="table table-striped">
                 <thead>
                     <tr>
+                        <th></th>
                         <th>
                             Firstname
                         </th>
@@ -67,6 +68,9 @@
                 <tbody>
                     @foreach($patients as $patient)
                         <tr>
+                            <td>
+                                <a href="{{ route('patient.pdf') }}" target="_blank" type="button" class="btn btn-primary btn-sm">Print</button>
+                            </td>
                             <td >
                                 {{ $patient->fname }}
                             </td>
@@ -106,9 +110,6 @@
                             </td>
                             <td>
                                 {{ $patient->created_by }}
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-primary btn-sm">Print</button>
                             </td>
                         </tr>
                     @endforeach
