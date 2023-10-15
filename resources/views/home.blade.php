@@ -69,8 +69,7 @@
                     @foreach($patients as $patient)
                         <tr>
                             <td>
-                                <a href="{{ route('patient.pdf') }}" target="_blank" type="button" class="btn btn-primary btn-sm">Print</button>
-                            </td>
+                            <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}" target="_blank" type="button" class="btn btn-primary btn-sm">Print</a>
                             <td >
                                 {{ $patient->fname }}
                             </td>

@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\Patients;
 use Illuminate\Http\Request;
-use PDF;
+
+use PDF; 
+
 
 class PrintController extends Controller
 {
@@ -11,11 +13,16 @@ class PrintController extends Controller
     {
         $this->middleware('auth');
     }
+    public function patientPdf(Request $request, $patientid) {
+        $patient = Patients::find($patientid);
 
-    public function patientPdf(Request $request) {
+        if(!$patient){
+            return redirect()->route('Home.index')->with('error', 'Patient not found.');
+        }
         $data = [
             'title' => 'Welcome to MAIF',
-            'date' => date('m/d/Y')
+            'date' => date('m/d/Y'),
+            'patient' => $patient,
         ];
     
         // Set the paper size to A4 in the options array
