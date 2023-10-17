@@ -5,13 +5,13 @@
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-            <form method="GET" action="{{ route('home') }}">
+            <form method="GET" action="{{ route('fundsource') }}">
                 <div class="input-group float-right w-50" style="min-width: 600px;">
-                    <input type="text" class="form-control" name="keyword" placeholder="Patient name" value="{{ $keyword }}" aria-label="Recipient's username">
+                    <input type="text" class="form-control" name="keyword" placeholder="SAA" value="{{ $keyword }}" aria-label="Recipient's username">
                         <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit">Search</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll">View All</button>
-                        <button type="button" href="#create_patient" onclick="createPatient()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md">Create</button>
+                        <button type="button" href="#create_fundsource" onclick="createFundSource()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md">Create</button>
                     </div>
                 </div>
             </form>
@@ -30,7 +30,7 @@
                             Proponent
                         </th>
                         <th>
-                            Code
+                            Code Proponent
                         </th>
                         <th>
                             Facility
@@ -53,16 +53,16 @@
                                 {{ $fund->proponent }}
                             </td>
                             <td>
-                                {{ $fund->facility_id }}
+                                {{ $fund->code_proponent }}
+                            </td>
+                            <td>
+                                {{ $fund->facility->description }}
                             </td>
                             <td>
                                 {{ $fund->alocated_funds }}
                             </td>
                             <td>
-                                {{ $fund->created_by }}
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-primary btn-sm">Print</button>
+                                {{ $fund->encoded_by->name }}
                             </td>
                         </tr>
                     @endforeach
@@ -76,11 +76,11 @@
     </div>
 </div>
 
-<div class="modal fade" id="create_patient" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="create_fundsource" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Create Patient</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Create Fund Source</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">×</span>
                 </button>
@@ -95,9 +95,9 @@
 
 @section('js')
     <script>
-        function createPatient() {
+        function createFundSource() {
             $('.modal_body').html(loading);
-            var url = "{{ route('patient.create') }}";
+            var url = "{{ route('fundsource.create') }}";
             setTimeout(function(){
                 $.ajax({
                     url: url,

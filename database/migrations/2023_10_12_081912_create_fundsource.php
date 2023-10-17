@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('code_proponent')->nullable();
             $table->smallInteger('facility_id')->nullable();
             $table->decimal('alocated_funds', 20, 2)->nullable();
+            $table->decimal('remaining_balance', 20, 2)->nullable();
             $table->smallInteger('created_by')->nullable();
             $table->rememberToken();
             $table->timestamps();

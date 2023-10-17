@@ -28,4 +28,8 @@ class Patients extends Model
     public function barangay() {       
         return $this->belongsTo(Barangay::class, 'barangay_id','id');
     }
+
+    public function encoded_by() {       
+        return $this->belongsTo(User::class, 'created_by','id');
+    }
 }

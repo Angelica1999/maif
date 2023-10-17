@@ -17,11 +17,13 @@ class FundSourceFactory extends Factory
      */
     public function definition(): array
     {
+        $amount = fake()->randomNumber(5);
         return [
-            'saa' => fake()->ean13(),
+            'saa' => 'SAA No.'.fake()->ean13(),
             'proponent' => fake()->postcode, 
             'code_proponent' => fake()->ean8, 
-            'alocated_funds' => fake()->randomNumber(5),
+            'alocated_funds' =>  $amount,
+            'remaining_balance' => $amount,
             'remember_token' => Str::random(10)
         ];
     }

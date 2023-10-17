@@ -11,4 +11,12 @@ class Fundsource extends Model
 
     protected $table = 'fundsource';
     protected $guarded = array();
+
+    public function facility() {   
+        return $this->belongsTo(Facility::class, 'facility_id','id');
+    }
+
+    public function encoded_by() {       
+        return $this->belongsTo(User::class, 'created_by','id');
+    }
 }

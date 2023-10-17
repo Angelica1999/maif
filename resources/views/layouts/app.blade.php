@@ -67,6 +67,12 @@
                 msg: 'Successfully saved patient!'
             });
         @endif
+        @if(session('fundsource_save'))
+            <?php session()->forget('fundsource_save'); ?>
+            Lobibox.notify('success', {
+                msg: 'Successfully saved Fund Source!'
+            });
+        @endif
     </script>
 
     @yield('js')

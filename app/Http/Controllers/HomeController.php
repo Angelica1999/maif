@@ -8,7 +8,9 @@ use App\Models\Facility;
 use App\Models\Province;
 use App\Models\Muncity;
 use App\Models\Barangay;
+use App\Models\Fundsource;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -32,12 +34,12 @@ class HomeController extends Controller
         $patients = Patients::
                         with(
                             [
-                                'facility' => function ($query) {
-                                    $query->select(
-                                        'id',
-                                        DB::raw('name as description')
-                                    );
-                                },
+                                // 'facility' => function ($query) {
+                                //     $query->select(
+                                //         'id',
+                                //         DB::raw('name as description')
+                                //     );
+                                // },
                                 'province' => function ($query) {
                                     $query->select(
                                         'id',
@@ -55,8 +57,14 @@ class HomeController extends Controller
                                         'id',
                                         'description'
                                     );
+                                },
+                                'encoded_by' => function ($query) {
+                                    $query->select(
+                                        'id',
+                                        'name'
+                                    );
                                 }
-                            ]);
+                            ]);              
                         
 
         if($request->viewAll) {
@@ -74,26 +82,38 @@ class HomeController extends Controller
                             
         return view('home',[
             'patients' => $patients,
-            'keyword' => $request->keyword
+            'keyword' => $request->keyword,
+            'provinces' => Province::get()
         ]);
     }
 
     public function createPatient() {
+        $user = Auth::user();
         return view('maif.create_patient',[
-            'facilities' => Facility::where('hospital_type','private')->get(),
             'provinces' => Province::get(),
-            'muncities' => Muncity::get(),
-            'barangays' => Barangay::get()
+            'fundsources' => Fundsource::get(),
+            'user' => $user
         ]);
     }
 
     public function createPatientSave(Request $request) {
         session()->flash('patient_save', true);
         $data = $request->all();
-        unset($data);
         Patients::create($request->all());
 
         return redirect()->back();
+    }
+
+    public function facilityGet(Request $request) {
+        return Facility::where('province',$request->province_id)->where('hospital_type','private')->get();
+    }
+
+    public function muncityGet(Request $request) {
+        return Muncity::where('province_id',$request->province_id)->get();
+    }
+
+    public function barangayGet(Request $request) {
+        return Barangay::where('muncity_id',$request->muncity_id)->get();
     }
 
 }

@@ -36,9 +36,9 @@
                         <th>
                             DOB
                         </th>
-                        <th>
+                        {{-- <th>
                             Facility
-                        </th>
+                        </th> --}}
                         <th>
                             Region
                         </th>
@@ -51,9 +51,9 @@
                         <th>
                             Barangay
                         </th>
-                        <th>
+                        {{-- <th>
                             Amount
-                        </th>
+                        </th> --}}
                         <th>
                             Guaranteed Amount
                         </th>
@@ -83,24 +83,40 @@
                                 {{ date("M j, Y",strtotime($patient->dob)) }}
                                 {{-- <small>({{ date("g:i a",strtotime($booking->start_time)) }})</small> --}}
                             </td>
-                            <td>
-                                {{ $patient->facility->description }}
-                            </td>
+                            {{-- <td>
+                                @if(isset($patient->facility->description))
+                                    {{ $patient->facility->description }}
+                                @else
+                                    {{ $patient->other_facility }}
+                                @endif
+                            </td> --}}
                             <td>
                                 {{ $patient->region }}
                             </td>
                             <td>
-                                {{ $patient->province->description }}
+                                @if(isset($patient->province->description))
+                                    {{ $patient->province->description }}
+                                @else
+                                    {{ $patient->other_province }}
+                                @endif
                             </td>
                             <td>
-                                {{ $patient->muncity->description }}
+                                @if(isset($patient->muncity->description))
+                                    {{ $patient->muncity->description }}
+                                @else
+                                    {{ $patient->other_muncity }}
+                                @endif
                             </td>
                             <td>
-                                {{ $patient->barangay->description }}
+                                @if(isset($patient->barangay->description))
+                                    {{ $patient->barangay->description }}
+                                @else
+                                    {{ $patient->other_barangay }}
+                                @endif
                             </td>
-                            <td>
+                            {{-- <td>
                                 {{ number_format($patient->amount, 2, '.', ',') }}
-                            </td>
+                            </td> --}}
                             <td>
                                 {{ number_format($patient->guaranteed_amount, 2, '.', ',') }}
                             </td>
@@ -108,7 +124,11 @@
                                 {{ number_format($patient->actual_amount, 2, '.', ',') }}
                             </td>
                             <td>
-                                {{ $patient->created_by }}
+                                @if(isset($patient->encoded_by->name))
+                                    {{ $patient->encoded_by->name }}
+                                @else
+                                    No Name
+                                @endif    
                             </td>
                         </tr>
                     @endforeach
@@ -154,5 +174,111 @@
                 });
             },500);
         }
+
+        function othersRegion(data) {
+            console.log(data)
+            if(data.val() != "Region 7"){
+                // $("#facility_body").html("<input type='text' class='form-control' name='other_facility' required>");
+                $("#province_body").html("<input type='text' class='form-control' name='other_province' required>");
+                $("#muncity_body").html("<input type='text' class='form-control' name='other_muncity' required>");
+                $("#barangay_body").html("<input type='text' class='form-control' name='other_barangay' required>");
+            }
+            else {
+
+                $("#province_body").html("<select class=\"form-control\" id=\"province_id\"  name=\"province_id\" onchange=\"onchangeProvince($(this))\" required>\n" +
+                    "\n" +
+                    "                                    </select>");
+
+                $('#province_id').empty();
+                var $newOption = $("<option selected='form-control'></option>").val("").text('Please select province');
+                $('#province_id').append($newOption).trigger('change');
+
+                jQuery.each(JSON.parse('<?php echo $provinces; ?>'), function(i,val){
+                    $('#province_id').append($('<option>', {
+                        value: val.id,
+                        text : val.description
+                    }));
+                });
+
+                // $("#facility_body").html("<select class=\"form-control select2\" id=\"facility_id\" name=\"facility_id\" required>\n" +
+                //     "                                        <option value=\"\">Please select municipality</option>\n" +
+                //     "                                    </select>");
+
+                $("#muncity_body").html("<select class=\"form-control select2\" id=\"muncity_id\" name=\"muncity_id\" onchange=\"onchangeMuncity($(this))\" required>\n" +
+                    "                                        <option value=\"\">Please select municipality</option>\n" +
+                    "                                    </select>");
+
+                $("#barangay_body").html("<select class=\"form-control select2\" id=\"barangay_id\" name=\"barangay_id\" required>\n" +
+                    "                                        <option value=\"\">Please select barangay</option>\n" +
+                    "                                    </select>");
+
+                $(".select2").select2({ width: '100%' });
+
+
+            }
+        }
+
+        function onchangeProvince(data) {
+            if(data.val()) {
+                // $.get("{{ url('facility/get').'/' }}"+data.val(), function(result) {
+                //     $('#facility_id').html('');
+
+                //     $.each(result, function(index, optionData) {
+                //         $('#facility_id').append($('<option>', {
+                //             value: optionData.id,
+                //             text: optionData.name
+                //         }));
+                //     });
+
+                //     $('#facility_id').trigger('change');
+                // });
+
+                $.get("{{ url('muncity/get').'/' }}"+data.val(), function(result) {
+                    $('#muncity_id').html('');
+
+                    $('#muncity_id').append($('<option>', {
+                        value: "",
+                        text: "Please select a municipality"
+                    }));
+                    $.each(result, function(index, optionData) {
+                        $('#muncity_id').append($('<option>', {
+                            value: optionData.id,
+                            text: optionData.description
+                        }));
+                    });
+
+                    $('#muncity_id').trigger('change');
+                });
+            }
+        }
+
+        function onchangeMuncity(data) {
+            if(data.val()) {
+                $.get("{{ url('barangay/get').'/' }}"+data.val(), function(result) {
+                    $('#barangay_id').html('');
+
+                    $.each(result, function(index, optionData) {
+                        $('#barangay_id').append($('<option>', {
+                            value: optionData.id,
+                            text: optionData.description
+                        }));
+                    });
+
+                    $('#barangay_id').trigger('change');
+                });
+            }
+        }
+
+        function onchangeFundsource(data) {
+            if(data.val()) {
+                $.get("{{ url('fundsource/get').'/' }}"+data.val(), function(result) {
+                    $("#proponent").val(result.proponent);
+                    $("#facility_name").val(result.facility.description);
+                    $("#actual_amount").val(result.alocated_funds);
+                    $("#remaining_balance").val(result.remaining_balance);
+                });
+            }
+        }
+
     </script>
 @endsection
