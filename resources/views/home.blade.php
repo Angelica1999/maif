@@ -71,7 +71,9 @@
                             <td>
                             <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}" target="_blank" type="button" class="btn btn-primary btn-sm">Print</a>
                             <td >
-                                {{ $patient->fname }}
+                                <a href="#create_patient" onclick="editPatient('{{ $patient->id }}')" data-backdrop="static" data-toggle="modal">
+                                    {{ $patient->fname }}
+                                </a>
                             </td>
                             <td>
                                 {{ $patient->mname }}
@@ -163,7 +165,23 @@
     <script>
         function createPatient() {
             $('.modal_body').html(loading);
+            $('.modal_title').html("Create Patient");
             var url = "{{ route('patient.create') }}";
+            setTimeout(function(){
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function(result) {
+                        $('.modal_body').html(result);
+                    }
+                });
+            },500);
+        }
+
+        function editPatient(id) {
+            $('.modal_body').html(loading);
+            $('.modal_title').html("Edit Patient");
+            var url = "{{ url('patient/edit').'/' }}"+id;
             setTimeout(function(){
                 $.ajax({
                     url: url,

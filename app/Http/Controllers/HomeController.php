@@ -104,6 +104,32 @@ class HomeController extends Controller
         return redirect()->back();
     }
 
+    public function editPatient(Request $request) {
+        $patient = Patients::where('id',$request->patient_id)
+                            ->with(
+                                [
+                                    'muncity' => function ($query) {
+                                        $query->select(
+                                            'id',
+                                            'description'
+                                        );
+                                    },
+                                    'barangay' => function ($query) {
+                                        $query->select(
+                                            'id',
+                                            'description'
+                                        );
+                                    },
+                                    'fundsource'
+                                ])
+                                ->first();
+        return view('maif.update_patient',[
+            'provinces' => Province::get(),
+            'fundsources' => Fundsource::get(),
+            'patient' => $patient,
+        ]);
+    }
+
     public function facilityGet(Request $request) {
         return Facility::where('province',$request->province_id)->where('hospital_type','private')->get();
     }

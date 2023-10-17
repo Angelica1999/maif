@@ -32,4 +32,8 @@ class Patients extends Model
     public function encoded_by() {       
         return $this->belongsTo(User::class, 'created_by','id');
     }
+
+    public function fundSource() {       
+        return $this->belongsTo(Fundsource::class, 'fundsource_id','id');
+    }
 }
