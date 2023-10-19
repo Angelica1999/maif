@@ -42,7 +42,7 @@
                 <div class="form-group">
                     <label>Facility</label>
                     <div id="facility_body">
-                        <select class="js-example-basic-single w-100" id="facility_id" name="facility_id[]" required>
+                        <select class="form-control js-example-basic-single w-100" id="facility_id" name="facility_id[]" required>
                             <option value="">Please select facility</option>
                             @foreach($facilities as $facility)
                                 <option value="{{ $facility->id }}">{{ $facility->name }}</option>
@@ -72,9 +72,9 @@
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 
 <script>
-    function onchangeFundsource () {
-        $(".select2").select2({ width: '100%' });
-    }
+    // function onchangeFundsource () {
+    //     $(".select2").select2({ width: '100%' });
+    // }
 
     function fundsourceExist(data) {
         data.val() ? $("#saa").attr('disabled','disabled') : $("#saa").removeAttr('disabled','disabled');

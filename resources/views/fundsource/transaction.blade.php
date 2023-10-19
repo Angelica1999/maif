@@ -2,7 +2,7 @@
     <div class="col-md-6">
         <div class="form-group">
             <label>Facility</label>
-            <select class="form-control select2" id="facility_id" name="facility_id[]" required>
+            <select class="form-control" id="{{ $uniqueCode }}" name="facility_id[]" required>
                 <option value="">Please select facility</option>
                 @foreach($facilities as $facility)
                     <option value="{{ $facility->id }}">{{ $facility->name }}</option>
@@ -18,3 +18,7 @@
         </div>
     </div>
 </div>
+
+<script>
+    $("#"+"{{ $uniqueCode }}").select2();
+</script>

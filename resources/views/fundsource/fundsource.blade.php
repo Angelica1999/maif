@@ -28,18 +28,12 @@
                     <div class="col-md-4 mt-2 grid-margin grid-margin-md-0 stretch-card">
                         <div class="card">
                             <div class="card-body">
-                                <?php 
-                                    $proponents = Proponent::where('fundsource_id',$fund->id)->get();    
-                                ?>
-                                @foreach($proponents as $proponent)
+                                @foreach($fund->proponents as $proponent)
                                     <h4 class="card-title">{{ $fund->saa }}</h4>
                                     <p class="card-description">{{ $proponent->proponent }}</p>
                                     <ul class="list-arrow">
-                                        <?php 
-                                            $proponentsInfo = ProponentInfo::where('fundsource_id',$fund->id)->get();    
-                                        ?>
-                                        @foreach($proponentsInfo as $proponentInfo)
-                                            <li>{{ Facility::find($proponentInfo->facility_id)->name }} - <strong class="text-info">&nbsp;₱&nbsp;{{ number_format($proponentInfo->alocated_funds, 2, '.', ',') }}</strong></li>
+                                        @foreach($proponent->proponentInfo as $proponentInfo)
+                                            <li>{{ $proponentInfo->facility->name }} - <strong class="text-info">&nbsp;₱&nbsp;{{ number_format($proponentInfo->alocated_funds, 2, '.', ',') }}</strong></li>
                                         @endforeach
                                     </ul>
                                 @endforeach
