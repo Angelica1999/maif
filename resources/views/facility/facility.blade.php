@@ -9,7 +9,7 @@
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-            <form method="GET" action="{{ route('fundsource') }}">
+            <form method="GET" action="{{ route('facility') }}">
                 <div class="input-group float-right w-50" style="min-width: 600px;">
                     <input type="text" class="form-control" name="keyword" placeholder="SAA" value="{{ $keyword }}" aria-label="Recipient's username">
                         <div class="input-group-append">
@@ -19,38 +19,60 @@
                     </div>
                 </div>
             </form>
-            <h4 class="card-title">Manage FundSource</h4>
+            <h4 class="card-title">Manage Facility</h4>
             <p class="card-description">
                 MAIF-IP
             </p>
-            <div class="row">
-                @foreach($fundsources as $fund)
-                    <div class="col-md-4 mt-2 grid-margin grid-margin-md-0 stretch-card">
-                        <div class="card">
-                            <div class="card-body">
-                                <?php 
-                                    $proponents = Proponent::where('fundsource_id',$fund->id)->get();    
-                                ?>
-                                @foreach($proponents as $proponent)
-                                    <h4 class="card-title">{{ $fund->saa }}</h4>
-                                    <p class="card-description">{{ $proponent->proponent }}</p>
-                                    <ul class="list-arrow">
-                                        <?php 
-                                            $proponentsInfo = ProponentInfo::where('fundsource_id',$fund->id)->get();    
-                                        ?>
-                                        @foreach($proponentsInfo as $proponentInfo)
-                                            <li>{{ Facility::find($proponentInfo->facility_id)->name }} - <strong class="text-info">&nbsp;₱&nbsp;{{ number_format($proponentInfo->alocated_funds, 2, '.', ',') }}</strong></li>
-                                        @endforeach
-                                    </ul>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
+            <div class="table-responsive">
+                <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>
+                            Name
+                        </th>
+                        <th>
+                            Address
+                        </th>
+                        <th>
+                            Social Worker
+                        </th>
+                        <th>
+                            Social Worker Email
+                        </th>
+                        <th>
+                            Social Worker Contact
+                        </th>
+                        <th>
+                            Finance Officer
+                        </th>
+                        <th>
+                            Finance Officer Email
+                        </th>
+                        <th>
+                            Finance Officer Contact
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($facilities as $facility)
+                        <tr>
+                            <td><a href="" target="_blank" type="button" class="btn btn-primary btn-sm">Update</a></td>
+                            <td>{{ $facility->name }}</td>
+                            <td>{{ $facility->facility_email }}</td>
+                            <td>{{ $facility->social_worker }}</td>
+                            <td>{{ $facility->social_worker_email }}</td>
+                            <td>{{ $facility->social_worker_contact }}</td>
+                            <td>{{ $facility->finance_officer }}</td>
+                            <td>{{ $facility->finance_officer_email }}</td>
+                            <td>{{ $facility->finance_officer_contact }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+                </table>
             </div>
-            
             <div class="pl-5 pr-5 mt-5">
-                {!! $fundsources->appends(request()->query())->links('pagination::bootstrap-5') !!}
+                {!! $facilities->appends(request()->query())->links('pagination::bootstrap-5') !!}
             </div>
         </div>
     </div>

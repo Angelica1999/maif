@@ -16,6 +16,10 @@ class Fundsource extends Model
         return $this->belongsTo(Facility::class, 'facility_id','id');
     }
 
+    public function proponent() {   
+        return $this->hasMany(Proponent::class,'fundsource_id');
+    }
+
     public function encoded_by() {       
         return $this->belongsTo(User::class, 'created_by','id');
     }

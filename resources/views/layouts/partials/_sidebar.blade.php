@@ -17,6 +17,7 @@
       </div>
       <p class="sidebar-menu-title">Dash menu</p>
     </li>
+    @if(Auth::user()->roles == 'maif')
     <li class="nav-item">
       <a class="nav-link" href="{{ route('home') }}">
         <i class="typcn typcn-user-add-outline menu-icon"></i>
@@ -24,11 +25,20 @@
       </a>
     </li>
     <li class="nav-item">
+      <a class="nav-link" href="{{ route('facility') }}">
+        <i class="typcn typcn-user-add-outline menu-icon"></i>
+        <span class="menu-title">Facility</span>
+      </a>
+    </li>
+    @endif
+    @if(Auth::user()->roles == 'budget')
+    <li class="nav-item">
       <a class="nav-link" href="{{ route('fundsource') }}">
         <i class="typcn typcn-film menu-icon"></i>
         <span class="menu-title">Fundsource</span>
       </a>
     </li>
+    @endif
   </ul>
   <ul class="sidebar-legend">
     <li>

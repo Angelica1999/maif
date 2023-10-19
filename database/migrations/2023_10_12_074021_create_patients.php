@@ -28,6 +28,7 @@ return new class extends Migration
             $table->smallInteger('barangay_id')->nullable();
             $table->string('other_barangay')->nullable();
             $table->string('proponent')->nullable();
+            $table->string('patient_code')->nullable();
             // $table->decimal('amount', 20, 2)->nullable();
             $table->decimal('guaranteed_amount', 20, 2)->nullable();
             $table->decimal('actual_amount', 20, 2)->nullable();

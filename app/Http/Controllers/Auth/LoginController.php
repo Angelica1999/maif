@@ -26,7 +26,15 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = RouteServiceProvider::HOME;
+    // protected $redirectTo = RouteServiceProvider::HOME;
+    protected function redirectTo()
+    {
+        if (auth()->user()->roles == 'maif') {
+            return RouteServiceProvider::MAIF;
+        } elseif (auth()->user()->roles == 'budget') {
+            return RouteServiceProvider::BUDGET;
+        }
+    }
 
     /**
      * Create a new controller instance.
