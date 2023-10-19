@@ -129,7 +129,9 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Proponent</label>
-                    <input type="text" class="form-control" id="proponent" name="proponent" readonly>
+                    <select class="js-example-basic-single w-100 select2" id="proponent_id" name="proponent_id" onchange="onchangeProponent($(this))" required>
+
+                    </select>
                 </div>
             </div>
         </div>
@@ -138,17 +140,18 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Facility</label>
-                    <input type="text" id="facility_name" class="form-control" readonly>
-                    <input type="hidden" id="facility_id" name="facility_id">
+                    <select class="js-example-basic-single w-100 select2" id="facility_id" name="facility_id" onchange="onchangeForPatientCode($(this))" required>
+
+                    </select>
                 </div>
             </div> 
 
-            {{-- <div class="col-md-6">
+            <div class="col-md-6">
                 <div class="form-group">
-                    <label for="fname">Amount</label>
-                    <input type="number" step="any" class="form-control" id="amount" name="amount" placeholder="Amount" required>
+                    <label for="fname">Patient Code</label>
+                    <input type="text" class="form-control" id="patient_code" name="patient_code" placeholder="Patient Code" readonly>
                 </div>
-            </div> --}}
+            </div>
         </div>
         <hr>
         <strong>Transaction</strong>

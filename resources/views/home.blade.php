@@ -11,7 +11,19 @@
                         <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit">Search</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll">View All</button>
-                        <button type="button" href="#create_patient" onclick="createPatient()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md">Create</button>
+                        {{-- <button type="button" href="#create_patient" onclick="createPatient()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md">Create</button> --}}
+                        <div class="btn-group">
+                            {{-- <button type="button" class="btn btn-success btn-md">Create</button> --}}
+                            <button type="button" class="btn btn-success btn-md dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Create
+                                <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <div class="dropdown-menu">
+                              <!-- Dropdown items go here -->
+                              <a class="dropdown-item" href="#create_patient" onclick="createPatient()" data-backdrop="static" data-toggle="modal">Guarantee Letter</a>
+                              <a class="dropdown-item" href="#">Disbursement Voucher</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -23,7 +35,9 @@
                 <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th></th>
+                        <th>
+                            Option
+                        </th>
                         <th>
                             Firstname
                         </th>
@@ -69,8 +83,9 @@
                     @foreach($patients as $patient)
                         <tr>
                             <td>
-                            <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}" target="_blank" type="button" class="btn btn-primary btn-sm">Print</a>
-                            <td >
+                                <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}" target="_blank" type="button" class="btn btn-primary btn-sm">Print</a>
+                            </td> 
+                            <td>
                                 <a href="#create_patient" onclick="editPatient('{{ $patient->id }}')" data-backdrop="static" data-toggle="modal">
                                     {{ $patient->fname }}
                                 </a>
@@ -159,6 +174,7 @@
         </div>
     </div>
 </div>
+
 @endsection
 
 @section('js')
@@ -231,8 +247,6 @@
                     "                                    </select>");
 
                 $(".select2").select2({ width: '100%' });
-
-
             }
         }
 
@@ -289,11 +303,51 @@
 
         function onchangeFundsource(data) {
             if(data.val()) {
-                $.get("{{ url('fundsource/get').'/' }}"+data.val(), function(result) {
-                    $("#proponent").val(result.proponent);
-                    $("#facility_name").val(result.facility.description);
-                    $("#actual_amount").val(result.alocated_funds);
-                    $("#remaining_balance").val(result.remaining_balance);
+                $.get("{{ url('proponent/get').'/' }}"+data.val(), function(result) {
+                    $('#proponent_id').html('');
+                    $('#proponent_id').append($('<option>', {
+                        value: "",
+                        text: "Please select a proponent"
+                    }));
+                    $.each(result, function(index, optionData) {
+                        $('#proponent_id').append($('<option>', {
+                            value: optionData.id,
+                            text: optionData.proponent
+                        }));
+                    });
+
+                    $('#proponent_id').trigger('change');
+
+                });
+            }
+        }
+
+        var proponent_id = 0;
+        function onchangeProponent(data) {
+            if(data.val()) {
+                proponent_id = data.val();
+                $.get("{{ url('facility/proponent').'/' }}"+data.val(), function(result) {
+                    $('#facility_id').html('');
+                    $('#facility_id').append($('<option>', {
+                        value: "",
+                        text: "Please select a facility"
+                    }));
+                    $.each(result, function(index, optionData) {
+                        $('#facility_id').append($('<option>', {
+                            value: optionData.facility.id,
+                            text: optionData.facility.description
+                        }));
+                    });
+                    $('#facility_id').trigger('change');
+                });
+            }
+        }
+
+        function onchangeForPatientCode(data) {
+            if(data.val()) {
+                $.get("{{ url('patient/code').'/' }}"+proponent_id+"/"+data.val(), function(result) {
+                    console.log(result);
+                    $("#patient_code").val(result);
                 });
             }
         }
