@@ -32,12 +32,6 @@ class FundSourceController extends Controller
                                     'id',
                                     'name'
                                 );
-                            },
-                            'proponent' => function ($query) {
-                                $query->select(
-                                    'id',
-                                    'proponent'
-                                );
                             }
                         ]);
 

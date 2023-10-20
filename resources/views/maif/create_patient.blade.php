@@ -92,7 +92,7 @@
                     <label for="lname">Municipality</label>
                     <div id="muncity_body">
                         <select class="js-example-basic-single w-100" id="muncity_id" name="muncity_id" onchange="onchangeMuncity($(this))" required>
-                            <option value="">Please select municipality</option>
+                            <option value=""></option>
                         </select>
                     </div>
                 </div>
@@ -103,7 +103,7 @@
                     <label for="lname">Barangay</label>
                     <div id="barangay_body">
                         <select class="js-example-basic-single w-100" id="barangay_id" name="barangay_id" required>
-                            <option value="">Please select barangay</option>
+                            <option value=""></option>
                         </select>
                     </div>
                 </div>
@@ -183,7 +183,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Remaining Balance</label>
-                    <input type="number" step="any" class="form-control" id="remaining_balance" name="remaining_balance" placeholder="Remaining Balance">
+                    <input type="number" step="any" class="form-control" id="remaining_balance" name="remaining_balance" placeholder="Remaining Balance" readonly>
                 </div>
             </div>
         </div>

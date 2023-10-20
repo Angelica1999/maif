@@ -26,7 +26,7 @@ class PatientsFactory extends Factory
             'muncity_id' => 63,
             'facility_id' => 24,
             'barangay_id' => 1444,
-            'proponent' => fake()->postcode, 
+            'proponent_id' => 1, 
             // 'amount' => fake()->randomNumber(5),
             'guaranteed_amount' => fake()->randomNumber(5),
             'actual_amount' => fake()->randomNumber(5),
