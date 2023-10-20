@@ -16,4 +16,10 @@ class Proponent extends Model
     {
         return $this->hasOne(Fundsource::class,'id','fundsource_id');
     }
+
+    public function proponentInfo()
+    {
+        return $this->hasMany(ProponentInfo::class);
+    }
+
 }

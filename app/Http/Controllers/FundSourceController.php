@@ -18,13 +18,14 @@ class FundSourceController extends Controller
     }
 
     public function fundSource(Request $request) {
-        $fundsources = Fundsource::
+        $fundsources = Fundsource::              
                         with([
-                            'facility' => function ($query) {
-                                $query->select(
-                                    'id',
-                                    DB::raw('name as description')
-                                );
+                            'proponents' => function ($query) {
+                                $query->with([
+                                    'proponentInfo' => function ($query) {
+                                        $query->with('facility');
+                                    }
+                                ]);
                             },
                             'encoded_by' => function ($query) {
                                 $query->select(
@@ -50,7 +51,8 @@ class FundSourceController extends Controller
         $fundsources = $fundsources
                         ->orderBy('id','desc')
                         ->paginate(15);
-
+                        
+        
         return view('fundsource.fundsource',[
             'fundsources' => $fundsources,
             'keyword' => $request->keyword
@@ -153,6 +155,16 @@ class FundSourceController extends Controller
         $facility = Facility::find($request->facility_id);
         $patient_code = $proponent->proponent_code.'-'.$this->getAcronym($facility->name).date('YmdHi').$user->id;
         return $patient_code;
+    }
+
+    public function transactionGet() {
+        $randomBytes = random_bytes(16); // 16 bytes (128 bits) for a reasonably long random code
+        $uniqueCode = bin2hex($randomBytes);
+        $facilities = Facility::where('hospital_type','private')->get();
+        return view('fundsource.transaction',[
+            'facilities' => $facilities,
+            'uniqueCode' => $uniqueCode
+        ]);
     }
 
 }

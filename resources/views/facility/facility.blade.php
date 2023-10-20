@@ -59,7 +59,7 @@
                         <tr>
                             <td><a href="" target="_blank" type="button" class="btn btn-primary btn-sm">Update</a></td>
                             <td>{{ $facility->name }}</td>
-                            <td>{{ $facility->facility_email }}</td>
+                            <td>{{ $facility->address }}</td>
                             <td>{{ $facility->social_worker }}</td>
                             <td>{{ $facility->social_worker_email }}</td>
                             <td>{{ $facility->social_worker_contact }}</td>
