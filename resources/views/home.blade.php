@@ -289,6 +289,10 @@
                 $.get("{{ url('barangay/get').'/' }}"+data.val(), function(result) {
                     $('#barangay_id').html('');
 
+                    $('#barangay_id').append($('<option>', {
+                        value: "",
+                        text: "Please select a barangay"
+                    }));
                     $.each(result, function(index, optionData) {
                         $('#barangay_id').append($('<option>', {
                             value: optionData.id,

@@ -3,26 +3,45 @@
 namespace App\Http\Controllers;
 use App\Models\Patients;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 use PDF; 
 
 
 class PrintController extends Controller
 {
-    public function __construct()
-    {
+    public function __construct() {
         $this->middleware('auth');
     }
+
+    public function calculateAge($dob) {
+        $dob = Carbon::parse($dob);
+        $currentDate = Carbon::now();
+        $age = $currentDate->diffInYears($dob);
+
+        if ($age >= 1) {
+            if ($dob->diffInMonths($currentDate) > 0) {
+                return $age . ' y/o';
+            } else {
+                return $age . ' y/o';
+            }
+        } else {
+            return $dob->diffInMonths($currentDate) . ' month' . ($dob->diffInMonths($currentDate) != 1 ? 's' : '');
+        }
+    }
+    
     public function patientPdf(Request $request, $patientid) {
         $patient = Patients::find($patientid);
 
         if(!$patient){
             return redirect()->route('Home.index')->with('error', 'Patient not found.');
         }
+
         $data = [
             'title' => 'Welcome to MAIF',
             'date' => date('m/d/Y'),
             'patient' => $patient,
+            'age' => $this->calculateAge($patient->dob)
         ];
     
         // Set the paper size to A4 in the options array

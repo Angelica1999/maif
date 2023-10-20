@@ -110,6 +110,15 @@
             </div>
         </div>
 
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="fname">Date of Guarantee Letter</label>
+                    <input type="date" class="form-control" id="date_guarantee_letter" name="date_guarantee_letter" placeholder="Date of Guarantee Letter" required>
+                </div>
+            </div>
+        </div>
+
         <hr>
         <strong>Fund Source</strong>
         <hr>
@@ -165,15 +174,12 @@
                 </div>
             </div>
 
-            <div class="col-md-6">
+            {{-- <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Actual Amount</label>
                     <input type="number" step="any" class="form-control" id="actual_amount" name="actual_amount" placeholder="Actual Amount" readonly>
                 </div>
-            </div>
-        </div>
-
-        <div class="row">
+            </div> --}}
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Remaining Balance</label>

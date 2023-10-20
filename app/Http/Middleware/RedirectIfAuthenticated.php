@@ -21,7 +21,11 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                return redirect(RouteServiceProvider::HOME);
+                if (auth()->user()->roles == 'maif') {
+                    return redirect(RouteServiceProvider::MAIF);
+                } elseif (auth()->user()->roles == 'budget') {
+                    return redirect(RouteServiceProvider::BUDGET);
+                }
             }
         }
 
