@@ -21,4 +21,5 @@ class Proponent extends Model
     {
         return $this->hasMany(ProponentInfo::class);
     }
+
 }

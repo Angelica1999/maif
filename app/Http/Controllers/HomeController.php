@@ -142,4 +142,11 @@ class HomeController extends Controller
         return Barangay::where('muncity_id',$request->muncity_id)->get();
     }
 
+    public function transactionGet() {
+        $facilities = Facility::where('hospital_type','private')->get();
+        return view('fundsource.transaction',[
+            'facilities' => $facilities
+        ]);
+    }
+
 }
