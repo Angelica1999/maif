@@ -8,6 +8,7 @@ use App\Models\Patients;
 use App\Models\AddFacilityInfo;
 use Illuminate\Support\Facades\DB;
 
+
 class FacilityController extends Controller
 {
     public function index(Request $request) {
@@ -37,4 +38,15 @@ class FacilityController extends Controller
             'keyword' => $request->keyword
         ]);
     }
+
+      public function facilityEdit()
+      {
+        //  $facility = AddFacilityInfo::find($facilityID);
+
+        //  if (!$facility) {
+        //     // Handle the case where the facility with the given ID doesn't exist
+        //     return redirect()->route('facility.facility')->with('error', 'Facility not found');
+        // }   
+       return view('facility.edit');  
+      }
 }

@@ -57,7 +57,14 @@
                 <tbody>
                     @foreach($facilities as $facility)
                         <tr>
-                            <td><a href="" target="_blank" type="button" class="btn btn-primary btn-sm">Update</a></td>
+                        <td>
+                        <a href="#" data-target="#update_facility" type="button" 
+                            onclick="updateFacility({{ $facility->id }}, {{ $facility->facility_id }})"
+                            data-backdrop="static" data-toggle="modal" class="btn btn-primary btn-sm">Update</a>
+
+                            <!-- <input type="hidden" id="table1_id" value="{{ $facility->id }}"> -->
+                        </td>
+
                             <td>{{ $facility->name }}</td>
                             <td>{{ $facility->address }}</td>
                             <td>{{ $facility->social_worker }}</td>
@@ -78,7 +85,23 @@
     </div>
 </div>
 
-<div class="modal fade" id="create_fundsource" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- <div class="modal fade" id="create_fundsource" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Create Fund Source</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal_body">
+                
+            </div>
+        </div>
+    </div>
+</div> -->
+
+<div class="modal fade" id="update_facility" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -93,13 +116,28 @@
         </div>
     </div>
 </div>
+
 @endsection
 
 @section('js')
     <script>
-        function createFundSource() {
+        // function createFundSource() {
+        //     $('.modal_body').html(loading);
+        //     var url = "{{ route('fundsource.create') }}";
+        //     setTimeout(function(){
+        //         $.ajax({
+        //             url: url,
+        //             type: 'GET',
+        //             success: function(result) {
+        //                 $('.modal_body').html(result);
+        //             }
+        //         });
+        //     },500);
+        // }
+
+        function updateFacility() {
             $('.modal_body').html(loading);
-            var url = "{{ route('fundsource.create') }}";
+            var url = "{{ route('facility.edit') }}";
             setTimeout(function(){
                 $.ajax({
                     url: url,
