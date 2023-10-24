@@ -52,12 +52,29 @@
                         <th>
                             Finance Officer Contact
                         </th>
+                        <th>
+                           Vat
+                        </th>
+                        <th>
+                            Ewt
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($facilities as $facility)
                         <tr>
-                            <td><a href="" target="_blank" type="button" class="btn btn-primary btn-sm">Update</a></td>
+                        <td>
+                        <a href="{{ route('facility.edit', ['main_id' => $facility->main_id]) }}" 
+               data-target="#update_facility" 
+               type="button" 
+               onclick="updateFacility(this)" 
+               data-backdrop="static" 
+               data-toggle="modal" 
+               class="btn btn-primary btn-sm"
+               data-main-id="{{ $facility->main_id }}">Update</a>
+
+                        </td>
+
                             <td>{{ $facility->name }}</td>
                             <td>{{ $facility->address }}</td>
                             <td>{{ $facility->social_worker }}</td>
@@ -66,6 +83,8 @@
                             <td>{{ $facility->finance_officer }}</td>
                             <td>{{ $facility->finance_officer_email }}</td>
                             <td>{{ $facility->finance_officer_contact }}</td>
+                            <td>{{ $facility->vat }}</td>
+                            <td>{{ $facility->Ewt}}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -78,7 +97,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="create_fundsource" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- <div class="modal fade" id="create_fundsource" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -92,24 +111,65 @@
             </div>
         </div>
     </div>
+</div> -->
+
+<div class="modal fade" id="update_facility" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Update Facility</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal_body">
+            <input type="hidden" id="main_id" name="main_id" value="">
+            </div>
+        </div>
+    </div>
 </div>
+
 @endsection
 
 @section('js')
     <script>
-        function createFundSource() {
-            $('.modal_body').html(loading);
-            var url = "{{ route('fundsource.create') }}";
-            setTimeout(function(){
-                $.ajax({
-                    url: url,
-                    type: 'GET',
-                    success: function(result) {
-                        $('.modal_body').html(result);
-                    }
-                });
-            },500);
-        }
+        // function createFundSource() {
+        //     $('.modal_body').html(loading);
+        //     var url = "{{ route('fundsource.create') }}";
+        //     setTimeout(function(){
+        //         $.ajax({
+        //             url: url,
+        //             type: 'GET',
+        //             success: function(result) {
+        //                 $('.modal_body').html(result);
+        //             }
+        //         });
+        //     },500);
+        // }
+
+        function updateFacility(clickedElement) {
+    // Get the main_id from the data-main-id attribute of the clicked element
+    var main_id = $(clickedElement).data('main-id');
+
+    $('.modal_body').html(loading);
+
+    var url = "{{ route('facility.edit', ':main_id') }}"; // Use a placeholder for main_id
+
+    // Replace the placeholder with the actual main_id value
+    url = url.replace(':main_id', main_id);
+
+    setTimeout(function() {
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(result) {
+                $('.modal_body').html(result);
+            }
+        });
+    }, 500);
+}
+
+
 
         function addTransaction() {
             event.preventDefault();
