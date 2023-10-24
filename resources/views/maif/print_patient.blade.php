@@ -66,14 +66,14 @@
                 <div class="ml-2">
                     <p>Republic of the Philippines<br>
                         Department of Health<br>
-                        <span class="col text-center" style="font-size: 13px"><strong>MALASAKIT PROGRAM OFFICE</strong></span>
+                        <span class="col text-center" style="font-size: 12px"><strong>MAIFIP - Medical Assistance to Indigent and Fanancialy - Incapacitated Patients</strong></span>
                     </p>
                 </div>
             </div>
         </div>
 
         <div class="form-group ml-1">
-            <p class="date">{{ $date }}</p>
+        <p class="date">{{ $patient->date_guarantee_letter? $patient->date_guarantee_letter->format('jS F Y') : " "}}</p>
             <p class="col text-center" id="certificate"><strong>CERTIFICATION</strong></p> <!-- Corrected typo in ID -->
         </div>
 
@@ -93,19 +93,19 @@
             <tbody>
                 <tr>
                     <td>Hospital Bills / laboratory /Procedures/ Medicine()</td>
-                    <td class="text-center">3,000.00</td>
+                    <td class="text-center">{{$patient->guaranteed_amount}}</td>
                     <td class="text-center">0.00</td>
-                    <td>2023-07-14 16:47:42</td>
+                    <td>{{$patient->created_at}}</td>
                 </tr>
             </tbody>
         </table>
 
         <p class="ml-3" ><strong>Total Amount:</strong>
-            <span class="static-data"><strong>3,000.00</strong></span>
+            <span class="static-data"><strong>{{$patient->guaranteed_amount}}</strong></span>
             <span class="static-data1"><strong>P0.00</strong></span>
         </p>
         <div class="row align-items-start ml-1"> 
-            <p class="ml-1">EAMC-230630-1674341E9DD<br><br>
+            <p class="ml-1">{{$patient->patient_code}}<br><br>
                 Notes:<br>
                 <i>50% maximum applicable for PF</i><br>
                 Non-Convertible to cash<br><br>
@@ -113,8 +113,10 @@
             </p>
         </div>
         <div class="col text-center">
-            <p>STA CRUZ MANILA, 651-7800 Local: 1807, 1810, 1811, 1805, and 2908, <a href="https://doh.gov.ph">doh.gov.ph</a></p>
-        </div>
+            <p>Osmeña Boulevard, Sambag II, Cebu City,6000 Philippines 
+                (032) 260-9740 loc.111 0915-395-6599 <a href="https://doh.gov.ph">doh.gov.ph</a></p>
+        </div>  
+        
     
         <hr> <!-- Horizontal line representing the footer -->
         <div class="row align-items-start"> 
@@ -127,14 +129,14 @@
                 <div class="ml-2">
                     <p>Republic of the Philippines<br>
                         Department of Health<br>
-                        <span class="col text-center" style="font-size: 13px"><strong>MALASAKIT PROGRAM OFFICE</strong></span>
+                        <span class="col text-center" style="font-size: 12px"><strong>MAIFIP - Medical Assistance to Indigent and Fanancialy - Incapacitated Patients</strong></span>
                     </p>
                 </div>
             </div>
         </div>
 
         <div class="form-group">
-            <p class="date">{{ $date }}</p>
+        <p class="date">{{ $patient->date_guarantee_letter ? $patient->date_guarantee_letter->format('jS F Y') : '' }}</p>
             <p class="col text-center" id="certificate"><strong>CERTIFICATION</strong></p> <!-- Corrected typo in ID -->
         </div>
 
@@ -154,19 +156,19 @@
             <tbody>
                 <tr>
                     <td>Hospital Bills / laboratory /Procedures/ Medicine()</td>
-                    <td class="text-center">3,000.00</td>
+                    <td class="text-center">{{$patient->guaranteed_amount}}</td>
                     <td class="text-center">0.00</td>
-                    <td>2023-07-14 16:47:42</td>
+                    <td>{{$patient->created_at}}</td>
                 </tr>
             </tbody>
         </table>
 
         <p class="ml-3"><strong>Total Amount:</strong>
-            <span class="static-data"><strong>3,000.00</strong></span>
+            <span class="static-data"><strong>{{$patient->guaranteed_amount}}</strong></span>
             <span class="static-data1"><strong>P0.00</strong></span>
         </p>
         <div class="row align-items-start ml-1"> 
-            <p class="ml-1">EAMC-230630-1674341E9DD<br><br>
+            <p class="ml-1">{{$patient->patient_code}}<br><br>
                 Notes:<br>
                 <i>50% maximum applicable for PF</i><br>
                 Non-Convertible to cash<br><br>
@@ -174,7 +176,8 @@
             </p>
         </div>
         <div class="col text-center">
-            <p>STA CRUZ MANILA, 651-7800 Local: 1807, 1810, 1811, 1805, and 2908, <a href="https://doh.gov.ph">doh.gov.ph</a></p>
+            <p>Osmeña Boulevard, Sambag II, Cebu City,6000 Philippines 
+                (032) 260-9740 loc.111 0915-395-6599 <a href="https://doh.gov.ph">doh.gov.ph</a></p>
         </div>       
       
     </body>
