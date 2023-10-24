@@ -52,17 +52,27 @@
                         <th>
                             Finance Officer Contact
                         </th>
+                        <th>
+                           Vat
+                        </th>
+                        <th>
+                            Ewt
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($facilities as $facility)
                         <tr>
                         <td>
-                        <a href="#" data-target="#update_facility" type="button" 
-                            onclick="updateFacility({{ $facility->id }}, {{ $facility->facility_id }})"
-                            data-backdrop="static" data-toggle="modal" class="btn btn-primary btn-sm">Update</a>
+                        <a href="{{ route('facility.edit', ['main_id' => $facility->main_id]) }}" 
+               data-target="#update_facility" 
+               type="button" 
+               onclick="updateFacility(this)" 
+               data-backdrop="static" 
+               data-toggle="modal" 
+               class="btn btn-primary btn-sm"
+               data-main-id="{{ $facility->main_id }}">Update</a>
 
-                            <!-- <input type="hidden" id="table1_id" value="{{ $facility->id }}"> -->
                         </td>
 
                             <td>{{ $facility->name }}</td>
@@ -73,6 +83,8 @@
                             <td>{{ $facility->finance_officer }}</td>
                             <td>{{ $facility->finance_officer_email }}</td>
                             <td>{{ $facility->finance_officer_contact }}</td>
+                            <td>{{ $facility->vat }}</td>
+                            <td>{{ $facility->Ewt}}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -105,13 +117,13 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Create Fund Source</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Update Facility</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">×</span>
                 </button>
             </div>
             <div class="modal_body">
-                
+            <input type="hidden" id="main_id" name="main_id" value="">
             </div>
         </div>
     </div>
@@ -135,19 +147,29 @@
         //     },500);
         // }
 
-        function updateFacility() {
-            $('.modal_body').html(loading);
-            var url = "{{ route('facility.edit') }}";
-            setTimeout(function(){
-                $.ajax({
-                    url: url,
-                    type: 'GET',
-                    success: function(result) {
-                        $('.modal_body').html(result);
-                    }
-                });
-            },500);
-        }
+        function updateFacility(clickedElement) {
+    // Get the main_id from the data-main-id attribute of the clicked element
+    var main_id = $(clickedElement).data('main-id');
+
+    $('.modal_body').html(loading);
+
+    var url = "{{ route('facility.edit', ':main_id') }}"; // Use a placeholder for main_id
+
+    // Replace the placeholder with the actual main_id value
+    url = url.replace(':main_id', main_id);
+
+    setTimeout(function() {
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(result) {
+                $('.modal_body').html(result);
+            }
+        });
+    }, 500);
+}
+
+
 
         function addTransaction() {
             event.preventDefault();

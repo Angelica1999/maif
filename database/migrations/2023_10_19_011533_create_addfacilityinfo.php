@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('finance_officer')->nullable();
             $table->string('finance_officer_email')->nullable();
             $table->string('finance_officer_contact')->nullable();
+            $table->decimal('vat', 20, 2)->nullable();
+            $table->decimal('Ewt', 20, 2)->nullable();
             $table->smallInteger('created_by')->nullable();
             $table->rememberToken();
             $table->timestamps();
