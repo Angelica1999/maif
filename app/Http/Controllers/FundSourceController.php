@@ -161,4 +161,17 @@ class FundSourceController extends Controller
         ]);
     }
 
+    public function fundSourceGet() {
+        $result = Fundsource::with([
+            'proponents' => function ($query) {
+                $query->with([
+                    'proponentInfo' => function ($query) {
+                        $query->with('facility');
+                    }
+                ]);
+            }
+        ])->get();
+        return $result;
+    }
+
 }
