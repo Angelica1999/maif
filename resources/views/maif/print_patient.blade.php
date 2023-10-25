@@ -117,9 +117,15 @@
                 (032) 260-9740 loc.111 0915-395-6599 <a href="https://doh.gov.ph">doh.gov.ph</a></p>
         </div>  
         
-    
+          <!-- Footer Section -->
+          <div class="footer text-center">
+        <!-- Your footer content goes here -->
+        <p>&copy; 2023 Dohro7. All rights reserved.</p>
+    </div>
+
         <hr> <!-- Horizontal line representing the footer -->
-        <div class="row align-items-start"> 
+
+        <div class="row align-items-start ml-1"> 
             <div class="col-1 d-flex align-items-center">
                 <div class="img-wrap">
                     <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/doh-logo.png'))) }}" alt="Logo" width="50" height="50">
@@ -134,7 +140,7 @@
                 </div>
             </div>
         </div>
-
+        
         <div class="form-group">
         <p class="date">{{ $patient->date_guarantee_letter ? $patient->date_guarantee_letter->format('jS F Y') : '' }}</p>
             <p class="col text-center" id="certificate"><strong>CERTIFICATION</strong></p> <!-- Corrected typo in ID -->
@@ -179,6 +185,10 @@
             <p>Osmeña Boulevard, Sambag II, Cebu City,6000 Philippines 
                 (032) 260-9740 loc.111 0915-395-6599 <a href="https://doh.gov.ph">doh.gov.ph</a></p>
         </div>       
-      
+       <!-- Footer Section -->
+    <div class="footer text-center">
+        <!-- Your footer content goes here -->
+        <p>&copy; 2023 Dohro7. All rights reserved.</p>
+    </div>
     </body>
 </html>

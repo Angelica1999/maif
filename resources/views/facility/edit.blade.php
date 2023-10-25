@@ -47,13 +47,13 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="vat">Vat</label>
-                    <input type="number" class="form-control" id="vat" name="vat" value="{{ $facility->vat }}" placeholder="Vat" required>
+                    <input type="number" class="form-control" id="vat" name="vat" value="{{ $facility->vat }}" placeholder="Vat" required step="any">
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="Ewt">Ewt</label>
-                    <input type="number" class="form-control" id="Ewt" name="Ewt" value="{{ $facility->Ewt }}" placeholder="Ewt" required>
+                    <input type="number" class="form-control" id="Ewt" name="Ewt" value="{{ $facility->Ewt }}" placeholder="Ewt" required step="any">
                 </div>
             </div>
       </div>       
