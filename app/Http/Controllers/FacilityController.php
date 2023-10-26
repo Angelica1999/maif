@@ -108,7 +108,7 @@ class FacilityController extends Controller
             $facility->Ewt = $request->input('Ewt');
 
             $facility->save();   
-            return redirect()->route('facility', ['main_id' => $main_id])->with('success', 'Facility updated successfully');
+            return redirect()->route('facility', ['main_id' => $main_id])->with('success','Worker Name: '.$facility->social_worker. ' updated successfully');
         }//end of function
      public function getVatEwt($facilityId)
      {

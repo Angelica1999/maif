@@ -22,6 +22,11 @@
             <p class="card-description">
                 MAIF-IP
             </p>
+            @if (session('success'))
+          <div class="alert alert-success">
+           {{ session('success') }}
+          </div>
+          @endif
             <div class="table-responsive">
                 <table class="table table-striped">
                 <thead>
@@ -70,7 +75,8 @@
                                     data-backdrop="static" 
                                     data-toggle="modal" 
                                     class="btn btn-primary btn-sm"
-                                    data-main-id="{{ $facility->main_id }}">Update</a>
+                                    data-main-id="{{ $facility->id }}"
+                                    data-name="{{$facility->name}}">Update</a>
                             </td>
                             <td>{{ $facility->name }}</td>
                             <td>{{ $facility->address }}</td>
@@ -147,6 +153,9 @@
         function updateFacility(clickedElement) {
     // Get the main_id from the data-main-id attribute of the clicked element
     var main_id = $(clickedElement).data('main-id');
+    var name = $(clickedElement).data('name');  // Use jQuery to access data attributes
+
+    document.querySelector(".modal-title").textContent = name;
 
     $('.modal_body').html(loading);
 
