@@ -46,16 +46,17 @@ class PrintController extends Controller
     
         // Set the paper size to A4 in the options array
         $options = [
-            'defaultFont' => 'helvetica',
-            'isHtml5ParserEnabled' => true,
-            'isPhpEnabled' => true,
-            'isRemoteEnabled' => true,
-            'isFontSubsettingEnabled' => true,
-            'paper' => 'A4',
+        //     'defaultFont' => 'helvetica',
+        //     'isHtml5ParserEnabled' => true,
+        //     'isPhpEnabled' => true,
+        //     'isRemoteEnabled' => true,
+        //     'isFontSubsettingEnabled' => true,
+        //    // 'format' => 'folio',
+        //     'size' => 'folio'
         ];
     
         $pdf = PDF::loadView('maif.print_patient', $data, $options);
-    
+
         // Set the response headers to open the PDF in a new tab
         return $pdf->stream('patient.pdf');
     }

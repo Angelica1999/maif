@@ -2,8 +2,8 @@
 <html>
     <head>
         <title>Guarantee Letter</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-        <!-- <link rel="stylesheet" href="{{ asset('bootstrap.min.css') }}"> -->
+        <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"> -->
+        <link rel="stylesheet" href="{{ public_path('bootstrap.min.css') }}">
         <style>
             .header-container {
                 clear: both;
@@ -117,9 +117,15 @@
                 (032) 260-9740 loc.111 0915-395-6599 <a href="https://doh.gov.ph">doh.gov.ph</a></p>
         </div>  
         
-    
+          <!-- Footer Section -->
+          <div class="footer text-center">
+        <!-- Your footer content goes here -->
+        <p>&copy; 2023 Dohro7. All rights reserved.</p>
+    </div>
+
         <hr> <!-- Horizontal line representing the footer -->
-        <div class="row align-items-start"> 
+
+        <div class="row align-items-start ml-1"> 
             <div class="col-1 d-flex align-items-center">
                 <div class="img-wrap">
                     <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/doh-logo.png'))) }}" alt="Logo" width="50" height="50">
@@ -134,7 +140,7 @@
                 </div>
             </div>
         </div>
-
+        
         <div class="form-group">
         <p class="date">{{ $patient->date_guarantee_letter ? $patient->date_guarantee_letter->format('jS F Y') : '' }}</p>
             <p class="col text-center" id="certificate"><strong>CERTIFICATION</strong></p> <!-- Corrected typo in ID -->
@@ -179,6 +185,10 @@
             <p>Osmeña Boulevard, Sambag II, Cebu City,6000 Philippines 
                 (032) 260-9740 loc.111 0915-395-6599 <a href="https://doh.gov.ph">doh.gov.ph</a></p>
         </div>       
-      
+       <!-- Footer Section -->
+    <div class="footer text-center">
+        <!-- Your footer content goes here -->
+        <p>&copy; 2023 Dohro7. All rights reserved.</p>
+    </div>
     </body>
 </html>

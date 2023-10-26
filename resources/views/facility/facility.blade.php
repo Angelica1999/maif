@@ -11,11 +11,10 @@
         <div class="card-body">
             <form method="GET" action="{{ route('facility') }}">
                 <div class="input-group float-right w-50" style="min-width: 600px;">
-                    <input type="text" class="form-control" name="keyword" placeholder="SAA" value="{{ $keyword }}" aria-label="Recipient's username">
+                    <input type="text" class="form-control" name="keyword" placeholder="Facility" value="{{ $keyword }}" aria-label="Recipient's username">
                         <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit">Search</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll">View All</button>
-                        <button type="button" href="#create_fundsource" onclick="createFundSource()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md">Create</button>
                     </div>
                 </div>
             </form>
