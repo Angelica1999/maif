@@ -41,12 +41,13 @@ class FundSourceController extends Controller
         else if($request->keyword) {
             $fundsources = $fundsources->where('saa', 'LIKE', "%$request->keyword%");
         } 
+
+        //return $fundsources->toSql();
         
-        $fundsources = $fundsources
+        return $fundsources = $fundsources
                         ->orderBy('id','desc')
                         ->paginate(15);
                         
-        
         return view('fundsource.fundsource',[
             'fundsources' => $fundsources,
             'keyword' => $request->keyword

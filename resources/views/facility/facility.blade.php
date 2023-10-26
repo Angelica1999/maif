@@ -63,28 +63,26 @@
                 <tbody>
                     @foreach($facilities as $facility)
                         <tr>
-                        <td>
-                        <a href="{{ route('facility.edit', ['main_id' => $facility->main_id]) }}" 
-               data-target="#update_facility" 
-               type="button" 
-               onclick="updateFacility(this)" 
-               data-backdrop="static" 
-               data-toggle="modal" 
-               class="btn btn-primary btn-sm"
-               data-main-id="{{ $facility->main_id }}">Update</a>
-
-                        </td>
-
+                            <td>
+                                <a href="{{ route('facility.edit', ['main_id' => $facility->id]) }}" 
+                                    data-target="#update_facility" 
+                                    type="button" 
+                                    onclick="updateFacility(this)" 
+                                    data-backdrop="static" 
+                                    data-toggle="modal" 
+                                    class="btn btn-primary btn-sm"
+                                    data-main-id="{{ $facility->main_id }}">Update</a>
+                            </td>
                             <td>{{ $facility->name }}</td>
                             <td>{{ $facility->address }}</td>
-                            <td>{{ $facility->social_worker }}</td>
-                            <td>{{ $facility->social_worker_email }}</td>
-                            <td>{{ $facility->social_worker_contact }}</td>
-                            <td>{{ $facility->finance_officer }}</td>
-                            <td>{{ $facility->finance_officer_email }}</td>
-                            <td>{{ $facility->finance_officer_contact }}</td>
-                            <td>{{ $facility->vat }}</td>
-                            <td>{{ $facility->Ewt}}</td>
+                            <td>{{ $facility->AddFacilityInfo->social_worker ?? '' }}</td>
+                            <td>{{ $facility->AddFacilityInfo->social_worker_email ?? '' }}</td>
+                            <td>{{ $facility->AddFacilityInfo->social_worker_contact ?? '' }}</td>
+                            <td>{{ $facility->AddFacilityInfo->finance_officer ?? '' }}</td>
+                            <td>{{ $facility->AddFacilityInfo->finance_officer_email ?? '' }}</td>
+                            <td>{{ $facility->AddFacilityInfo->finance_officer_contact ?? '' }}</td>
+                            <td>{{ $facility->AddFacilityInfo->vat ?? '' }}</td>
+                            <td>{{ $facility->AddFacilityInfo->Ewt ?? '' }}</td>
                         </tr>
                     @endforeach
                 </tbody>

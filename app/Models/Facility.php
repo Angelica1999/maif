@@ -13,7 +13,7 @@ class Facility extends Model
     protected $table = 'facility';
     protected $guarded = array();
 
-    public function AddFacilityInfo() {      
-        return $this->belongsTo(AddFacilityInfo::class, 'facility_id', 'id');
+    public function addFacilityInfo() {      
+        return $this->belongsTo(AddFacilityInfo::class, 'id', 'facility_id');
     }
 }
