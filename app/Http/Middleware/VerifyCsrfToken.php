@@ -13,5 +13,7 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         //
+        'facility/vatEwt/get',
+        'fundsource/saa/get'
     ];
 }

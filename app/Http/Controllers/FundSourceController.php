@@ -14,7 +14,7 @@ class FundSourceController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+       // $this->middleware('auth');
     }
 
     public function fundSource(Request $request) {
@@ -44,7 +44,7 @@ class FundSourceController extends Controller
 
         //return $fundsources->toSql();
         
-        return $fundsources = $fundsources
+        $fundsources = $fundsources
                         ->orderBy('id','desc')
                         ->paginate(15);
                         
