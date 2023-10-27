@@ -144,6 +144,13 @@
         //     },500);
         // }
 
+        @if(session('facility_save'))
+             <?php session()->forget('facility_save'); ?>
+             Lobibox.notify('success', {
+                msg: 'Successfully saved Facility!'
+             });
+        @endif
+
         function updateFacility(clickedElement) {
     // Get the main_id from the data-main-id attribute of the clicked element
     var main_id = $(clickedElement).data('main-id');

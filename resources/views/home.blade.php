@@ -163,7 +163,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Create Patient</h5>
+                <h5 class="modal-title" id="exampleModalLabel"></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">×</span>
                 </button>
@@ -181,7 +181,7 @@
     <script>
         function createPatient() {
             $('.modal_body').html(loading);
-            $('.modal_title').html("Create Patient");
+            $('.modal-title').html("Create Patient");
             var url = "{{ route('patient.create') }}";
             setTimeout(function(){
                 $.ajax({
@@ -196,7 +196,7 @@
 
         function editPatient(id) {
             $('.modal_body').html(loading);
-            $('.modal_title').html("Edit Patient");
+            $('.modal-title').html("Edit Patient");
             var url = "{{ url('patient/edit').'/' }}"+id;
             setTimeout(function(){
                 $.ajax({

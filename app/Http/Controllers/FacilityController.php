@@ -81,22 +81,26 @@ class FacilityController extends Controller
      public function facilityUpdate(Request $request)
      {
 
-          $rules =[
-                  'social_worker_contact' => 'required|digits:11',
-                 'finance_officer_contact' => 'required|digits:11',
-                 ];
-         $message = [
-                    'social_worker_contact' => 'The social worker contact number must be 11 digits.',
-                    'finance_officer_contact' => 'The finance officer contact number must be 11 digits.',
-                    ];
+        //   $rules =[
+        //           'social_worker_contact' => 'required|digits:11',
+        //          'finance_officer_contact' => 'required|digits:11',
+        //         //  'finance_officer_email' => 'email|unique:addfacilityinfo,finance_officer_email',
+        //         //  'social_worker_email' => 'email|unique:addfacilityinfo,social_worker_email',
+        //          ];
+        //  $message = [
+        //             'social_worker_contact' => 'The social worker contact number must be 11 digits.',
+        //             'finance_officer_contact' => 'The finance officer contact number must be 11 digits.',
+        //             // 'finance_officer_email.unique' => 'The finance officer email is already in use.',
+        //             // 'social_worker_email.unique' => 'The Social Worker email is already in use',
+        //             ];
 
-        $validator = Validator::make($request->all(), $rules, $message);
+        // $validator = Validator::make($request->all(), $rules, $message);
 
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
-        }
+        // if ($validator->fails()) {
+        //     return redirect()->back()
+        //         ->withErrors($validator)
+        //         ->withInput();
+        // }
     
         $main_id = $request->input('main_id');    
         // Retrieve the facility record based on the main_id
@@ -117,8 +121,9 @@ class FacilityController extends Controller
             $facility->vat = number_format($request->input('vat'), 1, '.', '');
             $facility->Ewt = $request->input('Ewt');
 
-            $facility->save();   
-            return redirect()->route('facility', ['main_id' => $main_id])->with('success','Worker Name: '.$facility->social_worker. ' updated successfully');
+            $facility->save();  
+            session()->flash('facility_save', true); 
+            return redirect()->route('facility', ['main_id' => $main_id]);
         }//end of function
      public function getVatEwt($facilityId)
      {
