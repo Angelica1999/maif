@@ -14,7 +14,6 @@ class FacilityController extends Controller
 {
     public function index(Request $request) {
 
-        $facility = AddFacilityInfo::select('social_worker', 'finance_officer');
         $result = Facility::with('addFacilityInfo')
                 ->select(
                     'facility.id',
@@ -49,18 +48,13 @@ class FacilityController extends Controller
          if($request->viewAll){
             $request->keyword = '';
          }else if($request->keyword){
-            $facility->where(function ($query) use ($request) {
-                $query->where('social_worker', 'LIKE', "%$request->keyword%")
-                      ->orWhere('finance_officer', 'LIKE', "%$request->keyword%");
-            });
+        
              $result->where('name', 'LIKE', "%$request->keyword%");
          }
 
-         $facilities = $facility->get();
          $results = $result->paginate(15);
 
         return view('facility.facility',[
-            'facilities' => $facility,
             'results' => $results,
             'keyword' => $request->keyword
         ]);
@@ -137,6 +131,3 @@ class FacilityController extends Controller
       
 
 }
-
-
-

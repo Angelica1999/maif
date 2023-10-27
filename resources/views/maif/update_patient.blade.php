@@ -116,10 +116,10 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label >SAA</label>
-                    <select class="js-example-basic-single w-100 select2" id="fundsource_id" name="fundsource_id" onchange="onchangeFundsource($(this))" required>
+                    <select class="js-example-basic-single w-100 select2" id="fundsource_id" name="fundsource_id" required>
                         <option value="">Please select SAA</option>
                         @foreach($fundsources as $fundsource)
-                            <option value="{{ $fundsource->id }}" @if($patient->id == $fundsource->id) selected @endif>{{ $fundsource->saa }}</option>
+                            <option value="{{ $fundsource->id }}" data-proponent="{{ $fundsource->proponent }}">{{ $fundsource->saa }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -127,18 +127,18 @@
 
             <div class="col-md-6">
                 <div class="form-group">
-                    <label for="fname">Proponent</label>
-                    <input type="text" class="form-control" value="{{ $patient->proponent }}" id="proponent" name="proponent" readonly>
+                    <label for="proponent">Proponent</label>
+                    <input type="text" class="form-control" id="proponent" name="proponent" readonly>
                 </div>
-            </div>
-        </div>
+           </div>
+        </div>  
 
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Facility</label>
                     <input type="text" id="facility_name" class="form-control" readonly>
-                    <input type="hidden" id="facility_id" value="{{ $patient->fundsource->facility_id }}" name="facility_id">
+                    <input type="hidden" id="facility_id" value="{{$patient->fundsource ? $patient->fundsource->facility_id : '' }}" name="facility_id">
                 </div>
             </div> 
 
@@ -157,7 +157,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Guaranteed Amount</label>
-                    <input type="number" step="any" class="form-control" value="{{ $patient->fundsource->guaranteed_amount }}" id="guaranteed_amount" name="guaranteed_amount" placeholder="Guaranteed Amount">
+                    <input type="number" step="any" class="form-control" value="{{ $patient->fundsource? $patient->fundsource->guaranteed_amount : '' }}" id="guaranteed_amount" name="guaranteed_amount" placeholder="Guaranteed Amount">
                 </div>
             </div>
 
@@ -186,4 +186,25 @@
     </div>
 </form>
 
-<script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
+<script src="{{ asset('admin/js/select2.js?v=').date('His') }}">
+
+// Attach an event listener to the select element
+document.getElementById("fundsource_id").addEventListener("change", function () {
+    var select = this;
+    var selectedOption = select.options[select.selectedIndex];
+    var proponentInput = document.getElementById("proponent");
+
+    if (selectedOption) {
+        var selectedProponent = selectedOption.getAttribute("data-proponent");
+        if (selectedProponent) {
+            proponentInput.value = selectedProponent;
+        } else {
+            proponentInput.value = ""; // Clear the Proponent field if no data is found
+        }
+    } else {
+        proponentInput.value = ""; // Clear the Proponent field if no SAA is selected
+    }
+});
+
+
+</script>

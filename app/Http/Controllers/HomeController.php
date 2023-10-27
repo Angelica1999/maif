@@ -9,6 +9,7 @@ use App\Models\Province;
 use App\Models\Muncity;
 use App\Models\Barangay;
 use App\Models\Fundsource;
+use App\Models\Proponent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -126,6 +127,7 @@ class HomeController extends Controller
         return view('maif.update_patient',[
             'provinces' => Province::get(),
             'fundsources' => Fundsource::get(),
+            'proponents' => Proponent::get(),
             'patient' => $patient,
         ]);
     }
