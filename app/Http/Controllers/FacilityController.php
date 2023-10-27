@@ -13,14 +13,16 @@ use Illuminate\Support\Facades\Validator;
 class FacilityController extends Controller
 {
     public function index(Request $request) {
+
+        $facility = AddFacilityInfo::select('social_worker', 'finance_officer');
         $result = Facility::with('addFacilityInfo')
                 ->select(
                     'facility.id',
                     'facility.name',
                     'facility.address',
                  )
-                ->where('hospital_type','private')
-                ->paginate(15);
+                ->where('hospital_type','private');
+              //  ->paginate(15);
         // $Facility = (new Facility())->getConnection()->getDatabaseName();
         // $AddFacilityInfo = (new AddFacilityInfo())->getConnection()->getDatabaseName();
         // $result = DB::table($Facility.'.facility')
@@ -43,9 +45,23 @@ class FacilityController extends Controller
         //     ->where('doh_referral.facility.hospital_type','private')
         //     ->paginate(15) 
         //     ;
+     
+         if($request->viewAll){
+            $request->keyword = '';
+         }else if($request->keyword){
+            $facility->where(function ($query) use ($request) {
+                $query->where('social_worker', 'LIKE', "%$request->keyword%")
+                      ->orWhere('finance_officer', 'LIKE', "%$request->keyword%");
+            });
+             $result->where('name', 'LIKE', "%$request->keyword%");
+         }
+
+         $facilities = $facility->get();
+         $results = $result->paginate(15);
 
         return view('facility.facility',[
-            'facilities' => $result,
+            'facilities' => $facility,
+            'results' => $results,
             'keyword' => $request->keyword
         ]);
     }
