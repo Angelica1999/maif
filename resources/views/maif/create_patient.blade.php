@@ -146,21 +146,22 @@
         </div>
 
         <div class="row">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label for="fname">Facility</label>
-                    <select class="js-example-basic-single w-100 select2" id="facility_id" name="facility_id" onchange="onchangeForPatientCode($(this))" required>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="fname">Facility</label>
+                        <select class="js-example-basic-single w-100 select2" id="facility_id" name="facility_id" onchange="onchangeForPatientCode($(this))" required>
 
-                    </select>
-                </div>
-            </div> 
+                        </select>
+                    </div>
+                </div> 
 
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label for="fname">Patient Code</label>
-                    <input type="text" class="form-control" id="patient_code" name="patient_code" placeholder="Patient Code" readonly>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="fname">Patient Code <div class="loading_ID"><span style="color: red;"><strong>Please Wait Loading....</strong></span></div></label>
+                        <input type="text" class="form-control" id="patient_code" name="patient_code" placeholder="Patient Code" readonly>
+                    </div>
                 </div>
-            </div>
+
         </div>
         <hr>
         <strong>Transaction</strong>
@@ -196,4 +197,39 @@
     </div>
 </form>
 
-<script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
+<script src="{{ asset('admin/js/select2.js?v=').date('His') }}">
+
+    $('#contractForm').submit(function(event) {
+        event.preventDefault();
+        var loading ="Please Wait Loading....";
+        $('.loading_ID').html(loading).show();  // Display loading message
+
+        setTimeout(function() {
+            var responseData = "Your data here";
+            $('#patient_code').val(responseData);
+            $('.loading_ID').hide();  // Hide loading message
+        }, 2000); // Simulated 2-second delay
+    });
+
+
+
+    // function displayLoading() {
+    //     var loading = "Loading..."; // Define the loading message
+    //     $('#patient_code').html(loading).show();  // Display loading message
+    // }
+
+    // function hideLoading() {
+    //     $('#patient_code').hide();  // Hide loading message
+    // }
+
+    // $('#contractForm').submit(function(event) {
+    //     event.preventDefault();
+    //     displayLoading(); // Display loading message
+
+    //     setTimeout(function() {
+    //         var responseData = "Your data here";
+    //         $('#patient_code').val(responseData);
+    //         hideLoading(); // Hide loading message
+    //     }, 2000); // Simulated 2-second delay
+    // });
+</script>

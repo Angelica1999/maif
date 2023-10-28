@@ -127,7 +127,7 @@ class HomeController extends Controller
         return view('maif.update_patient',[
             'provinces' => Province::get(),
             'fundsources' => Fundsource::get(),
-            'proponents' => Proponent::get(),
+            //'proponents' => Proponent::get(),
             'patient' => $patient,
         ]);
     }

@@ -73,7 +73,7 @@
         </div>
 
         <div class="form-group ml-1">
-        <p class="date">{{ $patient->date_guarantee_letter? $patient->date_guarantee_letter->format('jS F Y') : " "}}</p>
+        <p class="date">{{ $patient->date_guarantee_letter ? \Carbon\Carbon::parse($patient->date_guarantee_letter)->format('jS F Y') : " " }}</p>
             <p class="col text-center" id="certificate"><strong>CERTIFICATION</strong></p> <!-- Corrected typo in ID -->
         </div>
 
@@ -142,7 +142,7 @@
         </div>
         
         <div class="form-group">
-        <p class="date">{{ $patient->date_guarantee_letter ? $patient->date_guarantee_letter->format('jS F Y') : '' }}</p>
+        <p class="date">{{ $patient->date_guarantee_letter ? \Carbon\Carbon::parse($patient->date_guarantee_letter)->format('jS F Y') : " " }}</p>
             <p class="col text-center" id="certificate"><strong>CERTIFICATION</strong></p> <!-- Corrected typo in ID -->
         </div>
 
