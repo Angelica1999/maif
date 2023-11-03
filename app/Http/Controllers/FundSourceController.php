@@ -152,6 +152,68 @@ class FundSourceController extends Controller
         return $patient_code;
     }
 
+    
+//     public function forPatientFacilityCode(Request $request) {
+//         $user = Auth::user();
+//         $proponent = Proponent::where('fundsource_id',$request->funsource_id);
+//         $facility = Facility::where('facility_id',$request->facility_id); 
+//         $patient_proponent = $proponent->proponent;
+//         $facilityname = $facility->name;
+//         $data = [
+//             'patient_proponent' => $patient_proponent,
+//             'facilityname' => $facilityname,
+//         ];
+//     return response()->json($data);
+    
+// }
+
+public function forPatientFacilityCode($fundsource_id) {
+
+    $proponentInfo = ProponentInfo::where('fundsource_id', $fundsource_id)->first();
+    
+    if($proponentInfo){
+        $facility = Facility::find($proponentInfo->facility_id);
+
+        $proponent = Proponent::find($proponentInfo->proponent_id);
+        $proponentName = $proponent ? $proponent->proponent : null;
+
+        return response()->json([
+
+            'proponent' => $proponentName,
+            'facility' => $facility ? $facility->name : null,
+        ]);
+    }else{
+        return response()->json(['error' => 'Proponent Info not found'], 404);
+    }
+}
+
+
+
+
+// public function forPatientFacilityCode($fundsource_id) {
+
+//     $fundsource = Fundsource::with('facility', 'proponents', 'proponent_info')
+//     ->whereHas('proponents', function ($query) use ($fundsource_id){
+//         $query->where('fundsource_id', $fundsource_id);
+//     })->find($fundsource_id);
+    
+//     if($fundsource){
+//         $facility_id = $fundsource->proponent_info->first()->facility_id;
+//         $facilities = Facility::where('facility_id', $facility_id)->get();
+
+//         $proponentName = $fundsource->proponents->first()->proponent;
+//         $facilityName = $facilities->pluck('name')->all();
+//         //$facilityName =  $fundsource->facility ?  $fundsource->facility->name : null;
+//         $proponents = $fundsource->proponents->pluck('proponent')->all();
+//         return response()->json([
+//           'proponent' => $proponents,
+//           'facility' => $facilityName,
+//         ]);
+//     }
+   
+// }
+
+
     public function transactionGet() {
         $randomBytes = random_bytes(16); // 16 bytes (128 bits) for a reasonably long random code
         $uniqueCode = bin2hex($randomBytes);

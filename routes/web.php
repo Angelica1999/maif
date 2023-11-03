@@ -43,3 +43,5 @@ Route::get('/proponent/get/{fundsource_id}', [App\Http\Controllers\FundSourceCon
 
 Route::get('/facility/proponent/{proponent_id}', [App\Http\Controllers\FundSourceController::class, 'facilityProponentGet'])->name('facility.proponent.get');
 Route::get('/patient/code/{proponent_id}/{facility_id}', [App\Http\Controllers\FundSourceController::class, 'forPatientCode'])->name('facility.patient.code');
+// Route::get('/patient/proponent/{proponent_id}/{facility_id}', [App\Http\Controllers\FundSourceController::class, 'forPatientFacilityCode'])->name('facility.patient.code');
+Route::get('/patient/proponent/{fundsource_id}', [App\Http\Controllers\FundSourceController::class, 'forPatientFacilityCode'])->name('facility.patient.code');

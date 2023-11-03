@@ -1,3 +1,18 @@
+
+<style>
+#patient-code-container {
+    position: relative;
+}
+#loading-image {
+  position: absolute;
+  margin-right: 50px;
+  top: -8%;
+  left: 50%; /* Adjust the position as needed */
+  transform: translateY(-50%, -50%);
+  width: 60px;
+    height: 60px;
+}
+</style>
 <form id="contractForm" method="POST" action="{{ route('patient.create.save') }}">
     <input type="hidden" name="created_by" value="{{ $user->id }}">
     <div class="modal-body">
@@ -146,22 +161,20 @@
         </div>
 
         <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="fname">Facility</label>
-                        <select class="js-example-basic-single w-100 select2" id="facility_id" name="facility_id" onchange="onchangeForPatientCode($(this))" required>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="fname">Facility</label>
+                    <select class="js-example-basic-single w-100 select2" id="facility_id" name="facility_id" onchange="onchangeForPatientCode($(this))" required>
 
-                        </select>
-                    </div>
-                </div> 
-
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="fname">Patient Code <div class="loading_ID"><span style="color: red;"><strong>Please Wait Loading....</strong></span></div></label>
-                        <input type="text" class="form-control" id="patient_code" name="patient_code" placeholder="Patient Code" readonly>
-                    </div>
+                    </select>
                 </div>
-
+            </div> 
+            <div class="col-md-6">
+                <div class="form-group" id="patient-code-container">
+                    <input type="text" class="form-control loading-input" id="patient_code" name="patient_code" placeholder="Patient Code" readonly>
+                    <img id="loading-image" src="{{ asset('images/loading.gif') }}" alt="Loading">
+                </div>
+            </div>
         </div>
         <hr>
         <strong>Transaction</strong>
@@ -197,19 +210,47 @@
     </div>
 </form>
 
-<script src="{{ asset('admin/js/select2.js?v=').date('His') }}">
+<script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 
-    $('#contractForm').submit(function(event) {
-        event.preventDefault();
-        var loading ="Please Wait Loading....";
-        $('.loading_ID').html(loading).show();  // Display loading message
 
-        setTimeout(function() {
-            var responseData = "Your data here";
-            $('#patient_code').val(responseData);
-            $('.loading_ID').hide();  // Hide loading message
-        }, 2000); // Simulated 2-second delay
+<script>
+
+$(document).ready(function() {
+    if ($('#patient_code').val() === '') {
+        $('#loading-image').show();
+    }
+
+    $('#patient_code').on('keyup', function() {
+        if ($(this).val() === '') {
+            $('#loading-image').show();
+        } else {
+            $('#loading-image').hide();
+        }
     });
+    $('#facility_id').on('change', function() {
+        // hide the loading-image when data is selected in the facility_id dropdown
+        if ($(this).val() !== '') {
+            $('#loading-image').hide();
+        } else {
+            $('#loading-image').show();
+        }
+    });
+});
+
+
+
+
+    // $('#contractForm').submit(function(event) {
+    //     event.preventDefault();
+    //     var loading ="Please Wait Loading....";
+    //     $('.loading_ID').html(loading).show();  // Display loading message
+
+    //     setTimeout(function() {
+    //         var responseData = "Your data here";
+    //         $('#patient_code').val(responseData);
+    //         $('.loading_ID').hide();  // Hide loading message
+    //     }, 2000); // Simulated 2-second delay
+    // });
 
 
 
@@ -232,4 +273,4 @@
     //         hideLoading(); // Hide loading message
     //     }, 2000); // Simulated 2-second delay
     // });
-</script>
+    </script>

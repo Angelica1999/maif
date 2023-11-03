@@ -356,5 +356,65 @@
             }
         }
 
+
+        function onchangeForPatientProp(select) {
+    var selectfundsourceId = $(select).val();
+    // var facility_id = $('#facility_id').val();
+    $.ajax({
+        type: 'GET',
+        url: "{{ url('patient/proponent') }}/" + selectfundsourceId,
+        success: function (data) {
+            $('#proponent').val(data.proponent);
+            $('#facility_name').val(data.facility);
+        },
+        error: function (xhr, status, error) {
+            console.log('Error:', error);
+        }
+    });
+}
+
+
+
+
+
+// function onchangeForPatientProp(data) {
+//      var proponent_id = data('proponent-id');
+//      var facility_id = data('facility-id');
+
+//             if(proponent_id && facility_id && data()) {
+//                 $.get("{{ url('patient/proponent').'/' }}" + proponent_id + "/" + facility_id + "/" + selectElement.val(), function(result) {
+//                     console.log(result);
+//                     $("#proponent").val(result.patient_proponent);
+//                     $("#facility_name").val(result.facilityname);
+//                 });
+//             }
+//         }
+
+// function onchangeForPatientProp(data) {
+//             if(data.val()) {
+//                 $.get("{{ url('patient/code').'/' }}"+proponent_id+"/"+data.val(), function(result) {
+//                     console.log(result);
+//                     $("#proponent").val(result);
+//                 });
+//             }
+//         }
+
+//         function onchangeForPatientProp(data) {
+//     if (data.val()) {
+//         var proponent_id = data.val(); // Get the selected proponent_id
+//         $.get("{{ url('patient/proponent') }}/" + proponent_id, function(result) {
+//             // Assuming the response contains facility and proponent data
+//             if (result.facility) {
+//                 $("#facility_name").val(result.facility.name); // Update the facility input
+//             }
+//             if (result.proponent) {
+//                 $("#proponent").val(result.proponent); // Update the proponent input
+//             }
+//         });
+//     }
+// }
+
+
+
     </script>
 @endsection
