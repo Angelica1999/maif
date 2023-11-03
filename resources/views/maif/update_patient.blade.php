@@ -1,3 +1,21 @@
+<style>
+#proponent-container {
+    position: relative;
+}
+#facility_id-container {
+    position: relative;
+}
+#proponent-loading-image, #facility-loading-image {
+  position: absolute;
+  margin-right: 50px;
+  top: 23%;
+  left: 50%; /* Adjust the position as needed */
+  transform: translateY(-50%, -50%);
+  width: 60px;
+    height: 60px;
+}
+
+</style>
 <form id="contractForm" method="POST" action="{{ route('patient.create.save') }}">
     <div class="modal-body">
         @csrf
@@ -129,6 +147,7 @@
                 <div class="form-group">
                     <label for="fname">Proponent</label>
                     <input type="text" class="form-control" value="{{$patient->proponents? $patient->proponents->proponent : ''}}" id="proponent" name="proponent" readonly>
+                    <img id="proponent-loading-image" src="{{ asset('images/loading.gif') }}" alt="Loading" style ="display:none">
                 </div>
             </div>
         </div>
@@ -139,6 +158,7 @@
                     <label for="fname">Facility</label>
                     <input type="text" id="facility_name" class="form-control" readonly>
                     <input type="hidden" id="facility_id" value="{{ $patient->fundsource ? $patient->facility_id : ''}}" name="facility_id">
+                    <img id="facility-loading-image" src="{{ asset('images/loading.gif') }}" alt="Loading" style="display:none">
                 </div>
             </div> 
 
@@ -160,7 +180,7 @@
                     <input type="number" step="any" class="form-control" value="{{ $patient->fundsource? $patient->guaranteed_amount : '' }}" id="guaranteed_amount" name="guaranteed_amount" placeholder="Guaranteed Amount">
                 </div>
             </div>
-
+                
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Actual Amount</label>
@@ -187,24 +207,33 @@
 </form>
 
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}">
+</script>
 
-// Attach an event listener to the select element
-// document.getElementById("fundsource_id").addEventListener("change", function () {
-//     var select = this;
-//     var selectedOption = select.options[select.selectedIndex];
-//     var proponentInput = document.getElementById("proponent");
+<script>
 
-//     if (selectedOption) {
-//         var selectedProponent = selectedOption.getAttribute("data-proponent");
-//         if (selectedProponent) {
-//             proponentInput.value = selectedProponent;
-//         } else {
-//             proponentInput.value = ""; // Clear the Proponent field if no data is found
-//         }
-//     } else {
-//         proponentInput.value = ""; // Clear the Proponent field if no SAA is selected
-//     }
-// });
+$(document).ready(function(){
+   function hideLoadingImages(){
+    $('#facility-loading-image').hide();
+    $('#proponent-loading-image').hide();
+   }
 
+if($('#fundsource_id').val() !== ''){
+    hideLoadingImages();
+}
+
+$('#fundsource_id').on('change', function() {
+    var selectedOptionText = $(this).find('option:selected').text();
+    if (selectedOptionText !== 'Please select SAA') {
+       hideLoadingImages();
+    } else {
+        $('#facility-loading-image').hide();
+        $('#proponent-loading-image').hide();
+    }
+});
+if ($('#fundsource_id').val() === '') {
+    $('#facility-loading-image').show();
+    $('#proponent-loading-image').show();
+}
+});
 
 </script>

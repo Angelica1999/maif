@@ -172,7 +172,7 @@
             <div class="col-md-6">
                 <div class="form-group" id="patient-code-container">
                     <input type="text" class="form-control loading-input" id="patient_code" name="patient_code" placeholder="Patient Code" readonly>
-                    <img id="loading-image" src="{{ asset('images/loading.gif') }}" alt="Loading">
+                    <img id="loading-image" src="{{ asset('images/loading.gif') }}" alt="Loading" style="display: none;">
                 </div>
             </div>
         </div>
@@ -216,23 +216,20 @@
 <script>
 
 $(document).ready(function() {
-    if ($('#patient_code').val() === '') {
-        $('#loading-image').show();
-    }
-
-    $('#patient_code').on('keyup', function() {
-        if ($(this).val() === '') {
-            $('#loading-image').show();
-        } else {
-            $('#loading-image').hide();
+    
+    $('#fundsource_id').on('change', function() {
+        if ($(this).val() !== '') {
+            var selectOptionText = $(this).find('option:selected').text();
+            if(selectOptionText !== 'Please select SAA'){
+                $('#loading-image').show();
+            }
         }
     });
+
     $('#facility_id').on('change', function() {
         // hide the loading-image when data is selected in the facility_id dropdown
         if ($(this).val() !== '') {
             $('#loading-image').hide();
-        } else {
-            $('#loading-image').show();
         }
     });
 });
