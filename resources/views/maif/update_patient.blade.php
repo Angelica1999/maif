@@ -109,8 +109,10 @@
                     <label for="lname">Municipality</label>
                     <div id="muncity_body">
                         <select class="js-example-basic-single w-100" id="muncity_id" name="muncity_id" onchange="onchangeMuncity($(this))" required>
-                            <option value="{{ $patient->muncity->id }}">{{ $patient->muncity->description }}</option>
-                        </select>
+                          @foreach($municipal as $municipals)   
+                        <option value="{{ $municipals->id }}" {{$municipals->id == $patient->muncity_id? 'selected' : ''}}>{{ $municipals->description }}</option>
+                          @endforeach   
+                    </select>
                     </div>
                 </div>
             </div>
@@ -120,7 +122,9 @@
                     <label for="lname">Barangay</label>
                     <div id="barangay_body">
                         <select class="js-example-basic-single w-100" id="barangay_id" name="barangay_id" required>
-                            <option value="{{ $patient->barangay->id }}">{{ $patient->barangay->description }}</option>
+                           @foreach($barangay as $barangays)
+                           <option value="{{ $barangays->id }}" {{$barangays->id == $patient->barangay_id? 'selected' : ''}}>{{ $barangays->description }}</option>
+                            @endforeach
                         </select>
                     </div>
                 </div>
