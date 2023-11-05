@@ -1,21 +1,4 @@
-<style>
-#proponent-container {
-    position: relative;
-}
-#facility_id-container {
-    position: relative;
-}
-#proponent-loading-image, #facility-loading-image {
-  position: absolute;
-  margin-right: 50px;
-  top: 23%;
-  left: 50%; /* Adjust the position as needed */
-  transform: translateY(-50%, -50%);
-  width: 60px;
-    height: 60px;
-}
 
-</style>
 <form id="contractForm" method="POST" action="{{ route('patient.update') }}">
 <input type="hidden" name="patient_id" value="{{ $patient->id }}">
     <div class="modal-body">
@@ -142,20 +125,19 @@
                     <select class="js-example-basic-single w-100 select2" id="fundsource_id" name="fundsource_id" onchange="onchangeForPatientProp($(this))" data-fundsource-id="{{$patient->fundsource_id}}" required>
                         <option value="">Please select SAA</option>
                         @foreach($fundsources as $fundsource)
-                            <option value="{{ $fundsource->id }}" data-fundsource-id="{{ $fundsource->id }}" @if($patient->id == $fundsource->id) selected @endif>{{ $fundsource->saa }}</option>
+                            <option value="{{ $fundsource->id }}" data-fundsource-id="{{ $fundsource->id }}" {{$patient->fundsource_id == $fundsource->id? 'selected' : ''}}>{{$fundsource->saa }}</option>
                         @endforeach
                     </select>            
                </div>
             </div>
 
             <div class="col-md-6">
-            <div class="form-group">
-                <label for="proponent">Proponent</label>
-                <input type="text" class="form-control" value="{{$patient->proponent_id ? $patient->proponent : ''}}" id="proponent" name="proponent" readonly>
-                <input type="hidden" id="proponent_id", name="proponent_id" value="{{$patient->proponent_id}}">
-                <img id="proponent-loading-image" src="{{ asset('images/loading.gif') }}" alt="Loading" style="display:none">
+                <div class="form-group">
+                    <label for="proponent">Proponent</label>
+                        <input type="text" class="form-control" value="{{ $patient->proponent_id == $proponents->id ? $proponents->proponent : '' }}" id="proponent" name="proponent" readonly>
+                    <input type="hidden" id="proponent_id" name="proponent_id" value="{{ $patient->proponent_id }}">
+                </div>
             </div>
-        </div>
 
         </div>
 
@@ -163,9 +145,8 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Facility</label>
-                    <input type="text" id="facility_name" class="form-control" readonly>
-                    <input type="hidden" id="facility_id" value="{{ $patient->fundsource ? $patient->facility_id : ''}}" name="facility_id">
-                    <img id="facility-loading-image" src="{{ asset('images/loading.gif') }}" alt="Loading" style="display:none">
+                    <input type="text" id="facility_name" value="{{ $patient->facility_id == $facilitys->id? $facilitys->name : ''}}" class="form-control" readonly>
+                    <input type="hidden" id="facility_id" value="{{ $patient ? $patient->facility_id : ''}}" name="facility_id">
                 </div>
             </div> 
 
@@ -218,29 +199,29 @@
 
 <script>
 
-$(document).ready(function(){
-   function hideLoadingImages(){
-    $('#facility-loading-image').hide();
-    $('#proponent-loading-image').hide();
-   }
+// $(document).ready(function(){
+//    function hideLoadingImages(){
+//     $('#facility-loading-image').hide();
+//     $('#proponent-loading-image').hide();
+//    }
 
-if($('#fundsource_id').val() !== ''){
-    hideLoadingImages();
-}
+// if($('#fundsource_id').val() !== ''){
+//     hideLoadingImages();
+// }
 
-$('#fundsource_id').on('change', function() {
-    var selectedOptionText = $(this).find('option:selected').text();
-    if (selectedOptionText !== 'Please select SAA') {
-       hideLoadingImages();
-    } else {
-        $('#facility-loading-image').hide();
-        $('#proponent-loading-image').hide();
-    }
-});
-if ($('#fundsource_id').val() === '') {
-    $('#facility-loading-image').show();
-    $('#proponent-loading-image').show();
-}
-});
+// $('#fundsource_id').on('change', function() {
+//     var selectedOptionText = $(this).find('option:selected').text();
+//     if (selectedOptionText !== 'Please select SAA') {
+//        hideLoadingImages();
+//     } else {
+//         $('#facility-loading-image').hide();
+//         $('#proponent-loading-image').hide();
+//     }
+// });
+// if ($('#fundsource_id').val() === '') {
+//     $('#facility-loading-image').show();
+//     $('#proponent-loading-image').show();
+// }
+// });
 
 </script>

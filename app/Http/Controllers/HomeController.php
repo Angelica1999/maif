@@ -128,15 +128,16 @@ class HomeController extends Controller
 
                                 $municipal = Muncity::select('id', 'description')->get();
                                 $barangay = Barangay::select('id', 'description')->get();
-                              //  $proponent_id = ProponentInfo::select('fundsource_id','proponent_id', 'facility_id');
+                                $Proponent = Proponent::find($patient->proponent_id);
+                                $Facility = Facility::find($patient->facility_id);
         return view('maif.update_patient',[
             'provinces' => Province::get(),
             'fundsources' => Fundsource::get(),
-            'proponents' => Proponent::get(),
+            'proponents' => $Proponent,
+            'facilitys' => $Facility,
             'patient' => $patient,
             'municipal' => $municipal,
             'barangay' => $barangay,
-            //'proponentInfo' => $proponent_id,
         ]);
     }
  

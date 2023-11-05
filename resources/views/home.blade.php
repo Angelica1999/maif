@@ -368,7 +368,6 @@
             $('#proponent_id').val(data.proponent_id);
             $('#facility_name').val(data.facility);
             $('#facility_id').val(data.facility_id);
-
         },
         error: function (xhr, status, error) {
             console.log('Error:', error);
