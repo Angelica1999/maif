@@ -148,7 +148,7 @@ class HomeController extends Controller
       if(!$patient){
         return redirect()->back()->with('error', 'Patient not found');
       }
-
+      session()->flash('patient_update', true);
       $patient->fname = $request->input('fname');
       $patient->lname = $request->input('lname');
       $patient->mname = $request->input('mname');
@@ -158,7 +158,7 @@ class HomeController extends Controller
       $patient->muncity_id  = $request->input('muncity_id');
       $patient->barangay_id = $request->input('barangay_id');
       $patient->fundsource_id = $request->input('fundsource_id');
-      $patient->proponent_id = $request->input('proponent');
+      $patient->proponent_id = $request->input('proponent_id');
       $patient->facility_id = $request->input('facility_id');
       $patient->guaranteed_amount = $request->input('guaranteed_amount');
       $patient->actual_amount = $request->input('actual_amount');
@@ -166,7 +166,7 @@ class HomeController extends Controller
 
 
         $patient->save();
-        return redirect()->back()->with('success', 'Patient information updated successfully.');
+        return redirect()->back();
 
         
     //   $patient = Patients::where('id', $patient_id)

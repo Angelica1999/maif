@@ -60,6 +60,7 @@
     <script>
         var path_gif = "{{ asset('images/loading.gif') }}";
         var loading = '<center><img src="'+path_gif+'" alt=""></center>';
+        
 
         @if(session('facility_save'))
              <?php session()->forget('facility_save'); ?>
@@ -67,7 +68,12 @@
                 msg: 'Successfully saved Facility!'
              });
         @endif
-
+        @if(session('patient_update'))
+            <?php session()->forget('patient_update'); ?>
+            Lobibox.notify('success', {
+                msg: 'Successfully updated patient!'
+            });
+        @endif
         @if(session('patient_save'))
             <?php session()->forget('patient_save'); ?>
             Lobibox.notify('success', {

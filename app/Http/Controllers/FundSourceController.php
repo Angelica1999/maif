@@ -176,11 +176,13 @@ public function forPatientFacilityCode($fundsource_id) {
 
         $proponent = Proponent::find($proponentInfo->proponent_id);
         $proponentName = $proponent ? $proponent->proponent : null;
-
+       // return $proponent->id . '' . $facility->id;
         return response()->json([
 
             'proponent' => $proponentName,
+            'proponent_id' => $proponentInfo? $proponentInfo->proponent_id : null,
             'facility' => $facility ? $facility->name : null,
+            'facility_id' => $proponentInfo ? $proponentInfo->facility_id : null,
         ]);
     }else{
         return response()->json(['error' => 'Proponent Info not found'], 404);

@@ -151,7 +151,8 @@
             <div class="col-md-6">
             <div class="form-group">
                 <label for="proponent">Proponent</label>
-                <input type="text" class="form-control" value="{{$patient->proponent_id ? $patient->proponent_id : ''}}" id="proponent" name="proponent" readonly>
+                <input type="text" class="form-control" value="{{$patient->proponent_id ? $patient->proponent : ''}}" id="proponent" name="proponent" readonly>
+                <input type="hidden" id="proponent_id", name="proponent_id" value="{{$patient->proponent_id}}">
                 <img id="proponent-loading-image" src="{{ asset('images/loading.gif') }}" alt="Loading" style="display:none">
             </div>
         </div>
