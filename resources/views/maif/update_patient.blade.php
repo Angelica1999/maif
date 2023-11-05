@@ -16,7 +16,8 @@
 }
 
 </style>
-<form id="contractForm" method="POST" action="{{ route('patient.create.save') }}">
+<form id="contractForm" method="POST" action="{{ route('patient.update') }}">
+<input type="hidden" name="patient_id" value="{{ $patient->id }}">
     <div class="modal-body">
         @csrf
         <div class="row">
@@ -148,12 +149,13 @@
             </div>
 
             <div class="col-md-6">
-                <div class="form-group">
-                    <label for="fname">Proponent</label>
-                    <input type="text" class="form-control" value="{{$patient->proponents? $patient->proponents->proponent : ''}}" id="proponent" name="proponent" readonly>
-                    <img id="proponent-loading-image" src="{{ asset('images/loading.gif') }}" alt="Loading" style ="display:none">
-                </div>
+            <div class="form-group">
+                <label for="proponent">Proponent</label>
+                <input type="text" class="form-control" value="{{$patient->proponent_id ? $patient->proponent_id : ''}}" id="proponent" name="proponent" readonly>
+                <img id="proponent-loading-image" src="{{ asset('images/loading.gif') }}" alt="Loading" style="display:none">
             </div>
+        </div>
+
         </div>
 
         <div class="row">
@@ -206,7 +208,7 @@
 
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary">Create Patient</button>
+        <button type="submit" class="btn btn-primary">Update Patient</button>
     </div>
 </form>
 

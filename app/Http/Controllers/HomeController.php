@@ -10,6 +10,7 @@ use App\Models\Muncity;
 use App\Models\Barangay;
 use App\Models\Fundsource;
 use App\Models\Proponent;
+use App\Models\ProponentInfo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -121,12 +122,13 @@ class HomeController extends Controller
                                             'description'
                                         );
                                     },
-                                    'fundsource'
+                                    'fundsource',
                                 ])
                                 ->first();
 
                                 $municipal = Muncity::select('id', 'description')->get();
                                 $barangay = Barangay::select('id', 'description')->get();
+                              //  $proponent_id = ProponentInfo::select('fundsource_id','proponent_id', 'facility_id');
         return view('maif.update_patient',[
             'provinces' => Province::get(),
             'fundsources' => Fundsource::get(),
@@ -134,8 +136,60 @@ class HomeController extends Controller
             'patient' => $patient,
             'municipal' => $municipal,
             'barangay' => $barangay,
+            //'proponentInfo' => $proponent_id,
         ]);
     }
+ 
+   public function updatePatient(Request $request)
+   {
+      $patient_id = $request->input('patient_id');
+       
+      $patient = Patients::where('id', $patient_id)->first();
+      if(!$patient){
+        return redirect()->back()->with('error', 'Patient not found');
+      }
+
+      $patient->fname = $request->input('fname');
+      $patient->lname = $request->input('lname');
+      $patient->mname = $request->input('mname');
+      $patient->dob   = $request->input('dob');
+      $patient->region = $request->input('region');
+      $patient->province_id = $request->input('province_id');
+      $patient->muncity_id  = $request->input('muncity_id');
+      $patient->barangay_id = $request->input('barangay_id');
+      $patient->fundsource_id = $request->input('fundsource_id');
+      $patient->proponent_id = $request->input('proponent');
+      $patient->facility_id = $request->input('facility_id');
+      $patient->guaranteed_amount = $request->input('guaranteed_amount');
+      $patient->actual_amount = $request->input('actual_amount');
+      $patient->remaining_balance = $request->input('remaining_balance');
+
+
+        $patient->save();
+        return redirect()->back()->with('success', 'Patient information updated successfully.');
+
+        
+    //   $patient = Patients::where('id', $patient_id)
+    //                     ->with(
+    //                     [
+    //                       'muncity' => function ($query){
+    //                         $query->select(
+    //                             'id',
+    //                             'description'
+    //                         );
+    //                       },                 
+    //                      'barangay' => function ($query){
+    //                         $query->select(
+    //                            'id',
+    //                            'description'
+    //                         );
+    //                      },
+    //                      'fundsource'
+    //                     ])
+    //                     ->first();
+   }  
+
+
 
     public function facilityGet(Request $request) {
         return Facility::where('province',$request->province_id)->where('hospital_type','private')->get();
