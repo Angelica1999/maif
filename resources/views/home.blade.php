@@ -267,11 +267,17 @@
 
                 $.get("{{ url('muncity/get').'/' }}"+data.val(), function(result) {
                     $('#muncity_id').html('');
+                    $('#barangay_id').html('');
 
                     $('#muncity_id').append($('<option>', {
                         value: "",
                         text: "Please select a municipality"
                     }));
+                    $('#barangay_id').append($('<option>', {
+                      value: "",
+                      text: "Please select a barangays"
+                    }));
+
                     $.each(result, function(index, optionData) {
                         $('#muncity_id').append($('<option>', {
                             value: optionData.id,
@@ -326,6 +332,75 @@
             }
         }
 
+        function onchangeForPatientProp(select) {
+    var selectfundsourceId = $(select).val();
+    var proponentData = $(select).data('proponents-data');
+    var facilityData = $(select).data('facility-data'); // Fixed the data attribute name
+
+    $.ajax({
+        type: 'GET',
+        url: "{{ url('patient/proponent') }}/" + selectfundsourceId,
+        success: function (data) {
+            $('#proponent').val(data.proponent);
+            $('#proponent_id').val(data.proponent_id);
+            $('#facility_name').val(data.facility);
+            $('#facility_id').val(data.facility_id);
+
+            $('#proponent_id').html('');
+            $('#facility_id').html('');
+
+            $('#proponent_id').append($('<option>', {
+                value: "",
+                text: "Please select a proponent"
+            }));
+            $('#facility_id').append($('<option>', {
+                value: "",
+                text: "Please select a Facility"
+            }));
+
+            $.each(proponentData, function (index, optionData) {
+                $('#proponent_id').append($('<option>', {
+                    value: optionData.data-proponent-id,
+                    text: optionData.data-proponent-name
+                }));
+            });
+
+            $('#proponent_id').trigger('change');
+
+            $.each(facilityData, function (index, optionData) {
+                $('#facility_id').append($('<option>', {
+                    value: optionData.data-facility-id,
+                    text: optionData.data-facility-name
+                }));
+            });
+            $('#facility_id').trigger('change');
+        },
+        error: function (xhr, status, error) {
+            console.log('Error:', error);
+        }
+    });
+}
+
+
+// function onchangeForPatientProp(select) {
+//     var selectfundsourceId = $(select).val();
+//     // var facility_id = $('#facility_id').val();
+//     $.ajax({
+//         type: 'GET',
+//         url: "{{ url('patient/proponent') }}/" + selectfundsourceId, 
+//         success: function (data) {
+//             $('#proponent').val(data.proponent);
+//             $('#proponent_id').val(data.proponent_id);
+//             $('#facility_name').val(data.facility);
+//             $('#facility_id').val(data.facility_id);
+
+          
+//         },
+//         error: function (xhr, status, error) {
+//             console.log('Error:', error);
+//         }
+//     });
+// }
         var proponent_id = 0;
         function onchangeProponent(data) {
             if(data.val()) {
@@ -357,23 +432,7 @@
         }
 
 
-        function onchangeForPatientProp(select) {
-    var selectfundsourceId = $(select).val();
-    // var facility_id = $('#facility_id').val();
-    $.ajax({
-        type: 'GET',
-        url: "{{ url('patient/proponent') }}/" + selectfundsourceId,
-        success: function (data) {
-            $('#proponent').val(data.proponent);
-            $('#proponent_id').val(data.proponent_id);
-            $('#facility_name').val(data.facility);
-            $('#facility_id').val(data.facility_id);
-        },
-        error: function (xhr, status, error) {
-            console.log('Error:', error);
-        }
-    });
-}
+
 
 
 

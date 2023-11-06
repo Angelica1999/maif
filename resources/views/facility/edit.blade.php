@@ -23,7 +23,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="social_worker_contact">Social Worker Contact</label>
-                    <input type="text" class="form-control" id="social_worker_contact" name="social_worker_contact" value="{{ $facility->social_worker_contact }}" placeholder="Social Worker Contact" required pattern="\d{11}">
+                    <input type="text" class="form-control" id="social_worker_contact" name="social_worker_contact" value="{{ $facility->social_worker_contact }}" placeholder="Social Worker Contact" required pattern="63\+\d{10}|\d{11}">
                 </div>
             </div>
             <div class="col-md-6">
@@ -43,20 +43,20 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="finance_officer_contact">Finance Officer Contact</label>
-                    <input type="text" class="form-control" id="finance_officer_contact" name="finance_officer_contact" value="{{ $facility->finance_officer_contact }}"  placeholder="Finance Officer Contact" required pattern="\d{11}">
+                    <input type="text" class="form-control" id="finance_officer_contact" name="finance_officer_contact" value="{{ $facility->finance_officer_contact }}"  placeholder="Finance Officer Contact" required pattern="((63\+)?\d{10}|\d{11})">
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="vat">Vat</label>
-                    <input type="number" class="form-control" id="vat" name="vat" value="{{ number_format($facility->vat, strlen(substr(strrchr($facility->vat, '.'), 1))) }}" placeholder="Vat" required step="any">
+                    <input type="number" class="form-control" id="vat" name="vat" value="{{ floor($facility->vat) }}" placeholder="Vat" required step="any">
 
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="Ewt">Ewt</label>
-                    <input type="number" class="form-control" id="Ewt" name="Ewt" value="{{$facility->Ewt}}" placeholder="Ewt" required step="any">
+                    <input type="number" class="form-control" id="Ewt" name="Ewt" value="{{ floor($facility->Ewt) }}" placeholder="Ewt" required step="any">
                 </div>
             </div>
       </div>       
@@ -138,16 +138,16 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 
-$(document).ready(function() {
+    $(document).ready(function() {
     $('#social_worker_contact, #finance_officer_contact').on('input', function() {
         var input = $(this).val();
         var digits = input.replace(/[^0-9]/g, ''); // Remove non-digits
 
-        if (digits.length !== 11) {
+        if (digits.length < 10 || (input.startsWith('63+') && digits.length !== 12) || (!input.startsWith('63+') && digits.length !== 11)) {
             // Display an error message or add a CSS class to indicate an error
             $(this).addClass('is-invalid');
         } else {
-            // Remove the error message or CSS class if it's 11 digits
+            // Remove the error message or CSS class if it's in the correct format
             $(this).removeClass('is-invalid');
         }
     });

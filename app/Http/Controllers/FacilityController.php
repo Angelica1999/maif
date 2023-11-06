@@ -118,20 +118,20 @@ class FacilityController extends Controller
             $facility->finance_officer = $request->input('finance_officer');
             $facility->finance_officer_email = $request->input('finance_officer_email');
             $facility->finance_officer_contact = $request->input('finance_officer_contact');
-            $facility->vat = number_format($request->input('vat'), 1, '.', '');
+            $facility->vat = $request->input('vat');
             $facility->Ewt = $request->input('Ewt');
 
             $facility->save();  
             session()->flash('facility_save', true); 
             return redirect()->route('facility', ['main_id' => $main_id]);
-        }//end of function
-     public function getVatEwt($facilityId)
+        }   //end of function
+     public function getVatEwt()
      {
-        $facility = AddFacilityInfo::where('facility_id', $facilityId)->first();
-        $VatAmount = $facility->vat;
-        $EwtAmount = $facility->Ewt;
-        return response()->json(['vat' => $VatAmount,
-                                  'Ewt' => $EwtAmount]);
+       return  $facility = AddFacilityInfo::all();
+        // $VatAmount = $facility->vat;
+        // $EwtAmount = $facility->Ewt;
+        // return response()->json(['vat' => $VatAmount,
+        //                           'Ewt' => $EwtAmount]);
      }
       
 

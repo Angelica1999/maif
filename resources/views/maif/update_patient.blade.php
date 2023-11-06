@@ -105,7 +105,7 @@
                 <div class="form-group">
                     <label for="lname">Barangay</label>
                     <div id="barangay_body">
-                        <select class="js-example-basic-single w-100" id="barangay_id" name="barangay_id" required>
+                        <select class="js-example-basic-single w-100" id="barangay_id" name="barangay_id"  required>
                            @foreach($barangay as $barangays)
                            <option value="{{ $barangays->id }}" {{$barangays->id == $patient->barangay_id? 'selected' : ''}}>{{ $barangays->description }}</option>
                             @endforeach
@@ -134,8 +134,12 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="proponent">Proponent</label>
-                        <input type="text" class="form-control" value="{{ $patient->proponent_id == $proponents->id ? $proponents->proponent : '' }}" id="proponent" name="proponent" readonly>
-                    <input type="hidden" id="proponent_id" name="proponent_id" value="{{ $patient->proponent_id }}">
+                    <select class="js-example-basic-single w-100 select2" data-proponents-data="{{ $proponents  }}" id="proponent_id" name="proponent_id"  onchange="onchangeProponent($(this))" required>
+                    <option value="">Please select A Proponent</option>
+                        @foreach($proponents as $proponent)
+                          <option value="{{ $proponent->id }}" data-proponent-id="{{ $proponent->id}}" data-proponent-name="{{ $proponent->proponent}}" {{$patient->proponent_id == $proponent->id? 'selected' : ''}}>{{$proponent->proponent }}</option>
+                        @endforeach
+                    </select>  
                 </div>
             </div>
 
@@ -145,10 +149,20 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Facility</label>
-                    <input type="text" id="facility_name" value="{{ $patient->facility_id == $facilitys->id? $facilitys->name : ''}}" class="form-control" readonly>
-                    <input type="hidden" id="facility_id" value="{{ $patient ? $patient->facility_id : ''}}" name="facility_id">
+                        <select class="js-example-basic-single w-100 select2"  data-facility-data ="{{ $facility }}" id="facility_id" onchange="onchangeForPatientCode($(this))" name="facility_id" required>
+                            @foreach($facility as $facilities)
+                               <option value="{{ $facilities->id }}" data-facility-id="$facilities->id" data-facility-name ="$facilities->name" {{$patient->facility_id == $facilities->id? 'selected' : ''}}>{{$facilities->name }}</option>
+                            @endforeach   
+                        </select>
                 </div>
             </div> 
+            <div class="col-md-6">
+                <div class="form-group" id="patient-code-container">
+                <label for="fname">Patient Code </label>
+                    <input type="text" class="form-control loading-input" id="patient_code" name="patient_code" value="{{$patient->patient_code}}" placeholder="Patient Code" readonly>
+                    <img id="loading-image" src="{{ asset('images/loading.gif') }}" alt="Loading" style="display: none;">
+                </div>
+            </div>
 
             {{-- <div class="col-md-6">  
                 <div class="form-group">
