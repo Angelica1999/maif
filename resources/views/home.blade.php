@@ -85,11 +85,11 @@
                             <td>
                                 <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}" target="_blank" type="button" class="btn btn-primary btn-sm">Print</a>
                             </td> 
-                            <td>
-                                <a href="#create_patient" onclick="editPatient('{{ $patient->id }}')" data-backdrop="static" data-toggle="modal">
-                                    {{ $patient->fname }}
-                                </a>
-                            </td>
+                                <td>
+                                    <a href="#create_patient" onclick="editPatient('{{ $patient->id }}', '{{ $patient->region }}' )" data-backdrop="static" data-toggle="modal">
+                                        {{ $patient->fname }}
+                                    </a>
+                                </td>   
                             <td>
                                 {{ $patient->mname }}
                             </td>
@@ -178,6 +178,7 @@
 @endsection
 
 @section('js')
+
     <script>
         function createPatient() {
             $('.modal_body').html(loading);
@@ -194,7 +195,14 @@
             },500);
         }
 
-        function editPatient(id) {
+            function editPatient(id, region) {
+            console.log(region);
+            if (region !== "Region 7") {
+                console.log("Condition met, inserting input element.");
+                $("#province_body").html("<input type='text' class='form-control' name='other_province' required>");
+            }
+
+
             $('.modal_body').html(loading);
             $('.modal-title').html("Edit Patient");
             var url = "{{ url('patient/edit').'/' }}"+id;
@@ -212,10 +220,12 @@
         function othersRegion(data) {
             console.log(data)
             if(data.val() != "Region 7"){
+
                 // $("#facility_body").html("<input type='text' class='form-control' name='other_facility' required>");
                 $("#province_body").html("<input type='text' class='form-control' name='other_province' required>");
                 $("#muncity_body").html("<input type='text' class='form-control' name='other_muncity' required>");
                 $("#barangay_body").html("<input type='text' class='form-control' name='other_barangay' required>");
+              
             }
             else {
 
@@ -248,7 +258,8 @@
 
                 $(".select2").select2({ width: '100%' });
             }
-        }
+
+   } 
 
         function onchangeProvince(data) {
             if(data.val()) {
