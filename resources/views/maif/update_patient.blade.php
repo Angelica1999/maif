@@ -1,3 +1,17 @@
+<style>
+#patient-code-container {
+    position: relative;
+}
+#loading-image {
+  position: absolute;
+  margin-right: 50px;
+  top: -8%;
+  left: 50%; /* Adjust the position as needed */
+  transform: translateY(-50%, -50%);
+  width: 60px;
+    height: 60px;
+}
+</style>
 
 <form id="contractForm" method="POST" action="{{ route('patient.update') }}">
 <input type="hidden" name="patient_id" value="{{ $patient->id }}">
@@ -122,44 +136,42 @@
         <div class="col-md-6">
                 <div class="form-group">
                     <label >SAA</label>
-                    <select class="js-example-basic-single w-100 select2" id="fundsource_id" name="fundsource_id" onchange="onchangeForPatientProp($(this))" data-fundsource-id="{{$patient->fundsource_id}}" required>
+                    <select class="js-example-basic-single w-100 select2" id="fundsource_id" name="fundsource_id" onchange="onchangeFundsource($(this))" required>
                         <option value="">Please select SAA</option>
                         @foreach($fundsources as $fundsource)
-                            <option value="{{ $fundsource->id }}" data-fundsource-id="{{ $fundsource->id }}" {{$patient->fundsource_id == $fundsource->id? 'selected' : ''}}>{{$fundsource->saa }}</option>
-                        @endforeach
-                    </select>            
-               </div>
+                        <option value="{{ $fundsource->id }}" data-fundsource-id="{{ $fundsource->id }}" {{$patient->fundsource_id == $fundsource->id? 'selected' : ''}}>{{$fundsource->saa }}</option>                        @endforeach
+                     
+                    </select>
+                </div>
             </div>
 
             <div class="col-md-6">
                 <div class="form-group">
-                    <label for="proponent">Proponent</label>
-                    <select class="js-example-basic-single w-100 select2" data-proponents-data="{{ $proponents  }}" id="proponent_id" name="proponent_id"  onchange="onchangeProponent($(this))" required>
-                    <option value="">Please select A Proponent</option>
+                    <label for="fname">Proponent</label>
+                    <select class="js-example-basic-single w-100 select2" id="proponent_id" name="proponent_id" onchange="onchangeProponent($(this))" required>
                         @foreach($proponents as $proponent)
                           <option value="{{ $proponent->id }}" data-proponent-id="{{ $proponent->id}}" data-proponent-name="{{ $proponent->proponent}}" {{$patient->proponent_id == $proponent->id? 'selected' : ''}}>{{$proponent->proponent }}</option>
                         @endforeach
-                    </select>  
+                    </select>
                 </div>
             </div>
-
         </div>
 
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Facility</label>
-                        <select class="js-example-basic-single w-100 select2"  data-facility-data ="{{ $facility }}" id="facility_id" onchange="onchangeForPatientCode($(this))" name="facility_id" required>
+                    <select class="js-example-basic-single w-100 select2" id="facility_id" name="facility_id" onchange="onchangeForPatientCode($(this))" required>
                             @foreach($facility as $facilities)
-                               <option value="{{ $facilities->id }}" data-facility-id="$facilities->id" data-facility-name ="$facilities->name" {{$patient->facility_id == $facilities->id? 'selected' : ''}}>{{$facilities->name }}</option>
-                            @endforeach   
-                        </select>
+                               <option value="{{ $facilities->id }}"  {{$patient->facility_id == $facilities->id? 'selected' : ''}}>{{$facilities->name }}</option>
+                             @endforeach  
+                    </select>
                 </div>
             </div> 
             <div class="col-md-6">
+            <label for="fname">Patient Code</label>
                 <div class="form-group" id="patient-code-container">
-                <label for="fname">Patient Code </label>
-                    <input type="text" class="form-control loading-input" id="patient_code" name="patient_code" value="{{$patient->patient_code}}" placeholder="Patient Code" readonly>
+                    <input type="text" class="form-control loading-input" id="patient_code" name="patient_code" value="{{$patient->patient_code}}" placeholder="Patient Code" readonly> 
                     <img id="loading-image" src="{{ asset('images/loading.gif') }}" alt="Loading" style="display: none;">
                 </div>
             </div>
@@ -212,6 +224,26 @@
 </script>
 
 <script>
+
+
+$(document).ready(function() {
+    
+    $('#fundsource_id').on('change', function() {
+        if ($(this).val() !== '') {
+            var selectOptionText = $(this).find('option:selected').text();
+            if(selectOptionText !== 'Please select SAA'){
+                $('#loading-image').show();
+            }
+        }
+    });
+
+    $('#facility_id').on('change', function() {
+        // hide the loading-image when data is selected in the facility_id dropdown
+        if ($(this).val() !== '') {
+            $('#loading-image').hide();
+        }
+    });
+});
 
 // $(document).ready(function(){
 //    function hideLoadingImages(){

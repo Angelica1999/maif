@@ -161,6 +161,7 @@ class HomeController extends Controller
       $patient->fundsource_id = $request->input('fundsource_id');
       $patient->proponent_id = $request->input('proponent_id');
       $patient->facility_id = $request->input('facility_id');
+      $patient->patient_code = $request->input('patient_code');
       $patient->guaranteed_amount = $request->input('guaranteed_amount');
       $patient->actual_amount = $request->input('actual_amount');
       $patient->remaining_balance = $request->input('remaining_balance');

@@ -118,9 +118,9 @@
         </div>  
         
           <!-- Footer Section -->
-          <div class="footer text-center">
+          <div class="footer">
         <!-- Your footer content goes here -->
-        <p>&copy; 2023 Dohro7. All rights reserved.</p>
+        <p class="text-center">&copy; 2023 dohro7ofcrdard@gmail.com. All rights reserved.</p>
     </div>
 
         <hr> <!-- Horizontal line representing the footer -->
@@ -188,7 +188,7 @@
        <!-- Footer Section -->
     <div class="footer text-center">
         <!-- Your footer content goes here -->
-        <p>&copy; 2023 Dohro7. All rights reserved.</p>
+        <p>&copy; 2023 dohro7ofcrdard@gmail.com. All rights reserved.</p>
     </div>
     </body>
 </html>
