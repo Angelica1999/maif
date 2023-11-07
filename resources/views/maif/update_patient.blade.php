@@ -168,13 +168,13 @@
                     </select>
                 </div>
             </div> 
-            <div class="col-md-6">
-            <label for="fname">Patient Code</label>
-                <div class="form-group" id="patient-code-container">
-                    <input type="text" class="form-control loading-input" id="patient_code" name="patient_code" value="{{$patient->patient_code}}" placeholder="Patient Code" readonly> 
-                    <img id="loading-image" src="{{ asset('images/loading.gif') }}" alt="Loading" style="display: none;">
+                <div class="col-md-6">
+                <label for="fname">Patient Code</label>
+                    <div class="form-group" id="patient-code-container">
+                        <input type="text" class="form-control loading-input" id="patient_code" name="patient_code" value="{{$patient->patient_code}}" placeholder="Patient Code" readonly> 
+                        <img id="loading-image" src="{{ asset('images/loading.gif') }}" alt="Loading" style="display: none;">
+                    </div>
                 </div>
-            </div>
 
             {{-- <div class="col-md-6">  
                 <div class="form-group">
@@ -220,54 +220,25 @@
     </div>
 </form>
 
-<script src="{{ asset('admin/js/select2.js?v=').date('His') }}">
-</script>
-
+<script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 <script>
-
-
-$(document).ready(function() {
-    
-    $('#fundsource_id').on('change', function() {
-        if ($(this).val() !== '') {
+     $(document).ready(function() {
+        // Show the loading image when the dropdown changes
+        $('#fundsource_id').on('change', function() {
             var selectOptionText = $(this).find('option:selected').text();
-            if(selectOptionText !== 'Please select SAA'){
+            if (selectOptionText !== 'Please select SAA') {
                 $('#loading-image').show();
+            } 
+        });
+
+        $('#facility_id').on('change', function() {
+            // Set a timeout to hide the loading-image after a specified interval (e.g., 2000 milliseconds or 2 seconds)
+            if ($(this).val() !== '') {
+                setTimeout(function() {
+                    $('#loading-image').hide();
+                }, 1000); // Change the time interval as needed
             }
-        }
+        });
+        
     });
-
-    $('#facility_id').on('change', function() {
-        // hide the loading-image when data is selected in the facility_id dropdown
-        if ($(this).val() !== '') {
-            $('#loading-image').hide();
-        }
-    });
-});
-
-// $(document).ready(function(){
-//    function hideLoadingImages(){
-//     $('#facility-loading-image').hide();
-//     $('#proponent-loading-image').hide();
-//    }
-
-// if($('#fundsource_id').val() !== ''){
-//     hideLoadingImages();
-// }
-
-// $('#fundsource_id').on('change', function() {
-//     var selectedOptionText = $(this).find('option:selected').text();
-//     if (selectedOptionText !== 'Please select SAA') {
-//        hideLoadingImages();
-//     } else {
-//         $('#facility-loading-image').hide();
-//         $('#proponent-loading-image').hide();
-//     }
-// });
-// if ($('#fundsource_id').val() === '') {
-//     $('#facility-loading-image').show();
-//     $('#proponent-loading-image').show();
-// }
-// });
-
 </script>

@@ -226,12 +226,15 @@ $(document).ready(function() {
         }
     });
 
+   
     $('#facility_id').on('change', function() {
-        // hide the loading-image when data is selected in the facility_id dropdown
-        if ($(this).val() !== '') {
-            $('#loading-image').hide();
-        }
-    });
+            // Set a timeout to hide the loading-image after a specified interval (e.g., 2000 milliseconds or 2 seconds)
+            if ($(this).val() !== '') {
+                setTimeout(function() {
+                    $('#loading-image').hide();
+                }, 1000); // Change the time interval as needed
+            }
+        });
 });
 
 
