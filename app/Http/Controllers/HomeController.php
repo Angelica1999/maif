@@ -155,9 +155,15 @@ class HomeController extends Controller
       $patient->mname = $request->input('mname');
       $patient->dob   = $request->input('dob');
       $patient->region = $request->input('region');
+      if($patient->region !== "Region 7"){
+        $patient->other_province = $request->input('other_province');
+        $patient->other_muncity = $request->input('other_muncity');
+        $patient->other_barangay = $request->input('other_barangay');
+      }
       $patient->province_id = $request->input('province_id');
       $patient->muncity_id  = $request->input('muncity_id');
       $patient->barangay_id = $request->input('barangay_id');
+
       $patient->fundsource_id = $request->input('fundsource_id');
       $patient->proponent_id = $request->input('proponent_id');
       $patient->facility_id = $request->input('facility_id');

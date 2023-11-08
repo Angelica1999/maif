@@ -72,6 +72,7 @@
                         <option value="Region 13" @if($patient->region == 'Region 13') selected @endif>Region 13</option>
                         <option value="BARMM" @if($patient->region == 'BARMM') selected @endif>BARMM</option>
                     </select>
+                    <script>var patientRegion = "{{$patient->region}}";</script>
                 </div>
             </div>
 
@@ -89,6 +90,7 @@
                 </div>
             </div>
         </div>
+
 
         <div class="row">
             {{-- <div class="col-md-6">
@@ -139,7 +141,8 @@
                     <select class="js-example-basic-single w-100 select2" id="fundsource_id" name="fundsource_id" onchange="onchangeFundsource($(this))" required>
                         <option value="">Please select SAA</option>
                         @foreach($fundsources as $fundsource)
-                        <option value="{{ $fundsource->id }}" data-fundsource-id="{{ $fundsource->id }}" {{$patient->fundsource_id == $fundsource->id? 'selected' : ''}}>{{$fundsource->saa }}</option>                        @endforeach
+                        <option value="{{ $fundsource->id }}" data-fundsource-id="{{ $fundsource->id }}" {{$patient->fundsource_id == $fundsource->id? 'selected' : ''}}>{{$fundsource->saa }}</option>                  
+                       @endforeach
                      
                     </select>
                 </div>
@@ -148,7 +151,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Proponent</label>
-                    <select class="js-example-basic-single w-100 select2" id="proponent_id" name="proponent_id" onchange="onchangeProponent($(this))" required>
+                    <select class="js-example-basic-single w-100 select2" id="proponent_id" name="proponent_id" onchange="onchangeProponent($(this))" required disabled>
                         @foreach($proponents as $proponent)
                           <option value="{{ $proponent->id }}" data-proponent-id="{{ $proponent->id}}" data-proponent-name="{{ $proponent->proponent}}" {{$patient->proponent_id == $proponent->id? 'selected' : ''}}>{{$proponent->proponent }}</option>
                         @endforeach
@@ -161,7 +164,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Facility</label>
-                    <select class="js-example-basic-single w-100 select2" id="facility_id" name="facility_id" onchange="onchangeForPatientCode($(this))" required>
+                    <select class="js-example-basic-single w-100 select2" id="facility_id" name="facility_id" onchange="onchangeForPatientCode($(this))" required disabled>
                             @foreach($facility as $facilities)
                                <option value="{{ $facilities->id }}"  {{$patient->facility_id == $facilities->id? 'selected' : ''}}>{{$facilities->name }}</option>
                              @endforeach  
@@ -223,6 +226,15 @@
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 <script>
      $(document).ready(function() {
+  
+        if (patientRegion !== "Region 7"){
+            var patientProvinceDescription = "{{ $patient->other_province }}"; 
+            var patientMuncity = "{{ $patient->other_muncity }}";
+            var patientBarangay = "{{$patient->other_barangay}}";
+            document.getElementById("province_body").innerHTML = '<input type="text" class="form-control" id="other_province" value="' + patientProvinceDescription + '" name="other_province">';
+            document.getElementById("muncity_body").innerHTML = '<input type="text" class="form-control" id="other_muncity" value="' + patientMuncity + '" name="other_muncity">';
+            document.getElementById("barangay_body").innerHTML = '<input type="text" class="form-control" id="other_barangay" value="' + patientBarangay + '" name="other_barangay">';
+        }
         // Show the loading image when the dropdown changes
         $('#fundsource_id').on('change', function() {
             var selectOptionText = $(this).find('option:selected').text();
@@ -239,6 +251,8 @@
                 }, 1000); // Change the time interval as needed
             }
         });
-        
+
+
     });
+    
 </script>

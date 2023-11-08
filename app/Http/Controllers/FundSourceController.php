@@ -153,7 +153,7 @@ class FundSourceController extends Controller
     }
 
     
-//     public function forPatientFacilityCode(Request $request) {
+//  public function forPatientFacilityCode(Request $request) {
 //         $user = Auth::user();
 //         $proponent = Proponent::where('fundsource_id',$request->funsource_id);
 //         $facility = Facility::where('facility_id',$request->facility_id); 
