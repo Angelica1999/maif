@@ -288,9 +288,17 @@
                             text: optionData.description
                         }));
                     });
-
+                    $('#muncity_id').prop('disabled', false); // Enable the Facility select box
                     $('#muncity_id').trigger('change');
+
+                    $('#barangay_id').prop('disaled', true);
+                    $('#barangay_id').trigger('change');
                 });
+            }else { // Reset and disable both the muncity and barangay select boxes
+                $('#muncity_id').val('').trigger('change');
+                $('#muncity_id').prop('disabled', true);
+                $('#barangay_id').val('').trigger('change');
+                $('#barangay_id').prop('disabled', true);
             }
         }
 
@@ -301,17 +309,22 @@
 
                     $('#barangay_id').append($('<option>', {
                         value: "",
-                        text: "Please select a barangay"
+                        text: "Please select a barangays"
                     }));
+
                     $.each(result, function(index, optionData) {
                         $('#barangay_id').append($('<option>', {
                             value: optionData.id,
                             text: optionData.description
                         }));
                     });
-
+                    
+                    $('#barangay_id').prop('disabled', false);
                     $('#barangay_id').trigger('change');
                 });
+            }else{// Reset and disable the Barangay select box
+                $('#barangay_id').prop('disabled', true);
+                $('#barangay_id').trigger('change');
             }
         }
 
@@ -329,18 +342,31 @@
                        text: "Please select a Facility"
                     }));
 
-                    $('#patient_code').val('');
-                    
+                    if(data.val() ===""){
+                        $('#patient_code').val('');
+                    }else{
+                        $('#patient_code').val('Patient Code');
+                    }
+                                    
+                     $('#patient_code').val('');
                     $.each(result, function(index, optionData) {
                         $('#proponent_id').append($('<option>', {
                             value: optionData.id,
                             text: optionData.proponent
                         }));
                     });
-
+                    $('#proponent_id').prop('disabled', false);
                     $('#proponent_id').trigger('change');
-
+ 
+                    $('#facility_id').prop('disabled', true);
+                    $('#facility_id').prop('disabled', true);
                 });
+              
+            }else{ // Reset and disable both the Proponent and Facility select boxes
+                $('#proponent_id').val('').trigger('change');
+                $('#proponent_id').prop('disabled', true);
+                $('#facility_id').val('').trigger('change');
+                $('#facility_id').prop('disabled', true);
             }
         }
 
@@ -429,8 +455,12 @@
                             text: optionData.facility.description
                         }));
                     });
+                    $('#facility_id').prop('disabled', false); //enable
                     $('#facility_id').trigger('change');
                 });
+            }else {// Reset and disable the Facility select box
+                $('#facility_id').val('').trigger('change');
+                $('#facility_id').prop('disabled', true);
             }
         }
 
