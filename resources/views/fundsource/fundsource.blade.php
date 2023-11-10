@@ -33,8 +33,10 @@
                                     <p class="card-description">{{ $proponent->proponent }}</p>
                                     <ul class="list-arrow">
                                         @foreach($proponent->proponentInfo as $proponentInfo)
+                                            <a href="#"><span style="">update</span></a>
                                             <li>{{ $proponentInfo->facility->name }} - <strong class="text-info">&nbsp;₱&nbsp;{{ number_format($proponentInfo->alocated_funds, 2, '.', ',') }}</strong></li>
                                         @endforeach
+                                        
                                     </ul>
                                 @endforeach
                             </div>
