@@ -236,6 +236,53 @@ $(document).ready(function() {
                 }, 1000); // Change the time interval as needed
             }
         });
+
+
+
+ // $('#province_id').change(function() {
+        
+        //     $('#muncity_id').prop('disabled', true);
+        //     $('#barangay_id').prop('disabled', true);
+        //     $('#muncity_id').html('<option value="">Please Select a Municipality</option>');
+
+        //     // Enable the Municipality dropdown after a second
+        //     setTimeout(function() {
+        //         $('#muncity_id').prop('disabled', false);
+        //     }, 1000); // 1000 milliseconds = 1 second
+
+        // });
+
+        // $('#muncity_id').change(function() {
+        //     $('#barangay_id').prop('disabled', true);
+        //     $('#barangay_id').html('<option value="">Please Select Barangay</option>')
+                
+        //     setTimeout(function() {
+        //         $('#barangay_id').prop('disabled', false);
+        //     }, 1000);
+        // });
+
+        $('#province_id').change(function() {
+           $('#muncity_id').prop('disabled', true);
+           $('#barangay_id').prop('disabled', true);
+           $('#muncity_id').html('<option value="">Please Select Municipality</option>');
+
+           setTimeout(function() {
+               $('#muncity_id').prop('disabled', false);
+           }, 1000);
+
+        });
+
+       $('#muncity_id').change(function() {
+         
+         $('#barangay_id').prop('disabled', true);
+         $('#barangay_id').html('<option value="">Please Select Barangay</option>');
+
+         setTimeout(function() {
+            $('#barangay_id').prop('disabled', false);
+         }, 1000);
+
+       });
+
 });
 
 

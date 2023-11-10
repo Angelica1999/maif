@@ -256,19 +256,6 @@
 
         function onchangeProvince(data) {
             if(data.val()) {
-                // $.get("{{ url('facility/get').'/' }}"+data.val(), function(result) {
-                //     $('#facility_id').html('');
-
-                //     $.each(result, function(index, optionData) {
-                //         $('#facility_id').append($('<option>', {
-                //             value: optionData.id,
-                //             text: optionData.name
-                //         }));
-                //     });
-
-                //     $('#facility_id').trigger('change');
-                // });
-
                 $.get("{{ url('muncity/get').'/' }}"+data.val(), function(result) {
                     $('#muncity_id').html('');
                     $('#barangay_id').html('');
@@ -288,17 +275,8 @@
                             text: optionData.description
                         }));
                     });
-                    $('#muncity_id').prop('disabled', false); // Enable the Facility select box
-                    $('#muncity_id').trigger('change');
-
-                    $('#barangay_id').prop('disaled', true);
-                    $('#barangay_id').trigger('change');
+                    
                 });
-            }else { // Reset and disable both the muncity and barangay select boxes
-                $('#muncity_id').val('').trigger('change');
-                $('#muncity_id').prop('disabled', true);
-                $('#barangay_id').val('').trigger('change');
-                $('#barangay_id').prop('disabled', true);
             }
         }
 
