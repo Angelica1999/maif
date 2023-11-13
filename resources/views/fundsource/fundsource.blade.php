@@ -33,7 +33,7 @@
                                     <p class="card-description">{{ $proponent->proponent }}</p>
                                     <ul class="list-arrow">
                                         @foreach($proponent->proponentInfo as $proponentInfo)
-                                            <a href="#"><span style="">update</span></a>
+                                           <span href="#create_fundsource" class="btn btn-info btn-sm typcn typcn-edit menu-icon" onclick="editfundsource({{ $fund->id }})" data-backdrop="static" data-toggle="modal"></span>
                                             <li>{{ $proponentInfo->facility->name }} - <strong class="text-info">&nbsp;₱&nbsp;{{ number_format($proponentInfo->alocated_funds, 2, '.', ',') }}</strong></li>
                                         @endforeach
                                         
@@ -71,8 +71,26 @@
 
 @section('js')
     <script>
+
+        function editfundsource(fundsourceId){
+            console.log(fundsourceId);
+            $('.modal_body').html(loading);
+            $('.modal-title').html("Update Fundsource");
+            var url = "{{ url('fundsource/edit').'/' }}"+ fundsourceId;
+            setTimeout(function() {
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function(result){
+                        $('.modal_body').html(result);
+                    }
+                });
+            }, 500);
+        }
+
         function createFundSource() {
             $('.modal_body').html(loading);
+            $('.modal-title').html("Create Fundsource");
             var url = "{{ route('fundsource.create') }}";
             setTimeout(function(){
                 $.ajax({

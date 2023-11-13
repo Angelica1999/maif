@@ -37,6 +37,7 @@ Route::get('barangay/get/{muncity_id}', [App\Http\Controllers\HomeController::cl
 Route::get('transaction/get', [App\Http\Controllers\FundSourceController::class, 'transactionGet'])->name('transaction.get');
 
 Route::get('/fundsource', [App\Http\Controllers\FundSourceController::class, 'fundSource'])->name('fundsource');
+Route::get('fundsource/edit/{fundsourceId}', [App\Http\Controllers\FundSourceController::class, 'Editfundsource'])->name('fundsource.edit');
 Route::get('/fundsource/saa/get', [App\Http\Controllers\FundSourceController::class, 'fundSourceGet'])->name('fundsource.saa.get');
 Route::get('/fundsource/create', [App\Http\Controllers\FundSourceController::class, 'createFundSource'])->name('fundsource.create');
 Route::post('/fundsource/create/save', [App\Http\Controllers\FundSourceController::class, 'createFundSourceSave'])->name('fundsource.create.save');

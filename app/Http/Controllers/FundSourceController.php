@@ -117,6 +117,36 @@ class FundSourceController extends Controller
         return redirect()->back();
     }
 
+    public function Editfundsource($fundsourceId)
+    {
+            // return($proponent_id);
+            $fundsources = Fundsource::where('id', $fundsourceId)              
+            ->with([
+                'proponents' => function ($query) {
+                    $query->with([
+                        'proponentInfo' => function ($query) {
+                            $query->with('facility');
+                        }
+                    ]);
+                },
+                'encoded_by' => function ($query) {
+                    $query->select(
+                        'id',
+                        'name'
+                    );
+                }
+            ])->first();
+    
+        $specificProponent = $fundsources->proponents->first();
+    
+        return view('fundsource.update_fundsource', [
+            'fundsource' => $fundsources,
+            'fundsources' => Fundsource::get(),
+            'facility' => Facility::get(),
+            'proponent' => $specificProponent,
+        ]);
+    }
+    
     public function proponentGet(Request $request) {
         return Proponent::where('fundsource_id',$request->fundsource_id)->get();
     }
