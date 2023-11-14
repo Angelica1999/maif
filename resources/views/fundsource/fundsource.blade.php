@@ -73,7 +73,7 @@
     <script>
 
         function editfundsource(fundsourceId){
-            console.log(fundsourceId);
+            //console.log(fundsourceId);
             $('.modal_body').html(loading);
             $('.modal-title').html("Update Fundsource");
             var url = "{{ url('fundsource/edit').'/' }}"+ fundsourceId;

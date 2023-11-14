@@ -14,7 +14,7 @@
                     <select class="js-example-basic-single w-100 select2" id="saa_exist" name="saa_exist" onchange="fundsourceExist($(this))">
                         <option value="">Please select SAA</option>
                           @foreach($fundsources as $fundsource1)
-                            <option value="{{ $fundsource->id }}" @if($fundsource1->id == $proponentInfo->fundsource_id) selected @endif>{{ $fundsource1->saa }}</option>
+                            <option value="{{ $fundsource1->saa }}" @if($fundsource1->id == $proponentInfo->fundsource_id) selected @endif>{{ $fundsource1->saa }}</option>
                           @endforeach
                         </select>
                 </div>
