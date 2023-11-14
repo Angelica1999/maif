@@ -149,10 +149,33 @@ class FundSourceController extends Controller
     }
 
      public function updatefundsource(Request $request){
-       $fundsource_id = $request->input('fundsourceId');
+       $user = Auth::user();
+      return $fundsource_id = $request->input('fundsourceId');
        
-     
-     }
+       $fundsource = Fundsource::find($fundsource_id);
+       if($fundsouce) {
+         $fundsouce->saa = $request->input('saa_exist');
+         $fundsouce->save();
+       }else{
+        return response()->json(['error' => 'Fundsource not found'], 404);
+       }
+
+       $proponent = Proponent::where('fundsource_id',$fundsource_id)->first();
+       
+       if($proponent){
+         $proponent->proponent  = $request->input('proponent');
+         $proponent->proponent_code = $request->input('proponent_code');
+         $proponent->save();
+       }else{
+         return response()->json(['error' => 'Proponent not found'], 404);
+       }
+        $index = 0;
+       foreach ($request('facility_id') as $facilityId) {
+        $proponentInfo = ProponentInfo::
+
+       }
+
+     }//endof 
     
     public function proponentGet(Request $request) {
         return Proponent::where('fundsource_id',$request->fundsource_id)->get();
