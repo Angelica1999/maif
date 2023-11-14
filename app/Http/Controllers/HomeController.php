@@ -219,7 +219,7 @@ class HomeController extends Controller
 
     public function disbursement(){
 
-        return view('maif.disbursement');
+        return view('maif.Disbursement.disbursement');
     }
 
 }

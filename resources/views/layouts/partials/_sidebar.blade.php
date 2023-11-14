@@ -27,7 +27,7 @@
     <li class="nav-item">
       <a class="nav-link" href="{{ route('disbursement')}}">
         <i class="typcn typcn-document-text menu-icon"></i>
-        <span class="menu-title">Disbursement Letter</span>
+        <span class="menu-title">Disbursement Voucher</span>
       </a>
     </li>
     <li class="nav-item">

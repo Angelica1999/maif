@@ -7,7 +7,7 @@
         <div class="card-body">
             <form method="GET" action="">
                 <div class="input-group float-right w-50" style="min-width: 600px;">
-                    <input type="text" class="form-control" name="keyword" placeholder="Disbursement" value="" aria-label="Recipient's username">
+                    <input type="text" class="form-control" name="keyword" placeholder="Disbursement Voucher" value="" aria-label="Recipient's username">
                         <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit">Search</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll">View All</button>
@@ -18,14 +18,14 @@
                                 <span class="sr-only">Toggle Dropdown</span>
                             </button>
                             <div class="dropdown-menu">
-                              <a class="dropdown-item" href="#create_patient" onclick="createPatient()" data-backdrop="static" data-toggle="modal">Guarantee Letter</a>
+                              <a class="dropdown-item" href="#create_patient" onclick="createPatient()" data-backdrop="static" data-toggle="modal">Disbursement Voucher</a>
                               <a class="dropdown-item" href="#">Disbursement Voucher</a>
                             </div>
                         </div> --}}
                     </div>
                 </div>
             </form>
-            <h4 class="card-title">Disbursement Letter</h4>
+            <h4 class="card-title">Disbursement Voucher</h4>
             <p class="card-description">
                 MAIF-IP
             </p>
