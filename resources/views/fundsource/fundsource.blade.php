@@ -27,7 +27,7 @@
                 @foreach($fundsources as $fund)
                     <div class="col-md-4 mt-2 grid-margin grid-margin-md-0 stretch-card">
                         <div class="card">
-                            <div class="card-body" href="#create_fundsource" onclick="editfundsource({{ $fund->id }})" data-backdrop="static" data-toggle="modal">
+                            <div class="card-body" href="#create_fundsource" onclick="editfundsource()" data-backdrop="static" data-toggle="modal">
                                 @foreach($fund->proponents as $proponent)
                                     <h4 class="card-title">{{ $fund->saa }}</h4>
                                     <p class="card-description">{{ $proponent->proponent }}</p>

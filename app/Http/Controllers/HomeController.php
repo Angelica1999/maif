@@ -217,4 +217,9 @@ class HomeController extends Controller
         ]);
     }
 
+    public function disbursement(){
+
+        return view('maif.disbursement');
+    }
+
 }

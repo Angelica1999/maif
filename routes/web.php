@@ -35,6 +35,7 @@ Route::get('facility/get/{province_id}', [App\Http\Controllers\HomeController::c
 Route::get('muncity/get/{province_id}', [App\Http\Controllers\HomeController::class, 'muncityGet'])->name('muncity.get');
 Route::get('barangay/get/{muncity_id}', [App\Http\Controllers\HomeController::class, 'barangayGet'])->name('barangay.get');
 Route::get('transaction/get', [App\Http\Controllers\FundSourceController::class, 'transactionGet'])->name('transaction.get');
+Route::get('/disbursement', [App\Http\Controllers\HomeController::class, 'disbursement'])->name('disbursement');
 
 Route::get('/fundsource', [App\Http\Controllers\FundSourceController::class, 'fundSource'])->name('fundsource');
 Route::get('fundsource/edit/{proponentId}', [App\Http\Controllers\FundSourceController::class, 'Editfundsource'])->name('fundsource.edit');
