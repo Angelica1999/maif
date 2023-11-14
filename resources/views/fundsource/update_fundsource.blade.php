@@ -1,5 +1,5 @@
 <form id="contractForm" method="POST" action="{{ route('fundsource.create.save') }}">
-    {{-- <input type="hidden" name="created_by" value="{{ $fundsource->id }}"> --}}
+     <input type="hidden" name="created_by" value="{{ $fundsource->id }}">
     <div class="modal-body">
         @csrf
         <div class="row">
@@ -8,8 +8,8 @@
                     <label >Existing SAA</label>
                     <select class="js-example-basic-single w-100 select2" id="saa_exist" name="saa_exist" onchange="fundsourceExist($(this))">
                         <option value="">Please select SAA</option>
-                        @foreach($fundsources as $fundsource)
-                            <option value="{{ $fundsource->id }}">{{ $fundsource->saa }}</option>
+                        @foreach($fundsourcess as $fundsources)
+                            <option value="{{ $fundsources->id }}" @if($fundsources->id == $proponent->proponentInfo->fundsource_id) selected @endif>{{ $fundsources->saa }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -18,6 +18,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label >if SAA not exist, add new</label>
+                    
                     <input type="text" class="form-control" id="saa" name="saa"  placeholder="SAA">
                 </div>
             </div>
