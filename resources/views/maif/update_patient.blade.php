@@ -1,4 +1,20 @@
-<form id="contractForm" method="POST" action="{{ route('patient.create.save') }}">
+<style>
+#patient-code-container {
+    position: relative;
+}
+#loading-image {
+  position: absolute;
+  margin-right: 50px;
+  top: -8%;
+  left: 50%; /* Adjust the position as needed */
+  transform: translateY(-50%, -50%);
+  width: 60px;
+    height: 60px;
+}
+</style>
+
+<form id="contractForm" method="POST" action="{{ route('patient.update') }}">
+<input type="hidden" name="patient_id" value="{{ $patient->id }}">
     <div class="modal-body">
         @csrf
         <div class="row">
@@ -56,6 +72,7 @@
                         <option value="Region 13" @if($patient->region == 'Region 13') selected @endif>Region 13</option>
                         <option value="BARMM" @if($patient->region == 'BARMM') selected @endif>BARMM</option>
                     </select>
+                    <script>var patientRegion = "{{$patient->region}}";</script>
                 </div>
             </div>
 
@@ -74,6 +91,7 @@
             </div>
         </div>
 
+
         <div class="row">
             {{-- <div class="col-md-6">
                 <div class="form-group">
@@ -90,9 +108,11 @@
                 <div class="form-group">
                     <label for="lname">Municipality</label>
                     <div id="muncity_body">
-                        <select class="js-example-basic-single w-100" id="muncity_id" name="muncity_id" onchange="onchangeMuncity($(this))" required>
-                            <option value="{{ $patient->muncity->id }}">{{ $patient->muncity->description }}</option>
-                        </select>
+                        <select class="js-example-basic-single w-100" id="muncity_id" name="muncity_id" onchange="onchangeMuncity($(this))" required disabled>
+                          @foreach($municipal as $municipals)   
+                        <option value="{{ $municipals->id }}" {{$municipals->id == $patient->muncity_id? 'selected' : ''}}>{{ $municipals->description }}</option>
+                          @endforeach   
+                    </select>
                     </div>
                 </div>
             </div>
@@ -101,8 +121,10 @@
                 <div class="form-group">
                     <label for="lname">Barangay</label>
                     <div id="barangay_body">
-                        <select class="js-example-basic-single w-100" id="barangay_id" name="barangay_id" required>
-                            <option value="{{ $patient->barangay->id }}">{{ $patient->barangay->description }}</option>
+                        <select class="js-example-basic-single w-100" id="barangay_id" name="barangay_id"  required disabled>
+                           @foreach($barangay as $barangays)
+                           <option value="{{ $barangays->id }}" {{$barangays->id == $patient->barangay_id? 'selected' : ''}}>{{ $barangays->description }}</option>
+                            @endforeach
                         </select>
                     </div>
                 </div>
@@ -113,14 +135,15 @@
         <strong>Fund Source</strong>
         <hr>
         <div class="row">
-            <div class="col-md-6">
+        <div class="col-md-6">
                 <div class="form-group">
                     <label >SAA</label>
                     <select class="js-example-basic-single w-100 select2" id="fundsource_id" name="fundsource_id" onchange="onchangeFundsource($(this))" required>
                         <option value="">Please select SAA</option>
                         @foreach($fundsources as $fundsource)
-                            <option value="{{ $fundsource->id }}" @if($patient->id == $fundsource->id) selected @endif>{{ $fundsource->saa }}</option>
-                        @endforeach
+                        <option value="{{ $fundsource->id }}" data-fundsource-id="{{ $fundsource->id }}" {{$patient->fundsource_id == $fundsource->id? 'selected' : ''}}>{{$fundsource->saa }}</option>                  
+                       @endforeach
+                     
                     </select>
                 </div>
             </div>
@@ -128,7 +151,11 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Proponent</label>
-                    <input type="text" class="form-control" value="{{ $patient->proponent }}" id="proponent" name="proponent" readonly>
+                    <select class="js-example-basic-single w-100 select2" id="proponent_id" name="proponent_id" onchange="onchangeProponent($(this))" required disabled>
+                        @foreach($proponents as $proponent)
+                          <option value="{{ $proponent->id }}" data-proponent-id="{{ $proponent->id}}" data-proponent-name="{{ $proponent->proponent}}" {{$patient->proponent_id == $proponent->id? 'selected' : ''}}>{{$proponent->proponent }}</option>
+                        @endforeach
+                    </select>
                 </div>
             </div>
         </div>
@@ -137,12 +164,22 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Facility</label>
-                    <input type="text" id="facility_name" class="form-control" readonly>
-                    <input type="hidden" id="facility_id" value="{{ $patient->fundsource->facility_id }}" name="facility_id">
+                    <select class="js-example-basic-single w-100 select2" id="facility_id" name="facility_id" onchange="onchangeForPatientCode($(this))" required disabled>
+                            @foreach($facility as $facilities)
+                               <option value="{{ $facilities->id }}"  {{$patient->facility_id == $facilities->id? 'selected' : ''}}>{{$facilities->name }}</option>
+                             @endforeach  
+                    </select>
                 </div>
             </div> 
+                <div class="col-md-6">
+                <label for="fname">Patient Code</label>
+                    <div class="form-group" id="patient-code-container">
+                        <input type="text" class="form-control loading-input" id="patient_code" name="patient_code" value="{{$patient->patient_code}}" placeholder="Patient Code" readonly> 
+                        <img id="loading-image" src="{{ asset('images/loading.gif') }}" alt="Loading" style="display: none;">
+                    </div>
+                </div>
 
-            {{-- <div class="col-md-6">
+            {{-- <div class="col-md-6">  
                 <div class="form-group">
                     <label for="fname">Amount</label>
                     <input type="number" step="any" class="form-control" id="amount" name="amount" placeholder="Amount" required>
@@ -157,10 +194,10 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Guaranteed Amount</label>
-                    <input type="number" step="any" class="form-control" value="{{ $patient->fundsource->guaranteed_amount }}" id="guaranteed_amount" name="guaranteed_amount" placeholder="Guaranteed Amount">
+                    <input type="number" step="any" class="form-control" value="{{ $patient->fundsource? $patient->guaranteed_amount : '' }}" id="guaranteed_amount" name="guaranteed_amount" placeholder="Guaranteed Amount">
                 </div>
             </div>
-
+                
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Actual Amount</label>
@@ -173,7 +210,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Remaining Balance</label>
-                    <input type="number" step="any" class="form-control" id="remaining_balance" name="remaining_balance" placeholder="Remaining Balance">
+                    <input type="number" step="any" class="form-control" value ="{{ $patient->fundsource? $patient->remaining_balance : ''}}" id="remaining_balance" name="remaining_balance" placeholder="Remaining Balance">
                 </div>
             </div>
         </div>
@@ -182,8 +219,77 @@
 
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary">Create Patient</button>
+        <button type="submit" class="btn btn-primary">Update Patient</button>
     </div>
 </form>
 
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
+<script>
+     $(document).ready(function() {
+  
+        if (patientRegion !== "Region 7"){
+            var patientProvinceDescription = "{{ $patient->other_province }}"; 
+            var patientMuncity = "{{ $patient->other_muncity }}";
+            var patientBarangay = "{{$patient->other_barangay}}";
+            document.getElementById("province_body").innerHTML = '<input type="text" class="form-control" id="other_province" value="' + patientProvinceDescription + '" name="other_province">';
+            document.getElementById("muncity_body").innerHTML = '<input type="text" class="form-control" id="other_muncity" value="' + patientMuncity + '" name="other_muncity">';
+            document.getElementById("barangay_body").innerHTML = '<input type="text" class="form-control" id="other_barangay" value="' + patientBarangay + '" name="other_barangay">';
+        }
+        // Show the loading image when the dropdown changes
+        $('#fundsource_id').on('change', function() {
+            var selectOptionText = $(this).find('option:selected').text();
+            if (selectOptionText !== 'Please select SAA') {
+                $('#loading-image').show();
+            } 
+        });
+
+        $('#facility_id').on('change', function() {
+            // Set a timeout to hide the loading-image after a specified interval (e.g., 2000 milliseconds or 2 seconds)
+            if ($(this).val() !== '') {
+                setTimeout(function() {
+                    $('#loading-image').hide();
+                }, 1000); // Change the time interval as needed
+            }
+        });
+
+
+       
+
+      $('#province_id').change(function() {
+ 
+        $('#muncity_id').prop('disabled', true);
+        $('#barangay_id').prop('disabled', true);
+
+        $('#muncity_id').html('<option value="">Please Select a Municipality</option>')
+
+        setTimeout(function() {
+            $('#muncity_id').prop('disabled', false);
+        }, 1000);
+
+      });
+
+      $('#muncity_id').change(function() {
+
+         $('#barangay_id').prop('disabled', true);
+         $('#barangay_id').html('<option value="">Please Select Barangay</please>');
+
+         setTimeout(function() {
+            $('#barangay_id').prop('disabled', false)
+         }, 1000);
+
+      });
+
+        //  $('#province_id').change(function() {
+
+        //     if($(this).val() !== ''){
+        //         $('#muncity_id').prop('disabled', false);
+        //     }else {
+        //         $('#muncity_id').prop('disabled', true);
+        //         $('#muncity_id').html('<option value="">Select Municipality</option>');
+        //     }
+          
+        //  });
+
+    });
+    
+</script>

@@ -27,7 +27,7 @@
                 @foreach($fundsources as $fund)
                     <div class="col-md-4 mt-2 grid-margin grid-margin-md-0 stretch-card">
                         <div class="card">
-                            <div class="card-body">
+                            <div class="card-body" href="#create_fundsource" onclick="editfundsource({{ $fund->id }})" data-backdrop="static" data-toggle="modal">
                                 @foreach($fund->proponents as $proponent)
                                     <h4 class="card-title">{{ $fund->saa }}</h4>
                                     <p class="card-description">{{ $proponent->proponent }}</p>
@@ -35,6 +35,7 @@
                                         @foreach($proponent->proponentInfo as $proponentInfo)
                                             <li>{{ $proponentInfo->facility->name }} - <strong class="text-info">&nbsp;₱&nbsp;{{ number_format($proponentInfo->alocated_funds, 2, '.', ',') }}</strong></li>
                                         @endforeach
+                                        
                                     </ul>
                                 @endforeach
                             </div>
@@ -69,8 +70,26 @@
 
 @section('js')
     <script>
+
+        function editfundsource(fundsourceId){
+            console.log(fundsourceId);
+            $('.modal_body').html(loading);
+            $('.modal-title').html("Update Fundsource");
+            var url = "{{ url('fundsource/edit').'/' }}"+ fundsourceId;
+            setTimeout(function() {
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function(result){
+                        $('.modal_body').html(result);
+                    }
+                });
+            }, 500);
+        }
+
         function createFundSource() {
             $('.modal_body').html(loading);
+            $('.modal-title').html("Create Fundsource");
             var url = "{{ route('fundsource.create') }}";
             setTimeout(function(){
                 $.ajax({

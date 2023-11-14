@@ -117,6 +117,33 @@ class FundSourceController extends Controller
         return redirect()->back();
     }
 
+    public function Editfundsource($proponentId)
+    {
+        $fundsource = Fundsource::
+                with([
+                'proponents' => function ($query) use($proponentId){
+                    $query->select('id', 'fundsource_id', 'proponent', 'proponent_code')
+                    ->where('id', $proponentId);
+                },
+                'proponents.proponentInfo' => function ($query) {
+                    $query->select('id', 'fundsource_id', 'proponent_id', 'alocated_funds');
+                },
+                'encoded_by' => function ($query) {
+                    $query->select('id', 'name');
+                }
+            ])->first();    
+    
+        $specificProponent = $fundsource->proponents->first();
+    
+        return view('fundsource.update_fundsource', [
+            'fundsource' => $fundsource,
+            'facility' => Facility::get(),
+            'fundsourcess' => Fundsource::get(),
+            'proponent' => $specificProponent,
+        ]);
+    }
+    
+    
     public function proponentGet(Request $request) {
         return Proponent::where('fundsource_id',$request->fundsource_id)->get();
     }
@@ -151,6 +178,70 @@ class FundSourceController extends Controller
         $patient_code = $proponent->proponent_code.'-'.$this->getAcronym($facility->name).date('YmdHi').$user->id;
         return $patient_code;
     }
+
+    
+//  public function forPatientFacilityCode(Request $request) {
+//         $user = Auth::user();
+//         $proponent = Proponent::where('fundsource_id',$request->funsource_id);
+//         $facility = Facility::where('facility_id',$request->facility_id); 
+//         $patient_proponent = $proponent->proponent;
+//         $facilityname = $facility->name;
+//         $data = [
+//             'patient_proponent' => $patient_proponent,
+//             'facilityname' => $facilityname,
+//         ];
+//     return response()->json($data);
+    
+// }
+
+public function forPatientFacilityCode($fundsource_id) {
+
+    $proponentInfo = ProponentInfo::where('fundsource_id', $fundsource_id)->first();
+    
+    if($proponentInfo){
+        $facility = Facility::find($proponentInfo->facility_id);
+
+        $proponent = Proponent::find($proponentInfo->proponent_id);
+        $proponentName = $proponent ? $proponent->proponent : null;
+       // return $proponent->id . '' . $facility->id;
+        return response()->json([
+
+            'proponent' => $proponentName,
+            'proponent_id' => $proponentInfo? $proponentInfo->proponent_id : null,
+            'facility' => $facility ? $facility->name : null,
+            'facility_id' => $proponentInfo ? $proponentInfo->facility_id : null,
+        ]);
+    }else{
+        return response()->json(['error' => 'Proponent Info not found'], 404);
+    }
+}
+
+
+
+
+// public function forPatientFacilityCode($fundsource_id) {
+
+//     $fundsource = Fundsource::with('facility', 'proponents', 'proponent_info')
+//     ->whereHas('proponents', function ($query) use ($fundsource_id){
+//         $query->where('fundsource_id', $fundsource_id);
+//     })->find($fundsource_id);
+    
+//     if($fundsource){
+//         $facility_id = $fundsource->proponent_info->first()->facility_id;
+//         $facilities = Facility::where('facility_id', $facility_id)->get();
+
+//         $proponentName = $fundsource->proponents->first()->proponent;
+//         $facilityName = $facilities->pluck('name')->all();
+//         //$facilityName =  $fundsource->facility ?  $fundsource->facility->name : null;
+//         $proponents = $fundsource->proponents->pluck('proponent')->all();
+//         return response()->json([
+//           'proponent' => $proponents,
+//           'facility' => $facilityName,
+//         ]);
+//     }
+   
+// }
+
 
     public function transactionGet() {
         $randomBytes = random_bytes(16); // 16 bytes (128 bits) for a reasonably long random code

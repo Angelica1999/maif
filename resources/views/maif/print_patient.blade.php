@@ -73,7 +73,7 @@
         </div>
 
         <div class="form-group ml-1">
-        <p class="date">{{ $patient->date_guarantee_letter? $patient->date_guarantee_letter->format('jS F Y') : " "}}</p>
+        <p class="date">{{ $patient->date_guarantee_letter ? \Carbon\Carbon::parse($patient->date_guarantee_letter)->format('jS F Y') : " " }}</p>
             <p class="col text-center" id="certificate"><strong>CERTIFICATION</strong></p> <!-- Corrected typo in ID -->
         </div>
 
@@ -118,9 +118,9 @@
         </div>  
         
           <!-- Footer Section -->
-          <div class="footer text-center">
+          <div class="footer">
         <!-- Your footer content goes here -->
-        <p>&copy; 2023 Dohro7. All rights reserved.</p>
+        <p class="text-center">&copy; 2023 dohro7ofcrdard@gmail.com. All rights reserved.</p>
     </div>
 
         <hr> <!-- Horizontal line representing the footer -->
@@ -142,7 +142,7 @@
         </div>
         
         <div class="form-group">
-        <p class="date">{{ $patient->date_guarantee_letter ? $patient->date_guarantee_letter->format('jS F Y') : '' }}</p>
+        <p class="date">{{ $patient->date_guarantee_letter ? \Carbon\Carbon::parse($patient->date_guarantee_letter)->format('jS F Y') : " " }}</p>
             <p class="col text-center" id="certificate"><strong>CERTIFICATION</strong></p> <!-- Corrected typo in ID -->
         </div>
 
@@ -188,7 +188,7 @@
        <!-- Footer Section -->
     <div class="footer text-center">
         <!-- Your footer content goes here -->
-        <p>&copy; 2023 Dohro7. All rights reserved.</p>
+        <p>&copy; 2023 dohro7ofcrdard@gmail.com. All rights reserved.</p>
     </div>
     </body>
 </html>

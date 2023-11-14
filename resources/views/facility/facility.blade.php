@@ -22,11 +22,6 @@
             <p class="card-description">
                 MAIF-IP
             </p>
-            @if (session('success'))
-          <div class="alert alert-success">
-           {{ session('success') }}
-          </div>
-          @endif
             <div class="table-responsive">
                 <table class="table table-striped">
                 <thead>
@@ -65,7 +60,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($facilities as $facility)
+                    @foreach($results as $facility)
                         <tr>
                             <td>
                                 <a href="{{ route('facility.edit', ['main_id' => $facility->id]) }}" 
@@ -94,7 +89,7 @@
                 </table>
             </div>
             <div class="pl-5 pr-5 mt-5">
-                {!! $facilities->appends(request()->query())->links('pagination::bootstrap-5') !!}
+                {!! $results->appends(request()->query())->links('pagination::bootstrap-5') !!}
             </div>
         </div>
     </div>
@@ -148,6 +143,13 @@
         //         });
         //     },500);
         // }
+
+        @if(session('facility_save'))
+             <?php session()->forget('facility_save'); ?>
+             Lobibox.notify('success', {
+                msg: 'Successfully saved Facility!'
+             });
+        @endif
 
         function updateFacility(clickedElement) {
     // Get the main_id from the data-main-id attribute of the clicked element

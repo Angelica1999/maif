@@ -85,11 +85,11 @@
                             <td>
                                 <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}" target="_blank" type="button" class="btn btn-primary btn-sm">Print</a>
                             </td> 
-                            <td>
-                                <a href="#create_patient" onclick="editPatient('{{ $patient->id }}')" data-backdrop="static" data-toggle="modal">
-                                    {{ $patient->fname }}
-                                </a>
-                            </td>
+                                <td>
+                                    <a href="#create_patient"   onclick="editPatient('{{ $patient->id }}')" data-backdrop="static" data-toggle="modal">
+                                        {{ $patient->fname }}
+                                    </a>
+                                </td>   
                             <td>
                                 {{ $patient->mname }}
                             </td>
@@ -163,7 +163,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Create Patient</h5>
+                <h5 class="modal-title" id="exampleModalLabel"></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">×</span>
                 </button>
@@ -178,10 +178,11 @@
 @endsection
 
 @section('js')
+
     <script>
         function createPatient() {
             $('.modal_body').html(loading);
-            $('.modal_title').html("Create Patient");
+            $('.modal-title').html("Create Patient");
             var url = "{{ route('patient.create') }}";
             setTimeout(function(){
                 $.ajax({
@@ -194,9 +195,9 @@
             },500);
         }
 
-        function editPatient(id) {
+            function editPatient(id) {
             $('.modal_body').html(loading);
-            $('.modal_title').html("Edit Patient");
+            $('.modal-title').html("Edit Patient");
             var url = "{{ url('patient/edit').'/' }}"+id;
             setTimeout(function(){
                 $.ajax({
@@ -212,8 +213,10 @@
         function othersRegion(data) {
             console.log(data)
             if(data.val() != "Region 7"){
+               {{-- var patientProvinceDescription = "{{ $patients->other_province }}"--}}
                 // $("#facility_body").html("<input type='text' class='form-control' name='other_facility' required>");
-                $("#province_body").html("<input type='text' class='form-control' name='other_province' required>");
+                $("#province_body").html("<input type='text' class='form-control' value='' name='other_province' required>");
+                
                 $("#muncity_body").html("<input type='text' class='form-control' name='other_muncity' required>");
                 $("#barangay_body").html("<input type='text' class='form-control' name='other_barangay' required>");
             }
@@ -248,38 +251,31 @@
 
                 $(".select2").select2({ width: '100%' });
             }
-        }
+
+   } 
 
         function onchangeProvince(data) {
             if(data.val()) {
-                // $.get("{{ url('facility/get').'/' }}"+data.val(), function(result) {
-                //     $('#facility_id').html('');
-
-                //     $.each(result, function(index, optionData) {
-                //         $('#facility_id').append($('<option>', {
-                //             value: optionData.id,
-                //             text: optionData.name
-                //         }));
-                //     });
-
-                //     $('#facility_id').trigger('change');
-                // });
-
                 $.get("{{ url('muncity/get').'/' }}"+data.val(), function(result) {
                     $('#muncity_id').html('');
+                    $('#barangay_id').html('');
 
                     $('#muncity_id').append($('<option>', {
                         value: "",
                         text: "Please select a municipality"
                     }));
+                    $('#barangay_id').append($('<option>', {
+                      value: "",
+                      text: "Please select a barangays"
+                    }));
+
                     $.each(result, function(index, optionData) {
                         $('#muncity_id').append($('<option>', {
                             value: optionData.id,
                             text: optionData.description
                         }));
                     });
-
-                    $('#muncity_id').trigger('change');
+                    
                 });
             }
         }
@@ -291,17 +287,22 @@
 
                     $('#barangay_id').append($('<option>', {
                         value: "",
-                        text: "Please select a barangay"
+                        text: "Please select a barangays"
                     }));
+
                     $.each(result, function(index, optionData) {
                         $('#barangay_id').append($('<option>', {
                             value: optionData.id,
                             text: optionData.description
                         }));
                     });
-
+                    
+                    $('#barangay_id').prop('disabled', false);
                     $('#barangay_id').trigger('change');
                 });
+            }else{// Reset and disable the Barangay select box
+                $('#barangay_id').prop('disabled', true);
+                $('#barangay_id').trigger('change');
             }
         }
 
@@ -313,19 +314,109 @@
                         value: "",
                         text: "Please select a proponent"
                     }));
+                    $('#facility_id').html('');
+                    $('#facility_id').append($('<option>', {
+                       value: "",
+                       text: "Please select a Facility"
+                    }));
+
+                    if(data.val() ===""){
+                        $('#patient_code').val('');
+                    }else{
+                        $('#patient_code').val('Patient Code');
+                    }
+                                    
+                     $('#patient_code').val('');
                     $.each(result, function(index, optionData) {
                         $('#proponent_id').append($('<option>', {
                             value: optionData.id,
                             text: optionData.proponent
                         }));
                     });
-
+                    $('#proponent_id').prop('disabled', false);
                     $('#proponent_id').trigger('change');
-
+ 
+                    $('#facility_id').prop('disabled', true);
+                    $('#facility_id').prop('disabled', true);
                 });
+              
+            }else{ // Reset and disable both the Proponent and Facility select boxes
+                $('#proponent_id').val('').trigger('change');
+                $('#proponent_id').prop('disabled', true);
+                $('#facility_id').val('').trigger('change');
+                $('#facility_id').prop('disabled', true);
             }
         }
 
+//         function onchangeForPatientProp(select) {
+//     var selectfundsourceId = $(select).val();
+//     var proponentData = $(select).data('proponents-data');
+//     var facilityData = $(select).data('facility-data'); // Fixed the data attribute name
+
+//     $.ajax({
+//         type: 'GET',
+//         url: "{{ url('patient/proponent') }}/" + selectfundsourceId,
+//         success: function (data) {
+//             $('#proponent').val(data.proponent);
+//             $('#proponent_id').val(data.proponent_id);
+//             $('#facility_name').val(data.facility);
+//             $('#facility_id').val(data.facility_id);
+
+//             $('#proponent_id').html('');
+//             $('#facility_id').html('');
+
+//             $('#proponent_id').append($('<option>', {
+//                 value: "",
+//                 text: "Please select a proponent"
+//             }));
+//             $('#facility_id').append($('<option>', {
+//                 value: "",
+//                 text: "Please select a Facility"
+//             }));
+
+//             $.each(proponentData, function (index, optionData) {
+//                 $('#proponent_id').append($('<option>', {
+//                     value: optionData.data-proponent-id,
+//                     text: optionData.data-proponent-name
+//                 }));
+//             });
+
+//             $('#proponent_id').trigger('change');
+
+//             $.each(facilityData, function (index, optionData) {
+//                 $('#facility_id').append($('<option>', {
+//                     value: optionData.data-facility-id,
+//                     text: optionData.data-facility-name
+//                 }));
+//             });
+//             $('#facility_id').trigger('change');
+//         },
+//         error: function (xhr, status, error) {
+//             console.log('Error:', error);
+//         }
+//     });
+// }
+
+
+// function onchangeForPatientProp(select) {
+//     var selectfundsourceId = $(select).val();
+//     // var facility_id = $('#facility_id').val();
+//     $.ajax({
+//         type: 'GET',
+//         url: "{{ url('patient/proponent') }}/" + selectfundsourceId, 
+//         success: function (data) {
+//             $('#proponent').val(data.proponent);
+//             $('#proponent_id').val(data.proponent_id);
+//             $('#facility_name').val(data.facility);
+//             $('#facility_id').val(data.facility_id);
+
+          
+//         },
+//         error: function (xhr, status, error) {
+//             console.log('Error:', error);
+//         }
+//     });
+// }
         var proponent_id = 0;
         function onchangeProponent(data) {
             if(data.val()) {
@@ -342,8 +433,12 @@
                             text: optionData.facility.description
                         }));
                     });
+                    $('#facility_id').prop('disabled', false); //enable
                     $('#facility_id').trigger('change');
                 });
+            }else {// Reset and disable the Facility select box
+                $('#facility_id').val('').trigger('change');
+                $('#facility_id').prop('disabled', true);
             }
         }
 
@@ -355,6 +450,52 @@
                 });
             }
         }
+
+
+
+
+
+
+
+
+// function onchangeForPatientProp(data) {
+//      var proponent_id = data('proponent-id');
+//      var facility_id = data('facility-id');
+
+//             if(proponent_id && facility_id && data()) {
+//                 $.get("{{ url('patient/proponent').'/' }}" + proponent_id + "/" + facility_id + "/" + selectElement.val(), function(result) {
+//                     console.log(result);
+//                     $("#proponent").val(result.patient_proponent);
+//                     $("#facility_name").val(result.facilityname);
+//                 });
+//             }
+//         }
+
+// function onchangeForPatientProp(data) {
+//             if(data.val()) {
+//                 $.get("{{ url('patient/code').'/' }}"+proponent_id+"/"+data.val(), function(result) {
+//                     console.log(result);
+//                     $("#proponent").val(result);
+//                 });
+//             }
+//         }
+
+//         function onchangeForPatientProp(data) {
+//     if (data.val()) {
+//         var proponent_id = data.val(); // Get the selected proponent_id
+//         $.get("{{ url('patient/proponent') }}/" + proponent_id, function(result) {
+//             // Assuming the response contains facility and proponent data
+//             if (result.facility) {
+//                 $("#facility_name").val(result.facility.name); // Update the facility input
+//             }
+//             if (result.proponent) {
+//                 $("#proponent").val(result.proponent); // Update the proponent input
+//             }
+//         });
+//     }
+// }
+
+
 
     </script>
 @endsection

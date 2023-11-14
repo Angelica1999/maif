@@ -1,3 +1,18 @@
+
+<style>
+#patient-code-container {
+    position: relative;
+}
+#loading-image {
+  position: absolute;
+  margin-right: 50px;
+  top: -8%;
+  left: 50%; /* Adjust the position as needed */
+  transform: translateY(-50%, -50%);
+  width: 60px;
+    height: 60px;
+}
+</style>
 <form id="contractForm" method="POST" action="{{ route('patient.create.save') }}">
     <input type="hidden" name="created_by" value="{{ $user->id }}">
     <div class="modal-body">
@@ -91,7 +106,7 @@
                 <div class="form-group">
                     <label for="lname">Municipality</label>
                     <div id="muncity_body">
-                        <select class="js-example-basic-single w-100" id="muncity_id" name="muncity_id" onchange="onchangeMuncity($(this))" required>
+                        <select class="js-example-basic-single w-100" id="muncity_id" name="muncity_id" onchange="onchangeMuncity($(this))" required disabled>
                             <option value=""></option>
                         </select>
                     </div>
@@ -102,7 +117,7 @@
                 <div class="form-group">
                     <label for="lname">Barangay</label>
                     <div id="barangay_body">
-                        <select class="js-example-basic-single w-100" id="barangay_id" name="barangay_id" required>
+                        <select class="js-example-basic-single w-100" id="barangay_id" name="barangay_id" required disabled>
                             <option value=""></option>
                         </select>
                     </div>
@@ -138,7 +153,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Proponent</label>
-                    <select class="js-example-basic-single w-100 select2" id="proponent_id" name="proponent_id" onchange="onchangeProponent($(this))" required>
+                    <select class="js-example-basic-single w-100 select2" id="proponent_id" name="proponent_id" onchange="onchangeProponent($(this))" required disabled>
 
                     </select>
                 </div>
@@ -149,16 +164,16 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Facility</label>
-                    <select class="js-example-basic-single w-100 select2" id="facility_id" name="facility_id" onchange="onchangeForPatientCode($(this))" required>
+                    <select class="js-example-basic-single w-100 select2" id="facility_id" name="facility_id" onchange="onchangeForPatientCode($(this))" required disabled
+                    >
 
                     </select>
                 </div>
             </div> 
-
             <div class="col-md-6">
-                <div class="form-group">
-                    <label for="fname">Patient Code</label>
-                    <input type="text" class="form-control" id="patient_code" name="patient_code" placeholder="Patient Code" readonly>
+                <div class="form-group" id="patient-code-container">
+                    <input type="text" class="form-control loading-input" id="patient_code" name="patient_code" placeholder="Patient Code" readonly>
+                    <img id="loading-image" src="{{ asset('images/loading.gif') }}" alt="Loading" style="display: none;">
                 </div>
             </div>
         </div>
@@ -197,3 +212,113 @@
 </form>
 
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
+
+
+<script>
+
+$(document).ready(function() {
+    
+    $('#fundsource_id').on('change', function() {
+        if ($(this).val() !== '') {
+            var selectOptionText = $(this).find('option:selected').text();
+            if(selectOptionText !== 'Please select SAA'){
+                $('#loading-image').show();
+            }
+        }
+    });
+
+   
+    $('#facility_id').on('change', function() {
+            // Set a timeout to hide the loading-image after a specified interval (e.g., 2000 milliseconds or 2 seconds)
+            if ($(this).val() !== '') {
+                setTimeout(function() {
+                    $('#loading-image').hide();
+                }, 1000); // Change the time interval as needed
+            }
+        });
+
+
+
+ // $('#province_id').change(function() {
+        
+        //     $('#muncity_id').prop('disabled', true);
+        //     $('#barangay_id').prop('disabled', true);
+        //     $('#muncity_id').html('<option value="">Please Select a Municipality</option>');
+
+        //     // Enable the Municipality dropdown after a second
+        //     setTimeout(function() {
+        //         $('#muncity_id').prop('disabled', false);
+        //     }, 1000); // 1000 milliseconds = 1 second
+
+        // });
+
+        // $('#muncity_id').change(function() {
+        //     $('#barangay_id').prop('disabled', true);
+        //     $('#barangay_id').html('<option value="">Please Select Barangay</option>')
+                
+        //     setTimeout(function() {
+        //         $('#barangay_id').prop('disabled', false);
+        //     }, 1000);
+        // });
+
+        $('#province_id').change(function() {
+           $('#muncity_id').prop('disabled', true);
+           $('#barangay_id').prop('disabled', true);
+           $('#muncity_id').html('<option value="">Please Select Municipality</option>');
+
+           setTimeout(function() {
+               $('#muncity_id').prop('disabled', false);
+           }, 1000);
+
+        });
+
+       $('#muncity_id').change(function() {
+         
+         $('#barangay_id').prop('disabled', true);
+         $('#barangay_id').html('<option value="">Please Select Barangay</option>');
+
+         setTimeout(function() {
+            $('#barangay_id').prop('disabled', false);
+         }, 1000);
+
+       });
+
+});
+
+
+
+
+    // $('#contractForm').submit(function(event) {
+    //     event.preventDefault();
+    //     var loading ="Please Wait Loading....";
+    //     $('.loading_ID').html(loading).show();  // Display loading message
+
+    //     setTimeout(function() {
+    //         var responseData = "Your data here";
+    //         $('#patient_code').val(responseData);
+    //         $('.loading_ID').hide();  // Hide loading message
+    //     }, 2000); // Simulated 2-second delay
+    // });
+
+
+
+    // function displayLoading() {
+    //     var loading = "Loading..."; // Define the loading message
+    //     $('#patient_code').html(loading).show();  // Display loading message
+    // }
+
+    // function hideLoading() {
+    //     $('#patient_code').hide();  // Hide loading message
+    // }
+
+    // $('#contractForm').submit(function(event) {
+    //     event.preventDefault();
+    //     displayLoading(); // Display loading message
+
+    //     setTimeout(function() {
+    //         var responseData = "Your data here";
+    //         $('#patient_code').val(responseData);
+    //         hideLoading(); // Hide loading message
+    //     }, 2000); // Simulated 2-second delay
+    // });
+    </script>

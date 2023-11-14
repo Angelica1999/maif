@@ -23,11 +23,12 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::get('/facility', [App\Http\Controllers\FacilityController::class, 'index'])->name('facility');
 Route::get('facility/edit/{main_id}', [App\Http\Controllers\FacilityController::class, 'facilityEdit'])->name('facility.edit');
 Route::post('facility/update', [App\Http\Controllers\FacilityController::class, 'facilityUpdate'])->name('facility.update');
-Route::get('facility/{facilityId}/vatEwt', [App\Http\Controllers\FacilityController::class, 'getVatEwt']);
+Route::get('facility/vatEwt', [App\Http\Controllers\FacilityController::class, 'getVatEwt']);
 
 Route::get('/patient/create', [App\Http\Controllers\HomeController::class, 'createPatient'])->name('patient.create');
 Route::post('/patient/create/save', [App\Http\Controllers\HomeController::class, 'createPatientSave'])->name('patient.create.save');
 Route::get('/patient/edit/{patient_id}', [App\Http\Controllers\HomeController::class, 'editPatient'])->name('patient.edit');
+Route::post('/patient/update', [App\Http\Controllers\HomeController::class, 'updatePatient'])->name('patient.update');
 Route::get('/patient/pdf', [App\Http\Controllers\PrintController::class, 'patientPdf'])->name('patient.pdf');
 Route::get('patient/pdf/{patientid}', [App\Http\Controllers\PrintController::class, 'patientPdf'])->name('patient.pdf');
 Route::get('facility/get/{province_id}', [App\Http\Controllers\HomeController::class, 'facilityGet'])->name('facility.get');
@@ -36,6 +37,7 @@ Route::get('barangay/get/{muncity_id}', [App\Http\Controllers\HomeController::cl
 Route::get('transaction/get', [App\Http\Controllers\FundSourceController::class, 'transactionGet'])->name('transaction.get');
 
 Route::get('/fundsource', [App\Http\Controllers\FundSourceController::class, 'fundSource'])->name('fundsource');
+Route::get('fundsource/edit/{proponentId}', [App\Http\Controllers\FundSourceController::class, 'Editfundsource'])->name('fundsource.edit');
 Route::get('/fundsource/saa/get', [App\Http\Controllers\FundSourceController::class, 'fundSourceGet'])->name('fundsource.saa.get');
 Route::get('/fundsource/create', [App\Http\Controllers\FundSourceController::class, 'createFundSource'])->name('fundsource.create');
 Route::post('/fundsource/create/save', [App\Http\Controllers\FundSourceController::class, 'createFundSourceSave'])->name('fundsource.create.save');
@@ -43,3 +45,5 @@ Route::get('/proponent/get/{fundsource_id}', [App\Http\Controllers\FundSourceCon
 
 Route::get('/facility/proponent/{proponent_id}', [App\Http\Controllers\FundSourceController::class, 'facilityProponentGet'])->name('facility.proponent.get');
 Route::get('/patient/code/{proponent_id}/{facility_id}', [App\Http\Controllers\FundSourceController::class, 'forPatientCode'])->name('facility.patient.code');
+// Route::get('/patient/proponent/{proponent_id}/{facility_id}', [App\Http\Controllers\FundSourceController::class, 'forPatientFacilityCode'])->name('facility.patient.code');
+Route::get('/patient/proponent/{fundsource_id}', [App\Http\Controllers\FundSourceController::class, 'forPatientFacilityCode'])->name('facility.patient.code');

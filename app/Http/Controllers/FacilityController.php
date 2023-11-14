@@ -13,14 +13,15 @@ use Illuminate\Support\Facades\Validator;
 class FacilityController extends Controller
 {
     public function index(Request $request) {
+
         $result = Facility::with('addFacilityInfo')
                 ->select(
                     'facility.id',
                     'facility.name',
                     'facility.address',
                  )
-                ->where('hospital_type','private')
-                ->paginate(15);
+                ->where('hospital_type','private');
+              //  ->paginate(15);
         // $Facility = (new Facility())->getConnection()->getDatabaseName();
         // $AddFacilityInfo = (new AddFacilityInfo())->getConnection()->getDatabaseName();
         // $result = DB::table($Facility.'.facility')
@@ -43,9 +44,18 @@ class FacilityController extends Controller
         //     ->where('doh_referral.facility.hospital_type','private')
         //     ->paginate(15) 
         //     ;
+     
+         if($request->viewAll){
+            $request->keyword = '';
+         }else if($request->keyword){
+        
+             $result->where('name', 'LIKE', "%$request->keyword%");
+         }
+
+         $results = $result->paginate(15);
 
         return view('facility.facility',[
-            'facilities' => $result,
+            'results' => $results,
             'keyword' => $request->keyword
         ]);
     }
@@ -71,22 +81,26 @@ class FacilityController extends Controller
      public function facilityUpdate(Request $request)
      {
 
-          $rules =[
-                  'social_worker_contact' => 'required|digits:11',
-                 'finance_officer_contact' => 'required|digits:11',
-                 ];
-         $message = [
-                    'social_worker_contact' => 'The social worker contact number must be 11 digits.',
-                    'finance_officer_contact' => 'The finance officer contact number must be 11 digits.',
-                    ];
+        //   $rules =[
+        //           'social_worker_contact' => 'required|digits:11',
+        //          'finance_officer_contact' => 'required|digits:11',
+        //         //  'finance_officer_email' => 'email|unique:addfacilityinfo,finance_officer_email',
+        //         //  'social_worker_email' => 'email|unique:addfacilityinfo,social_worker_email',
+        //          ];
+        //  $message = [
+        //             'social_worker_contact' => 'The social worker contact number must be 11 digits.',
+        //             'finance_officer_contact' => 'The finance officer contact number must be 11 digits.',
+        //             // 'finance_officer_email.unique' => 'The finance officer email is already in use.',
+        //             // 'social_worker_email.unique' => 'The Social Worker email is already in use',
+        //             ];
 
-        $validator = Validator::make($request->all(), $rules, $message);
+        // $validator = Validator::make($request->all(), $rules, $message);
 
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
-        }
+        // if ($validator->fails()) {
+        //     return redirect()->back()
+        //         ->withErrors($validator)
+        //         ->withInput();
+        // }
     
         $main_id = $request->input('main_id');    
         // Retrieve the facility record based on the main_id
@@ -104,23 +118,21 @@ class FacilityController extends Controller
             $facility->finance_officer = $request->input('finance_officer');
             $facility->finance_officer_email = $request->input('finance_officer_email');
             $facility->finance_officer_contact = $request->input('finance_officer_contact');
-            $facility->vat = number_format($request->input('vat'), 1, '.', '');
+            $facility->vat = $request->input('vat');
             $facility->Ewt = $request->input('Ewt');
 
-            $facility->save();   
-            return redirect()->route('facility', ['main_id' => $main_id])->with('success','Worker Name: '.$facility->social_worker. ' updated successfully');
-        }//end of function
-     public function getVatEwt($facilityId)
+            $facility->save();  
+            session()->flash('facility_save', true); 
+            return redirect()->route('facility', ['main_id' => $main_id]);
+        }   //end of function
+     public function getVatEwt()
      {
-        $facility = AddFacilityInfo::where('facility_id', $facilityId)->first();
-        $VatAmount = $facility->vat;
-        $EwtAmount = $facility->Ewt;
-        return response()->json(['vat' => $VatAmount,
-                                  'Ewt' => $EwtAmount]);
+       return  $facility = AddFacilityInfo::all();
+        // $VatAmount = $facility->vat;
+        // $EwtAmount = $facility->Ewt;
+        // return response()->json(['vat' => $VatAmount,
+        //                           'Ewt' => $EwtAmount]);
      }
       
 
 }
-
-
-
