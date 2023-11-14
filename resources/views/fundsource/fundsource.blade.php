@@ -27,8 +27,9 @@
                 @foreach($fundsources as $fund)
                     <div class="col-md-4 mt-2 grid-margin grid-margin-md-0 stretch-card">
                         <div class="card">
-                            <div class="card-body" href="#create_fundsource" onclick="editfundsource()" data-backdrop="static" data-toggle="modal">
-                                @foreach($fund->proponents as $proponent)
+                        @foreach($fund->proponents as $proponent)
+                            <div class="card-body" href="#create_fundsource" class="btn btn-info btn-sm typcn typcn-edit menu-icon" onclick="editfundsource({{ $fund->id }})" data-backdrop="static" data-toggle="modal">
+                               
                                     <h4 class="card-title">{{ $fund->saa }}</h4>
                                     <p class="card-description">{{ $proponent->proponent }}</p>
                                     <ul class="list-arrow">
@@ -37,8 +38,8 @@
                                         @endforeach
                                         
                                     </ul>
-                                @endforeach
                             </div>
+                        @endforeach
                         </div>
                     </div>
                 @endforeach
@@ -101,6 +102,28 @@
                 });
             },500);
         }
+       
+    //    function onchangefacility(data)
+    //     {
+
+    //         if(data.val()){
+
+    //             $.get("{{ url('facility/get').'/' }}"+data.val() function(result){
+    //                $('#facility_id').html('');
+
+    //                $('#facility_id').append($('<option>',{
+    //                   value: "",
+    //                   text:"Please select facility"
+    //                }));
+    //             $.each(result, function(index, optionData){
+    //                 value: optionData.id,
+    //                 text: optionData.name
+    //              });
+
+    //             });
+    //         }
+    //     }
+
 
         function addTransaction() {
             event.preventDefault();

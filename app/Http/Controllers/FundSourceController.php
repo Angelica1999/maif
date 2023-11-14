@@ -117,32 +117,42 @@ class FundSourceController extends Controller
         return redirect()->back();
     }
 
-    public function Editfundsource($proponentId)
+    public function Editfundsource($fundsourceId)
     {
-        $fundsource = Fundsource::
-                with([
-                'proponents' => function ($query) use($proponentId){
-                    $query->select('id', 'fundsource_id', 'proponent', 'proponent_code')
-                    ->where('id', $proponentId);
-                },
-                'proponents.proponentInfo' => function ($query) {
-                    $query->select('id', 'fundsource_id', 'proponent_id', 'alocated_funds');
+            // return($proponent_id);
+            $fundsources = Fundsource::where('id', $fundsourceId)              
+            ->with([
+                'proponents' => function ($query) {
+                    $query->with([
+                        'proponentInfo' => function ($query) {
+                            $query->with('facility');
+                        }
+                    ]);
                 },
                 'encoded_by' => function ($query) {
-                    $query->select('id', 'name');
+                    $query->select(
+                        'id',
+                        'name'
+                    );
                 }
-            ])->first();    
-    
-        $specificProponent = $fundsource->proponents->first();
+            ])->first();
+
+        $specificProponent = $fundsources->proponents->first();
     
         return view('fundsource.update_fundsource', [
-            'fundsource' => $fundsource,
+            'fundsource' => $fundsources,
+            'fundsources' => Fundsource::get(),
             'facility' => Facility::get(),
-            'fundsourcess' => Fundsource::get(),
             'proponent' => $specificProponent,
+    
         ]);
     }
-    
+
+     public function updatefundsource(Request $request){
+       $fundsource_id = $request->input('fundsourceId');
+       
+     
+     }
     
     public function proponentGet(Request $request) {
         return Proponent::where('fundsource_id',$request->fundsource_id)->get();
@@ -217,7 +227,9 @@ public function forPatientFacilityCode($fundsource_id) {
 }
 
 
-
+  public function facilityGet(Request $request){
+     return Facility::where('id', $request->facilityId)->get();
+  }
 
 // public function forPatientFacilityCode($fundsource_id) {
 
@@ -265,5 +277,6 @@ public function forPatientFacilityCode($fundsource_id) {
         ])->get();
         return $result;
     }
+
 
 }
