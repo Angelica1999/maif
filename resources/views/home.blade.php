@@ -11,19 +11,17 @@
                         <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit">Search</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll">View All</button>
-                        {{-- <button type="button" href="#create_patient" onclick="createPatient()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md">Create</button> --}}
-                        <div class="btn-group">
-                            {{-- <button type="button" class="btn btn-success btn-md">Create</button> --}}
+                        <button type="button" href="#create_patient" onclick="createPatient()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md">Create</button>
+                        {{-- <div class="btn-group">
                             <button type="button" class="btn btn-success btn-md dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Create
                                 <span class="sr-only">Toggle Dropdown</span>
                             </button>
                             <div class="dropdown-menu">
-                              <!-- Dropdown items go here -->
                               <a class="dropdown-item" href="#create_patient" onclick="createPatient()" data-backdrop="static" data-toggle="modal">Guarantee Letter</a>
                               <a class="dropdown-item" href="#">Disbursement Voucher</a>
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </form>

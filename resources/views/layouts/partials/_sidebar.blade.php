@@ -21,12 +21,18 @@
     <li class="nav-item">
       <a class="nav-link" href="{{ route('home') }}">
         <i class="typcn typcn-user-add-outline menu-icon"></i>
-        <span class="menu-title">Patients</span>
+        <span class="menu-title">Guarantee Letter</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">
+        <i class="typcn typcn-document-text menu-icon"></i>
+        <span class="menu-title">Disbursement Letter</span>
       </a>
     </li>
     <li class="nav-item">
       <a class="nav-link" href="{{ route('facility') }}">
-        <i class="typcn typcn-user-add-outline menu-icon"></i>
+        <i class="typcn typcn-flow-switch menu-icon"></i>
         <span class="menu-title">Facility</span>
       </a>
     </li>
