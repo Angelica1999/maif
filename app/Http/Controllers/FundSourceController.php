@@ -148,47 +148,48 @@ class FundSourceController extends Controller
         ]);
     }
 
-     public function updatefundsource(Request $request){
-       $user = Auth::user();
-       $fundsource_id = $request->input('fundsourceId');
-       
-       $fundsource = Fundsource::find($fundsource_id);
-       if($fundsource) {
-        $fundsource->saa = $request->input('saa_exist');
-        $fundsource->save();
-       }else{
-        return response()->json(['error' => 'Fundsource not found'], 404);
-       }
-
-       $proponent = Proponent::where('fundsource_id',$fundsource_id)->first();
-       
-       if($proponent){
-         $proponent->proponent  = $request->input('proponent');
-         $proponent->proponent_code = $request->input('proponent_code');
-         $proponent->save();
-       }else{
-         return response()->json(['error' => 'Proponent not found'], 404);
-       }
-       //$facility = Facility::where('id', )
-
-        $index = 0;
-       foreach ($request->input('facility_id') as $facilityId) {
-        $proponentInfo = ProponentInfo::where('fundsource_id', $facilityId)
-        ->where('facility_id', $request->input('facility_id')[$index])
-        ->first();
-
-        if($proponentInfo){
-            $proponentInfo->alocated_funds = $request->input('alocated_funds')[$index];
-            $proponentInfo->save();
-        }
-
-        $index++;
-
-       }
+    public function updatefundsource(Request $request) {
+            $user = Auth::user();
+            $fundsource_id = $request->input('fundsourceId');
+            $propnentId = $request->input('proponentId');
+            $fundsource = Fundsource::find($fundsource_id);
+        
+                if ($fundsource) {
+                    $fundsource->saa = $request->input('saa_exist');
+                    $fundsource->save();
+                } else {
+            
+                    return response()->json(['error' => 'Fundsource not found'], 404);
+                }
+            
+                $proponent = Proponent::where('fundsource_id', $fundsource_id)->first();
+            
+                if ($proponent) {
+                    $proponent->proponent = $request->input('proponent');
+                    $proponent->proponent_code = $request->input('proponent_code');
+                    $proponent->save();
+                } else {
+                    return response()->json(['error' => 'Proponent not found'], 404);
+                }
+            
+                $index = 0;
+                foreach ($request->input('facility_id') as $facilityId) {
+                    $proponentInfo = ProponentInfo::where('proponent_id', $propnentId)
+                        ->where('facility_id', $facilityId)
+                        ->first();
+            
+                    if ($proponentInfo) {
+                        $proponentInfo->facility_id = $request->input('facility_id')[$index];
+                        $proponentInfo->alocated_funds = $request->input('alocated_funds')[$index];
+                        $proponentInfo->save();
+                    } 
+            
+                    $index++;
+                }
+        
+          return redirect()->back();
+    }//end of function
     
-         return redirect()->back();
-
-     }//endof 
     
     public function proponentGet(Request $request) {
         return Proponent::where('fundsource_id',$request->fundsource_id)->get();

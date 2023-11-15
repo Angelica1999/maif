@@ -1,12 +1,23 @@
-<form id="contractForm" method="POST" action="{{ route('fundsource.update') }}">
-     <input type="hidden" name="fundsourceId" value="{{ $fundsource->id }}"> 
-    <div class="modal-body">
-        @csrf
+<style>
+      hr {
+        border: 1px solid;
+       
+        /* Adjust the border color if needed */
+        color: grey;
+    }
+</style>
 @if ($fundsource->proponents)
 @foreach ($fundsource->proponents as $proponent)
 @if($proponent->proponentInfo)
 @foreach ($proponent->proponentInfo as $proponentInfo)
 @if ($proponentInfo->facility)
+
+<form id="contractForm" method="POST" action="{{ route('fundsource.update', ['proponentId' =>$proponent->id]) }}">
+     <input type="hidden" name="fundsourceId" value="{{ $fundsource->id }}"> 
+     <input type="hidden" name="proponentId" value="{{ $proponent->id }}"> 
+    <div class="modal-body">
+        @csrf
+
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
@@ -37,6 +48,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label >Proponent Code</label>
+
                     <input type="text" class="form-control" id="proponent_code" name="proponent_code" value="{{$proponent->proponent_code}}" placeholder="Proponent Code" required>
                 </div>
             </div>
@@ -47,13 +59,13 @@
                 <div class="form-group">
                     <label>Facility</label>
                     <div id="facility_body">
-    <select class="form-control js-example-basic-single w-100" id="facility_id" name="facility_id[]" required>
-        <option value="">Please select facility</option>
-        @foreach($facility as $facilities1)
-            <option value="{{ $facilities1->id }}" @if($facilities1->id == $proponentInfo->facility_id) selected @endif>{{ $facilities1->name }}</option>
-        @endforeach
-    </select>
-   </div>
+                        <select class="form-control js-example-basic-single w-100" id="facility_id" name="facility_id[]" required>
+                                <option value="">Please select facility</option>
+                            @foreach($facility as $facilities1)
+                                <option value="{{ $facilities1->id }}" @if($facilities1->id == $proponentInfo->facility_id) selected @endif>{{ $facilities1->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -66,7 +78,7 @@
         </div>
         <div id="transaction-container"></div><br>
         <a href="#" onclick="addTransaction()">Add</a>
-
+        <hr>
 
 @endif
 @endforeach
