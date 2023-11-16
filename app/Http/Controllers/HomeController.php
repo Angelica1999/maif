@@ -222,4 +222,11 @@ class HomeController extends Controller
         return view('maif.Disbursement.disbursement');
     }
 
+    public function dv(){
+
+        return view('dv.dv');
+    }
+
+ 
+
 }

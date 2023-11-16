@@ -16,6 +16,7 @@ class Fundsource extends Model
         return $this->belongsTo(Facility::class, 'facility_id','id');
     }
 
+    
     public function proponents() {   
         return $this->hasMany(Proponent::class);
     }

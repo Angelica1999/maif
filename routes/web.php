@@ -48,3 +48,13 @@ Route::get('/facility/proponent/{proponent_id}', [App\Http\Controllers\FundSourc
 Route::get('/patient/code/{proponent_id}/{facility_id}', [App\Http\Controllers\FundSourceController::class, 'forPatientCode'])->name('facility.patient.code');
 // Route::get('/patient/proponent/{proponent_id}/{facility_id}', [App\Http\Controllers\FundSourceController::class, 'forPatientFacilityCode'])->name('facility.patient.code');
 Route::get('/patient/proponent/{fundsource_id}', [App\Http\Controllers\FundSourceController::class, 'forPatientFacilityCode'])->name('facility.patient.code');
+
+
+//DISBURSEMENT VOUCHER
+Route::get('/dv', [App\Http\Controllers\DvController::class, 'dv'])->name('dv');
+Route::get('/dv/create', [App\Http\Controllers\DvController::class, 'createDv'])->name('dv.create');
+
+
+Route::get('/dv/create/save', [App\Http\Controllers\DvController::class, 'createDvSave'])->name('dv.create.save');
+Route::get('/dv/edit', [App\Http\Controllers\DvController::class, 'editDv'])->name('dv.edit');
+

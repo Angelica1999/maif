@@ -7,62 +7,43 @@ use App\Models\Fundsource;
 use App\Models\Facility;
 use App\Models\Proponent;
 use App\Models\ProponentInfo;
+use App\Models\Dv;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
-class FundSourceController extends Controller
+class DvController extends Controller
 {
     public function __construct()
     {
        // $this->middleware('auth');
     }
 
-    public function fundSource(Request $request) {
-        $fundsources = Fundsource::              
-                        with([
-                            'proponents' => function ($query) {
-                                $query->with([
-                                    'proponentInfo' => function ($query) {
-                                        $query->with('facility');
-                                    }
-                                ]);
-                            },
-                            'encoded_by' => function ($query) {
-                                $query->select(
-                                    'id',
-                                    'name'
-                                );
-                            }
-                        ]);
 
-        if($request->viewAll) {
-            $request->keyword = '';
-        }
-        else if($request->keyword) {
-            $fundsources = $fundsources->where('saa', 'LIKE', "%$request->keyword%");
-        } 
+    public function dv(){
 
-        //return $fundsources->toSql();
         
-        $fundsources = $fundsources
-                        ->orderBy('id','desc')
-                        ->paginate(15);
-                        
-        return view('fundsource.fundsource',[
-            'fundsources' => $fundsources,
-            'keyword' => $request->keyword
+        return view('dv.dv');
+    }
+
+
+    public function createDv()
+    {
+        $user = Auth::user();
+        $dvs = Dv::get();
+
+        // Fetch the fundsource data from the model
+        $fundsources = Fundsource::all();
+        $facilities = Facility::all();
+
+        return view('dv.create_dv', [
+            'user' => $user,
+            'dvs' => $dvs,
+            'fundsources' => $fundsources, // Pass the fundsource data to the view
+            'facilities' => $facilities, // Pass the facility data to the view
         ]);
     }
 
-    public function createFundSource() {
-        $user = Auth::user();
-        $fundsources = Fundsource::get();
-        return view('fundsource.create_fundsource',[
-            'facilities' => Facility::where('hospital_type','private')->get(),
-            'user' => $user,
-            'fundsources' => $fundsources
-        ]);
-    }
+
 
 
     public function createFundSourceSave(Request $request) {
@@ -96,23 +77,7 @@ class FundSourceController extends Controller
             $index++;
         }
 
-        //return $request->all();
-        // $data = $request->all();
-        // Fundsource::create($request->all());
-        // $fundsource = new Fundsource();
-        // $fundsource->saa = $request->saa;
-        // $fundsource->created_by = $request->created_by;
-        // $fundsource->save();
-
-        // $saaInfo = new SaaInfo();
-        // $saaInfo->saaId_unique = $fundsouce->id;
-        // $saaInfo->saaId = $fundsource->saa_exist;
-        
-        // $saaInfo->proponent = $saaInfo->proponent;
-        // $saaInfo->code_proponent = $saaInfo->code_proponent;
-        // $saaInfo->facility_id = $saaInfo->facility_id;
-        // $saaInfo->alocated_funds = $saaInfo->alocated_funds;
-        // $saaInfo->save();
+    
 
         session()->flash('fundsource_save', true);
         return redirect()->back();
@@ -180,20 +145,7 @@ class FundSourceController extends Controller
         return $patient_code;
     }
 
-    
-//  public function forPatientFacilityCode(Request $request) {
-//         $user = Auth::user();
-//         $proponent = Proponent::where('fundsource_id',$request->funsource_id);
-//         $facility = Facility::where('facility_id',$request->facility_id); 
-//         $patient_proponent = $proponent->proponent;
-//         $facilityname = $facility->name;
-//         $data = [
-//             'patient_proponent' => $patient_proponent,
-//             'facilityname' => $facilityname,
-//         ];
-//     return response()->json($data);
-    
-// }
+
 
 public function forPatientFacilityCode($fundsource_id) {
 
@@ -217,31 +169,6 @@ public function forPatientFacilityCode($fundsource_id) {
     }
 }
 
-
-
-
-// public function forPatientFacilityCode($fundsource_id) {
-
-//     $fundsource = Fundsource::with('facility', 'proponents', 'proponent_info')
-//     ->whereHas('proponents', function ($query) use ($fundsource_id){
-//         $query->where('fundsource_id', $fundsource_id);
-//     })->find($fundsource_id);
-    
-//     if($fundsource){
-//         $facility_id = $fundsource->proponent_info->first()->facility_id;
-//         $facilities = Facility::where('facility_id', $facility_id)->get();
-
-//         $proponentName = $fundsource->proponents->first()->proponent;
-//         $facilityName = $facilities->pluck('name')->all();
-//         //$facilityName =  $fundsource->facility ?  $fundsource->facility->name : null;
-//         $proponents = $fundsource->proponents->pluck('proponent')->all();
-//         return response()->json([
-//           'proponent' => $proponents,
-//           'facility' => $facilityName,
-//         ]);
-//     }
-   
-// }
 
 
     public function transactionGet() {
