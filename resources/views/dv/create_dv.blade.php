@@ -147,13 +147,20 @@
              </select>
            <input type="text" name="amount3" id="inputValue3" style="position:absolute;top:510px;left:270px;white-space:nowrap; width:150px; height: 20px; font-size: 8pt;" class="ft15">
 
-        <select id="deduction1" name="deduction1" style="position:absolute;top:550px;left:100px;white-space:nowrap; width:150px; height: 20px" class="ft15">
-       
-         </select>
+        <select id="deduction1" name="deduction1"  style="position:absolute;top:550px;left:100px;white-space:nowrap; width:150px; height: 20px" class="ft15">
+         <option value="">- Select Vat -</option>
+          @foreach($ewtVatFacility as $ewtVat)
+         <option value="{{$ewtVat->id}}">{{$ewtVat->vat}}</option>
+         @endforeach
+        </select>
             <input type="text" id="inputDeduction1" asp-for="DeductionAmount1" style="position:absolute;top:550px;left:270px;white-space:nowrap; width:150px; height: 20px; font-size: 8pt" class="ft15">
 
         <select id="deduction2" name="deduction2" style="position:absolute;top:570px;left:100px;white-space:nowrap; width:150px; height: 20px" class="ft15">
-            </select>
+        <option value="">- Select Ewt -</option>
+        @foreach($ewtVatFacility as $ewtVat)
+        <option value="$ewtVat->id">{{$ewtVat->Ewt}}</option>
+        @endforeach
+        </select>
         <input type="text" id="inputDeduction2" asp-for="DeductionAmount2" style="position:absolute;top:570px;left:270px;white-space:nowrap; width:150px; height: 20px; font-size: 8pt" class="ft15">
             <p style="position:absolute;top:598px;left:69px;white-space:nowrap; font-weight:bold;" class="ft16">  &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; Amount Due</p>
             <p style="position:absolute;top:389px;left:746px;white-space:nowrap" class="ft15"></p>

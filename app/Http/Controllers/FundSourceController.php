@@ -152,7 +152,6 @@ class FundSourceController extends Controller
     public function updatefundsource(Request $request) {
             $user = Auth::user();
             $fundsource_id = $request->input('fundsourceId');
-            $propnentId = $request->input('proponentId');
             $fundsource = Fundsource::find($fundsource_id);
         
                 if ($fundsource) {
@@ -162,9 +161,9 @@ class FundSourceController extends Controller
             
                     return response()->json(['error' => 'Fundsource not found'], 404);
                 }
-            
-                $proponent = Proponent::where('fundsource_id', $fundsource_id)->first();
-            
+                $proponentIds = $request->input('proponentId');
+               
+                $proponent = Proponent::find($proponentIds);
                 if ($proponent) {
                     $proponent->proponent = $request->input('proponent');
                     $proponent->proponent_code = $request->input('proponent_code');
@@ -172,10 +171,26 @@ class FundSourceController extends Controller
                 } else {
                     return response()->json(['error' => 'Proponent not found'], 404);
                 }
-            
                 $index = 0;
+                
+                // if (is_array($proponentIds) || is_object($proponentIds)) {
+                //     foreach ($proponentIds as $proponentId) {
+                //         $proponent = Proponent::where('id', $proponentId);
+                //         if ($proponent) {
+                //             $proponent->proponent = $request->input('proponent')[$index];
+                //             $proponent->proponent_code = $request->input('proponent_code')[$index];
+                //             $proponent->save();
+                //         }
+                
+                //         $index++;
+                //     }
+                // }
+   
+               
+               
                 foreach ($request->input('facility_id') as $facilityId) {
-                    $proponentInfo = ProponentInfo::where('proponent_id', $propnentId)
+                    $proponentInfo = ProponentInfo::where('fundsource_id', $fundsource_id)
+                        ->where('proponent_id', $proponentIds)
                         ->where('facility_id', $facilityId)
                         ->first();
             

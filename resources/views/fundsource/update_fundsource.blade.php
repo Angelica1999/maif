@@ -12,9 +12,10 @@
 @foreach ($proponent->proponentInfo as $proponentInfo)
 @if ($proponentInfo->facility)
 
-<form id="contractForm" method="POST" action="{{ route('fundsource.update', ['proponentId' =>$proponent->id]) }}">
-     <input type="hidden" name="fundsourceId" value="{{ $fundsource->id }}"> 
-     <input type="hidden" name="proponentId" value="{{ $proponent->id }}"> 
+<form id="contractForm" method="POST" action="{{ route('fundsource.update')}}">
+     <input type="hidden" name="fundsourceId" value="{{ $fundsource->id }}">
+     <input type="hidden" name="proponentId" value="{{ $proponent->id }}">
+   
     <div class="modal-body">
         @csrf
 
@@ -42,14 +43,14 @@
         <div class="col-md-6">
                 <div class="form-group">
                     <label>Proponent</label>
-                    <input type="text" class="form-control" id="proponent" name="proponent" value="{{ $proponent->proponent }}" placeholder="Proponent" required>
+                    <input type="text" class="form-control" id="proponent" name="proponent" value="{{ $proponent->proponent }}" placeholder="Proponent" required> 
                 </div>
          </div>
             <div class="col-md-6">
                 <div class="form-group">
                     <label >Proponent Code</label>
-
                     <input type="text" class="form-control" id="proponent_code" name="proponent_code" value="{{$proponent->proponent_code}}" placeholder="Proponent Code" required>
+                
                 </div>
             </div>
         </div>
