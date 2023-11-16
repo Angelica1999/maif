@@ -89,8 +89,8 @@
   
         <select id="facilityDropdown" name="facility" style="position:absolute;top:261px;left:140px;white-space:nowrap; width:260px; height: 28px; font-size: 9pt" class="ft15">
             <option value=""> - Select Facility - </option>
-            @foreach ($facilities as $facility)
-                <option value="{{ $facility->id }}" >{{ $facility->name }}</option>
+            @foreach ($Facility as $facilities)
+                <option value="{{ $facilities->id }}" >{{ $facilities->name }}</option>
             @endforeach
         </select>
             <p style="position:absolute;top:269px;left:434px;white-space:nowrap" class="ft18">Tin/Employee No.:<br /></p>
@@ -149,17 +149,17 @@
 
         <select id="deduction1" name="deduction1"  style="position:absolute;top:550px;left:100px;white-space:nowrap; width:150px; height: 20px" class="ft15">
          <option value="">- Select Vat -</option>
-          @foreach($ewtVatFacility as $ewtVat)
-         <option value="{{$ewtVat->id}}">{{$ewtVat->vat}}</option>
+          @foreach($Facility as $facilityvat)
+          <option value="{{  $facilityvat->id }}">{{  $facilityvat->addFacilityInfo->vat }}</option>
          @endforeach
         </select>
             <input type="text" id="inputDeduction1" asp-for="DeductionAmount1" style="position:absolute;top:550px;left:270px;white-space:nowrap; width:150px; height: 20px; font-size: 8pt" class="ft15">
 
         <select id="deduction2" name="deduction2" style="position:absolute;top:570px;left:100px;white-space:nowrap; width:150px; height: 20px" class="ft15">
         <option value="">- Select Ewt -</option>
-        @foreach($ewtVatFacility as $ewtVat)
-        <option value="$ewtVat->id">{{$ewtVat->Ewt}}</option>
-        @endforeach
+        @foreach($Facility as $facilityewt)
+          <option value="{{ $facilityewt->id }}">{{ $facilityewt->addFacilityInfo->Ewt }}</option>
+         @endforeach
         </select>
         <input type="text" id="inputDeduction2" asp-for="DeductionAmount2" style="position:absolute;top:570px;left:270px;white-space:nowrap; width:150px; height: 20px; font-size: 8pt" class="ft15">
             <p style="position:absolute;top:598px;left:69px;white-space:nowrap; font-weight:bold;" class="ft16">  &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; Amount Due</p>

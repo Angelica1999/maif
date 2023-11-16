@@ -43,13 +43,13 @@
         <div class="col-md-6">
                 <div class="form-group">
                     <label>Proponent</label>
-                    <input type="text" class="form-control" id="proponent" name="proponent" value="{{ $proponent->proponent }}" placeholder="Proponent" required> 
+                    <input type="text" class="form-control" id="proponent" name="proponents[{{ $proponent->id }}][proponent]" value="{{ $proponent->proponent }}" placeholder="Proponent" required> 
                 </div>
          </div>
             <div class="col-md-6">
                 <div class="form-group">
                     <label >Proponent Code</label>
-                    <input type="text" class="form-control" id="proponent_code" name="proponent_code" value="{{$proponent->proponent_code}}" placeholder="Proponent Code" required>
+                    <input type="text" class="form-control" id="proponent_code" name="proponents[{{ $proponent->id }}][proponent_code]"  value="{{$proponent->proponent_code}}" placeholder="Proponent Code" required>
                 
                 </div>
             </div>
@@ -60,7 +60,7 @@
                 <div class="form-group">
                     <label>Facility</label>
                     <div id="facility_body">
-                        <select class="form-control js-example-basic-single w-100" id="facility_id" name="facility_id[]" required>
+                        <select class="form-control js-example-basic-single w-100" id="facility_id" name="proponentInfo[{{$proponentInfo->id}}][facility_id]" required>
                                 <option value="">Please select facility</option>
                             @foreach($facility as $facilities1)
                                 <option value="{{ $facilities1->id }}" @if($facilities1->id == $proponentInfo->facility_id) selected @endif>{{ $facilities1->name }}</option>
@@ -73,7 +73,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="alocated_funds">Allocated Fund</label>
-                    <input type="number" step="any" class="form-control" id="alocated_funds" name="alocated_funds[]" value="{{$proponentInfo->alocated_funds}}" placeholder="Allocated Fund" required>
+                    <input type="number" step="any" class="form-control" id="alocated_funds" name="proponentInfo[{{$proponentInfo->id}}][alocated_funds]" value="{{$proponentInfo->alocated_funds}}" placeholder="Allocated Fund" required>
                 </div>
             </div>
         </div>

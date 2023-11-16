@@ -161,17 +161,48 @@ class FundSourceController extends Controller
             
                     return response()->json(['error' => 'Fundsource not found'], 404);
                 }
-                $proponentIds = $request->input('proponentId');
-               
-                $proponent = Proponent::find($proponentIds);
-                if ($proponent) {
-                    $proponent->proponent = $request->input('proponent');
-                    $proponent->proponent_code = $request->input('proponent_code');
-                    $proponent->save();
-                } else {
-                    return response()->json(['error' => 'Proponent not found'], 404);
+
+                $proponentsData = $request->input('proponents');
+
+                foreach ($proponentsData as $proponentId => $proponent) {
+                    $proponentModel = Proponent::find($proponentId);
+        
+                    if ($proponentModel) {
+                        $proponentModel->update([
+                            'proponent' => $proponent['proponent'],
+                            'proponent_code' => $proponent['proponent_code'],
+                            // Add other fields as needed
+                        ]);
+                    }
                 }
-                $index = 0;
+
+                
+                $proponentInfoData = $request->input('proponentInfo');
+
+                foreach ($proponentInfoData as $proponentInfoId => $proponentInfo) {
+                    $proponentInfoModel = ProponentInfo::find($proponentInfoId);
+                
+                    if ($proponentInfoModel) {
+                        $proponentInfoModel->update([
+                            'facility_id' => $proponentInfo['facility_id'], // Updated from $proponent['facility_id']
+                            'alocated_funds' => $proponentInfo['alocated_funds'], // Updated from $proponent['alocated_funds']
+                            // Add other fields as needed
+                        ]);
+                    }
+                }
+
+
+                //  $proponentIds = $request->input('proponentId');
+               
+                // $proponent = Proponent::find($proponentIds);
+                // if ($proponent) {
+                //     $proponent->proponent = $request->input('proponent');
+                //     $proponent->proponent_code = $request->input('proponent_code');
+                //     $proponent->save();
+                // } else {
+                //     return response()->json(['error' => 'Proponent not found'], 404);
+                // }
+                // $index = 0;
                 
                 // if (is_array($proponentIds) || is_object($proponentIds)) {
                 //     foreach ($proponentIds as $proponentId) {
@@ -188,20 +219,20 @@ class FundSourceController extends Controller
    
                
                
-                foreach ($request->input('facility_id') as $facilityId) {
-                    $proponentInfo = ProponentInfo::where('fundsource_id', $fundsource_id)
-                        ->where('proponent_id', $proponentIds)
-                        ->where('facility_id', $facilityId)
-                        ->first();
+                // foreach ($request->input('facility_id') as $facilityId) {
+                //     $proponentInfo = ProponentInfo::where('fundsource_id', $fundsource_id)
+                //         ->where('proponent_id', $proponentIds)
+                //         ->where('facility_id', $facilityId)
+                //         ->first();
             
-                    if ($proponentInfo) {
-                        $proponentInfo->facility_id = $request->input('facility_id')[$index];
-                        $proponentInfo->alocated_funds = $request->input('alocated_funds')[$index];
-                        $proponentInfo->save();
-                    } 
+                //     if ($proponentInfo) {
+                //         $proponentInfo->facility_id = $request->input('facility_id')[$index];
+                //         $proponentInfo->alocated_funds = $request->input('alocated_funds')[$index];
+                //         $proponentInfo->save();
+                //     } 
             
-                    $index++;
-                }
+                //     $index++;
+                // }
         
           return redirect()->back();
     }//end of function

@@ -34,15 +34,23 @@ class DvController extends Controller
 
         // Fetch the fundsource data from the model
         $fundsources = Fundsource::all();
-        $facilities = Facility::all();
-        $ewtVatFacility = AddFacilityInfo::Select('id','vat','Ewt')->get();
+       // $facilities = Facility::all();
+       // $ewtVatFacility = AddFacilityInfo::Select('id','vat','Ewt')->get();
+
+        $ewtVatFacility= Facility::with('addFacilityInfo')
+        ->select(
+            'facility.id',
+            'facility.name',
+            'facility.address',
+         )
+        ->where('hospital_type','private')->get();
 
         return view('dv.create_dv', [
             'user' => $user,
             'dvs' => $dvs,
             'fundsources' => $fundsources, // Pass the fundsource data to the view
-            'facilities' => $facilities, // Pass the facility data to the view
-            'ewtVatFacility' => $ewtVatFacility,
+           // 'facilities' => $facilities, // Pass the facility data to the view
+            'Facility' => $ewtVatFacility,
         ]);
     }
 
