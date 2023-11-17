@@ -150,17 +150,25 @@ class FundSourceController extends Controller
     }
 
     public function updatefundsource(Request $request) {
-            $user = Auth::user();
-            $fundsource_id = $request->input('fundsourceId');
-            $fundsource = Fundsource::find($fundsource_id);
-        
-                if ($fundsource) {
-                    $fundsource->saa = $request->input('saa_exist');
-                    $fundsource->save();
-                } else {
             
-                    return response()->json(['error' => 'Fundsource not found'], 404);
+            $fundsourceData = $request->input('fundsource');
+          
+             foreach ($fundsourceData as $fundsourceId => $fundsources){
+                $fundsourceModel = Fundsource::find($fundsourceId);
+
+                if($fundsourceModel){
+                    $fundsourceModel->update([
+                        'saa' => $fundsources['saa_exist'],
+                    ]);
                 }
+             }
+                // if ($fundsource) {
+                //     $fundsource->saa = $request->input('saa_exist');
+                //     $fundsource->save();
+                // } else {
+            
+                //     return response()->json(['error' => 'Fundsource not found'], 404);
+                // }
 
                 $proponentsData = $request->input('proponents');
 
@@ -233,7 +241,7 @@ class FundSourceController extends Controller
             
                 //     $index++;
                 // }
-        
+                session()->flash('fundsource_update', true);
           return redirect()->back();
     }//end of function
     

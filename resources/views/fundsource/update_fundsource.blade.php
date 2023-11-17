@@ -23,7 +23,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label >Existing SAA</label>
-                    <select class="js-example-basic-single w-100 select2" id="saa_exist" name="saa_exist" onchange="fundsourceExist($(this))">
+                    <select class="js-example-basic-single w-100 select2" id="saa_exist" name="fundsource[{{ $fundsource->id }}][saa_exist]" onchange="fundsourceExist($(this))">
                         <option value="">Please select SAA</option>
                           @foreach($fundsources as $fundsource1)
                             <option value="{{ $fundsource1->saa }}" @if($fundsource1->id == $proponentInfo->fundsource_id) selected @endif>{{ $fundsource1->saa }}</option>
@@ -94,14 +94,26 @@
     </div>
 </form>
 
-<script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
+<script src="{{ asset('admin/js/select2.js?v=').date('His') }}">
+</script>
 
 <script>
+
+$(document).ready(function() {
+        $('.js-example-basic-single').select2({
+            theme: 'bootstrap', // Optionally, you can set the theme to 'bootstrap' if you are using the bootstrap theme
+            width: '100%',       // Set the width to 100%
+            placeholder: 'Please select facility', // Set a placeholder text
+        });
+    });
     // function onchangeFundsource () {
     //     $(".select2").select2({ width: '100%' });
     // }
+   
 
     function fundsourceExist(data) {
         data.val() ? $("#saa").attr('disabled','disabled') : $("#saa").removeAttr('disabled','disabled');
     }
+
 </script>
+
