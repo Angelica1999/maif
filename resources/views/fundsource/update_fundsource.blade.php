@@ -50,7 +50,6 @@
                 <div class="form-group">
                     <label >Proponent Code</label>
                     <input type="text" class="form-control" id="proponent_code" name="proponents[{{ $proponent->id }}][proponent_code]"  value="{{$proponent->proponent_code}}" placeholder="Proponent Code" required>
-                
                 </div>
             </div>
         </div>

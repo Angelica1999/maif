@@ -239,18 +239,45 @@
                 //     "                                        <option value=\"\">Please select municipality</option>\n" +
                 //     "                                    </select>");
 
-                $("#muncity_body").html("<select class=\"form-control select2\" id=\"muncity_id\" name=\"muncity_id\" onchange=\"onchangeMuncity($(this))\" required>\n" +
+                $("#muncity_body").html("<select class=\"form-control select2\" id=\"muncity_id\" name=\"muncity_id\" onchange=\"onchangeMuncity($(this))\" required disabled>\n" +
                     "                                        <option value=\"\">Please select municipality</option>\n" +
                     "                                    </select>");
 
-                $("#barangay_body").html("<select class=\"form-control select2\" id=\"barangay_id\" name=\"barangay_id\" required>\n" +
-                    "                                        <option value=\"\">Please select barangay</option>\n" +
+                $("#barangay_body").html("<select class=\"form-control select2\" id=\"barangay_id\" name=\"barangay_id\" required disabled>\n" +
+                    "                                        <option value=\"\">please select barangay</option>\n" +
                     "                                    </select>");
 
                 $(".select2").select2({ width: '100%' });
             }
 
+            if(data.val() == "Region 7"){
+                $('#province_id').change(function() {
+                $('#muncity_id').prop('disabled', true);
+                $('#barangay_id').prop('disabled', true);
+
+                $('#muncity_id').html('<option value="">Please Select a Muncity</option>')
+
+                setTimeout(function() {
+                    $('#muncity_id').prop('disabled', false)
+                }, 1000);
+            });
+
+            $('#muncity_id').change(function() {
+                $('#barangay_id').prop('disabled', true);
+
+                $('#barangay_id').html('<option value="">Please Select a barangay</option>')
+
+                setTimeout(function() {
+                    $('#barangay_id').prop('disabled', false)
+                }, 1000);
+            });
+         }
+
    } 
+
+    // $(document).ready(function() {
+ 
+    // });
 
         function onchangeProvince(data) {
             if(data.val()) {
