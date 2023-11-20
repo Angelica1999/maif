@@ -24,6 +24,7 @@ Route::get('/facility', [App\Http\Controllers\FacilityController::class, 'index'
 Route::get('facility/edit/{main_id}', [App\Http\Controllers\FacilityController::class, 'facilityEdit'])->name('facility.edit');
 Route::post('facility/update', [App\Http\Controllers\FacilityController::class, 'facilityUpdate'])->name('facility.update');
 Route::get('facility/vatEwt', [App\Http\Controllers\FacilityController::class, 'getVatEwt']);
+Route::get('facility/get/{facility_id}', [App\Http\Controllers\DvController::class, 'facilityGet'])->name('facility.get');
 
 Route::get('/patient/create', [App\Http\Controllers\HomeController::class, 'createPatient'])->name('patient.create');
 Route::post('/patient/create/save', [App\Http\Controllers\HomeController::class, 'createPatientSave'])->name('patient.create.save');

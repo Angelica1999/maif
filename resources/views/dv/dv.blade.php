@@ -167,6 +167,32 @@
 @section('js')
 
 <script>
+   
+   function onchangeSaa(data) {
+        if(data.val()) {
+            console.log(data);
+            $.get("{{ url('facility/get').'/' }}"+data.val(), function(result) {
+              
+                $('#facility_id').html('');
+
+                $('#facility_id').append($('<option>', {
+
+                     value: "",
+                     text: "Please select Facility"
+
+                }));
+                 $.each(result, function(index, optionData){
+                    $('#facility_id').append($('<option>', {
+                        value: optionData.id,
+                        text: optionData.name
+                    }))
+                 });
+            });
+        }
+
+      }
+
+
         function createDv() {
             $('.modal_body').html(loading);
             $('.modal-title').html("Create Disbursement Voucher");

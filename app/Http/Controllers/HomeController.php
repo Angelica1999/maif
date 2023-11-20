@@ -123,7 +123,7 @@ class HomeController extends Controller
                                         );
                                     },
                                     'fundsource',
-                                ])
+                                ])->orderBy('updated_at', 'desc')
                                 ->first();
 
                                 $municipal = Muncity::select('id', 'description')->get();

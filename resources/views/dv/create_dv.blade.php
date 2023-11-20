@@ -63,7 +63,7 @@
 </style>
 <!-- <img src="{{ asset('images/target004.png') }}"  width="892" height="1263" class="img-responsive" /> -->
 <!-- <div id="page1-div" style="position:relative;width:892px;height:1280px;"> -->
-<form asp-action="SaveMaiffDv" asp-controller="Maiff" method="post">     
+<form action="Maiff" method="post">     
     <div id="page1-div" style="position:relative;width:852px;height:1280px;">
         <img src="{{ asset('images/target005.png') }}"  width="892" height="1263" class="img-responsive" />
             <p style="position:absolute;top:23px;left:54px;white-space:nowrap" class="ft10">&#160;</p>
@@ -87,11 +87,12 @@
             <p style="position:absolute;top:180px;left:566px;white-space:nowrap" class="ft15">Others (Please specify) ____________</p>
             <p style="position:absolute;top:217px;left:20px;white-space:nowrap" class="ft15">Payee</p>
   
-        <select id="facilityDropdown" name="facility" style="position:absolute;top:215px;left:140px;white-space:nowrap; width:260px; height: 28px; font-size: 9pt" class="ft15">
+        <select id="facilityDropdown" name="facility_id" id ="facility_id" style="position:absolute;top:215px;left:140px;white-space:nowrap; width:260px; height: 28px; font-size: 9pt" class="ft15">
             <option value=""> - Select Facility - </option>
-            @foreach ($facilities as $facility)
+            <!-- <option value="" ></option> -->
+            <!-- @foreach ($facilities as $facility)
                 <option value="{{ $facility->id }}" >{{ $facility->name }}</option>
-            @endforeach
+            @endforeach -->
         </select>
             <p style="position:absolute;top:219px;left:434px;white-space:nowrap" class="ft18">Tin/Employee No.:<br /></p>
             <p style="position:absolute;top:219px;left:655px;white-space:nowrap" class="ft15">ORS/BURS No.:</p>
@@ -119,7 +120,7 @@
                     in the amount of:
             </p>
 
-            <select id="fundsourceDropdown" name="fundsource_id" id="saa1" style="position:absolute;top:440px;left:100px;white-space:nowrap; width:150px; height: 20px;" class="ft15">
+            <select id="fundsourceDropdown" name="fundsource_id" id="saa1" onchange="onchangeSaa($(this))" style="position:absolute;top:440px;left:100px;white-space:nowrap; width:150px; height: 20px;" class="ft15">
                 <option value="" data-facilities="">- Select SAA -</option>
                 @foreach ($fundsources as $fundsource)
                     <option value="{{ $fundsource->id }}" data-facilities="{{ json_encode($fundsource->facilities) }}">{{ $fundsource->saa }}</option>
@@ -131,34 +132,36 @@
                 <br />
             <span id="showSAAButton" class="fa fa-plus" style="position:absolute;top:445px;left:75px; width:20px; height: 20px; cursor:pointer" onclick="toggleSAADropdowns()"></span>
          
-            <select id="fundsourceDropdown" name="fundsource_id"  id="saa2" style="position:absolute;top:460px;left:100px;white-space:nowrap; width:150px; height: 20px" class="ft15"  >
+            <select id="fundsourceDropdown" name="fundsource_id"  id="saa2" style="position:absolute;top:460px;left:100px;white-space:nowrap; width:150px; height: 20px" class="ft15"  disabled>
               <option value="">- Select SAA -</option>
                 @foreach ($fundsources as $fundsource)
                     <option value="{{ $fundsource->id }}">{{ $fundsource->saa }}</option>
                 @endforeach
              </select>
-           <input type="text" name="amount2" id="inputValue2" style="position:absolute;top:460px;left:270px;white-space:nowrap; width:150px; height: 20px; font-size: 8pt;" class="ft15">
+           <input type="text" name="amount2" id="inputValue2" style="position:absolute;top:460px;left:270px;white-space:nowrap; width:150px; height: 20px; font-size: 8pt;" class="ft15" disabled>
 
-           <select id="fundsourceDropdown" name="fundsource_id"  id="saa3" style="position:absolute;top:480px;left:100px;white-space:nowrap; width:150px; height: 20px" class="ft15"  >
+           <select id="fundsourceDropdown1" name="fundsource_id"  id="saa3" style="position:absolute;top:480px;left:100px;white-space:nowrap; width:150px; height: 20px" class="ft15" disabled>
              <option value="">- Select SAA -</option>
                 @foreach ($fundsources as $fundsource)
                     <option value="{{ $fundsource->id }}">{{ $fundsource->saa }}</option>
                 @endforeach
              </select>
-           <input type="text" name="amount3" id="inputValue3" style="position:absolute;top:480px;left:270px;white-space:nowrap; width:150px; height: 20px; font-size: 8pt;" class="ft15">
+           <input type="text" name="amount3" id="inputValue3" style="position:absolute;top:480px;left:270px;white-space:nowrap; width:150px; height: 20px; font-size: 8pt;" class="ft15" disabled>
 
         <select id="deduction1" name="deduction1"  style="position:absolute;top:520px;left:100px;white-space:nowrap; width:150px; height: 20px" class="ft15">
          <option value="">- Select Vat -</option>
-          @foreach($Facility as $facilityvat)
-          <option value="{{  $facilityvat->id }}">{{  $facilityvat->vat }}</option>
+         @foreach($VatFacility as $facilityvat)
+                <option value="{{ $facilityvat->id }}">{{ $facilityvat->vat }}%</option>
          @endforeach
         </select>
             <input type="text" id="inputDeduction1" asp-for="DeductionAmount1" style="position:absolute;top:520px;left:270px;white-space:nowrap; width:150px; height: 20px; font-size: 8pt" class="ft15">
 
         <select id="deduction2" name="deduction2" style="position:absolute;top:540px;left:100px;white-space:nowrap; width:150px; height: 20px" class="ft15">
         <option value="">- Select Ewt -</option>
-        @foreach($Facility as $facilityewt)
-          <option value="{{  $facilityewt->id }}">{{ $facilityewt->Ewt }}</option>
+        @foreach($ewtFacility as $facilityewt)
+          <option value="{{  $facilityewt->id }}">{{ $facilityewt->Ewt }}%</option>
+
+         {{-- <option value="{{  $facilityewt->id }}">{{ $facilityewt->Ewt % 1 == 0? number_format($facilityewt->Ewt, 0) : $facilityewt->Ewt }}%</option> --}}
          @endforeach
         </select>
         <input type="text" id="inputDeduction2" asp-for="DeductionAmount2" style="position:absolute;top:540px;left:270px;white-space:nowrap; width:150px; height: 20px; font-size: 8pt" class="ft15">
@@ -221,6 +224,27 @@
     </form>
 
 <script>
+
+      $(document).ready(function() {
+       $('#saa1').change(function() {
+         $('#saa2').prop('disabled', true);
+         $('#inputValue2').prop('disabled', true);
+
+         $('#saa3').prop('disabled', true);
+         $('#inputValue3').prop('disabled', true);
+
+         $('#saa2').html('<option value="">Please Select a Saa</option>')
+
+         setTimeout(function() {
+            $('#saa2').prop('disabled', false);
+            $('#inputValue2').prop('disabled', false);
+         }, 500);
+
+       });
+         
+
+      });
+
           // Function to update the total and format with commas
         function updateTotal() {
             // Get input values

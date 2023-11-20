@@ -104,7 +104,7 @@ class FacilityController extends Controller
     
         $main_id = $request->input('main_id');    
         // Retrieve the facility record based on the main_id
-        $facility = AddFacilityInfo::where('facility_id', $main_id)->first();
+        $facility = AddFacilityInfo::where('facility_id', $main_id)->orderBy('updated_at', 'desc')->first();
 
         if (!$facility) {
             // If the facility doesn't exist, you can create a new instance.
