@@ -75,6 +75,25 @@ class DvController extends Controller
        return $proponentInfo;
     }
 
+    function dvfacility(Request $request){
+       $facilityId = $request->facility_id;
+
+       $proponentInfo = ProponentInfo::with('facility')
+       ->where('facility_id',  $facilityId)->first();
+
+       if($proponentInfo){
+         $facilityAddress = $proponentInfo->facility->address;
+         return $facilityAddress;
+       }else{
+        return "facility not found";
+       }
+        // return $request->facility_id;
+        // $proponentInfo = ProponentInfo::with('facility')
+        // ->where('facility_id', $request->facility_id)
+        // ->get();
+        // $proponentInfo = $proponentInfo->facility->address;
+        // return $proponentInfo;
+    }
 
 //     public function createFundSourceSave(Request $request) {
 //         $user = Auth::user();

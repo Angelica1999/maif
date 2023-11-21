@@ -167,9 +167,25 @@
 @section('js')
 
 <script>
+
+
+
+// function onchangefacility(data) {
+//     if (data.val()) {
+//         console.log("Selected Facility_id:", data.val())
+//         $.get("{{ url('facility/dv').'/' }}" + data.val(), function(result) {
+//             // Assuming result is a JSON object with a 'facility' property
+//             var facilityAddress = result.facility ? result.facility.address : 'N/A';
+//             $("#facilityAddress").text(facilityAddress);
+//         });
+//     }
+// }
+
+
    function onchangeSaa(data) {
         if(data.val()) {
-            console.log(data);
+        var facilityId = data.find(':selected').data('facility-id');
+        console.log(data);
             $.get("{{ url('facility/get').'/' }}"+data.val(), function(result) {
               
                 $('#facilityDropdown').html('');
@@ -186,10 +202,31 @@
                         text: optionData.facility ? optionData.facility.name : ''
                     }));
                  });
+
+                 $('#facilityDropdown').trigger('change', facilityId);
             });
         }
 
       }
+
+      function onchangefacility(data, facilityId) {
+        console.log("Selected Facility_id:", facilityId );
+    if (facilityId) {
+        
+        $.get("{{ url('facility/dv').'/' }}" + facilityId, function(result) {
+            $("#facilityAddress").text(result);
+        });
+    }
+}
+
+        // function onchangefacility(data) {
+        //     if (data.val()) {
+        //         console.log("Selected Facility_id:", data.val())
+        //         $.get("{{ url('facility/dv').'/' }}" + data.val(), function(result) {
+        //             $("#facilityAddress").text(result);
+        //         });
+        //     }
+        // }
 
         function createDv() {
             $('.modal_body').html(loading);
