@@ -63,10 +63,16 @@
 </style>
 <!-- <img src="{{ asset('images/target004.png') }}"  width="892" height="1263" class="img-responsive" /> -->
 <!-- <div id="page1-div" style="position:relative;width:892px;height:1280px;"> -->
-<form action="Maiff" method="post">     
+<form action="Maiff" method="post"> 
+@foreach($FundSources as $fundsorce)
+@foreach ($fundsorce->proponents as $proponent)
+@if ($proponent->proponentInfo)
+@foreach ($proponent->proponentInfo as $proponentInfo)
+@if($proponentInfo->facility)     
     <div id="page1-div" style="position:relative;width:852px;height:1280px;">
         <img src="{{ asset('images/target005.png') }}"  width="892" height="1263" class="img-responsive" />
             <p style="position:absolute;top:23px;left:54px;white-space:nowrap" class="ft10">&#160;</p>
+
             <p style="position:absolute;top:43px;left:295px;white-space:nowrap" class="ft11">Republic of Philippines</p>
             <p style="position:absolute;top:63px;left:300px;white-space:nowrap" class="ft11">Department of Health</p>
             <p style="position:absolute;top:82px;left:164px;white-space:nowrap" class="ft12"><b>CENTRAL VISAYAS CENTER FOR HEALTH DEVELOPMENT</b></p>
@@ -88,16 +94,17 @@
             <p style="position:absolute;top:217px;left:20px;white-space:nowrap" class="ft15">Payee</p>
   
         <select id="facilityDropdown" name="facility_id" id ="facility_id" style="position:absolute;top:215px;left:140px;white-space:nowrap; width:260px; height: 28px; font-size: 9pt" class="ft15">
-            <option value=""> - Select Facility - </option>
+            <option value=""> Select Facility  </option>
+            </select>
             <!-- <option value="" ></option> -->
             <!-- @foreach ($facilities as $facility)
                 <option value="{{ $facility->id }}" >{{ $facility->name }}</option>
             @endforeach -->
-        </select>
+   
             <p style="position:absolute;top:219px;left:434px;white-space:nowrap" class="ft18">Tin/Employee No.:<br /></p>
             <p style="position:absolute;top:219px;left:655px;white-space:nowrap" class="ft15">ORS/BURS No.:</p>
             <p style="position:absolute;top:260px;left:20px;white-space:nowrap" class="ft15">Address</p>
-        <p style="position:absolute;top:260px;left:150px;white-space:nowrap; color:red; font-weight:bold" id="facilityAddress"  name="facilityAddress" class="ft15"></p> 
+        <p style="position:absolute;top:260px;left:150px;white-space:nowrap; color:red; font-weight:bold" id="facilityAddress"  name="facilityAddress" class="ft15">dd</p> 
         <p style="position:absolute;top:260px;left:150px;white-space:nowrap; color:red; font-weight:bold" id="facilityAddress" name="facilityAddress" class="ft15"></p>
         <input type="hidden" id="facilityAddressHidden" name="facilityAddress" value="" />
             <p style="position:absolute;top:300px;left:246px;white-space:nowrap" class="ft15">Particulars</p>
@@ -119,32 +126,30 @@
             <input type="month" id="billingMonth2" asp-for="MonthYearTo" style="width: 110px; height: 28px; font-size: 8pt;" class="ft15">
                     in the amount of:
             </p>
-
-            <select id="fundsourceDropdown" name="fundsource_id" id="saa1" onchange="onchangeSaa($(this))" style="position:absolute;top:440px;left:100px;white-space:nowrap; width:150px; height: 20px;" class="ft15">
-                <option value="" data-facilities="">- Select SAA -</option>
-                @foreach ($fundsources as $fundsource)
-                    <option value="{{ $fundsource->id }}" data-facilities="{{ json_encode($fundsource->facilities) }}">{{ $fundsource->saa }}</option>
-                @endforeach
-            </select>
-
+                     <select id="fundsourceDropdown" name="fundsource_id" id="saa1" onchange="onchangeSaa($(this))" style="position:absolute;top:440px;left:100px;white-space:nowrap; width:150px; height: 20px;" class="ft15">
+                          <option value="" data-facilities="">- Select SAA -</option>
+                        @foreach($fundsources as $fund)
+                          <option value="{{ $fund->id }}">{{ $fund->saa }}</option>
+                        @endforeach  
+                     </select> 
             <input type="text" name="amount1" id="inputValue1" style="position:absolute;top:440px;left:270px;white-space:nowrap; width:150px; height: 20px;" class="ft15">
                 <br />
                 <br />
-            <span id="showSAAButton" class="fa fa-plus" style="position:absolute;top:445px;left:75px; width:20px; height: 20px; cursor:pointer" onclick="toggleSAADropdowns()"></span>
+             <span id="showSAAButton" class="fa fa-plus" style="position:absolute;top:445px;left:75px; width:20px; height: 20px; cursor:pointer" onclick="toggleSAADropdowns()"></span>
          
-            <select id="fundsourceDropdown" name="fundsource_id"  id="saa2" style="position:absolute;top:460px;left:100px;white-space:nowrap; width:150px; height: 20px" class="ft15"  disabled>
+            <select id="fundsourceDropdown" name="fundsource_id"  id="saa2" onchange="onchangeSaa($(this))" style="position:absolute;top:460px;left:100px;white-space:nowrap; width:150px; height: 20px" class="ft15"  disabled>
               <option value="">- Select SAA -</option>
-                @foreach ($fundsources as $fundsource)
-                    <option value="{{ $fundsource->id }}">{{ $fundsource->saa }}</option>
-                @endforeach
+                    @foreach($fundsources as $fund)
+                        <option value="{{ $fund->id }}">{{ $fund->saa }}</option>
+                    @endforeach 
              </select>
            <input type="text" name="amount2" id="inputValue2" style="position:absolute;top:460px;left:270px;white-space:nowrap; width:150px; height: 20px; font-size: 8pt;" class="ft15" disabled>
 
-           <select id="fundsourceDropdown1" name="fundsource_id"  id="saa3" style="position:absolute;top:480px;left:100px;white-space:nowrap; width:150px; height: 20px" class="ft15" disabled>
+           <select id="fundsourceDropdown" name="fundsource_id"  id="saa3" onchange="onchangeSaa($(this))" style="position:absolute;top:480px;left:100px;white-space:nowrap; width:150px; height: 20px" class="ft15" disabled>
              <option value="">- Select SAA -</option>
-                @foreach ($fundsources as $fundsource)
-                    <option value="{{ $fundsource->id }}">{{ $fundsource->saa }}</option>
-                @endforeach
+                    @foreach($fundsources as $fund)
+                        <option value="{{ $fund->id }}">{{ $fund->saa }}</option>
+                    @endforeach 
              </select>
            <input type="text" name="amount3" id="inputValue3" style="position:absolute;top:480px;left:270px;white-space:nowrap; width:150px; height: 20px; font-size: 8pt;" class="ft15" disabled>
 
@@ -213,7 +218,11 @@
             <p style="position:absolute;top:1230px;left:20px;white-space:nowrap" class="ft15">Official Receipt No. &amp; Date/Other Documents</p>
         </div>
 
-
+@endif
+@endforeach
+@endif
+@endforeach
+@endforeach
 
      <div class="modal-footer">
         <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal"><i class="typcn typcn-times"></i>Close</button>
@@ -224,6 +233,7 @@
     </form>
 
 <script>
+
 
       $(document).ready(function() {
        $('#saa1').change(function() {

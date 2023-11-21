@@ -32,24 +32,33 @@ class DvController extends Controller
         $user = Auth::user();
         $dvs = Dv::get();
 
-        // Fetch the fundsource data from the model
-        $fundsources = Fundsource::all();
+            $fundsources = Fundsource::              
+                            with([
+                                'proponents' => function ($query) {
+                                    $query->with([
+                                        'proponentInfo' => function ($query) {
+                                            $query->with('facility');
+                                        }
+                                    ]);
+                                },
+                                'encoded_by' => function ($query) {
+                                    $query->select(
+                                        'id',
+                                        'name'
+                                    );
+                                }
+                            ])->get();
+
         $facilities = Facility::all();
         $VatFacility = AddFacilityInfo::Select('vat')->distinct()->get();
         $ewtFacility = AddFacilityInfo::Select('Ewt')->distinct()->get();
-        //$ewtVatFacility = AddFacilityInfo::all();
-        // $ewtVatFacility= Facility::with('addFacilityInfo')
-        // ->select(
-        //     'facility.id',
-        //     'facility.name',
-        //     'facility.address',
-        //  )
-        // ->where('hospital_type','private')->get();
+
 
         return view('dv.create_dv', [
             'user' => $user,
             'dvs' => $dvs,
-            'fundsources' => $fundsources, // Pass the fundsource data to the view
+            'FundSources' =>  $fundsources,
+            'fundsources' => Fundsource::get(), // Pass the fundsource data to the view
             'facilities' => $facilities, // Pass the facility data to the view
             'VatFacility' => $VatFacility,
             'ewtFacility' => $ewtFacility,
@@ -57,7 +66,13 @@ class DvController extends Controller
     }
 
     function facilityGet(Request $request){
-         return Facility::where('id', $request->facility_id)->get();
+      //  \Log::info('Request received. Fundsource ID: ' . $request->fundsource_id);
+
+        // ProponentInfo::where('fundsource_id', $request->fundsource_id)->get();
+        $proponentInfo = ProponentInfo::with('facility')
+                       ->where('fundsource_id', $request->fundsource_id)
+                       ->get();
+       return $proponentInfo;
     }
 
 

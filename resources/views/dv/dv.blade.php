@@ -167,31 +167,29 @@
 @section('js')
 
 <script>
-   
    function onchangeSaa(data) {
         if(data.val()) {
             console.log(data);
             $.get("{{ url('facility/get').'/' }}"+data.val(), function(result) {
               
-                $('#facility_id').html('');
+                $('#facilityDropdown').html('');
 
-                $('#facility_id').append($('<option>', {
+                $('#facilityDropdown').append($('<option>', {
 
                      value: "",
-                     text: "Please select Facility"
+                     text: " -Please select Facility-"
 
                 }));
                  $.each(result, function(index, optionData){
-                    $('#facility_id').append($('<option>', {
+                    $('#facilityDropdown').append($('<option>', {
                         value: optionData.id,
-                        text: optionData.name
-                    }))
+                        text: optionData.facility ? optionData.facility.name : ''
+                    }));
                  });
             });
         }
 
       }
-
 
         function createDv() {
             $('.modal_body').html(loading);
