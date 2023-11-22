@@ -170,21 +170,26 @@
 
 
 
-// function onchangefacility(data) {
-//     if (data.val()) {
-//         console.log("Selected Facility_id:", data.val())
-//         $.get("{{ url('facility/dv').'/' }}" + data.val(), function(result) {
-//             // Assuming result is a JSON object with a 'facility' property
-//             var facilityAddress = result.facility ? result.facility.address : 'N/A';
-//             $("#facilityAddress").text(facilityAddress);
-//         });
-//     }
-// }
+var saaCounter = 1;
+
+function toggleSAADropdowns() {
+    saaCounter++;
+
+    if (saaCounter === 2) {
+        document.getElementById('saa2').style.display = 'block';
+        document.getElementById('inputValue2').style.display = 'block';
+    } else if (saaCounter === 3) {
+        document.getElementById('saa3').style.display = 'block';
+        document.getElementById('inputValue3').style.display = 'block';
+
+        document.getElementById('showSAAButton').style.display = 'none';//hiding this button 
+    }
+}
+
 
 
    function onchangeSaa(data) {
         if(data.val()) {
-        var facilityId = data.find(':selected').data('facility-id');
         console.log(data);
             $.get("{{ url('facility/get').'/' }}"+data.val(), function(result) {
               
@@ -199,34 +204,38 @@
                  $.each(result, function(index, optionData){
                     $('#facilityDropdown').append($('<option>', {
                         value: optionData.id,
-                        text: optionData.facility ? optionData.facility.name : ''
+                        text: optionData.facility ? optionData.facility.name : '',
+                        address:optionData.facility ? optionData.facility.address : '',
+                        facilityname: optionData.facility ? optionData.facility.name : '',
                     }));
                  });
-
-                 $('#facilityDropdown').trigger('change', facilityId);
             });
         }
 
+      }//end of function
+
+      function onchangefacility(data) {
+        if(data.val()) {
+            var selectOption = data.find('option:selected');
+            var facilityAddress = selectOption.attr('address');
+            var facilityName = selectOption.attr('facilityname');
+            $('#facilityAddress').empty();
+            $('#hospitalAddress').empty();
+       
+            if(facilityAddress){
+                $("#facilityAddress").text(facilityAddress);
+                $("#facilitaddress").val(facilityAddress);
+                
+                $("#hospitalAddress").text(facilityName);
+            }else{
+                $("#facilityAddress, #hospitalAddress").text("Facility not found");
+
+            }
+        }
       }
 
-      function onchangefacility(data, facilityId) {
-        console.log("Selected Facility_id:", facilityId );
-    if (facilityId) {
-        
-        $.get("{{ url('facility/dv').'/' }}" + facilityId, function(result) {
-            $("#facilityAddress").text(result);
-        });
-    }
-}
 
-        // function onchangefacility(data) {
-        //     if (data.val()) {
-        //         console.log("Selected Facility_id:", data.val())
-        //         $.get("{{ url('facility/dv').'/' }}" + data.val(), function(result) {
-        //             $("#facilityAddress").text(result);
-        //         });
-        //     }
-        // }
+
 
         function createDv() {
             $('.modal_body').html(loading);

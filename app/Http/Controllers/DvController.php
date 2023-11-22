@@ -76,23 +76,39 @@ class DvController extends Controller
     }
 
     function dvfacility(Request $request){
-       $facilityId = $request->facility_id;
-
        $proponentInfo = ProponentInfo::with('facility')
-       ->where('facility_id',  $facilityId)->first();
-
+       ->where('facility_id',  $request->facility_id)->first();
+      // return $proponentInfo;
        if($proponentInfo){
          $facilityAddress = $proponentInfo->facility->address;
-         return $facilityAddress;
+         return response()->json(['facilityAddress' => $facilityAddress]);
        }else{
         return "facility not found";
-       }
-        // return $request->facility_id;
-        // $proponentInfo = ProponentInfo::with('facility')
-        // ->where('facility_id', $request->facility_id)
-        // ->get();
-        // $proponentInfo = $proponentInfo->facility->address;
-        // return $proponentInfo;
+       }    
+    }
+    
+    function createDvSave(Request $request){
+
+     //  return $request->input('facilityddress');
+        $dv = new Dv();
+
+       $dv->date = $request->input('datefield');
+       $dv->payee = $request->input('facilityname');
+       $dv->address = $request->input('facilityddress');
+       $dv->month_year_from = $request->input('billingMonth1');
+       $dv->month_year_to = $request->input('billingMonth2');
+       $dv->saa_number = $request->input('fundsource_id');
+       $dv->amount1 = $request->input('amount1');
+       $dv->amount2 = $request->input('amount2');
+       $dv->amount3 = $request->input('amount3');
+       $dv->total_amount = $request->input('total');
+       $dv->deduction1 = $request->input('deduction1');
+       $dv->deduction2 = $request->input('deduction2');
+       $dv->deduction_amount1 = $request->input('deductionAmount1');
+       $dv->deduction_amount2 = $request->input('deduction_amount2');
+       $dv->total_deduction_amount = $request->input('totalDeduction');
+       $dv->overall_total_amount = $request->input('overallTotal');
+       $dv->save();
     }
 
 //     public function createFundSourceSave(Request $request) {

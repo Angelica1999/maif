@@ -63,12 +63,9 @@
 </style>
 <!-- <img src="{{ asset('images/target004.png') }}"  width="892" height="1263" class="img-responsive" /> -->
 <!-- <div id="page1-div" style="position:relative;width:892px;height:1280px;"> -->
-<form action="Maiff" method="post"> 
-{{--@foreach($FundSources as $fundsorce)
-@foreach ($fundsorce->proponents as $proponent)
-@if ($proponent->proponentInfo)
-@foreach ($proponent->proponentInfo as $proponentInfo)
-@if($proponentInfo->facility)   --}}  
+<form  method="post" action="{{ route('dv.create.save') }}"> 
+    @csrf   
+<input type="hidden" name="dv" value="">
     <div id="page1-div" style="position:relative;width:852px;height:1280px;">
         <img src="{{ asset('images/target005.png') }}"  width="892" height="1263" class="img-responsive" />
             <p style="position:absolute;top:23px;left:54px;white-space:nowrap" class="ft10">&#160;</p>
@@ -83,7 +80,7 @@
             <p style="position:absolute;top:27px;left:696px;white-space:nowrap" class="ft15"></p>
             <p style="position:absolute;top:41px;left:738px;white-space:nowrap" class="ft15"></p>
             <p style="position:absolute;top:74px;left:600px;white-space:nowrap" class="ft15">Date :</p>
-            <input type="date" asp-for="Date"  id="dateField" style="position:absolute;top:70px;left:650px;white-space:nowrap; width: 150px; height: 28px; font-size:8pt" class="ft15">
+            <input type="date" asp-for="Date" name="datefield"  id="dateField" style="position:absolute;top:70px;left:650px;white-space:nowrap; width: 150px; height: 28px; font-size:8pt" class="ft15">
             <p style="position:absolute;top:113px;left:600px;white-space:nowrap" class="ft15">DV No :</p>
             <p style="position:absolute;top:113px;left:728px;white-space:nowrap" class="ft15"></p>
             <p style="position:absolute;top:180px;left:20px;white-space:nowrap" class="ft18">Mode Of<br />Payment</p>
@@ -93,7 +90,7 @@
             <p style="position:absolute;top:180px;left:566px;white-space:nowrap" class="ft15">Others (Please specify) ____________</p>
             <p style="position:absolute;top:217px;left:20px;white-space:nowrap" class="ft15">Payee</p>
   
-        <select id="facilityDropdown" name="facility_id" id ="facility_id" onchange="onchangefacility($(this))" style="position:absolute;top:215px;left:140px;white-space:nowrap; width:260px; height: 28px; font-size: 9pt" class="ft15">
+        <select id="facilityDropdown" name="facilityname" id ="facility_id" onchange="onchangefacility($(this))" style="position:absolute;top:215px;left:140px;white-space:nowrap; width:260px; height: 28px; font-size: 9pt" class="ft15">
             <option value=""> Select Facility  </option>
             </select>
             <!-- <option value="" ></option> -->
@@ -104,8 +101,9 @@
             <p style="position:absolute;top:219px;left:434px;white-space:nowrap" class="ft18">Tin/Employee No.:<br /></p>
             <p style="position:absolute;top:219px;left:655px;white-space:nowrap" class="ft15">ORS/BURS No.:</p>
             <p style="position:absolute;top:260px;left:20px;white-space:nowrap" class="ft15">Address</p>
-        <p style="position:absolute;top:260px;left:150px;white-space:nowrap; color:red; font-weight:bold" id="facilityAddress"  name="facilityAddress" class="ft15"></p> 
-       {{-- <p style="position:absolute;top:260px;left:150px;white-space:nowrap; color:red; font-weight:bold" id="facilityAddress" name="facilityAddress" class="ft15"></p>--}}
+        <p style="position:absolute;top:260px;left:150px;white-space:nowrap; color:red; font-weight:bold" id="facilityAddress"  class="ft15"></p> 
+                                                                    <input type="hidden" name="facilityAddress" id="facilitaddress" class="ft15">
+    {{--<p style="position:absolute;top:365px;left:150px;white-space:nowrap; color:red; font-weight:bold" id="facilityAddress2" name="facilityAddress2" class="ft15"></p>--}}
         <input type="hidden" id="facilityAddressHidden" name="facilityAddress" value="" />
             <p style="position:absolute;top:300px;left:246px;white-space:nowrap" class="ft15">Particulars</p>
             <p style="position:absolute;top:295px;left:522px;white-space:nowrap" class="ft15">Responsibility</p>
@@ -115,58 +113,52 @@
             <p style="position:absolute;top:345px;left:39px;white-space:nowrap" class="ft16">
                 For reimbursement of medical services rendered to patients under the Medical Assistance for <br />
             </p>
-            <p style="position:absolute;top:365px;left:39px;white-space:nowrap" class="ft16">
+            <p style="position:absolute;top:365px;left:39px;white-space:nowrap"  class="ft16">
                 Indigent Patient Program for
-                <span id="hospitalAddress" style="color:red;"></span>
+                <span id="hospitalAddress" name="hospitalname" style="color:red;"></span>
             </p>
             <p style="position:absolute;top:385px;left:39px;white-space:nowrap" class="ft16">
                 per billing statement dated
-                <input type="month" id="billingMonth1" asp-for="MonthYearFrom" style="width: 110px; height: 28px; font-size: 8pt;" class="ft15">
+                <input type="month" id="billingMonth1" name="billingMonth1" asp-for="MonthYearFrom" style="width: 110px; height: 28px; font-size: 8pt;" class="ft15">
                 <!-- Second Month Picker -->
-            <input type="month" id="billingMonth2" asp-for="MonthYearTo" style="width: 110px; height: 28px; font-size: 8pt;" class="ft15">
+            <input type="month" id="billingMonth2" name="billingMonth2" asp-for="MonthYearTo" style="width: 110px; height: 28px; font-size: 8pt;" class="ft15">
                     in the amount of:
-            </p>              
-             @foreach($FundSources as $fundsorce)
-            @foreach ($fundsorce->proponents as $proponent)
-            @if ($proponent->proponentInfo)
-            @foreach ($proponent->proponentInfo as $proponentInfo)
-                     <select id="fundsourceDropdown" name="fundsource_id" id="saa1" onchange="onchangeSaa($(this))" style="position:absolute;top:440px;left:100px;white-space:nowrap; width:150px; height: 20px;" class="ft15">
-                          <option value="" data-facilities="">- Select SAA -</option>
-                        @foreach($fundsources as $fund)
-                          <option value="{{ $fund->id }}" data-facility-id="{$proponentInfo->facility_id}}">{{ $fund->saa }}</option>  
-                        @endforeach  
-                     </select> 
-            <input type="text" name="amount1" id="inputValue1" style="position:absolute;top:440px;left:270px;white-space:nowrap; width:150px; height: 20px;" class="ft15">
-                <br />
-                <br />
-             <span id="showSAAButton" class="fa fa-plus" style="position:absolute;top:445px;left:75px; width:20px; height: 20px; cursor:pointer" onclick="toggleSAADropdowns()"></span>
-  
-            <select id="fundsourceDropdown" name="fundsource_id"  id="saa2" onchange="onchangeSaa($(this))" style="position:absolute;top:460px;left:100px;white-space:nowrap; width:150px; height: 20px" class="ft15"  disabled>
-              <option value="">- Select SAA -</option>
+            </p> 
+            
+                    <select  name="fundsource_id" id="saa1"  onchange="onchangeSaa($(this))" style="position:absolute;top:440px;left:100px;white-space:nowrap; width:150px; height: 20px;" class="ft15" required>
+                        <option value="" data-facilities="">- Select SAA -</option>
                     @foreach($fundsources as $fund)
-                        <option value="{{ $fund->id }}">{{ $fund->saa }}</option>
-                    @endforeach 
-             </select>
-           <input type="text" name="amount2" id="inputValue2" style="position:absolute;top:460px;left:270px;white-space:nowrap; width:150px; height: 20px; font-size: 8pt;" class="ft15" disabled>
+                        <option value="{{ $fund->id }}">{{ $fund->saa }}</option>  
+                    @endforeach  
+                    </select> 
+                    <input type="text" name="amount1" id="inputValue1" style="position:absolute;top:440px;left:270px;white-space:nowrap; width:150px; height: 20px;" class="ft15" required>
+                        <br />
+                        <br />        
+                    <select  name="fundsource_id"  id="saa2"  style="position:absolute;top:460px;left:100px;white-space:nowrap; width:150px; height: 20px; display: none;" class="ft15" >
+                    <option value="">- Select SAA -</option>
+                            @foreach($fundsources as $fund)
+                                <option value="{{ $fund->id }}">{{ $fund->saa }}</option>
+                            @endforeach 
+                    </select>
+                <input type="text" name="amount2" id="inputValue2" style="position:absolute;top:460px;left:270px;white-space:nowrap; width:150px; height: 20px; font-size: 8pt; display: none;" class="ft15">
 
-           <select id="fundsourceDropdown" name="fundsource_id"  id="saa3" onchange="onchangeSaa($(this))" style="position:absolute;top:480px;left:100px;white-space:nowrap; width:150px; height: 20px" class="ft15" disabled>
-             <option value="">- Select SAA -</option>
-                    @foreach($fundsources as $fund)
-                        <option value="{{ $fund->id }}">{{ $fund->saa }}</option>
-                    @endforeach 
-             </select>
-           <input type="text" name="amount3" id="inputValue3" style="position:absolute;top:480px;left:270px;white-space:nowrap; width:150px; height: 20px; font-size: 8pt;" class="ft15" disabled>
-           @endforeach
-           @endif
-@endforeach
-@endforeach
+                <select  name="fundsource_id"  id="saa3" style="position:absolute;top:480px;left:100px;white-space:nowrap; width:150px; height: 20px; display: none" class="ft15">
+                    <option value="">- Select SAA -</option>
+                            @foreach($fundsources as $fund)
+                                <option value="{{ $fund->id }}">{{ $fund->saa }}</option>
+                            @endforeach 
+                    </select>
+                <input type="text" name="amount3" id="inputValue3" style="position:absolute;top:480px;left:270px;white-space:nowrap; width:150px; height: 20px; font-size: 8pt; display:none" class="ft15">
+            <!-- <span id="showSaabutton" class="fa fa-plus" style="position:absolute;top:445px;left:75px; width:20px; height: 20px; cursor:pointer" onclick="toggleSAAdropdowns()">Add</span> -->
+            <span id="showSAAButton" class="fa fa-plus" style="position:absolute;top:442px;left:70px; width:20px; height: 20px; cursor:pointer" onclick="toggleSAADropdowns()">Add</span>
+
         <select id="deduction1" name="deduction1"  style="position:absolute;top:520px;left:100px;white-space:nowrap; width:150px; height: 20px" class="ft15">
          <option value="">- Select Vat -</option>
          @foreach($VatFacility as $facilityvat)
                 <option value="{{ $facilityvat->id }}">{{ $facilityvat->vat }}%</option>
          @endforeach
         </select>
-            <input type="text" id="inputDeduction1" asp-for="DeductionAmount1" style="position:absolute;top:520px;left:270px;white-space:nowrap; width:150px; height: 20px; font-size: 8pt" class="ft15">
+            <input type="text" id="inputDeduction1" name="deductionAmount1" asp-for="DeductionAmount1" style="position:absolute;top:520px;left:270px;white-space:nowrap; width:150px; height: 20px; font-size: 8pt" class="ft15">
 
         <select id="deduction2" name="deduction2" style="position:absolute;top:540px;left:100px;white-space:nowrap; width:150px; height: 20px" class="ft15">
         <option value="">- Select Ewt -</option>
@@ -176,13 +168,16 @@
          {{-- <option value="{{  $facilityewt->id }}">{{ $facilityewt->Ewt % 1 == 0? number_format($facilityewt->Ewt, 0) : $facilityewt->Ewt }}%</option> --}}
          @endforeach
         </select>
-        <input type="text" id="inputDeduction2" asp-for="DeductionAmount2" style="position:absolute;top:540px;left:270px;white-space:nowrap; width:150px; height: 20px; font-size: 8pt" class="ft15">
+        <input type="text" id="inputDeduction2" name="deductionAmount2" asp-for="DeductionAmount2" style="position:absolute;top:540px;left:270px;white-space:nowrap; width:150px; height: 20px; font-size: 8pt" class="ft15">
             <p style="position:absolute;top:568px;left:69px;white-space:nowrap; font-weight:bold;" class="ft16">  &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; Amount Due</p>
             <p style="position:absolute;top:359px;left:746px;white-space:nowrap" class="ft15"></p>
-            <p style="position:absolute;top:440px;left:755px;white-space:nowrap" class="ft15 total"></p>
+            <p style="position:absolute;top:440px;left:755px;white-space:nowrap"  class="ft15 total"></p>
+                                                  <input type="hidden" name="total" id="totalInput" class="ft15 total">
             <p style="position:absolute;top:521px;left:755px;white-space:nowrap" class="ft15 totalDeduction"></p>
+                                              <input type="hidden" name="totalDeduction" id="totalDeductionInput" class="ft15 totalDeduction">
             <p style="position:absolute;top:551px;left:760px;white-space:nowrap" class="ft15">_________________</p>
-            <p style="position:absolute;top:568px;left:755px;white-space:nowrap; font-weight:bold" class="ft15 overallTotal"></p>
+            <p style="position:absolute;top:568px;left:755px;white-space:nowrap; font-weight:bold" class="ft15 overallTotal" id="overallTotal">total</p>
+                                                                                  <input type="hidden" name="overallTotal" id="overallTotalInput" class="ft15 overallTotal">
             <p style="position:absolute;top:615px;left:20px;white-space:nowrap" class="ft17"><b>A. Certified: Expenses/Cash Advance necessary, lawful and incurred under my direct supervision.</b></p>
             <p style="position:absolute;top:652px;left:57px;white-space:nowrap; font-size:9pt" class="ft17"><b>&#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160;  SOPHIA M. MANCAO, MD, DPSP, RN-MAN </b></p>
             <p style="position:absolute;top:666px;left:60px;white-space:nowrap; font-size: 8pt" class="ft17">&#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; Director III</p>
@@ -225,12 +220,6 @@
             <p style="position:absolute;top:1230px;left:20px;white-space:nowrap" class="ft15">Official Receipt No. &amp; Date/Other Documents</p>
         </div>
 
-{{--@endif
-@endforeach
-@endif
-@endforeach
-@endforeach --}}
-
      <div class="modal-footer">
         <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal"><i class="typcn typcn-times"></i>Close</button>
         <button type="submit" class="btn btn-sm btn-primary"><i class="typcn typcn-tick menu-icon"></i>Submit</button>
@@ -241,26 +230,10 @@
 
 <script>
 
-
-      $(document).ready(function() {
-       $('#saa1').change(function() {
-         $('#saa2').prop('disabled', true);
-         $('#inputValue2').prop('disabled', true);
-
-         $('#saa3').prop('disabled', true);
-         $('#inputValue3').prop('disabled', true);
-
-         $('#saa2').html('<option value="">Please Select a Saa</option>')
-
-         setTimeout(function() {
-            $('#saa2').prop('disabled', false);
-            $('#inputValue2').prop('disabled', false);
-         }, 500);
-
-       });
-         
-
-      });
+//   // Get the content of the <p> tag
+//   var pContent = document.getElementById('overallTotal').innerText;
+// // Set the value of the hidden input field
+// document.getElementById('overallTotalInput').value = pContent;
 
           // Function to update the total and format with commas
         function updateTotal() {
@@ -269,14 +242,27 @@
             var amount2 = parseFloat(getFormattedValue('inputValue2')) || 0;
             var amount3 = parseFloat(getFormattedValue('inputValue3')) || 0;
 
+            var deduct1 = parseFloat(getFormattedValue('inputDeduction1')) || 0;
+            var deduct2 = parseFloat(getFormattedValue('inputDeduction2')) || 0;
+            //calculate the deduction 
+             var totaldeduction = deduct1 + deduct2;
             // Calculate sum
             var total = amount1 + amount2 + amount3;
-
+            //add deduction and sum
+             var totalAmount = total - totaldeduction ;
             // Format with commas for integer part
             var formattedTotal = total.toLocaleString('en-US', { maximumFractionDigits: 2 });
-
+            var formattedDecduction = totaldeduction.toLocaleString('en-Us', {maximumFractionDigits: 2});
+            var formattedTotalAmount = totalAmount.toLocaleString('en-Us', {maximumFractionDigits: 2});
             // Update the total display
             document.querySelector('.total').innerText = '' + formattedTotal;
+            document.querySelector('#totalInput').value = '' + formattedTotal;
+
+            document.querySelector('.totalDeduction').innerText = '' + formattedDecduction;
+            document.querySelector('#totalDeductionInput').value = '' + formattedDecduction;
+
+            document.querySelector('.overallTotal').innerText = '' + formattedTotalAmount;
+            document.querySelector('#overallTotalInput').value = '' + formattedTotalAmount;
         }
 
         // Function to get the numeric value from the formatted input
@@ -293,6 +279,9 @@
         document.getElementById('inputValue1').addEventListener('input', updateTotal);
         document.getElementById('inputValue2').addEventListener('input', updateTotal);
         document.getElementById('inputValue3').addEventListener('input', updateTotal);
+
+        document.getElementById('inputDeduction1').addEventListener('input', updateTotal);
+        document.getElementById('inputDeduction2').addEventListener('input', updateTotal);
 
         // Initial update
         updateTotal();
