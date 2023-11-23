@@ -208,7 +208,7 @@ function toggleSAADropdowns() {
                         address:optionData.facility ? optionData.facility.address : '',
                         facilityname: optionData.facility ? optionData.facility.name : '',
                         id: optionData.facility ? optionData.facility.id : '',
-                        fund_source : data.val()
+                        fund_source : data.val(),
                     }));
                  });
             });

@@ -130,7 +130,7 @@
                             <option value="{{ $fund->id }}">{{ $fund->saa }}</option>  
                         @endforeach  
                     </select> 
-                    <input type="text" name="amount1" id="inputValue1" style="position:absolute;top:440px;left:270px;white-space:nowrap; width:150px; height: 20px;" class="ft15" >
+                    <input type="text" name="amount1" id="inputValue1" style="position:absolute;top:440px;left:270px;white-space:nowrap; width:150px; height: 20px;" class="ft15" oninput="fundAmount()" >
                         <br />
                         <br />        
                     <select  name="fundsource_id_2"  id="saa2"  style="position:absolute;top:460px;left:100px;white-space:nowrap; width:150px; height: 20px; display: none;" class="ft15" >
