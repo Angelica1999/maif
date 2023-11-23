@@ -92,7 +92,12 @@
                 msg: 'Successfully Upate Fund Source!'
             });
         @endif
-    
+        @if(session('dv_create'))
+           <?php session()->forget('dv_create'); ?>
+           Lobibox.notify('success', {
+              msg: 'Disbursement was Created!'
+           });
+        @endif
     </script>
 
     @yield('js')

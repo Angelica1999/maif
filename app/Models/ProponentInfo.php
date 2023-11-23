@@ -15,4 +15,8 @@ class ProponentInfo extends Model
     public function facility() {
         return $this->belongsTo(Facility::class, 'facility_id','id');
     }
+
+    public function fundsource() {
+        return $this->belongsTo(Fundsource::class,'fundsource_id','id');
+    }
 }

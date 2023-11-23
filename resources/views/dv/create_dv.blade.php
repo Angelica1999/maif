@@ -65,7 +65,7 @@
 <!-- <div id="page1-div" style="position:relative;width:892px;height:1280px;"> -->
 <form  method="post" action="{{ route('dv.create.save') }}"> 
     @csrf   
-<input type="hidden" name="dv" value="">
+ <input type="hidden" name="dv" value="">
     <div id="page1-div" style="position:relative;width:852px;height:1280px;">
         <img src="{{ asset('images/target005.png') }}"  width="892" height="1263" class="img-responsive" />
             <p style="position:absolute;top:23px;left:54px;white-space:nowrap" class="ft10">&#160;</p>
@@ -104,7 +104,6 @@
         <p style="position:absolute;top:260px;left:150px;white-space:nowrap; color:red; font-weight:bold" id="facilityAddress"  class="ft15"></p> 
                                                                     <input type="hidden" name="facilityAddress" id="facilitaddress" class="ft15">
     {{--<p style="position:absolute;top:365px;left:150px;white-space:nowrap; color:red; font-weight:bold" id="facilityAddress2" name="facilityAddress2" class="ft15"></p>--}}
-        <input type="hidden" id="facilityAddressHidden" name="facilityAddress" value="" />
             <p style="position:absolute;top:300px;left:246px;white-space:nowrap" class="ft15">Particulars</p>
             <p style="position:absolute;top:295px;left:522px;white-space:nowrap" class="ft15">Responsibility</p>
             <p style="position:absolute;top:310px;left:543px;white-space:nowrap" class="ft15">Center</p>
@@ -126,49 +125,50 @@
             </p> 
             
                     <select  name="fundsource_id" id="saa1"  onchange="onchangeSaa($(this))" style="position:absolute;top:440px;left:100px;white-space:nowrap; width:150px; height: 20px;" class="ft15" required>
-                        <option value="" data-facilities="">- Select SAA -</option>
-                    @foreach($fundsources as $fund)
-                        <option value="{{ $fund->id }}">{{ $fund->saa }}</option>  
-                    @endforeach  
+                            <option value="" data-facilities="">- Select SAA -</option>
+                        @foreach($fundsources as $fund)
+                            <option value="{{ $fund->id }}">{{ $fund->saa }}</option>  
+                        @endforeach  
                     </select> 
-                    <input type="text" name="amount1" id="inputValue1" style="position:absolute;top:440px;left:270px;white-space:nowrap; width:150px; height: 20px;" class="ft15" required>
+                    <input type="text" name="amount1" id="inputValue1" style="position:absolute;top:440px;left:270px;white-space:nowrap; width:150px; height: 20px;" class="ft15" >
                         <br />
                         <br />        
-                    <select  name="fundsource_id"  id="saa2"  style="position:absolute;top:460px;left:100px;white-space:nowrap; width:150px; height: 20px; display: none;" class="ft15" >
+                    <select  name="fundsource_id_2"  id="saa2"  style="position:absolute;top:460px;left:100px;white-space:nowrap; width:150px; height: 20px; display: none;" class="ft15" >
                     <option value="">- Select SAA -</option>
-                            @foreach($fundsources as $fund)
-                                <option value="{{ $fund->id }}">{{ $fund->saa }}</option>
-                            @endforeach 
+                            <!-- @foreach($facilityId as $row)
+                              <option value="{{ $row->fundsource_id }}">{{ $row->fundsource_id }}</option>
+                            @endforeach  -->
                     </select>
                 <input type="text" name="amount2" id="inputValue2" style="position:absolute;top:460px;left:270px;white-space:nowrap; width:150px; height: 20px; font-size: 8pt; display: none;" class="ft15">
+                <span id="showSAAButton" class="fa fa-plus" style="position:absolute;top:442px;left:70px; width:20px; height: 20px; font-size:11px; cursor:pointer" onclick="toggleSAADropdowns()">Add</span>
 
-                <select  name="fundsource_id"  id="saa3" style="position:absolute;top:480px;left:100px;white-space:nowrap; width:150px; height: 20px; display: none" class="ft15">
+               {{-- <select  name="fundsource_id_3"  id="saa3" style="position:absolute;top:480px;left:100px;white-space:nowrap; width:150px; height: 20px; display: none" class="ft15">
                     <option value="">- Select SAA -</option>
                             @foreach($fundsources as $fund)
                                 <option value="{{ $fund->id }}">{{ $fund->saa }}</option>
                             @endforeach 
-                    </select>
+                    </select>--}}
                 <input type="text" name="amount3" id="inputValue3" style="position:absolute;top:480px;left:270px;white-space:nowrap; width:150px; height: 20px; font-size: 8pt; display:none" class="ft15">
             <!-- <span id="showSaabutton" class="fa fa-plus" style="position:absolute;top:445px;left:75px; width:20px; height: 20px; cursor:pointer" onclick="toggleSAAdropdowns()">Add</span> -->
-            <span id="showSAAButton" class="fa fa-plus" style="position:absolute;top:442px;left:70px; width:20px; height: 20px; cursor:pointer" onclick="toggleSAADropdowns()">Add</span>
+            <!-- <span id="showSAAButton1" class="fa fa-plus" style="position:absolute;top:455px;left:70px; width:20px; height: 20px; front-size:8px; cursor:pointer" onclick="toggleSAADropdowns()">Remove</span> -->
 
         <select id="deduction1" name="deduction1"  style="position:absolute;top:520px;left:100px;white-space:nowrap; width:150px; height: 20px" class="ft15">
          <option value="">- Select Vat -</option>
          @foreach($VatFacility as $facilityvat)
-                <option value="{{ $facilityvat->id }}">{{ $facilityvat->vat }}%</option>
+                <option value="{{ $facilityvat->id  }}">{{ $facilityvat->vat }}%</option>
          @endforeach
         </select>
-            <input type="text" id="inputDeduction1" name="deductionAmount1" asp-for="DeductionAmount1" style="position:absolute;top:520px;left:270px;white-space:nowrap; width:150px; height: 20px; font-size: 8pt" class="ft15">
+            <input type="text" id="inputDeduction1" name="deductionAmount1" style="position:absolute;top:520px;left:270px;white-space:nowrap; width:150px; height: 20px; font-size: 8pt" class="ft15">
 
         <select id="deduction2" name="deduction2" style="position:absolute;top:540px;left:100px;white-space:nowrap; width:150px; height: 20px" class="ft15">
         <option value="">- Select Ewt -</option>
         @foreach($ewtFacility as $facilityewt)
-          <option value="{{  $facilityewt->id }}">{{ $facilityewt->Ewt }}%</option>
+          <option value="{{  $facilityewt->id }}">{{ $facilityewt->Ewt % 1 == 0? number_format($facilityewt->Ewt, 0) : $facilityewt->Ewt  }}%</option>
 
          {{-- <option value="{{  $facilityewt->id }}">{{ $facilityewt->Ewt % 1 == 0? number_format($facilityewt->Ewt, 0) : $facilityewt->Ewt }}%</option> --}}
          @endforeach
         </select>
-        <input type="text" id="inputDeduction2" name="deductionAmount2" asp-for="DeductionAmount2" style="position:absolute;top:540px;left:270px;white-space:nowrap; width:150px; height: 20px; font-size: 8pt" class="ft15">
+        <input type="text" id="inputDeduction2" name="deductionAmount2" style="position:absolute;top:540px;left:270px;white-space:nowrap; width:150px; height: 20px; font-size: 8pt" class="ft15">
             <p style="position:absolute;top:568px;left:69px;white-space:nowrap; font-weight:bold;" class="ft16">  &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; Amount Due</p>
             <p style="position:absolute;top:359px;left:746px;white-space:nowrap" class="ft15"></p>
             <p style="position:absolute;top:440px;left:755px;white-space:nowrap"  class="ft15 total"></p>
@@ -224,9 +224,8 @@
         <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal"><i class="typcn typcn-times"></i>Close</button>
         <button type="submit" class="btn btn-sm btn-primary"><i class="typcn typcn-tick menu-icon"></i>Submit</button>
     </div>
- </div>
-
-    </form>
+  </div>
+</form>
 
 <script>
 

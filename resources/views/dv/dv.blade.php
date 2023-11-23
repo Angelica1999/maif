@@ -207,6 +207,8 @@ function toggleSAADropdowns() {
                         text: optionData.facility ? optionData.facility.name : '',
                         address:optionData.facility ? optionData.facility.address : '',
                         facilityname: optionData.facility ? optionData.facility.name : '',
+                        id: optionData.facility ? optionData.facility.id : '',
+                        fund_source : data.val()
                     }));
                  });
             });
@@ -218,10 +220,33 @@ function toggleSAADropdowns() {
         if(data.val()) {
             var selectOption = data.find('option:selected');
             var facilityAddress = selectOption.attr('address');
+            var facilityId = selectOption.attr('id');
             var facilityName = selectOption.attr('facilityname');
+            var fund_source = selectOption.attr('fund_source');
             $('#facilityAddress').empty();
             $('#hospitalAddress').empty();
-       
+
+            $.get("{{ url('/getFund').'/' }}"+facilityId+fund_source, function(result) {
+                //  console.log(fund_source);
+                $('#saa2').html('');
+
+                $('#saa2').append($('<option>', {
+
+                     value: "",
+                     text: " -Please select saa fund"
+
+                }));
+                 $.each(result, function(index, optionData){
+                     console.log(optionData);
+                    $('#saa2').append($('<option>', {
+                         value: optionData.fundsource.id,
+                         text: optionData.fundsource.saa
+                        //  text: optionData.facilityId && optionData.facilityId.fundsource ? optionData.facilityId.fundsource.saa : '',
+                        // text: optionData.facilityId ? optionData.facilityId.fundsource.saa : ''
+                    }));
+                 });
+            })
+
             if(facilityAddress){
                 $("#facilityAddress").text(facilityAddress);
                 $("#facilitaddress").val(facilityAddress);

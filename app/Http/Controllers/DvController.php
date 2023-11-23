@@ -27,10 +27,14 @@ class DvController extends Controller
     }
 
 
-    public function createDv()
+    public function createDv(Request $request)
     {
         $user = Auth::user();
         $dvs = Dv::get();
+
+         
+            $facilityId = ProponentInfo::where('facility_id','=', $request->facilityId)->get();
+            //  dd($facilityId);
 
             $fundsources = Fundsource::              
                             with([
@@ -50,8 +54,8 @@ class DvController extends Controller
                             ])->get();
 
         $facilities = Facility::all();
-        $VatFacility = AddFacilityInfo::Select('vat')->distinct()->get();
-        $ewtFacility = AddFacilityInfo::Select('Ewt')->distinct()->get();
+        $VatFacility = AddFacilityInfo::Select('id','vat')->distinct()->get();
+        $ewtFacility = AddFacilityInfo::Select('id','Ewt')->distinct()->get();
 
 
         return view('dv.create_dv', [
@@ -62,6 +66,7 @@ class DvController extends Controller
             'facilities' => $facilities, // Pass the facility data to the view
             'VatFacility' => $VatFacility,
             'ewtFacility' => $ewtFacility,
+            'facilityId' => $facilityId
         ]);
     }
 
@@ -89,15 +94,23 @@ class DvController extends Controller
     
     function createDvSave(Request $request){
 
-     //  return $request->input('facilityddress');
-        $dv = new Dv();
+         $dv = new Dv();
 
        $dv->date = $request->input('datefield');
        $dv->payee = $request->input('facilityname');
-       $dv->address = $request->input('facilityddress');
+       $dv->address = $request->input('facilityAddress');
        $dv->month_year_from = $request->input('billingMonth1');
        $dv->month_year_to = $request->input('billingMonth2');
-       $dv->saa_number = $request->input('fundsource_id');
+       $saaNumbers = [
+        $request->input('fundsource_id'),
+        $request->input('fundsource_id_2'),
+        $request->input('fundsource_id_3'),
+       ];
+       $saaNumbers = array_filter($saaNumbers, function($value) {
+          return $value !== null;
+       });
+      
+       $dv->saa_number = json_encode($saaNumbers);
        $dv->amount1 = $request->input('amount1');
        $dv->amount2 = $request->input('amount2');
        $dv->amount3 = $request->input('amount3');
@@ -105,10 +118,26 @@ class DvController extends Controller
        $dv->deduction1 = $request->input('deduction1');
        $dv->deduction2 = $request->input('deduction2');
        $dv->deduction_amount1 = $request->input('deductionAmount1');
-       $dv->deduction_amount2 = $request->input('deduction_amount2');
+       $dv->deduction_amount2 = $request->input('deductionAmount2');
        $dv->total_deduction_amount = $request->input('totalDeduction');
        $dv->overall_total_amount = $request->input('overallTotal');
        $dv->save();
+       session()->flash('dv_create', true);
+       return redirect()->back();
+    }
+
+    public function getFund (Request $request) {
+        $facilityId = ProponentInfo::with([
+            'fundsource' => function ($query) {
+                $query->select(
+                    'id',
+                    'saa'
+                );
+            }])->where('facility_id','=', $request->facilityId)
+            ->where('fundsource_id','!=', $request->fund_source)
+            ->get();
+
+        return $facilityId;
     }
 
 //     public function createFundSourceSave(Request $request) {

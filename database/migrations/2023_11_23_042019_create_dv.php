@@ -18,19 +18,19 @@ return new class extends Migration
             $table->string('address');
             $table->dateTime('month_year_from');
             $table->dateTime('month_year_to');
-            $table->string('saa_number');
-            $table->double('amount1')->nullable();
-            $table->double('amount2')->nullable();
-            $table->double('amount3')->nullable();
-            $table->double('total_amount')->nullable();
+            $table->string('saa_number')->nullable();
+            $table->bigInteger('amount1')->nullable();
+            $table->bigInteger('amount2')->nullable();
+            $table->bigInteger('amount3')->nullable();
+            $table->bigInteger('total_amount')->nullable();
             $table->string('deduction1')->nullable();
             $table->string('deduction2')->nullable();
             $table->double('deduction_amount1')->nullable();
             $table->double('deduction_amount2')->nullable();
             $table->double('total_deduction_amount')->nullable();
-            $table->double('overall_total_amount')->nullable();
+            $table->bigInteger('overall_total_amount')->nullable();
             $table->timestamps();
-        });
+        }); 
     }
 
     /**
