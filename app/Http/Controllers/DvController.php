@@ -70,27 +70,7 @@ class DvController extends Controller
         ]);
     }
 
-    function facilityGet(Request $request){
-      //  \Log::info('Request received. Fundsource ID: ' . $request->fundsource_id);
-
-        // ProponentInfo::where('fundsource_id', $request->fundsource_id)->get();
-        $proponentInfo = ProponentInfo::with('facility')
-                       ->where('fundsource_id', $request->fundsource_id)
-                       ->get();
-       return $proponentInfo;
-    }
-
-    function dvfacility(Request $request){
-       $proponentInfo = ProponentInfo::with('facility')
-       ->where('facility_id',  $request->facility_id)->first();
-      // return $proponentInfo;
-       if($proponentInfo){
-         $facilityAddress = $proponentInfo->facility->address;
-         return response()->json(['facilityAddress' => $facilityAddress]);
-       }else{
-        return "facility not found";
-       }    
-    }
+    
     
     function createDvSave(Request $request){
 
@@ -126,20 +106,72 @@ class DvController extends Controller
        return redirect()->back();
     }
 
+    function facilityGet(Request $request){
+        //  \Log::info('Request received. Fundsource ID: ' . $request->fundsource_id);
+  
+          ProponentInfo::where('fundsource_id', $request->fundsource_id)->get();
+          $proponentInfo = ProponentInfo::with('facility')
+                         ->where('fundsource_id', $request->fundsource_id)
+                         ->get();
+                   
+         return $proponentInfo;
+
+//         $proponentInfo = ProponentInfo::with([
+//     'facility',
+//     'facility.addFacilityInfo' => function ($query) {
+//         // Include the necessary columns in the select statement for 'addfacilityinfo'
+//         $query->select('facility_id', 'vat', 'Ewt');
+//     },
+//     'fundsource',
+// ])->where('fundsource_id', $request->fundsource_id)
+//   ->get();
+
+// dd($proponentInfo);
+
+      }
+  
+      function dvfacility(Request $request){
+         $proponentInfo = ProponentInfo::with('facility')
+         ->where('facility_id',  $request->facility_id)->first();
+        // return $proponentInfo;
+         if($proponentInfo){
+           $facilityAddress = $proponentInfo->facility->address;
+           return response()->json(['facilityAddress' => $facilityAddress]);
+         }else{
+          return "facility not found";
+         }
+      }
+
     public function getFund (Request $request) {
         $facilityId = ProponentInfo::with([
+            'fundsource' => function ($query) {
+                $query->select('id', 'saa');
+            },
+        ])->where('facility_id', '=', $request->facilityId)
+            ->where('fundsource_id', '!=', $request->fund_source)
+            ->get();
+
+        $fund_source = ProponentInfo::with([
             'fundsource' => function ($query) {
                 $query->select(
                     'id',
                     'saa'
                 );
-            }])->where('facility_id','=', $request->facilityId)
-            ->where('fundsource_id','!=', $request->fund_source)
-            ->get();
+            }])->where('fundsource_id','=', $request->fund_source)
+            ->first();
+        
+         $beginning_bal = Session()->put('balance',$fund_source->alocated_funds);
 
         return $facilityId;
     }
 
+    public function getvatEwt(Request $request)
+    {
+        $facilityVatEwt = AddFacilityInfo::where('facility_id',$request->facilityId)->first();
+    
+
+        return $facilityVatEwt;
+    }
 //     public function createFundSourceSave(Request $request) {
 //         $user = Auth::user();
 //         //return $request->all();

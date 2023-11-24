@@ -189,8 +189,8 @@ function toggleSAADropdowns() {
 
 
    function onchangeSaa(data) {
+    console.log(data);
         if(data.val()) {
-        console.log(data);
             $.get("{{ url('facility/get').'/' }}"+data.val(), function(result) {
               
                 $('#facilityDropdown').html('');
@@ -202,15 +202,20 @@ function toggleSAADropdowns() {
 
                 }));
                  $.each(result, function(index, optionData){
+                    console.log(optionData)
                     $('#facilityDropdown').append($('<option>', {
                         value: optionData.id,
                         text: optionData.facility ? optionData.facility.name : '',
                         address:optionData.facility ? optionData.facility.address : '',
                         facilityname: optionData.facility ? optionData.facility.name : '',
                         id: optionData.facility ? optionData.facility.id : '',
+                        facilityvat: optionData.facility ? optionData.facility.vat : '',
                         fund_source : data.val(),
+                      
                     }));
                  });
+                 console.log(data.val());
+                 fundAmount(data.val());
             });
         }
 
@@ -223,11 +228,12 @@ function toggleSAADropdowns() {
             var facilityId = selectOption.attr('id');
             var facilityName = selectOption.attr('facilityname');
             var fund_source = selectOption.attr('fund_source');
+            var fund_source_id = selectOption.attr('')
             $('#facilityAddress').empty();
             $('#hospitalAddress').empty();
 
             $.get("{{ url('/getFund').'/' }}"+facilityId+fund_source, function(result) {
-                //  console.log(fund_source);
+                console.log(fund_source);
                 $('#saa2').html('');
 
                 $('#saa2').append($('<option>', {
@@ -237,15 +243,18 @@ function toggleSAADropdowns() {
 
                 }));
                  $.each(result, function(index, optionData){
-                     console.log(optionData);
+                     //console.log(optionData.fundsource.id);
                     $('#saa2').append($('<option>', {
                          value: optionData.fundsource.id,
-                         text: optionData.fundsource.saa
+                         text: optionData.fundsource.saa,
+                         dataval: optionData.alocated_funds
+                         
                         //  text: optionData.facilityId && optionData.facilityId.fundsource ? optionData.facilityId.fundsource.saa : '',
                         // text: optionData.facilityId ? optionData.facilityId.fundsource.saa : ''
                     }));
+                    fundAmount(optionData.alocated_funds);
                  });
-            })
+            });
 
             if(facilityAddress){
                 $("#facilityAddress").text(facilityAddress);
@@ -256,9 +265,51 @@ function toggleSAADropdowns() {
                 $("#facilityAddress, #hospitalAddress").text("Facility not found");
 
             }
+            $.get("{{ url('/getvatEwt').'/' }}"+facilityId, function(result) {
+
+                console.log(result.vat);
+                $('#vat').val(result.vat);
+                $('#ewt').val(result.Ewt);
+                $('#for_vat').val(result.vat);
+                $('#for_ewt').val(result.Ewt);
+            //  <?php
+            //     $for_vat = DB::table('addfacilityinfo')->get(); 
+            //     if($for_vat){
+            //         foreach(){
+            //             <?php  ?>
+            //         }
+            //     } 
+                
+            //     ?>
+            //   $('#vat').val($facilityVatEwt);
+
+           //  console.log('my vat: ', vat);
+            });
         }
       }
+      var beginningBalance = @json(session('balance', 0));
+      function fundAmount() {
+        var allotmentFunds;
+        var inputValue1 = parseFloat(document.getElementById('inputValue1').value) || 0;
+        var inputValue2 = parseFloat(document.getElementById('inputValue2').value) || 0;
+        // console.log("Beginning Balance: ", beginningBalance);
+            
+            //console.log(inputValue1);
+        //  console.log(inputValue2);
 
+       console.log(beginningBalance);
+        // if (!isNaN(inputValue1) && beginningBalance !== undefined) {
+        //         if (beginningBalance > inputValue1 ) {
+        //             console.log("Error: Insufficient Fund Source Balance");
+        //         } else if(beginningBalance < inputValue1) {
+        //             console.log("Success: Sufficient Fund Source Balance");
+        //         } 
+        //     } else {
+        //         console.log("Error: Invalid Input or Beginning Balance is empty");
+        //     }
+            // var totalFunds = inputValue1 -  allocatedFunds;
+            // console.log("Total Funds: ", totalFunds);
+      }
 
 
 
