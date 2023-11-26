@@ -234,14 +234,17 @@ function toggleSAADropdowns() {
 
             $.get("{{ url('/getFund').'/' }}"+facilityId+fund_source, function(result) {
                 console.log(fund_source);
-                $('#saa2').html('');
+                $('#saa2', '#saa3').html('');
 
                 $('#saa2').append($('<option>', {
-
                      value: "",
                      text: " -Please select saa fund"
-
                 }));
+                $('#3').append($('<option>', {
+                     value: "",
+                     text: " -Please select saa fund"
+                }));
+                var selectedValueSaa2 = $('#saa2').val();
                  $.each(result, function(index, optionData){
                      //console.log(optionData.fundsource.id);
                     $('#saa2').append($('<option>', {
@@ -252,9 +255,19 @@ function toggleSAADropdowns() {
                         //  text: optionData.facilityId && optionData.facilityId.fundsource ? optionData.facilityId.fundsource.saa : '',
                         // text: optionData.facilityId ? optionData.facilityId.fundsource.saa : ''
                     }));
+                    $('#saa3').append($('<option>', {
+                            value: optionData.fundsource.id,
+                            text: optionData.fundsource.saa,
+                            dataval: optionData.alocated_funds
+                        }));
                     fundAmount(optionData.alocated_funds);
                  });
-            });
+                $('#saa2').on('change', function() {
+                    var selectedValueSaa2 = $(this).val();
+                    // Remove options from #saa3 based on selected value in #saa2
+                    $('#saa3 option[value="' + selectedValueSaa2 + '"]').remove();
+                });
+        });
 
             if(facilityAddress){
                 $("#facilityAddress").text(facilityAddress);
@@ -272,18 +285,7 @@ function toggleSAADropdowns() {
                 $('#ewt').val(result.Ewt);
                 $('#for_vat').val(result.vat);
                 $('#for_ewt').val(result.Ewt);
-            //  <?php
-            //     $for_vat = DB::table('addfacilityinfo')->get(); 
-            //     if($for_vat){
-            //         foreach(){
-            //             <?php  ?>
-            //         }
-            //     } 
-                
-            //     ?>
-            //   $('#vat').val($facilityVatEwt);
-
-           //  console.log('my vat: ', vat);
+            
             });
         }
       }

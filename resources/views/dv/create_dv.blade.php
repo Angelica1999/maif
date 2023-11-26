@@ -123,25 +123,25 @@
             <input type="month" id="billingMonth2" name="billingMonth2" asp-for="MonthYearTo" style="width: 110px; height: 28px; font-size: 8pt;" class="ft15">
                     in the amount of:
             </p> 
-            
+                      <!-- List of saa to display -->
                     <select  name="fundsource_id" id="saa1"  onchange="onchangeSaa($(this))" style="position:absolute;top:440px;left:60px;white-space:nowrap; width:100px; height: 20px;" class="ft15" required>
                             <option value="" data-facilities="">- Select SAA -</option>
                         @foreach($fundsources as $fund)
                             <option value="{{ $fund->id }}">{{ $fund->saa }}</option>  
                         @endforeach  
                     </select> 
-                    <input type="text" name="amount1" id="inputValue1" style="position:absolute;top:440px;left:180px;white-space:nowrap; width:120px; height: 20px;" class="ft15" oninput="fundAmount()" >
-                    <input type="text" name="amount1" id="for_vat" style="position:absolute;top:420px;left:320px;white-space:nowrap; width:60px; height: 20px;" class="ft15" oninput="fundAmount()" >
+                    <input type="text" name="amount1" id="inputValue1" style="position:absolute;top:440px;left:180px;white-space:nowrap; width:120px; height: 20px;" class="ft15" oninput="fundAmount()">
+                    <input type="text" name="amount1" id="for_vat" style="position:absolute;top:420px;left:320px;white-space:nowrap; width:60px; height: 20px;" class="ft15" oninput="fundAmount()" placeholder="for vat" disabled>
                     <!-- for vat each saa -->
-                    <input type="text" name="amount1" id="vatValue1" style="position:absolute;top:440px;left:320px;white-space:nowrap; width:80px; height: 20px;" class="ft15" oninput="fundAmount()" >
-                    <input type="text" name="amount1" id="vatValue2" style="position:absolute;top:460px;left:320px;white-space:nowrap; width:80px; height: 20px;" class="ft15" oninput="fundAmount()" >
-                    <input type="text" name="amount1" id="vatValue3" style="position:absolute;top:480px;left:320px;white-space:nowrap; width:80px; height: 20px;" class="ft15" oninput="fundAmount()" >
+                    <input type="text" name="amount1" id="vatValue1" style="position:absolute;top:440px;left:320px;white-space:nowrap; width:80px; height: 20px;" class="ft15" oninput="fundAmount()" disabled>
+                    <input type="text" name="amount1" id="vatValue2" style="position:absolute;top:460px;left:320px;white-space:nowrap; width:80px; height: 20px;" class="ft15" oninput="fundAmount()" disabled>
+                    <input type="text" name="amount1" id="vatValue3" style="position:absolute;top:480px;left:320px;white-space:nowrap; width:80px; height: 20px;" class="ft15" oninput="fundAmount()" disabled>
                     <!-- ---- -->
-                    <input type="text" name="amount1" id="for_ewt" style="position:absolute;top:420px;left:410px;white-space:nowrap; width:60px; height: 20px;" class="ft15" oninput="fundAmount()" >
+                    <input type="text" name="amount1" id="for_ewt" style="position:absolute;top:420px;left:410px;white-space:nowrap; width:60px; height: 20px;" class="ft15" oninput="fundAmount()" placeholder="for Ewt" disabled>
                     <!-- for ewt each saa -->
-                    <input type="text" name="amount1" id="ewttValue1" style="position:absolute;top:440px;left:410px;white-space:nowrap; width:80px; height: 20px;" class="ft15" oninput="fundAmount()" >
-                    <input type="text" name="amount1" id="ewtValue2" style="position:absolute;top:460px;left:410px;white-space:nowrap; width:80px; height: 20px;" class="ft15" oninput="fundAmount()" >
-                    <input type="text" name="amount1" id="ewtValue3" style="position:absolute;top:480px;left:410px;white-space:nowrap; width:80px; height: 20px;" class="ft15" oninput="fundAmount()" >
+                    <input type="text" name="amount1" id="ewttValue1" style="position:absolute;top:440px;left:410px;white-space:nowrap; width:80px; height: 20px;" class="ft15" oninput="fundAmount()" disabled>
+                    <input type="text" name="amount1" id="ewtValue2" style="position:absolute;top:460px;left:410px;white-space:nowrap; width:80px; height: 20px;" class="ft15" oninput="fundAmount()" disabled>
+                    <input type="text" name="amount1" id="ewtValue3" style="position:absolute;top:480px;left:410px;white-space:nowrap; width:80px; height: 20px;" class="ft15" oninput="fundAmount()" disabled>
                     <!-- ---- -->
                     <div id="error-message" style="position: absolute; top: 470px; left: 270px; color: red;"></div>
 
@@ -162,11 +162,11 @@
                                 <option value="{{ $fund->id }}">{{ $fund->saa }}</option>
                             @endforeach  -->
                     </select>
-                <input type="text" name="amount3" id="inputValue3"  style="position:absolute;top:480px;left:180px;white-space:nowrap; width:120px; height: 20px; font-size: 8pt; display:none"  oninput="fundAmount()" class="ft15">
+                <input type="text" name="amount3" id="inputValue3"  style="position:absolute;top:480px;left:180px;white-space:nowrap; width:120px; height: 20px; font-size: 8pt; display:none"  oninput="fundAmount()" class="ft15" >
             <!-- <span id="showSaabutton" class="fa fa-plus" style="position:absolute;top:445px;left:75px; width:20px; height: 20px; cursor:pointer" onclick="toggleSAAdropdowns()">Add</span> -->
             <!-- <span id="showSAAButton1" class="fa fa-plus" style="position:absolute;top:455px;left:70px; width:20px; height: 20px; front-size:8px; cursor:pointer" onclick="toggleSAADropdowns()">Remove</span> -->
-        <input type="text" name="amount1" id="vat" style="position:absolute;top:520px;left:60px;white-space:nowrap; width:100px; height: 20px;" class="ft15" oninput="" >
-        <input type="text" name="amount1" id="ewt" style="position:absolute;top:540px;left:60px;white-space:nowrap; width:100px; height: 20px;" class="ft15" oninput="" >
+        <input type="text" name="amount1" id="vat" style="position:absolute;top:520px;left:60px;white-space:nowrap; width:100px; height: 20px;" class="ft15" oninput="" placeholder="Vat" disabled>
+        <input type="text" name="amount1" id="ewt" style="position:absolute;top:540px;left:60px;white-space:nowrap; width:100px; height: 20px;" class="ft15" oninput="" placeholder="ewt" disabled>
 
         <!-- <select id="deduction1" name="deduction1"  style="position:absolute;top:520px;left:60px;white-space:nowrap; width:100px; height: 20px" class="ft15">
          <option value="">- Select Vat -</option>
@@ -174,7 +174,7 @@
                 <option value="{{ $facilityvat->id  }}">{{ $facilityvat->vat }}%</option>
          @endforeach
         </select> -->
-            <input type="text" id="inputDeduction1" name="deductionAmount1" style="position:absolute;top:520px;left:180px;white-space:nowrap; width:120px; height: 20px; font-size: 8pt" class="ft15">
+            <input type="text" id="inputDeduction1" name="deductionAmount1" style="position:absolute;top:520px;left:180px;white-space:nowrap; width:120px; height: 20px; font-size: 8pt" class="ft15" disabled>
 
         <!-- <select id="deduction2" name="deduction2" style="position:absolute;top:540px;left:60px;white-space:nowrap; width:100px; height: 20px" class="ft15">
         <option value="">- Select Ewt -</option>
@@ -184,7 +184,7 @@
          {{-- <option value="{{  $facilityewt->id }}">{{ $facilityewt->Ewt % 1 == 0? number_format($facilityewt->Ewt, 0) : $facilityewt->Ewt }}%</option> --}}
          @endforeach
         </select> -->
-        <input type="text" id="inputDeduction2" name="deductionAmount2" style="position:absolute;top:540px;left:180px;white-space:nowrap; width:120px; height: 20px; font-size: 8pt" class="ft15">
+        <input type="text" id="inputDeduction2" name="deductionAmount2" style="position:absolute;top:540px;left:180px;white-space:nowrap; width:120px; height: 20px; font-size: 8pt" class="ft15" disabled>
             <p style="position:absolute;top:568px;left:69px;white-space:nowrap; font-weight:bold;" class="ft16">  &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; Amount Due</p>
             <p style="position:absolute;top:359px;left:746px;white-space:nowrap" class="ft15"></p>
             <p style="position:absolute;top:440px;left:755px;white-space:nowrap"  class="ft15 total"></p>
