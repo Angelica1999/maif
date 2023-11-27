@@ -115,19 +115,6 @@ class DvController extends Controller
                          ->get();
                    
          return $proponentInfo;
-
-//         $proponentInfo = ProponentInfo::with([
-//     'facility',
-//     'facility.addFacilityInfo' => function ($query) {
-//         // Include the necessary columns in the select statement for 'addfacilityinfo'
-//         $query->select('facility_id', 'vat', 'Ewt');
-//     },
-//     'fundsource',
-// ])->where('fundsource_id', $request->fundsource_id)
-//   ->get();
-
-// dd($proponentInfo);
-
       }
   
       function dvfacility(Request $request){
@@ -159,9 +146,8 @@ class DvController extends Controller
                 );
             }])->where('fundsource_id','=', $request->fund_source)
             ->first();
-        
-         $beginning_bal = Session()->put('balance',$fund_source->alocated_funds);
-
+             
+        $beginning_balances = session()->put('balance', $fund_source->alocated_funds);
         return $facilityId;
     }
 
@@ -171,6 +157,13 @@ class DvController extends Controller
     
 
         return $facilityVatEwt;
+    }
+    public function getAlocated(Request $request){
+        $allocatedFunds = ProponentInfo::where('facility_id', $request->facilityId)
+       // ->where('fundsource_id', $request->fund_source)
+        ->select('alocated_funds','fundsource_id')
+        ->get();
+        return response()->json(['allocated_funds' => $allocatedFunds]);
     }
 //     public function createFundSourceSave(Request $request) {
 //         $user = Auth::user();

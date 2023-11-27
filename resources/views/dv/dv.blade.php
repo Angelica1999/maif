@@ -240,7 +240,7 @@ function removeSAADropdowns() {
                     }));
                  });
                  console.log(data.val());
-                 fundAmount(data.val());
+                // fundAmount(data.val());
             });
         }
 
@@ -258,7 +258,9 @@ function removeSAADropdowns() {
             $('#hospitalAddress').empty();
 
             $.get("{{ url('/getFund').'/' }}"+facilityId+fund_source, function(result) {
-                console.log(fund_source);
+                console.log('fundsource: ',fund_source);
+                console.log('facility: ',facilityId);
+                fundAmount(facilityId);
                 $('#saa2', '#saa3').html('');
 
                 $('#saa2').append($('<option>', {
@@ -285,14 +287,14 @@ function removeSAADropdowns() {
                             text: optionData.fundsource.saa,
                             dataval: optionData.alocated_funds
                         }));
-                    fundAmount(optionData.alocated_funds);
+                   // fundAmount(optionData.alocated_funds);
                  });
                 $('#saa2').on('change', function() {
                     var selectedValueSaa2 = $(this).val();
                     // Remove options from #saa3 based on selected value in #saa2
                     $('#saa3 option[value="' + selectedValueSaa2 + '"]').remove();
                 });
-        });
+          });
 
             if(facilityAddress){
                 $("#facilityAddress").text(facilityAddress);
@@ -305,38 +307,64 @@ function removeSAADropdowns() {
             }
             $.get("{{ url('/getvatEwt').'/' }}"+facilityId, function(result) {
 
-                console.log(result.vat);
+              //  console.log(result.vat);
                 $('#vat').val(result.vat);
                 $('#ewt').val(result.Ewt);
                 $('#for_vat').val(result.vat);
                 $('#for_ewt').val(result.Ewt);
-            
+                var vat = result.vat;
+                var ewt = result.Ewt
+                fundAmount(facilityId,vat,ewt);
             });
-        }
-      }
 
-      var beginningBalance = @json(session('balance', []));
-
-      function fundAmount() {
-        var selectedSAA = document.getElementById('saaDropdown').value;
-        var selectedBalance = beginningBalance.find(balance => balance.fundsource_id === selectedSAA);
-
-        var inputValue1 = parseFloat(document.getElementById('inputValue1').value) || 0;
-        var inputValue2 = parseFloat(document.getElementById('inputValue2').value) || 0;
-        var inputValue3 = parseFloat(document.getElementById('inputValue3').value) || 0;
         
-         if(selectedBalance){
-            console.log('beginning Balance', selectedBalance.alocated_funds);
-         }
+        }
+      }//end function
+   var totalSaa1;
+    $('#inputValue1', '#inputValue2', '#inputValue3').on('input', function (){
+         fundAmount(facilityId,vat,ewt);
+    });
 
-        // console.log('input1', inputValue1);
-        // console.log('inout2', inputValue2);
-        // console.log('inout3', inputValue3);
-       // console.log(beginningBalance);
+   function fundAmount(facilityId, vat, ewt) {
+            var selectedSaaId = $('#saa1').val();
+            var selecteSaa2Id = $('#saa2').val();
+           // console.log('Saa2 Fundsource Id: ',selecteSaa2Id);
+        //var selectedSaaIndex = parseInt($('#saa1').val());
+            $.get("{{ url('/getallocated').'/' }}" +facilityId, function(result) {
+            var saa1Alocated_Funds = (result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId) || {}).alocated_funds || 0;
+        //  var saa1AllocatedFunds = result.allocated_funds[selectedSaaIndex];
+        console.log('VAT: ', vat);
+    console.log('EWT: ', ewt);
+            var inputValue1 = parseNumberWithCommas(document.getElementById('inputValue1').value) || 0;
+            var inputValue2 = parseFloat(document.getElementById('inputValue2').value) || 0;
+            var inputValue3 = parseFloat(document.getElementById('inputValue3').value) || 0;
+            saa1Alocated_Funds = parseNumberWithCommas(saa1Alocated_Funds);
+            console.log('Allocated Funds: ', saa1Alocated_Funds);
+          
 
-      }
+            if (saa1Alocated_Funds >= inputValue1) {
+                totalSaa1 = saa1Alocated_Funds - inputValue1;
+                console.log('Total SAA1 after subtraction: ', formatNumberWithCommas(totalSaa1));
+              
+                $('#error-message').hide();
+            } else {
+                $('#error-message').text('Insufficient balance for SAA1.');
+                console.error('Insufficient balance for SAA1.');
+            }
 
+            });
+    }
 
+    function parseNumberWithCommas(value) {
+        if(typeof value === 'string'){
+        return parseFloat(value.replace(/,/g, '')) || 0;
+       } else{
+        return parseFloat(value) || 0;
+       }
+    }
+    function formatNumberWithCommas(number) {
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
 
         function createDv() {
             $('.modal_body').html(loading);

@@ -61,6 +61,7 @@ Route::get('/dv', [App\Http\Controllers\DvController::class, 'dv'])->name('dv');
 Route::get('/dv/create', [App\Http\Controllers\DvController::class, 'createDv'])->name('dv.create');
 Route::get('/getFund/{facilityId}{fund_source}',[App\Http\Controllers\DvController::class, 'getFund']);
 Route::get('/getvatEwt/{facilityId}',[App\Http\Controllers\DvController::class, 'getvatEwt'])->name('getvatEwt');
+Route::get('/getallocated/{facilityId}',[App\Http\Controllers\DvController::class, 'getAlocated'])->name('getallocated');
 
 
 Route::get('/dv/create/save', [App\Http\Controllers\DvController::class, 'createDvSave'])->name('dv.create.save');
