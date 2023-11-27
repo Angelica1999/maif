@@ -169,21 +169,46 @@
 <script>
 
 
-
 var saaCounter = 1;
 
 function toggleSAADropdowns() {
-    saaCounter++;
-
-    if (saaCounter === 2) {
+    if (saaCounter === 1) {
         document.getElementById('saa2').style.display = 'block';
         document.getElementById('inputValue2').style.display = 'block';
-    } else if (saaCounter === 3) {
+        document.getElementById('vatValue2').style.display = 'block';
+        document.getElementById('ewtValue2').style.display = 'block';
+
+        document.getElementById('RemoveSAAButton').style.display = 'none'; // hide RemoveSAAButton
+        document.getElementById('showSAAButton').style.display = 'block';
+
+        saaCounter++;
+    } else if (saaCounter === 2) {
         document.getElementById('saa3').style.display = 'block';
         document.getElementById('inputValue3').style.display = 'block';
-
-        document.getElementById('showSAAButton').style.display = 'none';//hiding this button 
+        document.getElementById('vatValue3').style.display = 'block';
+        document.getElementById('ewtValue3').style.display = 'block';
+        document.getElementById('RemoveSAAButton').style.display = 'block'; // hide RemoveSAAButton
+        document.getElementById('showSAAButton').style.display = 'none'; // hiding showSAAButton
     }
+}
+function removeSAADropdowns() {
+    if (saaCounter === 1) {
+        document.getElementById('saa2').style.display = 'none';
+        document.getElementById('inputValue2').style.display = 'none';
+        document.getElementById('vatValue2').style.display = 'none';
+        document.getElementById('ewtValue2').style.display = 'none';
+        document.getElementById('RemoveSAAButton').style.display = 'none';
+        document.getElementById('showSAAButton').style.display = 'block'
+    } else if (saaCounter === 2) {
+        document.getElementById('saa3').style.display = 'none';
+        document.getElementById('inputValue3').style.display = 'none';
+        document.getElementById('vatValue3').style.display = 'none';
+        document.getElementById('ewtValue3').style.display = 'none';
+
+        document.getElementById('RemoveSAAButton').style.display = 'block'; // show RemoveSAAButton
+        document.getElementById('showSAAButton').style.display = 'none';
+    }
+    saaCounter = 1; // reset saaCounter to 1
 }
 
 
@@ -289,28 +314,26 @@ function toggleSAADropdowns() {
             });
         }
       }
-      var beginningBalance = @json(session('balance', 0));
+
+      var beginningBalance = @json(session('balance', []));
+
       function fundAmount() {
-        var allotmentFunds;
+        var selectedSAA = document.getElementById('saaDropdown').value;
+        var selectedBalance = beginningBalance.find(balance => balance.fundsource_id === selectedSAA);
+
         var inputValue1 = parseFloat(document.getElementById('inputValue1').value) || 0;
         var inputValue2 = parseFloat(document.getElementById('inputValue2').value) || 0;
-        // console.log("Beginning Balance: ", beginningBalance);
-            
-            //console.log(inputValue1);
-        //  console.log(inputValue2);
+        var inputValue3 = parseFloat(document.getElementById('inputValue3').value) || 0;
+        
+         if(selectedBalance){
+            console.log('beginning Balance', selectedBalance.alocated_funds);
+         }
 
-       console.log(beginningBalance);
-        // if (!isNaN(inputValue1) && beginningBalance !== undefined) {
-        //         if (beginningBalance > inputValue1 ) {
-        //             console.log("Error: Insufficient Fund Source Balance");
-        //         } else if(beginningBalance < inputValue1) {
-        //             console.log("Success: Sufficient Fund Source Balance");
-        //         } 
-        //     } else {
-        //         console.log("Error: Invalid Input or Beginning Balance is empty");
-        //     }
-            // var totalFunds = inputValue1 -  allocatedFunds;
-            // console.log("Total Funds: ", totalFunds);
+        // console.log('input1', inputValue1);
+        // console.log('inout2', inputValue2);
+        // console.log('inout3', inputValue3);
+       // console.log(beginningBalance);
+
       }
 
 
