@@ -203,8 +203,7 @@ function removeSAADropdowns() {
         document.getElementById('saa3').style.display = 'none';
         document.getElementById('inputValue3').style.display = 'none';
         document.getElementById('vatValue3').style.display = 'none';
-        document.getElementById('ewtValue3').style.display = 'none';
-
+        document.getElementById('ewtValue3').style.display = 'none';  
         document.getElementById('RemoveSAAButton').style.display = 'block'; // show RemoveSAAButton
         document.getElementById('showSAAButton').style.display = 'none';
     }
@@ -214,16 +213,20 @@ function removeSAADropdowns() {
 
 
    function onchangeSaa(data) {
-    console.log(data);
-        if(data.val()) {
-            $.get("{{ url('facility/get').'/' }}"+data.val(), function(result) {
-              
-                $('#facilityDropdown').html('');
 
+   var data23 = $('#facilityDropdown').val();
+   console.log('facility data', data.val());
+   console.log('facility okii', data23);
+   if (data23 === null || data23 === undefined || data23 === '' ) {
+        console.log('null');
+        if(data.val()) {
+          var isSaa1Selected = $('#saa1').val() === "saa1";
+            $.get("{{ url('facility/get').'/' }}"+data.val(), function(result) {
+                $('#facilityDropdown').html('');
                 $('#facilityDropdown').append($('<option>', {
 
-                     value: "",
-                     text: " -Please select Facility-"
+                value: "",
+                text: " -Please select Facility-"
 
                 }));
                  $.each(result, function(index, optionData){
@@ -236,17 +239,26 @@ function removeSAADropdowns() {
                         id: optionData.facility ? optionData.facility.id : '',
                         facilityvat: optionData.facility ? optionData.facility.vat : '',
                         fund_source : data.val(),
-                      
                     }));
                  });
+                // var saa2 =  $('#saa2').val(facilityname);
+                //  console.log("My saa2: ",saa2);
+
                  console.log(data.val());
                 // fundAmount(data.val());
             });
         }
+    }else{
+        console.log('not null');
+        
+    }
+        
 
       }//end of function
 
       function onchangefacility(data) {
+
+
         if(data.val()) {
             var selectOption = data.find('option:selected');
             var facilityAddress = selectOption.attr('address');
@@ -260,17 +272,8 @@ function removeSAADropdowns() {
             $.get("{{ url('/getFund').'/' }}"+facilityId+fund_source, function(result) {
                 console.log('fundsource: ',fund_source);
                 console.log('facility: ',facilityId);
-                fundAmount(facilityId);
-                $('#saa2', '#saa3').html('');
-
-                $('#saa2').append($('<option>', {
-                     value: "",
-                     text: " -Please select saa fund"
-                }));
-                $('#3').append($('<option>', {
-                     value: "",
-                     text: " -Please select saa fund"
-                }));
+                fundAmount(facilityId,fund_source);
+           
                 var selectedValueSaa2 = $('#saa2').val();
                  $.each(result, function(index, optionData){
                      //console.log(optionData.fundsource.id);
@@ -314,38 +317,97 @@ function removeSAADropdowns() {
                 $('#for_ewt').val(result.Ewt);
                 var vat = result.vat;
                 var ewt = result.Ewt
-                fundAmount(facilityId,vat,ewt);
+      
             });
-
-        
         }
       }//end function
-   var totalSaa1;
+
     $('#inputValue1', '#inputValue2', '#inputValue3').on('input', function (){
-         fundAmount(facilityId,vat,ewt);
+         fundAmount(facilityId);
     });
 
-   function fundAmount(facilityId, vat, ewt) {
+   function fundAmount(facilityId,fund_source) {
+            console.log("facility number", $('#facilityDropdown').val());
+            console.log('check', facilityId);
             var selectedSaaId = $('#saa1').val();
-            var selecteSaa2Id = $('#saa2').val();
+            var selectedSaaId2 = $('#saa2').val();
+            console.log('my fundsource Saa2', selectedSaaId2);
+
+            var vat = $('#for_vat').val();
+            var ewt = $('#for_ewt').val();
+            console.log('VAT: ', vat);
+            console.log('EWT: ', ewt);
            // console.log('Saa2 Fundsource Id: ',selecteSaa2Id);
         //var selectedSaaIndex = parseInt($('#saa1').val());
             $.get("{{ url('/getallocated').'/' }}" +facilityId, function(result) {
             var saa1Alocated_Funds = (result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId) || {}).alocated_funds || 0;
         //  var saa1AllocatedFunds = result.allocated_funds[selectedSaaIndex];
-        console.log('VAT: ', vat);
-    console.log('EWT: ', ewt);
+     
             var inputValue1 = parseNumberWithCommas(document.getElementById('inputValue1').value) || 0;
-            var inputValue2 = parseFloat(document.getElementById('inputValue2').value) || 0;
-            var inputValue3 = parseFloat(document.getElementById('inputValue3').value) || 0;
+            var inputValue2 = parseNumberWithCommas(document.getElementById('inputValue2').value) || 0;
+            var inputValue3 = parseNumberWithCommas(document.getElementById('inputValue3').value) || 0;
             saa1Alocated_Funds = parseNumberWithCommas(saa1Alocated_Funds);
             console.log('Allocated Funds: ', saa1Alocated_Funds);
-          
+            //first Saa
+            var first_vat = (inputValue1 * vat) / 100;
+            var first_ewt = (inputValue1 * ewt) / 100;
+            var sec_vat = (inputValue2 * vat) / 100;
+            var sec_ewt = (inputValue2 * ewt) / 100;
+            console.log("second", inputValue2);
+            
+            var third_vat = (inputValue3 * vat) / 100;
+            var third_ewt = (inputValue3 * ewt) / 100;
+            var vat_total = first_vat + sec_vat + third_vat;
+            var ewt_total = first_ewt + sec_ewt + third_ewt;        
+            
+            $('#vatValue1').val(first_vat);
+            $('#ewttValue1').val(first_ewt);
+            console.log('vat 2', sec_vat);
+            $('#vatValue2').val(sec_vat);
+            $('#ewtValue2').val(sec_ewt);
+            $('#vatValue3').val(third_vat);
+            $('#ewtValue3').val(third_ewt);
 
-            if (saa1Alocated_Funds >= inputValue1) {
+            console.log("for_vat", vat_total);
+
+            $('#inputDeduction1').val(vat_total);
+            $('#inputDeduction2').val(ewt_total);
+
+            var result_Vat = $('#totalInput').val();
+            var all_data = inputValue1 + inputValue2 + inputValue3;
+            if(vat >3){
+                var vat_input = (((all_data/ 1.12) * vat) / 100).toFixed(2);
+                $('#forVat_left').text(vat_input);
+                console.log('data', vat_input);
+            }
+            var ewt_input = ((all_data * ewt) / 100).toFixed(2);
+            $('#forEwt_left').text(ewt_input);
+           // console.log('my result', result);
+            if(vat == 5 ){
+               
+                var percentVat = result_Vat / 1.12;
+                  if(!isNaN(percentVat))
+                  console.log('my percentVat',percentVat);
+                 // $('#forVat_left').text(formatNumberWithCommas(percentVat));
+                //  var forvat_left = parseNumberWithCommas($('#forVat_left').text(percentVat)) || 0;
+                //   forvat_left;
+            }else if(vat >= 4 || vat >= 3 || vat >= 2 || vat >= 1 ){
+              
+                // $('#forVat_left').text(result);
+            }
+            
+            if(ewt == 2){
+                // $('#forEwt_left').text(percentVat);
+            }
+
+            // console.log('saa', totalSaa1);
+            console.log('data', )
+            var saa1Alcated_fund = formatNumberWithCommas(saa1Alocated_Funds);
+            console.log(saa1Alcated_fund);
+            if (saa1Alcated_fund > inputValue1) {
+                var totalSaa1;
                 totalSaa1 = saa1Alocated_Funds - inputValue1;
                 console.log('Total SAA1 after subtraction: ', formatNumberWithCommas(totalSaa1));
-              
                 $('#error-message').hide();
             } else {
                 $('#error-message').text('Insufficient balance for SAA1.');
@@ -353,8 +415,12 @@ function removeSAADropdowns() {
             }
 
             });
+
+           
     }
 
+    
+  
     function parseNumberWithCommas(value) {
         if(typeof value === 'string'){
         return parseFloat(value.replace(/,/g, '')) || 0;

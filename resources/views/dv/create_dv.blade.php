@@ -150,28 +150,30 @@
 
                        <br />
                         <br />        
-                    <select  name="fundsource_id_2"  id="saa2" style="position:absolute;top:460px;left:60px;white-space:nowrap; width:100px; height: 20px; display: none;" class="ft15" >
+                    <select  name="fundsource_id_2"  id="saa2"  onchange="onchangeSaa($(this))" style="position:absolute;top:460px;left:60px;white-space:nowrap; width:100px; height: 20px; display: none;" class="ft15" >
                     <option value="">- Select SAA -</option>
-                            <!-- @foreach($facilityId as $row)
-                              <option value="{{ $row->fundsource_id }}">{{ $row->fundsource_id }}</option>
-                            @endforeach  -->
+                              <option value=""></option>
                     </select>
-                <input type="text" name="amount2" id="inputValue2"  style="position:absolute;top:460px;left:180px;white-space:nowrap; width:120px; height: 20px; font-size: 8pt; display: none;"  class="ft15">
+                <input type="text" name="amount2" id="inputValue2"  style="position:absolute;top:460px;left:180px;white-space:nowrap; width:120px; height: 20px; font-size: 8pt; display: none;"  class="ft15" oninput="fundAmount()">
                 <span id="showSAAButton" class="fa fa-plus" style="position:absolute;top:442px;left:20px; width:20px; height: 20px; font-size:11px; cursor:pointer" onclick="toggleSAADropdowns()">Add</span>
                 <span id="RemoveSAAButton" class="fa fa-plus" style="position:absolute;top:465px;left:20px; width:20px; height: 20px; font-size:11px; display: none; cursor:pointer" onclick="removeSAADropdowns()">remove</span>
 
-               <select name="fundsource_id_3"  id="saa3"  style="position:absolute;top:480px;left:60px;white-space:nowrap; width:100px; height: 20px; display: none" class="ft15">
+               <select name="fundsource_id_3"  id="saa3" onchange="onchangeSaa($(this))" style="position:absolute;top:480px;left:60px;white-space:nowrap; width:100px; height: 20px; display: none" class="ft15">
                     <option value="">- Select SAA -</option>
                             <!-- @foreach($fundsources as $fund)
                                 <option value="{{ $fund->id }}">{{ $fund->saa }}</option>
                             @endforeach  -->
                     </select>
-                <input type="text" name="amount3" id="inputValue3"  style="position:absolute;top:480px;left:180px;white-space:nowrap; width:120px; height: 20px; font-size: 8pt; display:none" class="ft15" >
-            <!-- <span id="showSaabutton" class="fa fa-plus" style="position:absolute;top:445px;left:75px; width:20px; height: 20px; cursor:pointer" onclick="toggleSAAdropdowns()">Add</span> -->
+                    <label style="position:absolute;top:525px;left:40px;white-space:nowrap;" class="ft16">Vat</label>
+                <input type="text" name="amount3" id="inputValue3"  style="position:absolute;top:480px;left:180px;white-space:nowrap; width:120px; height: 20px; font-size: 8pt; display:none" class="ft15" oninput="fundAmount()">
+                <p style="position:absolute;top:520px;left:113px;white-space:nowrap; width:50px; height: 20px;" id ="forVat_left" class='ft16'>
+               </p>
+                <!-- <span id="showSaabutton" class="fa fa-plus" style="position:absolute;top:445px;left:75px; width:20px; height: 20px; cursor:pointer" onclick="toggleSAAdropdowns()">Add</span> -->
             <!-- <span id="showSAAButton1" class="fa fa-plus" style="position:absolute;top:455px;left:70px; width:20px; height: 20px; front-size:8px; cursor:pointer" onclick="toggleSAADropdowns()">Remove</span> -->
-        <input type="text" name="amount1" id="vat" style="position:absolute;top:520px;left:60px;white-space:nowrap; width:100px; height: 20px;" class="ft15" oninput="" placeholder="Vat" disabled>
-        <input type="text" name="amount1" id="ewt" style="position:absolute;top:540px;left:60px;white-space:nowrap; width:100px; height: 20px;" class="ft15" oninput="" placeholder="ewt" disabled>
-
+        <label style="position:absolute;top:545px;left:40px;white-space:nowrap;" class="ft16">Ewt</label>
+        <input type="text" name="amount1" id="vat" style="position:absolute;top:520px;left:60px;white-space:nowrap; width:50px; height: 20px;" class="ft15" oninput="" placeholder="Vat" disabled>
+        <input type="text" name="amount1" id="ewt" style="position:absolute;top:540px;left:60px;white-space:nowrap; width:50px; height: 20px;" class="ft15" oninput="" placeholder="ewt" disabled>
+        <p style="position:absolute;top:540px;left:113px;white-space:nowrap; width:50px; height: 20px;" class='ft16' id ="forEwt_left"></p>
         <!-- <select id="deduction1" name="deduction1"  style="position:absolute;top:520px;left:60px;white-space:nowrap; width:100px; height: 20px" class="ft15">
          <option value="">- Select Vat -</option>
          @foreach($VatFacility as $facilityvat)
