@@ -244,7 +244,7 @@ function removeSAADropdowns() {
                 // var saa2 =  $('#saa2').val(facilityname);
                 //  console.log("My saa2: ",saa2);
 
-                 console.log(data.val());
+                 console.log('dfd',data.val());
                 // fundAmount(data.val());
             });
         }
@@ -331,6 +331,7 @@ function removeSAADropdowns() {
             console.log('check', facilityId);
             var selectedSaaId = $('#saa1').val();
             var selectedSaaId2 = $('#saa2').val();
+            var selectedSaaId3 = $('#saa3').val();
             console.log('my fundsource Saa2', selectedSaaId2);
 
             var vat = $('#for_vat').val();
@@ -340,14 +341,22 @@ function removeSAADropdowns() {
            // console.log('Saa2 Fundsource Id: ',selecteSaa2Id);
         //var selectedSaaIndex = parseInt($('#saa1').val());
             $.get("{{ url('/getallocated').'/' }}" +facilityId, function(result) {
-            var saa1Alocated_Funds = (result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId) || {}).alocated_funds || 0;
+            var saa1Alocated_Funds1 = (result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId) || {}).alocated_funds || 0;
+            var saa1Alocated_Funds2 = (result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId2) || {}).alocated_funds || 0;
+            var saa1Alocated_Funds3 = (result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId3) || {}).alocated_funds || 0;
         //  var saa1AllocatedFunds = result.allocated_funds[selectedSaaIndex];
      
             var inputValue1 = parseNumberWithCommas(document.getElementById('inputValue1').value) || 0;
             var inputValue2 = parseNumberWithCommas(document.getElementById('inputValue2').value) || 0;
             var inputValue3 = parseNumberWithCommas(document.getElementById('inputValue3').value) || 0;
-            saa1Alocated_Funds = parseNumberWithCommas(saa1Alocated_Funds);
-            console.log('Allocated Funds: ', saa1Alocated_Funds);
+            saa1Alocated_Funds = parseNumberWithCommas(saa1Alocated_Funds1);
+            console.log('Allocated Funds: ', saa1Alocated_Funds1);
+
+        //    var saa1 = $('#saa1').val(saa1Alocated_Funds1);
+        //    var saa2 = $('#saa2').val(saa1Alocated_Funds2);
+        //    var saa3 = $('#saa3').val(saa1Alocated_Funds3);
+        //    console.log('my Saa1', saa1);
+
             //first Saa
             var first_vat = (inputValue1 * vat) / 100;
             var first_ewt = (inputValue1 * ewt) / 100;
@@ -357,8 +366,9 @@ function removeSAADropdowns() {
             
             var third_vat = (inputValue3 * vat) / 100;
             var third_ewt = (inputValue3 * ewt) / 100;
-            var vat_total = first_vat + sec_vat + third_vat;
-            var ewt_total = first_ewt + sec_ewt + third_ewt;        
+
+            var vat_total = (first_vat + sec_vat + third_vat).toFixed(2);
+            var ewt_total = (first_ewt + sec_ewt + third_ewt).toFixed(2);        
             
             $('#vatValue1').val(first_vat);
             $('#ewttValue1').val(first_ewt);
@@ -383,36 +393,66 @@ function removeSAADropdowns() {
             var ewt_input = ((all_data * ewt) / 100).toFixed(2);
             $('#forEwt_left').text(ewt_input);
            // console.log('my result', result);
-            if(vat == 5 ){
+            // if(vat == 5 ){
                
-                var percentVat = result_Vat / 1.12;
-                  if(!isNaN(percentVat))
-                  console.log('my percentVat',percentVat);
-                 // $('#forVat_left').text(formatNumberWithCommas(percentVat));
-                //  var forvat_left = parseNumberWithCommas($('#forVat_left').text(percentVat)) || 0;
-                //   forvat_left;
-            }else if(vat >= 4 || vat >= 3 || vat >= 2 || vat >= 1 ){
+            //     var percentVat = result_Vat / 1.12;
+            //       if(!isNaN(percentVat))
+            //       console.log('my percentVat',percentVat);
+            //      // $('#forVat_left').text(formatNumberWithCommas(percentVat));
+            //     //  var forvat_left = parseNumberWithCommas($('#forVat_left').text(percentVat)) || 0;
+            //     //   forvat_left;
+            // }else if(vat >= 4 || vat >= 3 || vat >= 2 || vat >= 1 ){
               
-                // $('#forVat_left').text(result);
-            }
+            //     // $('#forVat_left').text(result);
+            // }
             
-            if(ewt == 2){
-                // $('#forEwt_left').text(percentVat);
-            }
+            // if(ewt == 2){
+            //     // $('#forEwt_left').text(percentVat);
+            // }
 
             // console.log('saa', totalSaa1);
+
+            
             console.log('data', )
-            var saa1Alcated_fund = formatNumberWithCommas(saa1Alocated_Funds);
-            console.log(saa1Alcated_fund);
-            if (saa1Alcated_fund > inputValue1) {
-                var totalSaa1;
-                totalSaa1 = saa1Alocated_Funds - inputValue1;
-                console.log('Total SAA1 after subtraction: ', formatNumberWithCommas(totalSaa1));
-                $('#error-message').hide();
-            } else {
-                $('#error-message').text('Insufficient balance for SAA1.');
-                console.error('Insufficient balance for SAA1.');
+            var saa1Alcated_fund1 = parseNumberWithCommas(saa1Alocated_Funds1);
+            var saa1Alcated_fund2 = parseNumberWithCommas(saa1Alocated_Funds2);
+            var saa1Alcated_fund3 = parseNumberWithCommas(saa1Alocated_Funds3);
+
+           var totalAlocate = saa1Alcated_fund1 - inputValue1;
+            console.log('total alocate: ',formatNumberWithCommas(totalAlocate));
+            if(inputValue1 !== null || inputValue1  !== undefined || inputValue1 !== ''){ 
+                if (saa1Alcated_fund1 > inputValue1) {
+                    var totalSaa1;
+                    totalSaa1 = saa1Alocated_Funds1 - inputValue1;
+                    console.log('Total SAA1 after subtraction: ', formatNumberWithCommas(totalSaa1));
+                    $('#error-message').hide();
+                } else {
+                    $('#error-message').text('Insufficient balance for SAA1.');
+                    console.error('Insufficient balance for SAA1.');
+                }
             }
+            if(inputValue2 !== null || inputValue2  !== undefined || inputValue2 !== ''){
+                if (saa1Alcated_fund2 > inputValue2) {
+                    var totalSaa2;
+                    totalSaa2 = saa1Alocated_Funds2 - inputValue2;
+                    console.log('Total SAA1 after subtraction: ', formatNumberWithCommas(totalSaa2));
+                    $('#error-message').hide();
+                } else {
+                    $('#error-message').text('Insufficient balance for SAA1.');
+                    console.error('Insufficient balance for SAA2.');
+                }
+             }
+             if(inputValue3 !== null || inputValue3  !== undefined || inputValue3 !== ''){
+                if (saa1Alcated_fund3 > inputValue3) {
+                    var totalSaa3;
+                    totalSaa3 = saa1Alocated_Funds3 - inputValue3;
+                    console.log('Total SAA1 after subtraction: ', formatNumberWithCommas(totalSaa3));
+                    $('#error-message').hide();
+                } else {
+                    $('#error-message').text('Insufficient balance for SAA1.');
+                    console.error('Insufficient balance for SAA3.');
+                }
+             }
 
             });
 
