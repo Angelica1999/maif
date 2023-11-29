@@ -127,7 +127,7 @@
                                <span id="error-message" style="color:red;"></span>
                              </p>
                       <!-- List of saa to display -->
-                    <select name="fundsource_id" id="saa1"  onchange="onchangeSaa($(this))" style="position:absolute;top:440px;left:60px;white-space:nowrap; width:100px; height: 20px;" class="ft15" required>
+                    <select name="fundsource_id" id="saa1"  onclick="onchangeSaa($(this))" style="position:absolute;top:440px;left:60px;white-space:nowrap; width:100px; height: 20px;" class="ft15" required>
                             <option value="" data-facilities="">- Select SAA -</option>
                         @foreach($fundsources as $fund)
                             <option value="{{ $fund->id }}">{{ $fund->saa }}</option>  
@@ -190,13 +190,15 @@
          {{-- <option value="{{  $facilityewt->id }}">{{ $facilityewt->Ewt % 1 == 0? number_format($facilityewt->Ewt, 0) : $facilityewt->Ewt }}%</option> --}}
          @endforeach
         </select> -->
+        <p style="position:absolute;top:650px;left:113px;white-space:nowrap; width:50px; height: 20px;" type="hidden" id ="for_facility_id" class='ft16'></p>
+
         <input type="number" id="inputDeduction2" name="deductionAmount2" style="position:absolute;top:540px;left:180px;white-space:nowrap; width:120px; height: 20px; font-size: 8pt" class="ft15" min="1" disabled required>
             <p style="position:absolute;top:568px;left:69px;white-space:nowrap; font-weight:bold;" class="ft16">  &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; Amount Due</p>
             <p style="position:absolute;top:359px;left:746px;white-space:nowrap" class="ft15"></p>
             <p style="position:absolute;top:440px;left:755px;white-space:nowrap"  class="ft15 total"></p>
                                                   <input type="hidden" name="total" id="totalInput" class="ft15 total">
-            <p style="position:absolute;top:521px;left:755px;white-space:nowrap" id ="totalDeduction" class="ft15"></p>
-                                              <input type="hidden" name="totalDeduction" id="totalDeduction" class="ft15 totalDeduction">
+            <p style="position:absolute;top:521px;left:755px;white-space:nowrap" class="ft15 totalDeduction"></p>
+                                              <input type="hidden" name="totalDeduction" id="totalDeductionInput" class="ft15 totalDeduction">
             <p style="position:absolute;top:551px;left:760px;white-space:nowrap" class="ft15">_________________</p>
             <p style="position:absolute;top:568px;left:755px;white-space:nowrap; font-weight:bold" class="ft15 overallTotal" id="overallTotal">total</p>
                                                                                   <input type="hidden" name="overallTotal" id="overallTotalInput" class="ft15 overallTotal">
