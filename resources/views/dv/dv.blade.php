@@ -369,7 +369,8 @@ function removeSAADropdowns() {
 
             var vat_total = (first_vat + sec_vat + third_vat).toFixed(2);
             var ewt_total = (first_ewt + sec_ewt + third_ewt).toFixed(2);        
-            
+            var totalDeductEwtVat = vat_total + ewt_total;
+
             $('#vatValue1').val(first_vat);
             $('#ewttValue1').val(first_ewt);
             console.log('vat 2', sec_vat);
@@ -377,14 +378,23 @@ function removeSAADropdowns() {
             $('#ewtValue2').val(sec_ewt);
             $('#vatValue3').val(third_vat);
             $('#ewtValue3').val(third_ewt);
-
             console.log("for_vat", vat_total);
-
             $('#inputDeduction1').val(vat_total);
             $('#inputDeduction2').val(ewt_total);
+            $('#totalDeduction').text(totalDeductEwtVat);
 
-            var result_Vat = $('#totalInput').val();
             var all_data = inputValue1 + inputValue2 + inputValue3;
+           //for Debit & Credit
+           var result_Vat = $('#totalInput').val();
+           var totadeduction = $('#totalDeductionInput').val();
+           //var overTotalCredit = $('#overallTotalInput').val();
+           var overTotalCredit = presult_Vat - totadeduction;
+           var formattedTotalCredit = overTotalCredit.toLocaleString();
+           console.log('dddd', overTotalCredit);
+           $('#totalDebit').text(result_Vat);
+           $('#DeductForCridet').text(totadeduction);
+           $('#OverTotalCredit').text(formattedTotalCredit);
+            
             if(vat >3){
                 var vat_input = (((all_data/ 1.12) * vat) / 100).toFixed(2);
                 $('#forVat_left').text(vat_input);

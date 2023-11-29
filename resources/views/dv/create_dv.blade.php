@@ -195,8 +195,8 @@
             <p style="position:absolute;top:359px;left:746px;white-space:nowrap" class="ft15"></p>
             <p style="position:absolute;top:440px;left:755px;white-space:nowrap"  class="ft15 total"></p>
                                                   <input type="hidden" name="total" id="totalInput" class="ft15 total">
-            <p style="position:absolute;top:521px;left:755px;white-space:nowrap" class="ft15 totalDeduction"></p>
-                                              <input type="hidden" name="totalDeduction" id="totalDeductionInput" class="ft15 totalDeduction">
+            <p style="position:absolute;top:521px;left:755px;white-space:nowrap" id ="totalDeduction" class="ft15"></p>
+                                              <input type="hidden" name="totalDeduction" id="totalDeduction" class="ft15 totalDeduction">
             <p style="position:absolute;top:551px;left:760px;white-space:nowrap" class="ft15">_________________</p>
             <p style="position:absolute;top:568px;left:755px;white-space:nowrap; font-weight:bold" class="ft15 overallTotal" id="overallTotal">total</p>
                                                                                   <input type="hidden" name="overallTotal" id="overallTotalInput" class="ft15 overallTotal">
@@ -207,7 +207,10 @@
             <p style="position:absolute;top:709px;left:211px;white-space:nowrap" class="ft15">Account Title</p>
             <p style="position:absolute;top:709px;left:478px;white-space:nowrap" class="ft15">Uacs Code</p>
             <p style="position:absolute;top:709px;left:627px;white-space:nowrap" class="ft15">Debit</p>
+              <p style="position:absolute;top:750px;left:627px;white-space:nowrap" id="totalDebit" class="ft15"></p>
             <p style="position:absolute;top:709px;left:755px;white-space:nowrap" class="ft15">Credit</p>
+            <p style="position:absolute;top:760px;left:755px;white-space:nowrap" id ="DeductForCridet" class="ft15"></p>
+            <p style="position:absolute;top:775px;left:755px;white-space:nowrap" id="OverTotalCredit" class="ft15"></p>
             <p style="position:absolute;top:830px;left:20px;white-space:nowrap" class="ft17"><b>C. Certified:</b></p>
             <p style="position:absolute;top:830px;left:449px;white-space:nowrap" class="ft17"><b>D. Approved for Payment:</b></p>
             <p style="position:absolute;top:860px;left:135px;white-space:nowrap" class="ft15">Cash available</p>
