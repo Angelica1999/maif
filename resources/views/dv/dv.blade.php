@@ -193,6 +193,7 @@ function toggleSAADropdowns() {
 }
 function removeSAADropdowns() {
     if (saaCounter === 1) {
+        $('#inputValue2').val().clear();
         document.getElementById('saa2').style.display = 'none';
         document.getElementById('inputValue2').style.display = 'none';
         document.getElementById('vatValue2').style.display = 'none';
@@ -200,6 +201,7 @@ function removeSAADropdowns() {
         document.getElementById('RemoveSAAButton').style.display = 'none';
         document.getElementById('showSAAButton').style.display = 'block'
     } else if (saaCounter === 2) {
+        $('#inputValue3').val().clear();
         document.getElementById('saa3').style.display = 'none';
         document.getElementById('inputValue3').style.display = 'none';
         document.getElementById('vatValue3').style.display = 'none';
