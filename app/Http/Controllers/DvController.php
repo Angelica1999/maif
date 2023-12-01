@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Fundsource;
+use App\Models\User;
 use App\Models\Facility;
+use App\Models\Utilization;
 use App\Models\Proponent;
 use App\Models\ProponentInfo;
 use App\Models\Dv;
@@ -73,8 +75,11 @@ class DvController extends Controller
     
     
     function createDvSave(Request $request){
-
-         $dv = new Dv();
+        // return Auth::user()->id;
+        $request->input('saa1_infoId');
+        $user = User::where('id', Auth::user()->id)->first();
+        // return $user;
+        $dv = new Dv();
 
        $dv->date = $request->input('datefield');
        $dv->payee = $request->input('facilityname');
@@ -102,6 +107,46 @@ class DvController extends Controller
        $dv->total_deduction_amount = $request->input('totalDeduction');
        $dv->overall_total_amount = $request->input('overallTotal');
        $dv->save();
+
+       if ($dv->saa_number) {
+        $saaNumbersArray = is_array($dv->saa_number)
+            ? $dv->saa_number
+            : explode(',', $dv->saa_number);
+        $proponent_id = [$request->input('saa1_infoId'), $request->input('saa2_infoId'), $request->input('saa3_infoId')];
+        $beg_balance = [$request->input('saa1_beg'),$request->input('saa2_beg'),$request->input('saa3_beg')];
+        $utilize_amount = [$request->input('saa1_utilize'),$request->input('saa2_utilize'),$request->input('saa3_utilize')];
+        $discount = [$request->input('saa1_discount'),$request->input('saa2_discount'),$request->input('saa3_discount')];
+        $i= 0;
+        // return $utilize ;
+
+
+        // return $discount;
+        foreach ($saaNumbersArray as $saa) {
+            $cleanedSaa = str_replace(['[', ']', '"'], '', $saa);
+            $utilize = new Utilization();
+            $utilize->fundsource_id = trim($cleanedSaa);
+            $utilize->proponentinfo_id = $proponent_id[$i];
+
+            $proponent_info = ProponentInfo::where('fundsource_id', trim($cleanedSaa))->where('proponent_id', $proponent_id[$i])->first();
+            if($proponent_info && $proponent_info != null){
+                $proponent_info->remaining_balance = $proponent_info->alocated_funds - $utilize_amount[$i];
+
+            }else{
+                $proponent_info->remaining_balance = $proponent_info->remaining_balance - $utilize_amount[$i]; // 100 - 10 = 90
+
+            }
+            $proponent_info->save();
+
+            $utilize->div_id = $dv->id;
+            $utilize->beginning_balance = $beg_balance[$i];
+            $utilize->discount = $discount[$i];
+            $utilize->utilize_amount = $utilize_amount[$i];
+            $utilize->created_by = $user->name;
+            $utilize->save();
+            $i = $i + 1;
+        }
+    }
+
        session()->flash('dv_create', true);
        return redirect()->back();
     }
@@ -158,10 +203,11 @@ class DvController extends Controller
 
         return $facilityVatEwt;
     }
+    
     public function getAlocated(Request $request){
         $allocatedFunds = ProponentInfo::where('facility_id', $request->facilityId)
        // ->where('fundsource_id', $request->fund_source)
-        ->select('alocated_funds','fundsource_id')
+        ->select('alocated_funds','fundsource_id', 'id', 'remaining_balance')
         ->get();
         return response()->json(['allocated_funds' => $allocatedFunds]);
     }

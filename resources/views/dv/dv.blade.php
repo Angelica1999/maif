@@ -191,9 +191,29 @@ function toggleSAADropdowns() {
         document.getElementById('showSAAButton').style.display = 'none'; // hiding showSAAButton
     }
 }
+
 function removeSAADropdowns() {
     if (saaCounter === 1) {
-        $('#inputValue2').val().clear();
+       var inputDeduction1 = $('#inputDeduction1').val();
+       var inputDeduction2 = $('#inputDeduction2').val();
+       var vatValue2 = parseFloat($('#inputValue2').val());
+       var vat = $('#vat').val();
+       var ewt= $('#ewt').val();
+       var second_vat = (parseFloat(vatValue2 * vat)) / 100;
+       var second_ewt = (parseFloat(vatValue2 * ewt)) / 100;
+       var subtractVat = inputDeduction1 - second_vat;
+       var subtractEwt = inputDeduction2 - second_ewt;
+       console.log('my subtractVat', subtractVat);
+    //   console.log('totalVat', $('#inputDeduction1').val(subtractVat));
+    //   console.log('totalEwt', $('#inputDeduction2').val(subtractEwt));
+       //console.log('my second vat: ', second_vat);
+       //console.log('my second vat: ', second_ewt);
+       //console.log('my deduction : ', inputDeduction1);
+      // console.log('my deduction : ', inputDeduction2);
+        // $('#inputValue2').val('');
+        // $('#ewtValue2').val('');
+        // var inputValue = $('#vatValue2').val();
+        // console.log('my input value: ',inputValue);
         document.getElementById('saa2').style.display = 'none';
         document.getElementById('inputValue2').style.display = 'none';
         document.getElementById('vatValue2').style.display = 'none';
@@ -201,7 +221,16 @@ function removeSAADropdowns() {
         document.getElementById('RemoveSAAButton').style.display = 'none';
         document.getElementById('showSAAButton').style.display = 'block'
     } else if (saaCounter === 2) {
-        $('#inputValue3').val().clear();
+        var inputvalue3 = $('#inputValue3').val();
+        var vat1 = $('#vat').val();
+        var ewt1= $('#ewt').val();
+        var third_vat1 = (parseFloat(inputvalue3 * vat1)) / 100;
+        var third_ewt1 = (parseFloat(inputvalue3 * ewt1)) / 100;
+
+       console.log('my third vat: ', third_vat1);
+       console.log('my third vat: ', third_ewt1);
+        // $('#vatValue3').val('');
+        // $('#ewtValue3').val('');
         document.getElementById('saa3').style.display = 'none';
         document.getElementById('inputValue3').style.display = 'none';
         document.getElementById('vatValue3').style.display = 'none';
@@ -216,47 +245,50 @@ function removeSAADropdowns() {
 
    function onchangeSaa(data) {
 
-   var data23 = $('#facilityDropdown').val();
-   console.log('facility data', data.val());
-   console.log('facility okii', data23);
-   if (data23 === null || data23 === undefined || data23 === '' ) {
-        console.log('null');
-        if(data.val()) {
-          var isSaa1Selected = $('#saa1').val() === "saa1";
-            $.get("{{ url('facility/get').'/' }}"+data.val(), function(result) {
-                $('#facilityDropdown').html('');
-                $('#facilityDropdown').append($('<option>', {
+    var data23 = $('#facilityDropdown').val();
 
-                value: "",
-                text: " -Please select Facility-"
+    // $('#saa1_value').val(data.val());
+    console.log('facility data', data.val());
+    console.log('facility okii', data23);
 
-                }));
-                 $.each(result, function(index, optionData){
-                    console.log(optionData)
+    if (data23 === null || data23 === undefined || data23 === '' ) {
+            console.log('null');
+            if(data.val()) {
+            var isSaa1Selected = $('#saa1').val() === "saa1";
+                $.get("{{ url('facility/get').'/' }}"+data.val(), function(result) {
+                    $('#facilityDropdown').html('');
                     $('#facilityDropdown').append($('<option>', {
-                        value: optionData.id,
-                        text: optionData.facility ? optionData.facility.name : '',
-                        address:optionData.facility ? optionData.facility.address : '',
-                        facilityname: optionData.facility ? optionData.facility.name : '',
-                        id: optionData.facility ? optionData.facility.id : '',
-                        facilityvat: optionData.facility ? optionData.facility.vat : '',
-                        fund_source : data.val(),
+
+                    value: "",
+                    text: " -Please select Facility-"
+
                     }));
-                 });
-                // var saa2 =  $('#saa2').val(facilityname);
-                //  console.log("My saa2: ",saa2);
+                    $.each(result, function(index, optionData){
+                        
+                        $('#facilityDropdown').append($('<option>', {
+                            value: optionData.id,
+                            text: optionData.facility ? optionData.facility.name : '',
+                            address:optionData.facility ? optionData.facility.address : '',
+                            facilityname: optionData.facility ? optionData.facility.name : '',
+                            id: optionData.facility ? optionData.facility.id : '',
+                            facilityvat: optionData.facility ? optionData.facility.vat : '',
+                            fund_source : data.val(),
+                        }));
+                    });
+                    // var saa2 =  $('#saa2').val(facilityname);
+                    //  console.log("My saa2: ",saa2);
 
-                 console.log('dfd',data.val());
-                // fundAmount(data.val());
-            });
+                    console.log('dfd',data.val());
+                    // fundAmount(data.val());
+                });
+            }
+        }else{
+        fundAmount();
+            
         }
-    }else{
-       fundAmount();
-        
-    }
         
 
-      }//end of function
+    }//end of function
 
       function onchangefacility(data) {
 
@@ -329,6 +361,7 @@ function removeSAADropdowns() {
     });
 
    function fundAmount(facilityId) {
+
             // console.log("facility number", $('#facilityDropdown').val());
             // console.log('check', facilityId);
             var selectedSaaId = $('#saa1').val();
@@ -347,15 +380,20 @@ function removeSAADropdowns() {
         //var selectedSaaIndex = parseInt($('#saa1').val());
             $.get("{{ url('/getallocated').'/' }}" +facility_id, function(result) {
             
-            var saa1Alocated_Funds1 = (result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId) || {}).alocated_funds || 0;
-            var saa1Alocated_Funds2 = (result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId2) || {}).alocated_funds || 0;
-            var saa1Alocated_Funds3 = (result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId3) || {}).alocated_funds || 0;
+            var saa1Alocated_Funds1 = (result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId) || {}).remaining_balance|| 0;
+            var saa1Alocated_Funds2 = (result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId2) || {}).remaining_balance|| 0;
+            var saa1Alocated_Funds3 = (result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId3) || {}).remaining_balance|| 0;
         //  var saa1AllocatedFunds = result.allocated_funds[selectedSaaIndex];
             var inputValue1 = parseNumberWithCommas(document.getElementById('inputValue1').value) || 0;
             var inputValue2 = parseNumberWithCommas(document.getElementById('inputValue2').value) || 0;
             var inputValue3 = parseNumberWithCommas(document.getElementById('inputValue3').value) || 0;
             saa1Alocated_Funds = parseNumberWithCommas(saa1Alocated_Funds1);
+            $('#saa1_infoId').val((result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId) || {}).id || 0);
+            $('#saa2_infoId').val((result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId2) || {}).id || 0);
+            $('#saa3_infoId').val((result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId3) || {}).id || 0);
             console.log('Allocated Funds: ', saa1Alocated_Funds1);
+
+            console.log('second_infoId', $('#saa2_infoId').val());
 
         //    var saa1 = $('#saa1').val(saa1Alocated_Funds1);
         //    var saa2 = $('#saa2').val(saa1Alocated_Funds2);
@@ -397,15 +435,48 @@ function removeSAADropdowns() {
            $('#DeductForCridet').text(totadeduction);
            $('#OverTotalCredit').text(overTotalCredit);
             
+           var ewt_input = ((all_data * ewt) / 100).toFixed(2);
+            $('#forEwt_left').text(ewt_input);
+
             if(vat >3){
                 var vat_input = (((all_data/ 1.12) * vat) / 100).toFixed(2);
                 $('#forVat_left').text(vat_input);
-                console.log('data', vat_input);
+                
+                var vat_first =  (((inputValue1/ 1.12) * vat) / 100).toFixed(2);
+                $('#saa1_discount').val(parseFloat(vat_first+ewt_input).toFixed(2));
+                $('#saa1_utilize').val((inputValue1-parseFloat(vat_first+ewt_input)).toFixed(2));
+                // console.log('saa1_discount', vat_first+ewt_input);
+                
+                var vat_sec =  (((inputValue2/ 1.12) * vat) / 100).toFixed(2);
+                $('#saa2_discount').val(parseFloat(vat_sec+ewt_input).toFixed(2));
+                $('#saa2_utilize').val((inputValue2 - parseFloat(vat_sec+ewt_input)).toFixed(2));
+
+                var vat_third =  (((inputValue3/ 1.12) * vat) / 100).toFixed(2);
+                $('#saa3_discount').val(parseFloat(vat_third+ewt_input).toFixed(2));
+                $('#saa3_utilize').val((inputValue3-parseFloat(vat_third+ewt_input)).toFixed(2));
+
+            }else{
+                var vat_input = ((all_data * vat) / 100).toFixed(2);
+                $('#forVat_left').text(vat_input);
+                $('#saa1_discount').val(parseFloat(vat_input+ewt_input).toFixed(2));
+                $('#saa1_utilize').val((inputValue1-parseFloat(vat_input+ewt_input)).toFixed(2));
+
+                var vat_sec =  ((inputValue2 * vat) / 100).toFixed(2);
+                $('#saa2_discount').val(parseFloat(vat_sec+ewt_input).toFixed(2));
+                $('#saa2_utilize').val((inputValue2-parseFloat(vat_sec+ewt_input)).toFixed(2));
+
+                var vat_third =  ((inputValue3 * vat) / 100).toFixed(2);
+                $('#saa3_discount').val(parseFloat(vat_third+ewt_input).toFixed(2));
+                $('#saa3_utilize').val((inputValue3-parseFloat(vat_third+ewt_input)).toFixed(2));
+
             }
-            var ewt_input = ((all_data * ewt) / 100).toFixed(2);
-            $('#forEwt_left').text(ewt_input);
+            
+            $('#saa1_beg').val(saa1Alocated_Funds1);
+            $('#saa2_beg').val(saa1Alocated_Funds2);
+            $('#saa3_beg').val(saa1Alocated_Funds3);
+            
           
-            console.log('data', )
+           // console.log('data', )
             var saa1Alcated_fund1 = parseNumberWithCommas(saa1Alocated_Funds1);
             var saa1Alcated_fund2 = parseNumberWithCommas(saa1Alocated_Funds2);
             var saa1Alcated_fund3 = parseNumberWithCommas(saa1Alocated_Funds3);

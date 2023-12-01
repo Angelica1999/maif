@@ -91,6 +91,7 @@ class FundSourceController extends Controller
             $proponentInfo->proponent_id = $proponent->id;
             $proponentInfo->facility_id = $request->facility_id[$index];
             $proponentInfo->alocated_funds = $request->alocated_funds[$index];
+            $proponentInfo->remaining_balance = $request->alocated_funds[$index];
             $proponentInfo->created_by = $user->id;
             $proponentInfo->save();
             $index++;

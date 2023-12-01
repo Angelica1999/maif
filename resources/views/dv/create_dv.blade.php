@@ -80,7 +80,7 @@
             <p style="position:absolute;top:27px;left:696px;white-space:nowrap" class="ft15"></p>
             <p style="position:absolute;top:41px;left:738px;white-space:nowrap" class="ft15"></p>
             <p style="position:absolute;top:74px;left:600px;white-space:nowrap" class="ft15">Date :</p>
-            <input type="date" asp-for="Date" name="datefield"  id="dateField" style="position:absolute;top:70px;left:650px;white-space:nowrap; width: 150px; height: 28px; font-size:8pt" class="ft15">
+            <input type="date" asp-for="Date" name="datefield"  id="dateField" style="position:absolute;top:70px;left:650px;white-space:nowrap; width: 150px; height: 28px; font-size:8pt" class="ft15" required>
             <p style="position:absolute;top:113px;left:600px;white-space:nowrap" class="ft15">DV No :</p>
             <p style="position:absolute;top:113px;left:728px;white-space:nowrap" class="ft15"></p>
             <p style="position:absolute;top:180px;left:20px;white-space:nowrap" class="ft18">Mode Of<br />Payment</p>
@@ -118,9 +118,9 @@
             </p>
             <p style="position:absolute;top:385px;left:39px;white-space:nowrap" class="ft16">
                 per billing statement dated
-                <input type="month" id="billingMonth1" name="billingMonth1" asp-for="MonthYearFrom" style="width: 110px; height: 28px; font-size: 8pt;" class="ft15">
+                <input type="month" id="billingMonth1" name="billingMonth1" asp-for="MonthYearFrom" style="width: 110px; height: 28px; font-size: 8pt;" class="ft15" required>
                 <!-- Second Month Picker -->
-            <input type="month" id="billingMonth2" name="billingMonth2" asp-for="MonthYearTo" style="width: 110px; height: 28px; font-size: 8pt;" class="ft15">
+            <input type="month" id="billingMonth2" name="billingMonth2" asp-for="MonthYearTo" style="width: 110px; height: 28px; font-size: 8pt;" class="ft15" required>
                     in the amount of:
             </p> 
                               <p style="position:absolute;top:420px;left:60px;white-space:nowrap; width:100px; height: 20px;"  class="ft16">
@@ -133,7 +133,14 @@
                             <option value="{{ $fund->id }}">{{ $fund->saa }}</option>  
                         @endforeach  
                     </select> 
-                    <input type="text" name="amount1" id="inputValue1" style="position:absolute;top:440px;left:180px;white-space:nowrap; width:120px; height: 20px;" oninput="fundAmount()" class="ft15" required>
+
+                    <input type="hidden" name="saa1_infoId" id="saa1_infoId" style="position:absolute;top:440px;left:500px;white-space:nowrap; width:120px; height: 20px;">
+                    <input type="hidden" name="saa1_beg" id="saa1_beg" style="position:absolute;top:440px;left:500px;white-space:nowrap; width:120px; height: 20px;">
+                    <input type="hidden" name="saa1_discount" id="saa1_discount" style="position:absolute;top:440px;left:500px;white-space:nowrap; width:120px; height: 20px;">
+                    <input type="hidden" name="saa1_utilize" id="saa1_utilize" style="position:absolute;top:440px;left:500px;white-space:nowrap; width:120px; height: 20px;">
+                    
+                    
+                    <input type="text" name="inputValue1" id="inputValue1" style="position:absolute;top:440px;left:180px;white-space:nowrap; width:120px; height: 20px;" oninput="fundAmount()" class="ft15" required>
                     <input type="text" name="amount1" id="for_vat" style="position:absolute;top:420px;left:320px;white-space:nowrap; width:60px; height: 20px;" class="ft15" placeholder="for vat" disabled>
                     <!-- for vat each saa -->
                     <input type="text" name="amount1" id="vatValue1" style="position:absolute;top:440px;left:320px;white-space:nowrap; width:80px; height: 20px;" class="ft15" disabled required>
@@ -154,6 +161,12 @@
                     <option value="">- Select SAA -</option>
                               <option value=""></option>
                     </select>
+
+                    <input type="hidden" name="saa2_infoId" id="saa2_infoId" style="position:absolute;top:440px;left:600px;white-space:nowrap; width:120px; height: 20px;">
+                    <input type="hidden" name="saa2_beg" id="saa2_beg" style="position:absolute;top:440px;left:600px;white-space:nowrap; width:120px; height: 20px;">
+                    <input type="hidden" name="saa2_discount" id="saa2_discount" style="position:absolute;top:600px;left:500px;white-space:nowrap; width:120px; height: 20px;">
+                    <input type="hidden" name="saa2_utilize" id="saa2_utilize" style="position:absolute;top:600px;left:500px;white-space:nowrap; width:120px; height: 20px;">
+
                 <input type="text" name="amount2" id="inputValue2"  style="position:absolute;top:460px;left:180px;white-space:nowrap; width:120px; height: 20px; font-size: 8pt; display: none;"  class="ft15" oninput="fundAmount()">
                 <span id="showSAAButton" class="fa fa-plus" style="position:absolute;top:442px;left:20px; width:20px; height: 20px; font-size:11px; cursor:pointer" onclick="toggleSAADropdowns()">Add</span>
                 <span id="RemoveSAAButton" class="fa fa-plus" style="position:absolute;top:465px;left:20px; width:20px; height: 20px; font-size:11px; display: none; cursor:pointer" onclick="removeSAADropdowns()">remove</span>
@@ -164,6 +177,12 @@
                                 <option value="{{ $fund->id }}">{{ $fund->saa }}</option>
                             @endforeach  -->
                     </select>
+
+                    <input type="hidden" name="saa3_infoId" id="saa3_infoId" style="position:absolute;top:440px;left:500px;white-space:nowrap; width:120px; height: 20px;">
+                    <input type="hidden" name="saa3_beg" id="saa3_beg" style="position:absolute;top:440px;left:500px;white-space:nowrap; width:120px; height: 20px;">
+                    <input type="hidden" name="saa3_discount" id="saa3_discount" style="position:absolute;top:440px;left:500px;white-space:nowrap; width:120px; height: 20px;">
+                    <input type="hidden" name="saa3_utilize" id="saa3_utilize" style="position:absolute;top:440px;left:500px;white-space:nowrap; width:120px; height: 20px;">
+                    
                     <label style="position:absolute;top:525px;left:40px;white-space:nowrap;" class="ft16">Vat</label>
                 <input type="text" name="amount3" id="inputValue3"  style="position:absolute;top:480px;left:180px;white-space:nowrap; width:120px; height: 20px; font-size: 8pt; display:none" class="ft15" oninput="fundAmount()">
                 <p style="position:absolute;top:520px;left:113px;white-space:nowrap; width:50px; height: 20px;" id ="forVat_left" class='ft16'>
