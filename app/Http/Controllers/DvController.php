@@ -117,6 +117,8 @@ class DvController extends Controller
         $utilize_amount = [$request->input('saa1_utilize'),$request->input('saa2_utilize'),$request->input('saa3_utilize')];
         $discount = [$request->input('saa1_discount'),$request->input('saa2_discount'),$request->input('saa3_discount')];
         $i= 0;
+
+        return $discount;
         // return $utilize ;
 
 

@@ -444,8 +444,9 @@ function removeSAADropdowns() {
                 
                 var vat_first =  (((inputValue1/ 1.12) * vat) / 100).toFixed(2);
                 $('#saa1_discount').val(parseFloat(vat_first+ewt_input).toFixed(2));
+                console.log('discount calculation: ', $('#saa1_discount').val());
                 $('#saa1_utilize').val((inputValue1-parseFloat(vat_first+ewt_input)).toFixed(2));
-                // console.log('saa1_discount', vat_first+ewt_input);
+                console.log('saa1_discount', vat_first+ewt_input);
                 
                 var vat_sec =  (((inputValue2/ 1.12) * vat) / 100).toFixed(2);
                 $('#saa2_discount').val(parseFloat(vat_sec+ewt_input).toFixed(2));
