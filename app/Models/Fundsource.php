@@ -24,4 +24,11 @@ class Fundsource extends Model
     public function encoded_by() {       
         return $this->belongsTo(User::class, 'created_by','id');
     }
+
+    public function utilization() {   
+        return $this->hasMany(Utilization::class, 'fundsource_id', 'id');
+    }
+    public function dv(){
+        return $this->hasmany(Dv::class, 'saa_number', 'id');
+    }
 }

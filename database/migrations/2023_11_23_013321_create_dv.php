@@ -19,16 +19,16 @@ return new class extends Migration
             $table->dateTime('month_year_from');
             $table->dateTime('month_year_to');
             $table->string('saa_number')->nullable();
-            $table->double('amount1')->nullable();
-            $table->double('amount2')->nullable();
-            $table->double('amount3')->nullable();
-            $table->double('total_amount')->nullable();
-            $table->string('deduction1')->nullable();
-            $table->string('deduction2')->nullable();
-            $table->double('deduction_amount1')->nullable();
-            $table->double('deduction_amount2')->nullable();
-            $table->double('total_deduction_amount')->nullable();
-            $table->double('overall_total_amount')->nullable();
+            $table->text('amount1')->nullable();
+            $table->text('amount2')->nullable();
+            $table->text('amount3')->nullable();
+            $table->text('total_amount', 20, 2)->nullable();
+            $table->text('deduction1')->nullable();
+            $table->text('deduction2')->nullable();
+            $table->text('deduction_amount1', 20, 2)->nullable();
+            $table->text('deduction_amount2', 20, 2)->nullable();
+            $table->text('total_deduction_amount', 5, 2)->nullable();
+            $table->text('overall_total_amount', 20, 2)->nullable();
             $table->timestamps();
         });
     }

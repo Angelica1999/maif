@@ -67,3 +67,5 @@ Route::get('/getallocated/{facilityId}',[App\Http\Controllers\DvController::clas
 Route::get('/dv/create/save', [App\Http\Controllers\DvController::class, 'createDvSave'])->name('dv.create.save');
 Route::get('/dv/edit', [App\Http\Controllers\DvController::class, 'editDv'])->name('dv.edit');
 
+Route::get('tracking/{fundsourceId}/{proponentInfoId}', [App\Http\Controllers\UtilizationController::class, 'tracking'])->name('tracking');
+Route::get('tracking', [App\Http\Controllers\UtilizationController::class, 'index'])->name('tracking');

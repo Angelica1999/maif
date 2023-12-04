@@ -44,4 +44,7 @@ class Dv extends Model
     public function addFacilityInfo() {      
         return $this->belongsTo(AddFacilityInfo::class, 'id', 'facility_id');
     }
+    public function fundsource() {
+        return $this->belongsTo(Fundsource::class, 'saa_number', 'id'); # payee is the foreign Id of fundsource it would be fundsource_id
+    }
 }

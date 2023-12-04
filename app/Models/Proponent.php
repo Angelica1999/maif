@@ -21,5 +21,10 @@ class Proponent extends Model
     {
         return $this->hasMany(ProponentInfo::class);
     }
+    
+    public function utilization()
+    {
+        return $this->hasMany(Utilization::class, 'proponentinfo_id', 'id');
+    }
 
 }

@@ -7,6 +7,8 @@ use App\Models\Fundsource;
 use App\Models\Facility;
 use App\Models\Proponent;
 use App\Models\ProponentInfo;
+use App\Models\Utilization;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,7 +19,7 @@ class FundSourceController extends Controller
        // $this->middleware('auth');
     }
 
-    public function fundSource(Request $request) {
+        public function fundSource(Request $request) {
         $fundsources = Fundsource::              
                         with([
                             'proponents' => function ($query) {
@@ -35,6 +37,9 @@ class FundSourceController extends Controller
                             }
                         ]);
 
+
+      $utilizations = Utilization::with(['fundSourcedata', 'proponentdata'])->first();
+                       
         if($request->viewAll) {
             $request->keyword = '';
         }
@@ -50,7 +55,8 @@ class FundSourceController extends Controller
                         
         return view('fundsource.fundsource',[
             'fundsources' => $fundsources,
-            'keyword' => $request->keyword
+            'keyword' => $request->keyword,
+            'utilizations' => $utilizations,
         ]);
     }
 

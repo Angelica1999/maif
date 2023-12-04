@@ -6,6 +6,7 @@
     use App\Models\ProponentInfo; 
     use App\Models\Facility; 
 ?>
+
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
@@ -39,9 +40,10 @@
                                             <label>R-Balance: <strong class="text-info">{{ number_format($proponentInfo->remaining_balance, 2, '.', ',') }}</strong></label>
                                             <input type="hidden" name="fundsource" id="fundsource" value="{{$proponentInfo->fundsource_id}}">
                                             <input type="hidden" name="proponent" id="proponent" value ="{{$proponentInfo->proponent_id}}">
-                                            <button id = "track" data-target="#track"onclick="track_details(event)" style = "margin-left: 150px; margin-top: 5px" class= 'btn btn-sm btn-info track_details'>Track</button>
+                                            <button id = "track" data-proponent-id = "$proponent->id" data-fundsource-id="{{ $fund->id }}" data-proponentInfo-id="{{$proponentInfo->id}}" data-target="#track_details"onclick="track_details(event)" style = "margin-left: 150px; margin-top: 5px" class= 'btn btn-sm btn-info track_details'>Track</button>
+                                           
                                         @endforeach
-                                        
+                                       
                                     </ul>
                             </div>
                         @endforeach
@@ -73,6 +75,7 @@
     </div>
 </div>
 
+
 <div class="modal fade" id="track_details" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -86,16 +89,17 @@
                 <table class="table table-list table-hover table-striped" id="track_details">
                     <thead>
                         <tr>
-                        <th>FundSource</th>
-                    <th>Proponent</th>
-                    <th>Beginning Balance</th>
-                    <th>Discount</th>
-                    <th>Utilize Amount</th>
-                    <th>Created By</th>
-                    <th>Created At</th>
+                            <th>FundSource</th>
+                            <th>Proponent</th>
+                            <th>Beginning Balance</th>
+                            <th>Discount</th>
+                            <th>Utilize Amount</th>
+                            <th>Created By</th>
+                            <th>Created At</th>
                     </tr>
                     </thead>
                     <tbody id="t_body">
+                        
                     </tbody>
                 </table>
                 
@@ -104,32 +108,114 @@
     </div>
 </div>
 
+<!-- <div class="modal fade" id="track_details" tabindex="-1" role="dialog" aria-hidden="true" style="width: 50%;">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tracking Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="table-container">
+                <table class="table table-list table-hover table-striped" id="track_details">
+                    <thead>
+                        <tr>
+                            <th>FundSource</th>
+                            <th>Proponent</th>
+                            <th>Beginning Balance</th>
+                            <th>Discount</th>
+                            <th>Utilize Amount</th>
+                            <th>Created By</th>
+                            <th>Created At</th>
+                    </tr>
+                    </thead>
+                    <tbody id="t_body">
+                         <td>FundSource1</td>
+                         <td>Proponent1</td>
+                         <td>Beginning Balance1</td>
+                         <td>Discount1</td>
+                         <td>Utilize Amount1</td>
+                         <td>Created By1</td>
+                         <td>Created At1</td>
+                    </tbody>
+                </table>
+                
+            </div>
+        </div>
+    </div>
+</div> -->
+
 @endsection
 
 @section('js')
     <script>
         function track_details(event){
-            console.log("track_details");
-            
             event.stopPropagation();
             $('#track_details').modal('show');
 
+         var fundsourceId = event.target.getAttribute('data-fundsource-id');
+         var proponentInfoId = event.target.getAttribute('data-proponentInfo-id');
+         var utilizeId = event.target.getAttribute('data-utilize-id');
+         console.log("FundsourceId: ",fundsourceId);
+         var url = "{{ url('tracking').'/' }}"+ fundsourceId + '/' +proponentInfoId;
+         console.log('my url', url);
+        //  $('#track_details').on('click', function(){
+            $.ajax({
+            url: url,
+            type: 'GET',
+            
+            success: function(result) {
+                $('#t_body').empty(); //to empy the table before it will load
+                var dataArray = result;
+
+                dataArray.forEach(function(item) {
+                    console.log('item', item); 
+                    var saa = item.fund_sourcedata && item.fund_sourcedata.saa !== null ? item.fund_sourcedata.saa : '';
+                    var proponentName = item.proponentdata && item.proponentdata.proponent !== null ? item.proponentdata.proponent : '';
+                    var new_row = '<tr>' +
+                        '<td>' + saa + '</td>' +
+                        '<td>' + proponentName + '</td>' +
+                        '<td>' + item.beginning_balance + '</td>' +
+                        '<td>' + item.discount + '</td>' +
+                        '<td>' + item.utilize_amount + '</td>' +
+                        '<td>' + item.created_by + '</td>' +
+                        '<td>' + item.created_at + '</td>' +
+                        '</tr>';
+                    $('#t_body').append(new_row);
+                });
+
+            }
+            });
+        // }); 
+
         }
 
-        $(document).ready(function () {
-            $("#track").on("click", function(){
-                $("#t_body").empty();
-            });
-             $(".modal-title").html("Tracking Details");
-            $(".track_details").on('click', function(e) {
-                $("#t_body").empty();
 
-                var fundsource_id = $("#fundsource").val();
-                console.log('fundsource', fundsource);
-               // var propon
-            });
+        // $(document).ready(function () {
+        //     $("#track").on("click", function(){
+        //       //  $("#t_body").empty();
+        //     });
+        //      $(".modal-title").html("Tracking Details okasddasd");
+        //     $(".track_details").on('click', function(e) {
+        //        // $("#t_body").empty();
 
-        });
+        //         var fundsource_id = $("#fundsource").val();
+        //         console.log('fundsource', fundsource);
+        //        // var propon
+        //        var new_row = '<tr>' +
+        //                 '<td?>' + "okayyyy"+ '</td>' +
+        //                 '<td?>' +"okayyyy"+ '</td>' +
+        //                 '<td?>'  + "okayyyy"+'</td>' +
+        //                 '<td?>'  + "okayyyy"+ '</td>' +
+        //                 '<td?>'  + "okayyyy"+ '</td>' +
+        //                 '<td?>'  + "okayyyy"+ '</td>' +
+        //                 '<td?>'  + "okayyyy"+ '</td>' +
+        //                 '</tr>';
+        //                 $('#t_body').append(new_row);
+        //     });
+
+        // });
 
         function editfundsource(fundsourceId){
             //console.log(fundsourceId);
