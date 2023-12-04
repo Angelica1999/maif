@@ -22,13 +22,13 @@ return new class extends Migration
             $table->double('amount1')->nullable();
             $table->double('amount2')->nullable();
             $table->double('amount3')->nullable();
-            $table->double('total_amount')->nullable();
+            $table->decimal('total_amount', 20, 2)->nullable();
             $table->string('deduction1')->nullable();
             $table->string('deduction2')->nullable();
-            $table->double('deduction_amount1')->nullable();
-            $table->double('deduction_amount2')->nullable();
-            $table->double('total_deduction_amount')->nullable();
-            $table->double('overall_total_amount')->nullable();
+            $table->decimal('deduction_amount1', 20, 2)->nullable();
+            $table->decimal('deduction_amount2', 20, 2)->nullable();
+            $table->decimal('total_deduction_amount', 5, 2)->nullable();
+            $table->decimal('overall_total_amount', 20, 2)->nullable();
             $table->timestamps();
         });
     }

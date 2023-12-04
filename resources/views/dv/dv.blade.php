@@ -82,59 +82,59 @@
                     </tr>
                 </thead>
                 <tbody>
-                  
+                        @foreach($disbursement as $dvs)
                         <tr>
                             <td>
-                                  Cebu City Medical Center
+                                {{$dvs->payee}}
                             </td> 
                             <td>
-                                  SAA 2023 - 1001
+                                  {{$dvs->saa_number}}
                             </td> 
                             <td>
-                                    11/16/2023
+                                    {{$dvs->date}}
                             </td>   
                             <td>
-                                 Natalio B. Bacalso Ave, Cebu City, 6000 Cebu
+                                 {{$dvs->address}}
                             </td>
                             <td>
-                                11/2023
+                               {{$dvs->month_year_from}}
                             </td>
                             <td>
-                                12/2023
+                                {{$dvs->month_year_to}}
                             </td>
                             <td>
-                              1,000,000.00
+                                 {{$dvs->amount1}}
                             </td>
                             <td>
-                               500,000.00
+                                {{$dvs->amount2}}
                             </td>
                             <td>
-                              100,000.00
+                                {{$dvs->amount3}}
                             </td>
                             <td>
-                                1,600,000.00
+                                {{$dvs->total_amount}}
                             </td>
                             <td>
-                               5% VAT
+                               {{$dvs->deduction1}}% VAT
                                <br>
-                               2% EWT
+                               {{$dvs->deduction2}}% EWT
                             </td>
                             <td>
-                              50,000.00
-                              20,000.00
+                            {{$dvs->deduction_amount1}}
+                            {{$dvs->deduction_amount2}}
                             </td>
                             <td>
-                              70,000.00
+                            {{$dvs->overall_total_amount}}
                             </td>
                             <td>
-                              1,520,000.00
+                            
                             </td>
                             <td class="inline-icons" style="width:200px;">
                                 <i class="typcn typcn-edit menu-icon btn-sm btn btn-primary"></i>
                                 <i class="typcn typcn-printer menu-icon btn-sm btn btn-secondary"></i>
                             </td>
                         </tr>
-              
+                      @endforeach
                 </tbody>
                 </table>
             </div>
@@ -387,6 +387,7 @@ function removeSAADropdowns() {
             var inputValue1 = parseNumberWithCommas(document.getElementById('inputValue1').value) || 0;
             var inputValue2 = parseNumberWithCommas(document.getElementById('inputValue2').value) || 0;
             var inputValue3 = parseNumberWithCommas(document.getElementById('inputValue3').value) || 0;
+
             saa1Alocated_Funds = parseNumberWithCommas(saa1Alocated_Funds1);
             $('#saa1_infoId').val((result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId) || {}).id || 0);
             $('#saa2_infoId').val((result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId2) || {}).id || 0);
@@ -412,28 +413,35 @@ function removeSAADropdowns() {
 
             var vat_total = (first_vat + sec_vat + third_vat).toFixed(2);
             var ewt_total = (first_ewt + sec_ewt + third_ewt).toFixed(2);        
-            var totalDeductEwtVat = vat_total + ewt_total;
+            var totalDeductEwtVat =  parseFloat(vat_total) + parseFloat(ewt_total);
 
             $('#vatValue1').val(first_vat);
             $('#ewttValue1').val(first_ewt);
             console.log('vat 2', sec_vat);
+            
             $('#vatValue2').val(sec_vat);
             $('#ewtValue2').val(sec_ewt);
             $('#vatValue3').val(third_vat);
             $('#ewtValue3').val(third_ewt);
+
             console.log("for_vat", vat_total);
             $('#inputDeduction1').val(vat_total);
             $('#inputDeduction2').val(ewt_total);
-            $('#totalDeduction').text(totalDeductEwtVat);
-
+            $('.totalDeduction').text(totalDeductEwtVat);
+            var totaldeduct =  $('#totalDeductionInput').val(totalDeductEwtVat);
+            console.log('my deduct',totaldeduct);
             var all_data = inputValue1 + inputValue2 + inputValue3;
            //for Debit & Credit
-           var result_Vat = $('#totalInput').val();
-           var totadeduction = $('#totalDeductionInput').val();
-           var overTotalCredit = $('#overallTotalInput').val();
-           $('#totalDebit').text(result_Vat);
-           $('#DeductForCridet').text(totadeduction);
-           $('#OverTotalCredit').text(overTotalCredit);
+           //var result_Vat = $('#totalInput').val();
+           //Over all total
+           var overallTotalInput = parseFloat(all_data)  - parseFloat(totalDeductEwtVat);
+           console.log('OverAllTotl', overallTotalInput);
+           $('#overallTotalInput').val(overallTotalInput);
+           $('.overallTotal').text(overallTotalInput);
+
+           $('#totalDebit').text(all_data);
+           $('#DeductForCridet').text(totalDeductEwtVat);
+           $('#OverTotalCredit').text(overallTotalInput);
             
            var ewt_input = ((all_data * ewt) / 100).toFixed(2);
             $('#forEwt_left').text(ewt_input);
@@ -445,7 +453,7 @@ function removeSAADropdowns() {
                 var vat_first =  (((inputValue1/ 1.12) * vat) / 100).toFixed(2);
                 $('#saa1_discount').val(parseFloat(vat_first+ewt_input).toFixed(2));
                 $('#saa1_utilize').val((inputValue1-parseFloat(vat_first+ewt_input)).toFixed(2));
-                // console.log('saa1_discount', vat_first+ewt_input);
+                 console.log('saa1_discount', vat_first+ewt_input);
                 
                 var vat_sec =  (((inputValue2/ 1.12) * vat) / 100).toFixed(2);
                 $('#saa2_discount').val(parseFloat(vat_sec+ewt_input).toFixed(2));
@@ -454,7 +462,6 @@ function removeSAADropdowns() {
                 var vat_third =  (((inputValue3/ 1.12) * vat) / 100).toFixed(2);
                 $('#saa3_discount').val(parseFloat(vat_third+ewt_input).toFixed(2));
                 $('#saa3_utilize').val((inputValue3-parseFloat(vat_third+ewt_input)).toFixed(2));
-
             }else{
                 var vat_input = ((all_data * vat) / 100).toFixed(2);
                 $('#forVat_left').text(vat_input);
@@ -468,7 +475,6 @@ function removeSAADropdowns() {
                 var vat_third =  ((inputValue3 * vat) / 100).toFixed(2);
                 $('#saa3_discount').val(parseFloat(vat_third+ewt_input).toFixed(2));
                 $('#saa3_utilize').val((inputValue3-parseFloat(vat_third+ewt_input)).toFixed(2));
-
             }
             
             $('#saa1_beg').val(saa1Alocated_Funds1);
@@ -512,33 +518,6 @@ function removeSAADropdowns() {
                 }
                 
 
-                // if (
-                // (inputValue1 !== null && inputValue1 !== undefined && inputValue1 !== '') &&
-                // (inputValue2 !== null && inputValue2 !== undefined && inputValue2 !== '') &&
-                // (inputValue3 !== null && inputValue3 !== undefined && inputValue3 !== '')
-                // ) {
-                //     if (saa1Alcated_fund1 >= inputValue1) {
-                //         var totalSaa1;
-                //         totalSaa1 = saa1Alocated_Funds1 - inputValue1;
-                //         console.log('Total SAA1 after subtraction: ', formatNumberWithCommas(totalSaa1));
-                //           $('#error-message').hide();
-                //     } else if (saa1Alcated_fund2 >= inputValue2) {
-                //         var totalSaa2;
-                //         totalSaa2 = saa1Alocated_Funds2 - inputValue2;
-                //         console.log('Total SAA2 after subtraction: ', formatNumberWithCommas(totalSaa2));
-                //          $('#error-message').hide();
-                //     } else if (saa1Alcated_fund3 >= inputValue3) {
-                //         var totalSaa3;
-                //         totalSaa3 = saa1Alocated_Funds3 - inputValue3;
-                //         console.log('Total SAA3 after subtraction: ', formatNumberWithCommas(totalSaa3));
-                //           $('#error-message').hide();
-                //     } else {
-
-                //         $('#error-message').text('Insufficient balance for SAA3.');
-                //         $('#error-message').show();
-                //         console.error('Insufficient balance for SAA.');
-                //     }
-                // }
 
         });
 

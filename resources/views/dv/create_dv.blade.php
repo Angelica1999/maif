@@ -140,18 +140,18 @@
                     <input type="hidden" name="saa1_utilize" id="saa1_utilize" style="position:absolute;top:440px;left:500px;white-space:nowrap; width:120px; height: 20px;">
                     
                     
-                    <input type="text" name="inputValue1" id="inputValue1" style="position:absolute;top:440px;left:180px;white-space:nowrap; width:120px; height: 20px;" oninput="fundAmount()" class="ft15" required>
-                    <input type="text" name="amount1" id="for_vat" style="position:absolute;top:420px;left:320px;white-space:nowrap; width:60px; height: 20px;" class="ft15" placeholder="for vat" disabled>
+                    <input type="text" name="amount1" id="inputValue1" style="position:absolute;top:440px;left:180px;white-space:nowrap; width:120px; height: 20px;" oninput="fundAmount()" class="ft15" required>
+                    <input type="text" name="forvat" id="for_vat" style="position:absolute;top:420px;left:320px;white-space:nowrap; width:60px; height: 20px;" class="ft15" placeholder="for vat" readonly>
                     <!-- for vat each saa -->
-                    <input type="text" name="amount1" id="vatValue1" style="position:absolute;top:440px;left:320px;white-space:nowrap; width:80px; height: 20px;" class="ft15" disabled required>
-                    <input type="text" name="amount1" id="vatValue2" style="position:absolute;top:460px;left:320px;white-space:nowrap; width:80px; height: 20px; display: none;" class="ft15"  disabled>
-                    <input type="text" name="amount1" id="vatValue3" style="position:absolute;top:480px;left:320px;white-space:nowrap; width:80px; height: 20px; display: none;" class="ft15"  disabled>
+                    <input type="text" name="vatValue1" id="vatValue1" style="position:absolute;top:440px;left:320px;white-space:nowrap; width:80px; height: 20px;" class="ft15" readonly required>
+                    <input type="text" name="vatValue2" id="vatValue2" style="position:absolute;top:460px;left:320px;white-space:nowrap; width:80px; height: 20px; display: none;" class="ft15"  readonly>
+                    <input type="text" name="vatValue3" id="vatValue3" style="position:absolute;top:480px;left:320px;white-space:nowrap; width:80px; height: 20px; display: none;" class="ft15"  readonly>
                     <!-- ---- -->
-                    <input type="text" name="amount1" id="for_ewt" style="position:absolute;top:420px;left:410px;white-space:nowrap; width:60px; height: 20px;" class="ft15"  placeholder="for Ewt" disabled>
+                    <input type="text" name="for_ewt" id="for_ewt" style="position:absolute;top:420px;left:410px;white-space:nowrap; width:60px; height: 20px;" class="ft15"  placeholder="for Ewt" readonly>
                     <!-- for ewt each saa -->
-                    <input type="text" name="amount1" id="ewttValue1" style="position:absolute;top:440px;left:410px;white-space:nowrap; width:80px; height: 20px;" class="ft15"  disabled required>
-                    <input type="text" name="amount1" id="ewtValue2" style="position:absolute;top:460px;left:410px;white-space:nowrap; width:80px; height: 20px;display: none;" class="ft15"  disabled>
-                    <input type="text" name="amount1" id="ewtValue3" style="position:absolute;top:480px;left:410px;white-space:nowrap; width:80px; height: 20px;display: none;" class="ft15"  disabled>
+                    <input type="text" name="ewttValue1" id="ewttValue1" style="position:absolute;top:440px;left:410px;white-space:nowrap; width:80px; height: 20px;" class="ft15"  readonly required>
+                    <input type="text" name="ewtValue2" id="ewtValue2" style="position:absolute;top:460px;left:410px;white-space:nowrap; width:80px; height: 20px;display: none;" class="ft15"  readonly>
+                    <input type="text" name="ewtValue3" id="ewtValue3" style="position:absolute;top:480px;left:410px;white-space:nowrap; width:80px; height: 20px;display: none;" class="ft15"  readonly>
                     <!-- ---- -->
                     <div id="error-message" style="position: absolute; top: 470px; left: 270px; color: red;"></div>
 
@@ -190,8 +190,8 @@
                 <!-- <span id="showSaabutton" class="fa fa-plus" style="position:absolute;top:445px;left:75px; width:20px; height: 20px; cursor:pointer" onclick="toggleSAAdropdowns()">Add</span> -->
             <!-- <span id="showSAAButton1" class="fa fa-plus" style="position:absolute;top:455px;left:70px; width:20px; height: 20px; front-size:8px; cursor:pointer" onclick="toggleSAADropdowns()">Remove</span> -->
         <label style="position:absolute;top:545px;left:40px;white-space:nowrap;" class="ft16">Ewt</label>
-        <input type="text" name="amount1" id="vat" style="position:absolute;top:520px;left:60px;white-space:nowrap; width:50px; height: 20px;" class="ft15" oninput="" placeholder="Vat" disabled>
-        <input type="text" name="amount1" id="ewt" style="position:absolute;top:540px;left:60px;white-space:nowrap; width:50px; height: 20px;" class="ft15" oninput="" placeholder="ewt" disabled>
+        <input type="text" name="vat" id="vat" style="position:absolute;top:520px;left:60px;white-space:nowrap; width:50px; height: 20px;" class="ft15" oninput="" placeholder="Vat" readonly>
+        <input type="text" name="ewt" id="ewt" style="position:absolute;top:540px;left:60px;white-space:nowrap; width:50px; height: 20px;" class="ft15" oninput="" placeholder="ewt" readonly>
         <p style="position:absolute;top:540px;left:113px;white-space:nowrap; width:50px; height: 20px;" class='ft16' id ="forEwt_left"></p>
         <!-- <select id="deduction1" name="deduction1"  style="position:absolute;top:520px;left:60px;white-space:nowrap; width:100px; height: 20px" class="ft15">
          <option value="">- Select Vat -</option>
@@ -199,7 +199,7 @@
                 <option value="{{ $facilityvat->id  }}">{{ $facilityvat->vat }}%</option>
          @endforeach
         </select> -->
-            <input type="text" id="inputDeduction1" name="deductionAmount1" style="position:absolute;top:520px;left:180px;white-space:nowrap; width:120px; height: 20px; font-size: 8pt" class="ft15" disabled required>
+            <input type="text" name="deductionAmount1" id="inputDeduction1" style="position:absolute;top:520px;left:180px;white-space:nowrap; width:120px; height: 20px; font-size: 8pt" class="ft15" readonly required>
 
         <!-- <select id="deduction2" name="deduction2" style="position:absolute;top:540px;left:60px;white-space:nowrap; width:100px; height: 20px" class="ft15">
         <option value="">- Select Ewt -</option>
@@ -210,17 +210,16 @@
          @endforeach
         </select> -->
         <p style="position:absolute;top:650px;left:113px;white-space:nowrap; width:50px; height: 20px;" type="hidden" id ="for_facility_id" class='ft16'></p>
-
-        <input type="number" id="inputDeduction2" name="deductionAmount2" style="position:absolute;top:540px;left:180px;white-space:nowrap; width:120px; height: 20px; font-size: 8pt" class="ft15" min="1" disabled required>
+        <input type="text" name="deductionAmount2" id="inputDeduction2" style="position:absolute;top:540px;left:180px;white-space:nowrap; width:120px; height: 20px; font-size: 8pt" class="ft15" min="1" readonly required>
             <p style="position:absolute;top:568px;left:69px;white-space:nowrap; font-weight:bold;" class="ft16">  &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; Amount Due</p>
             <p style="position:absolute;top:359px;left:746px;white-space:nowrap" class="ft15"></p>
             <p style="position:absolute;top:440px;left:755px;white-space:nowrap"  class="ft15 total"></p>
                                                   <input type="hidden" name="total" id="totalInput" class="ft15 total">
             <p style="position:absolute;top:521px;left:755px;white-space:nowrap" class="ft15 totalDeduction"></p>
-                                              <input type="hidden" name="totalDeduction" id="totalDeductionInput" class="ft15 totalDeduction">
+                                            <input type="hidden" name="totalDeduction" id="totalDeductionInput" class="ft15">
             <p style="position:absolute;top:551px;left:760px;white-space:nowrap" class="ft15">_________________</p>
-            <p style="position:absolute;top:568px;left:755px;white-space:nowrap; font-weight:bold" class="ft15 overallTotal" id="overallTotal">total</p>
-                                                                                  <input type="hidden" name="overallTotal" id="overallTotalInput" class="ft15 overallTotal">
+            <p style="position:absolute;top:568px;left:755px;white-space:nowrap; font-weight:bold" class="ft15 overallTotal">total</p>
+                                            <input type="hidden" name="overallTotal" id="overallTotalInput" class="ft15 overallTotal">
             <p style="position:absolute;top:615px;left:20px;white-space:nowrap" class="ft17"><b>A. Certified: Expenses/Cash Advance necessary, lawful and incurred under my direct supervision.</b></p>
             <p style="position:absolute;top:652px;left:57px;white-space:nowrap; font-size:9pt" class="ft17"><b>&#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160;  SOPHIA M. MANCAO, MD, DPSP, RN-MAN </b></p>
             <p style="position:absolute;top:666px;left:60px;white-space:nowrap; font-size: 8pt" class="ft17">&#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; &#160; Director III</p>
@@ -303,11 +302,11 @@
             document.querySelector('.total').innerText = '' + formattedTotal;
             document.querySelector('#totalInput').value = '' + formattedTotal;
 
-            document.querySelector('.totalDeduction').innerText = '' + formattedDecduction;
-            document.querySelector('#totalDeductionInput').value = '' + formattedDecduction;
+           // document.querySelector('.totalDeduction').innerText = '' + formattedDecduction;
+          //  document.querySelector('#totalDeductionInput').value = '' + formattedDecduction;
 
             document.querySelector('.overallTotal').innerText = '' + formattedTotalAmount;
-            document.querySelector('#overallTotalInput').value = '' + formattedTotalAmount;
+           // document.querySelector('#overallTotalInput').value = '' + formattedTotalAmount;
         }
 
         // Function to get the numeric value from the formatted input

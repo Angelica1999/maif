@@ -24,16 +24,17 @@ class DvController extends Controller
 
     public function dv(){
 
-        
-        return view('dv.dv');
+        $dv = Dv::get();
+        return view('dv.dv', [
+        'disbursement' => $dv,
+        ]);
     }
-
+    
 
     public function createDv(Request $request)
     {
         $user = Auth::user();
         $dvs = Dv::get();
-
          
             $facilityId = ProponentInfo::where('facility_id','=', $request->facilityId)->get();
             //  dd($facilityId);
@@ -80,7 +81,6 @@ class DvController extends Controller
         $user = User::where('id', Auth::user()->id)->first();
         // return $user;
         $dv = new Dv();
-
        $dv->date = $request->input('datefield');
        $dv->payee = $request->input('facilityname');
        $dv->address = $request->input('facilityAddress');
@@ -100,8 +100,8 @@ class DvController extends Controller
        $dv->amount2 = $request->input('amount2');
        $dv->amount3 = $request->input('amount3');
        $dv->total_amount = $request->input('total');
-       $dv->deduction1 = $request->input('deduction1');
-       $dv->deduction2 = $request->input('deduction2');
+       $dv->deduction1 = $request->input('vat');
+       $dv->deduction2 = $request->input('ewt');
        $dv->deduction_amount1 = $request->input('deductionAmount1');
        $dv->deduction_amount2 = $request->input('deductionAmount2');
        $dv->total_deduction_amount = $request->input('totalDeduction');
