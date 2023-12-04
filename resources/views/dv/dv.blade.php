@@ -82,13 +82,19 @@
                     </tr>
                 </thead>
                 <tbody>
+               
                         @foreach($disbursement as $dvs)
                         <tr>
                             <td>
-                                {{$dvs->payee}}
+                                
+                            @if($dvs->facility)
+                                {{ $dvs->facility->name }}
+                            @endif
                             </td> 
                             <td>
-                                  {{$dvs->saa_number}}
+                                @if($dvs->fundsource)
+                                  {{$dvs->fundsource->saa}}
+                                @endif
                             </td> 
                             <td>
                                     {{$dvs->date}}
@@ -292,7 +298,6 @@ function removeSAADropdowns() {
 
       function onchangefacility(data) {
 
-
         if(data.val()) {
             var selectOption = data.find('option:selected');
             var facilityAddress = selectOption.attr('address');
@@ -303,11 +308,19 @@ function removeSAADropdowns() {
             $('#facilityAddress').empty();
             $('#hospitalAddress').empty();
             $('#for_facility_id').text(facilityId);
+
             $.get("{{ url('/getFund').'/' }}"+facilityId+fund_source, function(result) {
                 console.log('fundsource: ',fund_source);
-                console.log('facility: ',facilityId);
-              
-           
+                //console.log('facility22: ',facilityId);
+                $.each(result, function(index, optionData){
+                   //  console.log(optionData.facility_id);
+                    $('#facility_id').append($('<option>', {
+                         value: optionData.facility_id,                  
+                        //  text: optionData.facilityId && optionData.facilityId.fundsource ? optionData.facilityId.fundsource.saa : '',
+                        // text: optionData.facilityId ? optionData.facilityId.fundsource.saa : ''
+                    }));
+                });
+
                 var selectedValueSaa2 = $('#saa2').val();
                  $.each(result, function(index, optionData){
                      //console.log(optionData.fundsource.id);

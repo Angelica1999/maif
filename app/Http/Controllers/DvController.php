@@ -24,8 +24,7 @@ class DvController extends Controller
 
     public function dv(){
 
-        $dv = Dv::with('fundsource')->get();
-        
+        $dv = Dv::with('fundsource','facility')->get();
         return view('dv.dv', ['disbursement' => $dv]);
         // $dv = Dv::get();
         // return view('dv.dv', [
@@ -80,12 +79,12 @@ class DvController extends Controller
     
     function createDvSave(Request $request){
         // return Auth::user()->id;
-        $request->input('saa1_infoId');
+       return $request->input('facilityname');
         $user = User::where('id', Auth::user()->id)->first();
         // return $user;
         $dv = new Dv();
        $dv->date = $request->input('datefield');
-       $dv->payee = $request->input('facilityname');
+       $dv->facility_id = $request->input('facilityname');
        $dv->address = $request->input('facilityAddress');
        $dv->month_year_from = $request->input('billingMonth1');
        $dv->month_year_to = $request->input('billingMonth2');

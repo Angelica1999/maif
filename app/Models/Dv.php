@@ -9,7 +9,7 @@ class Dv extends Model
     protected $table = 'Dv'; // Adjust the table name as needed
     protected $fillable = [
         'date',
-        'payee',
+        'facility_id',
         'address',
         'month_year_from',
         'month_year_to',

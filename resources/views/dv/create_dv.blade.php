@@ -91,8 +91,9 @@
             <p style="position:absolute;top:217px;left:20px;white-space:nowrap" class="ft15">Payee</p>
   
         <select id="facilityDropdown" name="facilityname" id ="facility_id" onchange="onchangefacility($(this))" style="position:absolute;top:215px;left:140px;white-space:nowrap; width:260px; height: 28px; font-size: 9pt" class="ft15">
-            <option value=""> Select Facility  </option>
-            </select>
+        <option value=""> Select Facility  </option>
+        </select>
+
             <!-- <option value="" ></option> -->
             <!-- @foreach ($facilities as $facility)
                 <option value="{{ $facility->id }}" >{{ $facility->name }}</option>

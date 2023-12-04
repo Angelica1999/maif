@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('dv', function (Blueprint $table) {
             $table->id();
             $table->dateTime('date');
-            $table->string('payee');
+            $table->string('facility_id');
             $table->string('address');
             $table->dateTime('month_year_from');
             $table->dateTime('month_year_to');
