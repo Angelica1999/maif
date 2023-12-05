@@ -13,7 +13,7 @@ class Dv extends Model
         'address',
         'month_year_from',
         'month_year_to',
-        'saa_number',
+        'fundsource_id',
         'amount1',
         'amount2',
         'amount3',
@@ -45,6 +45,6 @@ class Dv extends Model
         return $this->belongsTo(AddFacilityInfo::class, 'id', 'facility_id');
     }
     public function fundsource() {
-        return $this->belongsTo(Fundsource::class, 'saa_number', 'id'); # payee is the foreign Id of fundsource it would be fundsource_id
+        return $this->belongsTo(Fundsource::class, 'fundsource_id', 'id'); 
     }
 }

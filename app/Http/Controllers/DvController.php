@@ -25,11 +25,8 @@ class DvController extends Controller
     public function dv(){
 
         $dv = Dv::with('fundsource','facility')->get();
+
         return view('dv.dv', ['disbursement' => $dv]);
-        // $dv = Dv::get();
-        // return view('dv.dv', [
-        // 'disbursement' => $dv,
-        // ]);
     }
     
 
@@ -79,7 +76,6 @@ class DvController extends Controller
     
     function createDvSave(Request $request){
         // return Auth::user()->id;
-       return $request->input('facilityname');
         $user = User::where('id', Auth::user()->id)->first();
         // return $user;
         $dv = new Dv();
@@ -97,7 +93,7 @@ class DvController extends Controller
           return $value !== null;
        });
       
-       $dv->saa_number = json_encode($saaNumbers);
+       $dv->fundsource_id = json_encode($saaNumbers);
        $dv->amount1 = $request->input('amount1');
        $dv->amount2 = $request->input('amount2');
        $dv->amount3 = $request->input('amount3');
@@ -110,10 +106,10 @@ class DvController extends Controller
        $dv->overall_total_amount = $request->input('overallTotal');
        $dv->save();
 
-       if ($dv->saa_number) {
-        $saaNumbersArray = is_array($dv->saa_number)
-            ? $dv->saa_number
-            : explode(',', $dv->saa_number);
+       if ($dv->fundsource_id) {
+        $saaNumbersArray = is_array($dv->fundsource_id)
+            ? $dv->fundsource_id
+            : explode(',', $dv->fundsource_id);
         $proponent_id = [$request->input('saa1_infoId'), $request->input('saa2_infoId'), $request->input('saa3_infoId')];
         $beg_balance = [$request->input('saa1_beg'),$request->input('saa2_beg'),$request->input('saa3_beg')];
         $utilize_amount = [$request->input('saa1_utilize'),$request->input('saa2_utilize'),$request->input('saa3_utilize')];

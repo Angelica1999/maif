@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('address');
             $table->dateTime('month_year_from');
             $table->dateTime('month_year_to');
-            $table->string('saa_number')->nullable();
+            $table->string('fundsource_id')->nullable();
             $table->text('amount1')->nullable();
             $table->text('amount2')->nullable();
             $table->text('amount3')->nullable();

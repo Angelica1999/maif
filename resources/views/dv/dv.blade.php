@@ -92,8 +92,21 @@
                             @endif
                             </td> 
                             <td>
-                                @if($dvs->fundsource)
-                                  {{$dvs->fundsource->saa}}
+                            @if($dvs->fundsource_id)
+                                    @php
+                                        $fundsourceIds = json_decode($dvs->fundsource_id);
+                                        $saaValues = [];
+
+                                        foreach($fundsourceIds as $fundsourceId) {
+                                            $fundsource = \App\Models\Fundsource::find($fundsourceId);
+
+                                            if($fundsource) {
+                                                $saaValues[] = $fundsource->saa;
+                                            }
+                                        }
+                                    @endphp
+
+                                    {{ implode(', ', $saaValues) }}
                                 @endif
                             </td> 
                             <td>
@@ -272,7 +285,7 @@ function removeSAADropdowns() {
                     $.each(result, function(index, optionData){
                         
                         $('#facilityDropdown').append($('<option>', {
-                            value: optionData.id,
+                            value: optionData.facility.id,
                             text: optionData.facility ? optionData.facility.name : '',
                             address:optionData.facility ? optionData.facility.address : '',
                             facilityname: optionData.facility ? optionData.facility.name : '',
@@ -312,14 +325,6 @@ function removeSAADropdowns() {
             $.get("{{ url('/getFund').'/' }}"+facilityId+fund_source, function(result) {
                 console.log('fundsource: ',fund_source);
                 //console.log('facility22: ',facilityId);
-                $.each(result, function(index, optionData){
-                   //  console.log(optionData.facility_id);
-                    $('#facility_id').append($('<option>', {
-                         value: optionData.facility_id,                  
-                        //  text: optionData.facilityId && optionData.facilityId.fundsource ? optionData.facilityId.fundsource.saa : '',
-                        // text: optionData.facilityId ? optionData.facilityId.fundsource.saa : ''
-                    }));
-                });
 
                 var selectedValueSaa2 = $('#saa2').val();
                  $.each(result, function(index, optionData){

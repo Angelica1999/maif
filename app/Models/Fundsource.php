@@ -29,6 +29,6 @@ class Fundsource extends Model
         return $this->hasMany(Utilization::class, 'fundsource_id', 'id');
     }
     public function dv(){
-        return $this->hasmany(Dv::class, 'saa_number', 'id');
+        return $this->hasmany(Dv::class, 'fundsource_id', 'id');
     }
 }
