@@ -10,40 +10,40 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="social_worker">Social Worker</label>
-                    <input type="text" class="form-control" id="social_worker" name="social_worker" value="{{ $facility->social_worker }}" placeholder="Social Worker" required>
+                    <input type="text" class="form-control" id="social_worker" name="social_worker" value="{{ $facility->social_worker }}" placeholder="Social Worker" >
                 </div>
             </div>
 
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="social_worker_email">Social Worker Email</label>
-                    <input type="email" class="form-control" id="social_worker_email" name="social_worker_email" value="{{ $facility->social_worker_email }}" placeholder="Social Worker Email" required>
+                    <input type="email" class="form-control" id="social_worker_email" name="social_worker_email" value="{{ $facility->social_worker_email }}" placeholder="Social Worker Email" >
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="social_worker_contact">Social Worker Contact</label>
-                    <input type="text" class="form-control" id="social_worker_contact" name="social_worker_contact" value="{{ $facility->social_worker_contact }}" placeholder="Social Worker Contact" required pattern="63\+\d{10}|\d{11}">
+                    <input type="text" class="form-control" id="social_worker_contact" name="social_worker_contact" value="{{ $facility->social_worker_contact }}" placeholder="Social Worker Contact"  pattern="63\+\d{10}|\d{11}">
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="finance_officer">Finance Officer</label>
-                    <input type="text" class="form-control" id="finance_officer" name="finance_officer" value="{{ $facility->finance_officer }}" placeholder="Finance Officer" required>
+                    <input type="text" class="form-control" id="finance_officer" name="finance_officer" value="{{ $facility->finance_officer }}" placeholder="Finance Officer" >
                 </div>
             </div>
             
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="finance_officer_email">Finance Officer Email</label>
-                    <input type="email" class="form-control" id="finance_officer_email" name="finance_officer_email" value="{{ $facility->finance_officer_email }}" placeholder="Finance Officer Email" required>
+                    <input type="email" class="form-control" id="finance_officer_email" name="finance_officer_email" value="{{ $facility->finance_officer_email }}" placeholder="Finance Officer Email" >
                 </div>
             </div>
 
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="finance_officer_contact">Finance Officer Contact</label>
-                    <input type="text" class="form-control" id="finance_officer_contact" name="finance_officer_contact" value="{{ $facility->finance_officer_contact }}"  placeholder="Finance Officer Contact" required pattern="((63\+)?\d{10}|\d{11})">
+                    <input type="text" class="form-control" id="finance_officer_contact" name="finance_officer_contact" value="{{ $facility->finance_officer_contact }}"  placeholder="Finance Officer Contact" pattern="((63\+)?\d{10}|\d{11})">
                 </div>
             </div>
             <div class="col-md-6">

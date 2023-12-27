@@ -36,12 +36,9 @@
                                     <ul class="list-arrow">
                                         @foreach($proponent->proponentInfo as $proponentInfo)
                                             <li>{{ $proponentInfo->facility->name }}</li>
-                                            <label>Allocated Funds : <strong class="text-info">{{ number_format($proponentInfo->alocated_funds, 2, '.', ',') }}</strong></label>
-                                            <label>R-Balance: <strong class="text-info">{{ number_format($proponentInfo->remaining_balance, 2, '.', ',') }}</strong></label>
-                                            <input type="hidden" name="fundsource" id="fundsource" value="{{$proponentInfo->fundsource_id}}">
-                                            <input type="hidden" name="proponent" id="proponent" value ="{{$proponentInfo->proponent_id}}">
-                                            <button id = "track" data-proponent-id = "$proponent->id" data-fundsource-id="{{ $fund->id }}" data-proponentInfo-id="{{$proponentInfo->id}}" data-target="#track_details"onclick="track_details(event)" style = "margin-left: 150px; margin-top: 5px" class= 'btn btn-sm btn-info track_details'>Track</button>
-                                           
+                                            &nbsp;&nbsp;&nbsp;&nbsp;<label>Allocated Funds : <strong class="text-info">{{ number_format(floatval(str_replace(',', '',$proponentInfo->alocated_funds)), 2, '.', ',') }}</strong></label>
+                                            <label>R-Balance: <strong class="text-info">{{ number_format(floatval(str_replace(',', '',$proponentInfo->remaining_balance)), 2, '.', ',') }}</strong></label>
+                                            <button id = "track" data-fundsource-id="{{ $proponentInfo->fundsource_id }}" data-proponentInfo-id="{{$proponentInfo->proponent_id}}" data-facility-id="{{$proponentInfo->facility_id}}"  data-target="#track_details"onclick="track_details(event)" style = "margin-left: 150px; margin-top: 5px" class= 'btn btn-sm btn-info track_details'>Track</button>
                                         @endforeach
                                        
                                     </ul>
@@ -88,63 +85,24 @@
             <div class="table-container">
                 <table class="table table-list table-hover table-striped" id="track_details">
                     <thead>
-                        <tr>
+                        <tr style="text-align:center;">
                             <th>FundSource</th>
                             <th>Proponent</th>
                             <th>Beginning Balance</th>
                             <th>Discount</th>
                             <th>Utilize Amount</th>
                             <th>Created By</th>
-                            <th>Created At</th>
+                            <th>Utilized On</th>
+                            <th>Remarks</th>
                     </tr>
                     </thead>
                     <tbody id="t_body">
-                        
                     </tbody>
                 </table>
-                
             </div>
         </div>
     </div>
 </div>
-
-<!-- <div class="modal fade" id="track_details" tabindex="-1" role="dialog" aria-hidden="true" style="width: 50%;">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Tracking Details</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="table-container">
-                <table class="table table-list table-hover table-striped" id="track_details">
-                    <thead>
-                        <tr>
-                            <th>FundSource</th>
-                            <th>Proponent</th>
-                            <th>Beginning Balance</th>
-                            <th>Discount</th>
-                            <th>Utilize Amount</th>
-                            <th>Created By</th>
-                            <th>Created At</th>
-                    </tr>
-                    </thead>
-                    <tbody id="t_body">
-                         <td>FundSource1</td>
-                         <td>Proponent1</td>
-                         <td>Beginning Balance1</td>
-                         <td>Discount1</td>
-                         <td>Utilize Amount1</td>
-                         <td>Created By1</td>
-                         <td>Created At1</td>
-                    </tbody>
-                </table>
-                
-            </div>
-        </div>
-    </div>
-</div> -->
 
 @endsection
 
@@ -156,9 +114,12 @@
 
          var fundsourceId = event.target.getAttribute('data-fundsource-id');
          var proponentInfoId = event.target.getAttribute('data-proponentInfo-id');
-         var utilizeId = event.target.getAttribute('data-utilize-id');
+         var facilityId = event.target.getAttribute('data-facility-id');
+         console.log('facility', facilityId);
+         console.log('proponent', proponentInfoId);
+
          console.log("FundsourceId: ",fundsourceId);
-         var url = "{{ url('tracking').'/' }}"+ fundsourceId + '/' +proponentInfoId;
+         var url = "{{ url('tracking').'/' }}"+ fundsourceId + '/' +proponentInfoId + '/' + facilityId;
          console.log('my url', url);
         //  $('#track_details').on('click', function(){
             $.ajax({
@@ -166,56 +127,72 @@
             type: 'GET',
             
             success: function(result) {
-                $('#t_body').empty(); //to empy the table before it will load
+                $('#t_body').empty(); //empty table to refresh table data
                 var dataArray = result;
-
-                dataArray.forEach(function(item) {
+                console.log("data",dataArray);
+                if(result.length > 0){
+                    dataArray.forEach(function(item) {
                     console.log('item', item); 
                     var saa = item.fund_sourcedata && item.fund_sourcedata.saa !== null ? item.fund_sourcedata.saa : '';
                     var proponentName = item.proponentdata && item.proponentdata.proponent !== null ? item.proponentdata.proponent : '';
-                    var new_row = '<tr>' +
+
+                    var timestamp = item.created_at;
+                    var date = new Date(timestamp);
+                    var formattedDate = date.toLocaleString('en-US', {
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric'
+                    });
+                    var formattedTime = date.toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: 'numeric'
+                    });
+                    var stat='';
+                    if(item.status == 0){
+                        stat = 'Processed';
+                    }else{
+                        stat = 'Modified';
+                    }
+                    var beg_balance = item.beginning_balance.replace(',', '');
+                    console.log("balance", beg_balance);
+                    var new_row = '<tr style="text-align:center">' +
                         '<td>' + saa + '</td>' +
                         '<td>' + proponentName + '</td>' +
-                        '<td>' + item.beginning_balance + '</td>' +
-                        '<td>' + item.discount + '</td>' +
-                        '<td>' + item.utilize_amount + '</td>' +
+                        '<td>' + number_format(parseFloat(beg_balance.replace(',', '')), 2, '.', ',') + '</td>' +
+                        '<td>' + number_format(parseFloat(item.discount.replace(',', '')), 2, '.', ',') + '</td>' +
+                        '<td>' + number_format(parseFloat(item.utilize_amount.replace(',', '')), 2, '.', ',') + '</td>'+
                         '<td>' + item.created_by + '</td>' +
-                        '<td>' + item.created_at + '</td>' +
+                        '<td>' + formattedDate+'<br>'+ formattedTime + '</td>' +
+                        '<td>' + stat + '</td>' +
                         '</tr>';
                     $('#t_body').append(new_row);
                 });
-
+                }else{
+                    var new_row = '<tr>' +
+                        '<td colspan ="7">' + "No Data Available" + '</td>' +
+                        '</tr>';
+                    $('#t_body').append(new_row);
+                }
             }
             });
         // }); 
 
         }
+        function number_format(number, decimals, decimalSeparator, thousandsSeparator) {
+            decimals = decimals || 0;
+            number = parseFloat(number);
 
+            if (!isFinite(number) || !number && number !== 0) return NaN;
 
-        // $(document).ready(function () {
-        //     $("#track").on("click", function(){
-        //       //  $("#t_body").empty();
-        //     });
-        //      $(".modal-title").html("Tracking Details okasddasd");
-        //     $(".track_details").on('click', function(e) {
-        //        // $("#t_body").empty();
+            var result = number.toFixed(decimals);
+            result = result.replace('.', decimalSeparator);
 
-        //         var fundsource_id = $("#fundsource").val();
-        //         console.log('fundsource', fundsource);
-        //        // var propon
-        //        var new_row = '<tr>' +
-        //                 '<td?>' + "okayyyy"+ '</td>' +
-        //                 '<td?>' +"okayyyy"+ '</td>' +
-        //                 '<td?>'  + "okayyyy"+'</td>' +
-        //                 '<td?>'  + "okayyyy"+ '</td>' +
-        //                 '<td?>'  + "okayyyy"+ '</td>' +
-        //                 '<td?>'  + "okayyyy"+ '</td>' +
-        //                 '<td?>'  + "okayyyy"+ '</td>' +
-        //                 '</tr>';
-        //                 $('#t_body').append(new_row);
-        //     });
+            var parts = result.split(decimalSeparator);
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSeparator);
 
-        // });
+            return parts.join(decimalSeparator);
+        }
+
 
         function editfundsource(fundsourceId){
             //console.log(fundsourceId);
@@ -247,28 +224,6 @@
                 });
             },500);
         }
-       
-    //    function onchangefacility(data)
-    //     {
-
-    //         if(data.val()){
-
-    //             $.get("{{ url('facility/get').'/' }}"+data.val() function(result){
-    //                $('#facility_id').html('');
-
-    //                $('#facility_id').append($('<option>',{
-    //                   value: "",
-    //                   text:"Please select facility"
-    //                }));
-    //             $.each(result, function(index, optionData){
-    //                 value: optionData.id,
-    //                 text: optionData.name
-    //              });
-
-    //             });
-    //         }
-    //     }
-
 
         function addTransaction() {
             event.preventDefault();

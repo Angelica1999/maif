@@ -55,7 +55,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="alocated_funds">Allocated Fund</label>
-                    <input type="number" step="any" class="form-control" id="alocated_funds" name="alocated_funds[]" placeholder="Allocated Fund" required>
+                    <input type="text" class="form-control" id="alocated_funds" name="alocated_funds[]" onkeyup= "validateAmount(this)"placeholder="Allocated Fund" required>
                 </div>
             </div>
         </div>
@@ -79,4 +79,14 @@
     function fundsourceExist(data) {
         data.val() ? $("#saa").attr('disabled','disabled') : $("#saa").removeAttr('disabled','disabled');
     }
+
+    function validateAmount(element) {
+            var cleanedValue = element.value.replace(/[^\d.]/g, '');
+            var numericValue = parseFloat(cleanedValue);
+            if (!isNaN(numericValue) || cleanedValue === '' || cleanedValue === '.') {
+                element.value = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            } else {
+                element.value = ''; 
+            }
+        }
 </script>

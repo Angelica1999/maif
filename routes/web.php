@@ -10,7 +10,7 @@ use App\Http\Controllers\PrintController;
 | Here is where you can register web routes for your application. These
 | routes are loaded by the RouteServiceProvider and all of them will
 | be assigned to the "web" middleware group. Make something great!
-|
+|routesAdminController
 */
 
 Route::get('/', function () {
@@ -32,6 +32,9 @@ Route::get('/patient/edit/{patient_id}', [App\Http\Controllers\HomeController::c
 Route::post('/patient/update', [App\Http\Controllers\HomeController::class, 'updatePatient'])->name('patient.update');
 Route::get('/patient/pdf', [App\Http\Controllers\PrintController::class, 'patientPdf'])->name('patient.pdf');
 Route::get('patient/pdf/{patientid}', [App\Http\Controllers\PrintController::class, 'patientPdf'])->name('patient.pdf');
+
+Route::get('dv/pdf/{dvId}', [App\Http\Controllers\PrintController::class, 'dvPDF'])->name('dv.pdf');
+
 Route::get('facility/get/{province_id}', [App\Http\Controllers\HomeController::class, 'facilityGet'])->name('facility.get');
 Route::get('muncity/get/{province_id}', [App\Http\Controllers\HomeController::class, 'muncityGet'])->name('muncity.get');
 Route::get('barangay/get/{muncity_id}', [App\Http\Controllers\HomeController::class, 'barangayGet'])->name('barangay.get');
@@ -65,7 +68,7 @@ Route::get('/getallocated/{facilityId}',[App\Http\Controllers\DvController::clas
 
 
 Route::get('/dv/create/save', [App\Http\Controllers\DvController::class, 'createDvSave'])->name('dv.create.save');
-Route::get('/dv/edit', [App\Http\Controllers\DvController::class, 'editDv'])->name('dv.edit');
+Route::get('getDv/{dvId}', [App\Http\Controllers\DvController::class, 'getDv'])->name('getDv');
 
-Route::get('tracking/{fundsourceId}/{proponentInfoId}', [App\Http\Controllers\UtilizationController::class, 'tracking'])->name('tracking');
+Route::get('tracking/{fundsourceId}/{proponentInfoId}/{facilityId}', [App\Http\Controllers\UtilizationController::class, 'tracking'])->name('tracking');
 Route::get('tracking', [App\Http\Controllers\UtilizationController::class, 'index'])->name('tracking');

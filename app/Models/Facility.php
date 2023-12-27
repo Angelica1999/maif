@@ -17,7 +17,7 @@ class Facility extends Model
         return $this->belongsTo(AddFacilityInfo::class, 'id', 'facility_id');
     }
     public function dv(){
-        return $this->hasmany(Dv::class, 'facility_id', 'id');
+        return $this->hasmany(Dv::class, 'id', 'facility_id');
     }
 
 }

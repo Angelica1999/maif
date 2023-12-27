@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 use App\Models\Patients;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Models\Dv;
+use App\Models\Facility;
+use App\Models\Fundsource;
 
 use PDF; 
 
@@ -59,5 +62,29 @@ class PrintController extends Controller
 
         // Set the response headers to open the PDF in a new tab
         return $pdf->stream('patient.pdf');
+    }
+
+    public function dvPDF(Request $request, $dvId) {
+        $dv = Dv::find($dvId);
+        $facility = Facility::find($dv->facility_id);
+        $saa = explode(',', $dv->fundsource_id);
+        $saa = str_replace(['[', ']', '"'],'',$saa);
+        $all = [];
+        foreach($saa as $id){
+            $all []= $id;
+       }
+        $fund_source = Fundsource::whereIn('id', $all)->get();
+        if(!$dv){
+            return redirect()->route('Home.index')->with('error', 'Patient not found.');
+        }
+        $data = [
+            'dv'=> $dv,
+            'facility' => $facility,
+            'fund_source' => $fund_source
+        ];
+    
+        $pdf = PDF::loadView('dv.dv_pdf', $data);
+        $pdf->setPaper('Folio');
+        return $pdf->stream('dv.pdf');
     }
 }

@@ -98,6 +98,12 @@
               msg: 'Disbursement was Created!'
            });
         @endif
+        @if(session('dv_update'))
+           <?php session()->forget('dv_create'); ?>
+           Lobibox.notify('success', {
+              msg: 'Disbursement was updated!'
+           });
+        @endif
     </script>
 
     @yield('js')

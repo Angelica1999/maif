@@ -11,6 +11,7 @@ use App\Models\Barangay;
 use App\Models\Fundsource;
 use App\Models\Proponent;
 use App\Models\ProponentInfo;
+use App\Models\Users;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -31,6 +32,8 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
+
+
     public function index(Request $request)
     {
         $patients = Patients::

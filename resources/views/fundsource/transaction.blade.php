@@ -14,7 +14,7 @@
     <div class="col-md-6">
         <div class="form-group">
             <label for="alocated_funds">Allocated Fund</label>
-            <input type="number" step="any" class="form-control" id="alocated_funds" name="alocated_funds[]" placeholder="Allocated Fund" required>
+            <input type="text" class="form-control" id="alocated_funds" name="alocated_funds[]" placeholder="Allocated Fund" onkeyup = "validateAmount(this)" required>
         </div>
     </div>
 </div>

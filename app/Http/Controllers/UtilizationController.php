@@ -20,18 +20,11 @@ class UtilizationController extends Controller
         $data = Utilization::with(['proponentdata', 'fundSourcedata'])
         ->where('fundsource_id', $request->fundsourceId)
         ->where('proponentinfo_id', $request->proponentInfoId)
+        ->where('facility_id', $request->facilityId)
         ->get();
+        // return $request->fundsourceId;
     
     return response()->json($data);
-    
-
-        // $data = [
-        //     'proponent' => $proponent,
-        //     'fundsource' => $fundsource,
-        //     'utilize' => $utilize
-        // ];
-       
-        // return response()->json($data);
     
     }
 

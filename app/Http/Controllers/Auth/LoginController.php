@@ -29,11 +29,11 @@ class LoginController extends Controller
     // protected $redirectTo = RouteServiceProvider::HOME;
     protected function redirectTo()
     {
-        if (auth()->user()->roles == 'maif') {
-            return RouteServiceProvider::MAIF;
-        } elseif (auth()->user()->roles == 'budget') {
+        // if (auth()->user()->roles == 'maif') {
+        //     return RouteServiceProvider::MAIF;
+        // } elseif (auth()->user()->roles == 'budget') {
             return RouteServiceProvider::BUDGET;
-        }
+        // }
     }
 
     /**

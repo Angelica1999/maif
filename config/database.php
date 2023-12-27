@@ -112,6 +112,17 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
+        'dohdtr' => [
+            'driver'    => 'mysql',
+			'host'      => '192.168.110.31',
+			'database'  => 'dohdtr',
+			'username'  => 'rtayong_31',
+			'password'  => 'rtayong_31',
+			'charset'   => 'utf8',
+			'collation' => 'utf8_bin',
+			'prefix'    => '',
+        ],
+
     ],
 
     /*

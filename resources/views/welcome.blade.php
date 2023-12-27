@@ -8,9 +8,9 @@
     <form class="pt-3" method="POST" action="{{ route('login') }}">
         @csrf
         <div class="form-group">
-            <input type="email" class="form-control form-control-lg @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" placeholder="{{ __('Email Address') }}" required autocomplete="email" autofocus>
+            <input type="text" class="form-control form-control-lg @error('username') is-invalid @enderror" name="username" value="{{ old('username') }}" placeholder="{{ __('Email Address') }}" required autocomplete="username" autofocus>
 
-            @error('email')
+            @error('username')
                 <span class="invalid-feedback" role="alert">
                     <strong>{{ $message }}</strong>
                 </span>
