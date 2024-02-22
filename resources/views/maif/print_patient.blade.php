@@ -37,12 +37,7 @@
  
             .static-data {
                 display: inline-block;
-                min-width: 42%; 
-                text-align: right; 
-            }
-            .static-data1 {
-                display: inline-block;
-                min-width: 16%; 
+                min-width: 55%; 
                 text-align: right; 
             }
             #certifacate{
@@ -73,43 +68,40 @@
         </div>
 
         <div class="form-group ml-1">
-        <p class="date">{{ $patient->date_guarantee_letter ? \Carbon\Carbon::parse($patient->date_guarantee_letter)->format('jS F Y') : " " }}</p>
+        <p class="date">{{ $patient['date_guarantee_letter'] ? \Carbon\Carbon::parse($patient->date_guarantee_letter)->format('jS F Y') : " " }}</p>
             <p class="col text-center" id="certificate"><strong>CERTIFICATION</strong></p> <!-- Corrected typo in ID -->
         </div>
 
         <div class="form-group ml-1">
-            <p>This is to certify that patient <strong>{{ $patient->fname . ' ' . $patient->mname . ' ' . $patient->lname}}</strong>, {{ $age }}, of CITY OF PASIG NCR SECOND DISTRICT, was extended by this office, a total of Php3,000.00 medical assistance stated below based on the existing guidelines of Administrative Order No. 2020 - 0060, dated December 23, 2020:</p>
+            <p>This is to certify that patient <strong>{{ $patient->fname . ' ' . $patient->mname . ' ' . $patient->lname}}</strong>, {{ $age }}, of CITY OF PASIG NCR SECOND DISTRICT, was extended by this office, a total of {{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }} medical assistance stated below based on the existing guidelines of Administrative Order No. 2023 - 0016, dated August 11, 2023:</p>
         </div>
 
         <table class="table table-white ml-1">
             <thead>
                 <tr>
                     <th scope="col" style="font-size: 12px">Type of Assistance</th>
-                    <th scope="col" style="font-size: 12px">Utilization</th>
-                    <th scope="col" style="font-size: 12px">Remaining Balance</th>
+                    <th scope="col" style="font-size: 12px">Guaranteed Amount</th>
                     <th scope="col" style="font-size: 12px">Date/Time</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>Hospital Bills / laboratory /Procedures/ Medicine()</td>
-                    <td class="text-center">{{$patient->guaranteed_amount}}</td>
-                    <td class="text-center">0.00</td>
+                    <td class="text-center">{{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }}</td>
                     <td>{{$patient->created_at}}</td>
                 </tr>
             </tbody>
         </table>
 
         <p class="ml-3" ><strong>Total Amount:</strong>
-            <span class="static-data"><strong>{{$patient->guaranteed_amount}}</strong></span>
-            <span class="static-data1"><strong>P0.00</strong></span>
+            <span class="static-data"><strong>P {{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }}</strong></span>
         </p>
         <div class="row align-items-start ml-1"> 
             <p class="ml-1">{{$patient->patient_code}}<br><br>
                 Notes:<br>
                 <i>50% maximum applicable for PF</i><br>
                 Non-Convertible to cash<br><br>
-                Encoded by: sat19.ncr
+                Encoded by: {{$patient->created_by}}
             </p>
         </div>
         <div class="col text-center">
@@ -147,38 +139,35 @@
         </div>
 
         <div class="form-group">
-            <p>This is to certify that patient <strong>{{ $patient->fname . ' ' . $patient->mname . ' ' . $patient->lname}}</strong>, 65 y/o, of CITY OF PASIG NCR SECOND DISTRICT, was extended by this office, a total of Php3,000.00 medical assistance stated below based on the existing guidelines of Administrative Order No. 2020 - 0060, dated December 23, 2020:</p>
+            <p>This is to certify that patient <strong>{{ $patient->fname . ' ' . $patient->mname . ' ' . $patient->lname}}</strong>, {{ $age }}, of CITY OF PASIG NCR SECOND DISTRICT, was extended by this office, a total of {{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }} medical assistance stated below based on the existing guidelines of Administrative Order No. 2023 - 0016, dated August 11, 2023:</p>
         </div>
 
         <table class="table table-white">
             <thead>
                 <tr>
                     <th scope="col" style="font-size: 12px">Type of Assistance</th>
-                    <th scope="col" style="font-size: 12px">Utilization</th>
-                    <th scope="col" style="font-size: 12px">Remaining Balance</th>
+                    <th scope="col" style="font-size: 12px">Guaranteed Amount</th>
                     <th scope="col" style="font-size: 12px">Date/Time</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>Hospital Bills / laboratory /Procedures/ Medicine()</td>
-                    <td class="text-center">{{$patient->guaranteed_amount}}</td>
-                    <td class="text-center">0.00</td>
+                    <td class="text-center">{{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }}</td>
                     <td>{{$patient->created_at}}</td>
                 </tr>
             </tbody>
         </table>
 
         <p class="ml-3"><strong>Total Amount:</strong>
-            <span class="static-data"><strong>{{$patient->guaranteed_amount}}</strong></span>
-            <span class="static-data1"><strong>P0.00</strong></span>
+            <span class="static-data"><strong>P {{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }}</strong></span>
         </p>
         <div class="row align-items-start ml-1"> 
             <p class="ml-1">{{$patient->patient_code}}<br><br>
                 Notes:<br>
                 <i>50% maximum applicable for PF</i><br>
                 Non-Convertible to cash<br><br>
-                Encoded by: sat19.ncr
+                Encoded by: {{$patient->created_by}}
             </p>
         </div>
         <div class="col text-center">

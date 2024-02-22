@@ -44,7 +44,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="lname">Date of Birth</label>
-                    <input type="date" class="form-control" value="{{ $patient->dob }}" id="dob" name="dob" placeholder="Date of Birth" required>
+                    <input type="date" class="form-control" value="{{ $patient->dob }}" id="dob" name="dob" placeholder="Date of Birth">
                 </div>
             </div>
         </div>
@@ -93,26 +93,15 @@
 
 
         <div class="row">
-            {{-- <div class="col-md-6">
-                <div class="form-group">
-                    <label>Facility</label>
-                    <div id="facility_body">
-                        <select class="js-example-basic-single w-100" id="facility_id" name="facility_id" required>
-                            <option value="">Please select facility</option>
-                        </select>
-                    </div>
-                </div>
-            </div> --}}
-
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="lname">Municipality</label>
                     <div id="muncity_body">
                         <select class="js-example-basic-single w-100" id="muncity_id" name="muncity_id" onchange="onchangeMuncity($(this))" required disabled>
-                          @foreach($municipal as $municipals)   
-                        <option value="{{ $municipals->id }}" {{$municipals->id == $patient->muncity_id? 'selected' : ''}}>{{ $municipals->description }}</option>
-                          @endforeach   
-                    </select>
+                            @foreach($municipal as $municipals)   
+                                <option value="{{ $municipals->id }}" {{$municipals->id == $patient->muncity_id? 'selected' : ''}}>{{ $municipals->description }}</option>
+                            @endforeach   
+                        </select>
                     </div>
                 </div>
             </div>
@@ -135,7 +124,7 @@
         <strong>Fund Source</strong>
         <hr>
         <div class="row">
-        <div class="col-md-6">
+            <!-- <div class="col-md-6">
                 <div class="form-group">
                     <label >SAA</label>
                     <select class="js-example-basic-single w-100 select2" id="fundsource_id" name="fundsource_id" onchange="onchangeFundsource($(this))" required>
@@ -146,12 +135,22 @@
                      
                     </select>
                 </div>
+            </div> -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="fname">Facility</label>
+                    <select class="js-example-basic-single w-100 select2" id="facility_id" name="facility_id" onchange="onchangeForProponent($(this))"required>
+                            @foreach($facility as $facilities)
+                               <option value="{{ $facilities->id }}"  {{$patient->facility_id == $facilities->id? 'selected' : ''}}>{{$facilities->name }}</option>
+                             @endforeach  
+                    </select>
+                </div>
             </div>
 
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Proponent</label>
-                    <select class="js-example-basic-single w-100 select2" id="proponent_id" name="proponent_id" onchange="onchangeProponent($(this))" required disabled>
+                    <select class="js-example-basic-single w-100 select2" id="proponent_id" name="proponent_id"  onchange="onchangeForPatientCode($(this))" required disabled>
                         @foreach($proponents as $proponent)
                           <option value="{{ $proponent->id }}" data-proponent-id="{{ $proponent->id}}" data-proponent-name="{{ $proponent->proponent}}" {{$patient->proponent_id == $proponent->id? 'selected' : ''}}>{{$proponent->proponent }}</option>
                         @endforeach
@@ -162,29 +161,12 @@
 
         <div class="row">
             <div class="col-md-6">
-                <div class="form-group">
-                    <label for="fname">Facility</label>
-                    <select class="js-example-basic-single w-100 select2" id="facility_id" name="facility_id" onchange="onchangeForPatientCode($(this))" required disabled>
-                            @foreach($facility as $facilities)
-                               <option value="{{ $facilities->id }}"  {{$patient->facility_id == $facilities->id? 'selected' : ''}}>{{$facilities->name }}</option>
-                             @endforeach  
-                    </select>
-                </div>
-            </div> 
-                <div class="col-md-6">
                 <label for="fname">Patient Code</label>
-                    <div class="form-group" id="patient-code-container">
-                        <input type="text" class="form-control loading-input" id="patient_code" name="patient_code" value="{{$patient->patient_code}}" placeholder="Patient Code" readonly> 
-                        <img id="loading-image" src="{{ asset('images/loading.gif') }}" alt="Loading" style="display: none;">
-                    </div>
+                <div class="form-group" id="patient-code-container">
+                    <input type="text" class="form-control loading-input" id="patient_code" name="patient_code" value="{{$patient->patient_code}}" placeholder="Patient Code" readonly> 
+                    <img id="loading-image" src="{{ asset('images/loading.gif') }}" alt="Loading" style="display: none;">
                 </div>
-
-            {{-- <div class="col-md-6">  
-                <div class="form-group">
-                    <label for="fname">Amount</label>
-                    <input type="number" step="any" class="form-control" id="amount" name="amount" placeholder="Amount" required>
-                </div>
-            </div> --}}
+            </div>
         </div>
         <hr>
         <strong>Transaction</strong>
@@ -194,14 +176,13 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Guaranteed Amount</label>
-                    <input type="number" step="any" class="form-control" value="{{ $patient->fundsource? $patient->guaranteed_amount : '' }}" id="guaranteed_amount" name="guaranteed_amount" placeholder="Guaranteed Amount">
+                    <input type="text" class="form-control" onkeyup= "validateAmount(this)" value="{{ $patient->guaranteed_amount? $patient->guaranteed_amount : '' }}" id="guaranteed_amount" name="guaranteed_amount"required>
                 </div>
             </div>
-                
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Actual Amount</label>
-                    <input type="number" step="any" class="form-control" id="actual_amount" name="actual_amount" placeholder="Actual Amount" readonly>
+                    <input type="number" step="any" class="form-control" id="actual_amount" name="actual_amount" value="{{ $patient->actual_amount? $patient->actual_amount : '' }}" readonly>
                 </div>
             </div>
         </div>
@@ -210,23 +191,31 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Remaining Balance</label>
-                    <input type="number" step="any" class="form-control" value ="{{ $patient->fundsource? $patient->remaining_balance : ''}}" id="remaining_balance" name="remaining_balance" placeholder="Remaining Balance">
+                    <input type="text" class="form-control" value ="{{ $patient->remaining_balance? $patient->remaining_balance : ''}}" id="remaining_balance" name="remaining_balance">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div id="suggestions"></div>
                 </div>
             </div>
         </div>
-
     </div>
 
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary">Update Patient</button>
+        <button type="submit" class="btn btn-primary updatebtn">Update Patient</button>
     </div>
 </form>
 
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 <script>
      $(document).ready(function() {
-  
+        $('.updatebtn').on('click', function(){
+            $('#muncity_id').prop('disabled', false);
+            $('#barangay_id').prop('disabled', false);
+            $('#proponent_id').prop('disabled', false);
+        });
         if (patientRegion !== "Region 7"){
             var patientProvinceDescription = "{{ $patient->other_province }}"; 
             var patientMuncity = "{{ $patient->other_muncity }}";
@@ -235,7 +224,6 @@
             document.getElementById("muncity_body").innerHTML = '<input type="text" class="form-control" id="other_muncity" value="' + patientMuncity + '" name="other_muncity">';
             document.getElementById("barangay_body").innerHTML = '<input type="text" class="form-control" id="other_barangay" value="' + patientBarangay + '" name="other_barangay">';
         }
-        // Show the loading image when the dropdown changes
         $('#fundsource_id').on('change', function() {
             var selectOptionText = $(this).find('option:selected').text();
             if (selectOptionText !== 'Please select SAA') {
@@ -244,16 +232,12 @@
         });
 
         $('#facility_id').on('change', function() {
-            // Set a timeout to hide the loading-image after a specified interval (e.g., 2000 milliseconds or 2 seconds)
             if ($(this).val() !== '') {
                 setTimeout(function() {
                     $('#loading-image').hide();
                 }, 1000); // Change the time interval as needed
             }
         });
-
-
-       
 
       $('#province_id').change(function() {
  

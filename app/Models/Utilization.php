@@ -12,15 +12,24 @@ class Utilization extends Model
     protected $table = 'utilization';
     protected $guarded = array();
 
-    public function proponentdata()
-    {
+    public function proponentdata(){
         return $this->belongsTo(Proponent::class, 'proponentinfo_id', 'id');
     }
 
-    public function fundSourcedata()
-    {
+    public function fundSourcedata(){
         return $this->belongsTo(FundSource::class, 'fundsource_id', 'id');
     }
- 
+    // public function facility() {   
+    //     return $this->belongsTo(Facility::class, 'facility_id','id');
+    // }
+    public function facilitydata() {   
+        return $this->belongsTo(Facility::class, 'facility_id','id');
+    }
+    public function user() {   
+        return $this->belongsTo(User::class, 'created_by','userid');
+    }
+    public function user_budget() {   
+        return $this->belongsTo(User::class, 'obligated_by','userid');
+    }
 
 }

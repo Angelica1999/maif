@@ -15,6 +15,9 @@ class ProponentInfo extends Model
     public function facility() {
         return $this->belongsTo(Facility::class, 'facility_id','id');
     }
+    public function proponent() {
+        return $this->belongsTo(Proponent::class, 'proponent_id','id');
+    }
     public function addfacilityinfo()
     {
         return $this->belongsTo(AddFacilityInfo::class);

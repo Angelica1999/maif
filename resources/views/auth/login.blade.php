@@ -3,7 +3,7 @@
 @section('content')
     <div class="text-center">
         <h4>MAIFIP</h4>
-        <h6 class="font-weight-light">MAIFIdsadsdP System for Private Hospital</h6>
+        <h6 class="font-weight-light">MAIFIPP System for Private Hospital</h6>
     </div>
     <form class="pt-3" method="POST" action="{{ route('login') }}">
         @csrf
@@ -21,7 +21,7 @@
             <input type="password" name="password" class="form-control form-control-lg @error('password') is-invalid @enderror" placeholder="{{ __('Password') }}" required autocomplete="current-password">
         </div>
         <div class="mt-3">
-            <button type="submit" class="btn btn-block btn-success btn-lg font-weight-medium auth-form-btn">SIGN IN</a>
+            <button type="submit" class="btn btn-block btn-success btn-lg font-weight-medium auth-form-btn">SIGN INsdfsfsf</a>
         </div>
         <div class="my-2 d-flex justify-content-between align-items-center">
             <div class="form-check form-check-success">

@@ -19,8 +19,8 @@ class FacilityController extends Controller
                     'facility.id',
                     'facility.name',
                     'facility.address',
-                 )
-                ->where('hospital_type','private');
+                );
+                // ->where('hospital_type','private');
               //  ->paginate(15);
         // $Facility = (new Facility())->getConnection()->getDatabaseName();
         // $AddFacilityInfo = (new AddFacilityInfo())->getConnection()->getDatabaseName();
@@ -52,7 +52,7 @@ class FacilityController extends Controller
              $result->where('name', 'LIKE', "%$request->keyword%");
          }
 
-         $results = $result->paginate(15);
+         $results = $result->paginate(10);
 
         return view('facility.facility',[
             'results' => $results,
@@ -118,6 +118,8 @@ class FacilityController extends Controller
             $facility->finance_officer = $request->input('finance_officer');
             $facility->finance_officer_email = $request->input('finance_officer_email');
             $facility->finance_officer_contact = $request->input('finance_officer_contact');
+            $facility->official_mail = $request->input('official_mail');
+            $facility->cc = $request->input('cc');
             $facility->vat = $request->input('vat');
             $facility->Ewt = $request->input('Ewt');
 
@@ -127,11 +129,12 @@ class FacilityController extends Controller
         }   //end of function
      public function getVatEwt()
      {
-       return  $facility = AddFacilityInfo::all();
-        // $VatAmount = $facility->vat;
-        // $EwtAmount = $facility->Ewt;
-        // return response()->json(['vat' => $VatAmount,
-        //                           'Ewt' => $EwtAmount]);
+        $facility = AddFacilityInfo::all();
+        if($facility){
+            return $facility;
+        }else{
+            return 0;
+        }
      }
       
 

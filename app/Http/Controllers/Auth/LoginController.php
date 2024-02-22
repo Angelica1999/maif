@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Support\Facades\DB;
 
 class LoginController extends Controller
 {
@@ -29,10 +30,28 @@ class LoginController extends Controller
     // protected $redirectTo = RouteServiceProvider::HOME;
     protected function redirectTo()
     {
+        $userId = auth()->user()->userid;
+
+            $joinedData = DB::connection('dohdtr')
+                ->table('users')
+                ->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
+                ->where('users.userid', '=', $userId)
+                ->select('users.section')
+                ->first();
+
+            if ($joinedData) {
+                if ($joinedData->section == 6) {
+                    return RouteServiceProvider::BUDGET;
+                } elseif ($joinedData->section == 80) {
+                    return RouteServiceProvider::MAIF;
+                } elseif($userId == 1027){
+                    return RouteServiceProvider::ACCOUNTING;
+                }
+            }
         // if (auth()->user()->roles == 'maif') {
         //     return RouteServiceProvider::MAIF;
         // } elseif (auth()->user()->roles == 'budget') {
-            return RouteServiceProvider::BUDGET;
+            // return RouteServiceProvider::BUDGET;
         // }
     }
 

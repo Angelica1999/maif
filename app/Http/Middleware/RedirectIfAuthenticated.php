@@ -7,6 +7,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\DB;
 
 class RedirectIfAuthenticated
 {
@@ -21,8 +22,27 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
+                // $userid
+                $userId = auth()->user()->userid;
+
+                $joinedData = DB::connection('dohdtr')
+                    ->table('users')
+                    ->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
+                    ->where('users.userid', '=', $userId)
+                    ->select('users.section', 'users.division')
+                    ->first();
+
+                if ($joinedData) {
+                    if ($joinedData->section == 6) {
+                        return redirect(RouteServiceProvider::BUDGET);
+                    } elseif ($joinedData->section == 105 || $joinedData->section == 80) {
+                        return redirect(RouteServiceProvider::MAIF);
+                    }elseif($userId == 1027){
+                        return redirect(RouteServiceProvider::ACCOUNTING);
+                    }
+                }
                 // if (auth()->user()->roles == 'maif') {
-                    return redirect(RouteServiceProvider::MAIF);
+                    // return redirect(RouteServiceProvider::MAIF);
                 // } elseif (auth()->user()->roles == 'budget') {
                 //     return redirect(RouteServiceProvider::BUDGET);
                 // }

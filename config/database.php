@@ -123,6 +123,17 @@ return [
 			'prefix'    => '',
         ],
 
+        'dts' => [
+            'driver'    => 'mysql',
+			'host'      => '192.168.110.31',
+			'database'  => 'dts',
+			'username'  => 'rtayong_31',
+			'password'  => 'rtayong_31',
+			'charset'   => 'utf8',
+			'collation' => 'utf8_bin',
+			'prefix'    => '',
+        ],
+
     ],
 
     /*

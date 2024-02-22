@@ -1,0 +1,51 @@
+<div class="clone">
+<div class="card" style="border:none;">
+    <div class="row">
+        <div class="col-md-5">
+            <b><label>Proponent:</label></b>
+            <div class="form-group">
+                <input type="text" class="form-control proponent" name="proponent[]" placeholder="Proponent">
+            </div>
+        </div>
+        <div class="col-md-7">
+            <b><label>Proponent Code:</label></b>
+            <div class="form-group" style="display: flex; align-items: center;">
+                <input type="text" class="form-control proponent_code" name="proponent_code[]" placeholder="Proponent Code" style="flex: 1; width:1000px;">
+                <button type="button" class="form-control remove_pro-btn" style="width: 10px; margin-left: 5px; color:white; background-color:#00688B">-</button>
+            </div>
+        </div>
+    </div>
+    <div class="card1">
+
+        <div class="row">
+            <div class="col-md-5">
+            <label>Facility:</label>
+                <div class="form-group">
+                    <div class="facility_select">
+                        <select class="form-control break_fac" id="{{ $uniqueCode }}" name="facility_id[]" >
+                            <option value="">Please select facility</option>
+                            @foreach($facilities as $facility)
+                                <option value="{{ $facility->id }}">{{ $facility->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-7">
+                <label>Allocated Funds:</label>
+                <div class="form-group">
+                    <div class="form-group" style="display: flex; align-items: center;">
+                        <input type="text" class="form-control alocated_funds" id="alocated_funds[]" name="alocated_funds[]" oninput="calculateFunds(this)" onkeyup="validateAmount(this)" placeholder="Allocated Fund" style="flex: 1; width:160px;">
+                        <button type="button" class="form-control btn-info clone_facility-btn" style="width: 5px; margin-left: 5px; color:white; background-color:#355E3B">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <hr>
+</div>
+<script>
+    $("#"+"{{ $uniqueCode }}").select2();
+</script>

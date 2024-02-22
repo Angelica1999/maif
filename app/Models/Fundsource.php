@@ -22,7 +22,7 @@ class Fundsource extends Model
     }
 
     public function encoded_by() {       
-        return $this->belongsTo(User::class, 'created_by','id');
+        return $this->belongsTo(User::class, 'created_by','userid');
     }
 
     public function utilization() {   
@@ -30,5 +30,9 @@ class Fundsource extends Model
     }
     public function dv(){
         return $this->hasmany(Dv::class, 'fundsource_id', 'id');
+    }
+    public function proponentInfo()
+    {
+        return $this->hasMany(ProponentInfo::class);
     }
 }

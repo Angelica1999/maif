@@ -1,40 +1,74 @@
 <style>
-      
-          .header{
-            font-size: 12px;
-            font-weight: normal;
-            text-align:center;
-          }
-          table td{
-            font-size: 11px;
-          }
-          .box-container {
-            display: flex;
-          }
-          .box {
-              width: 23px;
-              height: 16px;
-              border: 1px solid black;
-              margin-left: 20px;
-              display: inline-block;
-              vertical-align: middle;
-          }
-          .label {
-              font-size: 12px;
-              display: inline-block;
-              margin-right: 8pxpx;
-              margin-left: 10px;
-          }
-          .saa{
-            margin-left:60px;
-          }.row{
-            font-size: 12px;
-          }
-          .modal-title {
-            text-align: center !important;
-         }
-        
-      </style>
+  .custom-dropdown {
+    position: relative;
+  }
+
+  #dropdownContent1,
+  #dropdownContent2,
+  #dropdownContent3 {
+          display: none;
+          position: absolute;
+          border: 1px solid #ccc;
+          max-height: 150px; /* Adjust as needed */
+          overflow-y: auto;
+          background-color: white;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          z-index: 1;
+          width:120px;
+      }
+
+  #dropdownContent1 label,
+  #dropdownContent2 label,
+  #dropdownContent3 label {
+      display: block;
+      padding: 8px;
+      cursor: pointer;
+  }
+
+  #dropdownContent1 label:hover,
+  #dropdownContent2 label:hover,
+  #dropdownContent3 label:hover {
+      background-color: #f1f1f1;
+  }
+  .header{
+      font-size: 12px;
+      font-weight: normal;
+      text-align:center;
+    }
+    table td{
+      font-size: 11px;
+    }
+    .box-container {
+      display: flex;
+    }
+    .box {
+        width: 23px;
+        height: 16px;
+        border: 1px solid black;
+        margin-left: 20px;
+        display: inline-block;
+        vertical-align: middle;
+    }
+    .label {
+        font-size: 12px;
+        display: inline-block;
+        margin-right: 8pxpx;
+        margin-left: 10px;
+    }
+    .saa{
+      margin-left:60px;
+    }.row{
+      font-size: 12px;
+    }
+    .modal-title {
+      text-align: center !important;
+    }
+    .hide {
+        display: none; /* Adjust the height to your desired value */
+    }
+   
+</style>
+
 <form  method="post" action="{{ route('dv.create.save') }}" id ="dv_form"> 
     @csrf   
  <input type="hidden" name="dv" id ="dv" value="">
@@ -99,10 +133,13 @@
             </table>
             <table border="2" style="width: 100%;">
                 <tr>
-                    <td height=3% width =12%><b> Payee</td>
+                    <td height=4% width =12%><b> Payee</td>
                     <td style="width:29%; border-left: 0 "><b> 
-                        <select id="facilityDropdown" name="facilityname" onchange="onchangefacility($(this))" style="margin-left:5px;width:260px; height: 28px; font-size: 9pt" class="ft15" required>
-                            <option value=""> Select Facility  </option>
+                        <select id="facilityDropdown" name="facilityname" onchange="onchangefacility($(this))" style="margin-left:5px;width:260px;" class="facility_select" required>
+                          <option value="">- Select Facility -</option>
+                          @foreach($facilities as $facility)
+                            <option value="{{$facility->id}}">{{$facility->name}}</option>
+                          @endforeach  
                         </select>
                     </td>
                     <td style="width:28%; border-left: 0 " >
@@ -138,41 +175,50 @@
                         
                         <input type="month" id="billingMonth1" name="billingMonth1" asp-for="MonthYearFrom" style="width: 110px; height: 28px; font-size: 8pt;" class="ft15" required>
                 
-                        <input type="month" id="billingMonth2" name="billingMonth2" asp-for="MonthYearTo" style="width: 110px; height: 28px; font-size: 8pt;" class="ft15" required>
+                        <input type="month" id="billingMonth2" name="billingMonth2" asp-for="MonthYearTo" style="width: 110px; height: 28px; font-size: 8pt;" class="ft15" >
 
                         in the amount of:</p><br>
 
-                        <div>   
-                            <span id="showSAAButton" class="fa fa-plus" style="width:20px; height: 20px; font-size:11px; cursor:pointer; width:50px" onclick="toggleSAADropdowns()">Add</span>
-                            <select name="fundsource_id" id="saa1"  onclick="onchangeSaa($(this))" style="margin-left:55px; width:100px; height: 28px;" class="ft15" required>
-                                <option value="" data-facilities="">- Select SAA -</option>
-                                @foreach($fundsources as $fund)
-                                    <option value="{{ $fund->id }}">{{ $fund->saa }}</option>  
-                                @endforeach  
+                        <div style="display: flex; align-items: center;">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <select name="fundsource_id" id="saa1" style="width:150px;" class="js-example-basic-single1" onchange="generateGroup()"required disabled>
+                                <option value="" data-facilities="">- Select SAA -</option> 
                             </select> 
-                            <input type="text" name="amount1" id="inputValue1" style="width:120px; height: 28px;" onkeyup="validateAmount(this)"  oninput="fundAmount()" class="ft15" disabled required>
-                            <input type="text" name="vatValue1" id="vatValue1" style="margin-left: 8px;width:80px; height: 28px;" class="ft15" readonly required>
-                            <input type="text" name="ewttValue1" id="ewttValue1" style="width:80px; height: 28px;" class="ft15"  readonly required>
+                            <div class="custom-dropdown" style="margin-left: 8px;">
+                                <input type="text" name="amount1" id="inputValue1" style="width:120px; height: 42px;" onkeyup="validateAmount(this)" oninput="fundAmount(1)" class="ft15" disabled required autocomplete="off">
+                                <div class="dropdown-content" id="dropdownContent1">
+                                </div>
+                            </div>
+                            <input type="text" name="vatValue1" id="vatValue1" style="margin-left: 8px; width: 80px; height: 42px;" class="ft15" readonly required>
+                            <input type="text" name="ewttValue1" id="ewttValue1" style="width: 80px; height: 42px;" class="ft15" readonly required>
+                            <button type="button" id="showSAAButton" class="fa fa-plus" style="border: none; width: 20px; height: 42px; font-size: 11px; cursor: pointer; width: 30px;" onclick="toggleSAADropdowns()">+</button>
                         </div>
-                        <div>  
-                            <span id="RemoveSAAButton" class="fa fa-plus" style=" width:20px; height: 20px; font-size:11px; display: none; cursor:pointer; width:50px" onclick="removeSAADropdowns()">remove</span> 
 
-                            <select  name="fundsource_id_2"  id="saa2"  onchange="onchangeSaa($(this))" style="margin-left: 78px;width:100px; height: 28px; display: none;" class="ft15">
-                                <option value="">- Select SAA -</option>
-                                <option value=""></option>
-                            </select> 
-                            <input type="text" name="amount2" id="inputValue2"  style="width:120px; height: 28px; display: none;" oninput="fundAmount()" onkeyup="validateAmount(this)" disabled required>
-                            <input type="text" name="vatValue2" id="vatValue2" style="margin-left:8px; width:80px; height: 28px; display: none;" class="ft15" readonly>
-                            <input type="text" name="ewtValue2" id="ewtValue2" style="width:80px; height: 28px;display: none;" class="ft15"  readonly>
+                        <div style="display: flex; align-items: center;"> 
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <select  name="fundsource_id_2"  id="saa2" style="width:150px; display: none;"></select> 
+                            <div class="custom-dropdown" style="margin-left: 8px;">
+                                <input type="text" name="amount2" id="inputValue2"  style="width:120px; height: 42px; display: none;" oninput="fundAmount(2)" onkeyup="validateAmount(this)" class="ft15" disabled required autocomplete="off">
+                                <div class="dropdown-content" id="dropdownContent2">
+                                </div>
+                            </div>
+                            <input type="text" name="vatValue2" id="vatValue2" style="margin-left:8px; width:80px; height: 42px; display: none;" class="ft15" readonly>
+                            <input type="text" name="ewtValue2" id="ewtValue2" style="width:80px; height: 42px;display: none;" class="ft15"  readonly>
+                            <button type="button"  id="RemoveSAAButton" class="fa fa-plus" style=" border:none; width:30px; height: 42px; font-size:11px; display: none; cursor:pointer; " onclick="removeSAADropdowns()">-</button> 
+
                         </div>
-                        <div>  
-                            <span id="RemoveSAAButton1" class="fa fa-plus" style=" width:20px; height: 20px; font-size:11px; display: none; cursor:pointer; width:50px" onclick="removeSAADropdowns1()">remove</span> 
-                            <select name="fundsource_id_3"  id="saa3" onchange="onchangeSaa($(this))" style="margin-left:55px; width:100px; height: 28px; display: none" class="ft15">
-                                <option value="">- Select SAA -</option>
-                            </select>
-                            <input type="text" name="amount3" id="inputValue3"  style="width:120px; height: 28px; font-size: 8pt; display:none" oninput="fundAmount()" onkeyup="validateAmount(this)"class="ft15" disabled required>                        
-                            <input type="text" name="vatValue3" id="vatValue3" style="margin-left:8px; width:80px; height: 28px; display: none;" class="ft15" readonly>
-                            <input type="text" name="ewtValue3" id="ewtValue3" style="width:80px; height: 28px;display: none;" class="ft15"  readonly>
+                        <div style="display: flex; align-items: center;">  
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <select name="fundsource_id_3"  id="saa3" style="width:150px; display: none"></select>
+                            <div class="custom-dropdown" style="margin-left: 8px;">
+                                <input type="text" name="amount3" id="inputValue3"  style="width:120px; height: 42px; font-size: 8pt; display:none" oninput="fundAmount(3)" onkeyup="validateAmount(this)"class="ft15"  disabled required autocomplete="off">                        
+                                <div class="dropdown-content" id="dropdownContent3">
+                                </div>
+                            </div>
+                            <input type="text" name="vatValue3" id="vatValue3" style="margin-left:8px; width:80px; height: 42px; display: none;" class="ft15" readonly>
+                            <input type="text" name="ewtValue3" id="ewtValue3" style="width:80px; height: 42px;display: none;" class="ft15"  readonly>
+                            <button type="button" id="RemoveSAAButton1" class="fa fa-plus" style="border:none; height: 42px; font-size:11px; display: none; cursor:pointer; width:30px" onclick="removeSAADropdowns1()">-</button> 
+
                         </div><br>
 
 
@@ -220,17 +266,17 @@
                             <span style="margin-left:20px; margin-top:10px;" class="saa">Ewt : </span>
                             <input type="text" name="ewt" id="ewt" style="margin-left:31px;width:40px; height: 25px;" class="ft15" oninput="" readonly>
                             <input style="margin-left:0px; width:80px; height: 25px;" id="forEwt_left">
-                            <input type="number" id="inputDeduction2" name="deductionAmount2" style="width:100px; height: 25px; font-size: 8pt" min="1" readonly required>
+                            <input type="text" id="inputDeduction2" name="deductionAmount2" style="width:100px; height: 25px; font-size: 8pt" readonly required>
                             <span type="hidden" id="per_deduct" name="per_deduct" style="width:120px; height: 25px; font-size: 8pt" readonly></span>
                         </div><br><br>
                         <div>
                             <span class="saa">Ref No:</span>
-                            <input type="text" name="control_no" id="control_no" style="width:185px; height: 28px;" class="ft15" required>
+                            <input type="text" name="control_no" id="control_no" style="width:185px; height: 28px;" class="ft15">
                         </div>
 
                         <br><br>
                         <span style="margin-left:200px; font-weight:bold">Amount Due</span>
-                    
+                        
                     </td>
                     <td style="width:14%; border-left: 0 " ></td>
                     <td style="width:14%; border-left: 0 " ></td>
@@ -280,22 +326,27 @@
                   <tr class="header">
                     <td height=6% width =40% style="text-align : left;">
                       &nbsp;&nbsp;&nbsp;&nbsp;<span>Subsidy / Others</span><br>
+                      &nbsp;&nbsp;&nbsp;&nbsp;<span>Accumulated Surplus</span><br>
                       <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Due to BIR</span><br> 
                       <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CIB-MDS</span> 
                     </td>
                     <td style="width:20%; border-left: 0 " >
                       <br>
                       <span>50214990</span><br>
+                      <span>30101010</span><br>
                       <span>20201010</span><br> 
                       <span>10104040</span> <br><br>
                     </td>
                     <td style="width:20%; border-left: 0 ; text-align:right; vertical-align:top" >
-                      <br><p id="totalDebit" class="ft15"></p>
+                    <br>
+                      <span id="totalDebit" class="ft15"></span><br>
+                      <input type="text" name="accumulated" id="accumulated" style="margin-top:1px;width:120px; height: 20px; text-align:right;" oninput="calculateSubsidy()" onkeyup="validateAmount(this)" class="ft15" autocomplete="off" disabled required>
+
                     </td>
                     <td style="width:20%; border-left: 0 ; text-align:right; vertical-align:top" >
-                      <br>
-                      <p id ="DeductForCridet" class="ft15"></p>
-                      <p id="OverTotalCredit" class="ft15"></p>
+                      <br><br><br>
+                      <span id ="DeductForCridet" class="ft15"></span><br>
+                      <span id="OverTotalCredit" class="ft15"></span>
                     </td>
                   </tr>
             </table>
@@ -391,100 +442,186 @@
     </div>
     <div class="modal-footer" id="dv_footer">
         <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal"><i class="typcn typcn-times"></i>Close</button>
-        <button type="submit" class="btn btn-sm btn-primary"><i class="typcn typcn-tick menu-icon"></i>Submit</button>
-       
+        <button type="submit" id="submitBtn" class="btn btn-sm btn-primary"><i class="typcn typcn-tick menu-icon"></i>Submit</button>
+        <input type="hidden" name="group_id" id="group_id" >
+
     </div>
 </div>
 </div>
 </div>
 </form>
 
+<script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 <script>
 
-    $('#facilityDropdown').change(function(){
-       $('#inputValue1').prop('disabled', true);
-         setTimeout(function() {
-            $('#inputValue1').prop('disabled', false);
-         }, 500);
+  document.getElementById('dv_form').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+      }
+  });
+
+  function calculateSubsidy(){
+    var subsidy = parseNumberWithCommas($("#totalInput").val()) || 0;
+    var accumulated = parseNumberWithCommas($("#accumulated").val()) || 0;
+    if(accumulated>subsidy){
+      Lobibox.alert('error', {
+        size: 'mini',
+        msg: "Accumulated is greater than total amount."
+      });
+      $("#accumulated").val('');
+      $('#totalDebit').text(formatNumberWithCommas(subsidy));
+    }else{
+      $('#totalDebit').text(formatNumberWithCommas(subsidy-accumulated));
+    }
+  }
+  $('#submitBtn').on('click', function(e){
+    //making sure no extra saa is being added since saa is the basis in the controller
+    var saa2Element = window.getComputedStyle(document.getElementById('saa2')).getPropertyValue('display');
+    var saa3Element = window.getComputedStyle(document.getElementById('saa3')).getPropertyValue('display');
+
+    if (saa2Element === 'none') {
+      $('#saa2').val('');
+    } else if(saa3Element === 'none') {
+      $('#saa3').val('');
+    }
+    var group_ids = [];
+    var dropdown1 = $('#dropdownContent1').find('input[type="checkbox"]:checked');
+    dropdown1.each(function(index, checkbox){
+      group_ids.push($(checkbox).data('id'));
     });
+    var dropdown2 = $('#dropdownContent2').find('input[type="checkbox"]:checked');
+    dropdown2.each(function(index, checkbox){
+      group_ids.push($(checkbox).data('id'));
+    });
+    var dropdown3 = $('#dropdownContent3').find('input[type="checkbox"]:checked');
+    dropdown3.each(function(index, checkbox){
+      group_ids.push($(checkbox).data('id'));
+    });
+    $('#group_id').val(group_ids);
+    console.log('data_id', group_ids);
+  });
+
+  $(document).ready(function() {
+        $('#facilityDropdown').select2();
+        $('#saa1').select2();
+    });
+  function toggleDropdown(event, dropdownIndex) {
+    const dropdownContentId = 'dropdownContent' + dropdownIndex;
+    const dropdownContent = document.getElementById(dropdownContentId);
+
+    if (dropdownContent) {
+        if (event.target !== dropdownContent) {
+            dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
+        }
+    }
+  }
+
+  function handleDropdownChange(dropdownContent, inputElement) {
+    console.log('one');
+    return function(event) {
+      if (event.target.type === 'checkbox') {
+          inputElement.value = formatNumberWithCommas(getSelectedItems(dropdownContent));
+          fundAmount();
+          console.log('chakichaki');
+      }
+    };
+  }
+  function getSelectedItems(dropdownContent) {
+    const checkboxes = dropdownContent.querySelectorAll('input[type="checkbox"]');
+    const selectedValues = Array.from(checkboxes)
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => parseNumberWithCommas(checkbox.value) || 0);
+    const sum = selectedValues.reduce((total, value) => parseNumberWithCommas(total) + parseNumberWithCommas(value), 0);
+    return sum;
+  }
+
+  $('#inputValue1').on('click', function(){
+    console.log('wanwan', $('#saa2').val());
+    document.getElementById('dropdownContent1').addEventListener('change', handleDropdownChange(document.getElementById('dropdownContent1'), 
+    document.getElementById('inputValue1')));
+    document.getElementById('inputValue1').addEventListener('click', function(event) {
+        toggleDropdown(event, 1);
+    });
+  });
+
+  $('#inputValue2').on('click', function(){
+    console.log('wanwan2');
+    document.getElementById('dropdownContent2').addEventListener('change', handleDropdownChange(document.getElementById('dropdownContent2'), 
+      document.getElementById('inputValue2')));
+      document.getElementById('inputValue2').addEventListener('click', function(event) {
+      toggleDropdown(event, 2);
+    });
+  });
+  
+  $('#inputValue3').on('click', function(){
+    console.log('wanwa3n');
+
+    document.getElementById('dropdownContent3').addEventListener('change', handleDropdownChange(document.getElementById('dropdownContent3'), 
+    document.getElementById('inputValue3')));
+    document.getElementById('inputValue3').addEventListener('click', function(event) {
+      toggleDropdown(event, 3);
+    });
+  });
+
+  $('#facilityDropdown').change(function(){
+        setTimeout(function() {
+          $('#inputValue1').prop('disabled', false);
+          $('#saa1').prop('disabled', false);
+        }, 700);
+  });
+  
+  $('#saa2').change(function(){
+      $('#inputValue2').prop('disabled', false);
+      
+  });
+  $('#saa3').change(function(){
+    $('#inputValue3').prop('disabled', false);
+  
+  });
+
+  function updateTotal() {
+    var amount1 = parseFloat('inputValue1') || 0;
+    var amount2 = parseFloat('inputValue2') || 0;
+    var amount3 = parseFloat('inputValue3') || 0;
+
+    var deduct1 = parseFloat('inputDeduction1') || 0;
+    var deduct2 = parseFloat('inputDeduction2') || 0;
+    var totaldeduction = deduct1 + deduct2;
+    var total = amount1 + amount2 + amount3;
+    var totalAmount = total - totaldeduction ;
+    var formattedTotal = total.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    var formattedDecduction = totaldeduction.toLocaleString('en-Us', {maximumFractionDigits: 2});
+    var formattedTotalAmount = totalAmount.toLocaleString('en-Us', {maximumFractionDigits: 2});
+    document.querySelector('.total').innerText = '' + formattedTotal;
+    document.querySelector('#totalInput').value = '' + formattedTotal;
+
+    document.querySelector('.totalDeduction').innerText = '' + formattedDecduction;
+    document.querySelector('#totalDeductionInput').value = '' + formattedDecduction;
+  }
+
+    document.getElementById('inputValue1').addEventListener('input', updateTotal);
+    document.getElementById('inputValue2').addEventListener('input', updateTotal);
+    document.getElementById('inputValue3').addEventListener('input', updateTotal);
+
+    document.getElementById('inputDeduction1').addEventListener('input', updateTotal);
+    document.getElementById('inputDeduction2').addEventListener('input', updateTotal);
+
+    updateTotal();
     
-    $('#saa2').change(function(){
-        $('#inputValue2').prop('disabled', false);
-        // $('#saa3').prop('disabled', true);
-        setTimeout(function(){
-            // $('#inputValue2').prop('disabled', false);
-        }, 500);
-    });
-    $('#saa3').change(function(){
-      $('#inputValue3').prop('disabled', false);
-      setTimeout(function(){
-        // $('#inputValue3').prop('disabled', false);
-      }, 500);
-    });
+    function validateAmount(element) {
+      if (event.keyCode === 32) {
+          event.preventDefault();
+      }
+      var cleanedValue = element.value.replace(/[^\d.]/g, '');
+      var numericValue = parseFloat(cleanedValue);
 
+      if ((!isNaN(numericValue) || cleanedValue === '' || cleanedValue === '.') &&
+          !(cleanedValue.length === 1 && cleanedValue[0] === '0')) {
+              element.value = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      }else{
+          element.value = '';
+      }
+    }
 
-          // Function to update the total and format with commas
-        function updateTotal() {
-            // Get input values
-            var amount1 = parseFloat('inputValue1') || 0;
-            var amount2 = parseFloat('inputValue2') || 0;
-            var amount3 = parseFloat('inputValue3') || 0;
-
-            var deduct1 = parseFloat('inputDeduction1') || 0;
-            var deduct2 = parseFloat('inputDeduction2') || 0;
-            //calculate the deduction 
-             var totaldeduction = deduct1 + deduct2;
-            // Calculate sum
-            var total = amount1 + amount2 + amount3;
-            //add deduction and sum
-             var totalAmount = total - totaldeduction ;
-            // Format with commas for integer part
-            var formattedTotal = total.toLocaleString('en-US', { maximumFractionDigits: 2 });
-            var formattedDecduction = totaldeduction.toLocaleString('en-Us', {maximumFractionDigits: 2});
-            var formattedTotalAmount = totalAmount.toLocaleString('en-Us', {maximumFractionDigits: 2});
-            // Update the total display
-            document.querySelector('.total').innerText = '' + formattedTotal;
-            document.querySelector('#totalInput').value = '' + formattedTotal;
-
-            document.querySelector('.totalDeduction').innerText = '' + formattedDecduction;
-            document.querySelector('#totalDeductionInput').value = '' + formattedDecduction;
-
-           // document.querySelector('.overallTotal').innerText = '' + formattedTotalAmount;
-           // document.querySelector('#overallTotalInput').value = '' + formattedTotalAmount;
-        }
-
-        // Function to get the numeric value from the formatted input
-        // function getFormattedValue(elementId) {
-        //     var inputElement = document.getElementById(elementId); 
-        //     // var numericValue = parseFloat(inputElement.value.replace(/[^0-9.]|\.(?=.*\.)/g, '')) || 0;
-        //     // inputElement.value = numericValue.toLocaleString('en-US', { maximumFractionDigits: 2 });
-        //     // return numericValue;
-        // }
-
-        function validateAmount(element) {
-            var cleanedValue = element.value.replace(/[^\d.]/g, '');
-            if (cleanedValue !== '0') {
-                cleanedValue = cleanedValue.replace(/^0+/, '');
-            }
-
-            var numericValue = parseFloat(cleanedValue);
-
-            if (!isNaN(numericValue) || cleanedValue === '' || cleanedValue === '.') {
-                element.value = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-            } else {
-                element.value = ''; 
-            }
-        }
-
-        // Attach the updateTotal function to input change events
-        document.getElementById('inputValue1').addEventListener('input', updateTotal);
-        document.getElementById('inputValue2').addEventListener('input', updateTotal);
-        document.getElementById('inputValue3').addEventListener('input', updateTotal);
-
-        document.getElementById('inputDeduction1').addEventListener('input', updateTotal);
-        document.getElementById('inputDeduction2').addEventListener('input', updateTotal);
-
-        // Initial update
-        updateTotal();
 </script>
 

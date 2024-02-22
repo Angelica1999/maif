@@ -11,6 +11,10 @@ class Patients extends Model
 
     protected $table = 'patients';
     protected $guarded = array();
+    
+    public function group() {
+        return $this->belongsTo(Group::class, 'group_id', 'id');
+    }
 
     public function facility() {
                                                   //patients     //facility             
@@ -30,10 +34,11 @@ class Patients extends Model
     }
 
     public function encoded_by() {       
-        return $this->belongsTo(User::class, 'created_by','id');
+        return $this->belongsTo(User::class, 'created_by','userid');
     }
 
     public function fundSource() {       
         return $this->belongsTo(Fundsource::class, 'fundsource_id','id');
     }
+    
 }

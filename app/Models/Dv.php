@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Dv extends Model
 {
+    protected $connection = 'mysql';
     protected $table = 'Dv'; // Adjust the table name as needed
     protected $fillable = [
         'date',
@@ -39,11 +40,19 @@ class Dv extends Model
     public function proponents() {   
         return $this->hasMany(Proponent::class);
     }
-
+    public function proponent() {
+        return $this->belongsTo(Proponent::class, 'proponent_id','id');
+    }
     public function addFacilityInfo() {      
         return $this->belongsTo(AddFacilityInfo::class, 'id', 'facility_id');
     }
     public function fundsource() {
         return $this->belongsTo(Fundsource::class, 'fundsource_id', 'id'); 
+    }
+    public function user() {
+        return $this->belongsTo(User::class, 'created_by', 'userid'); 
+    }
+    public function master(){
+        return $this->belongsTo(TrackingMaster::class, 'route_no','route_no');
     }
 }

@@ -14,7 +14,7 @@
 }
 </style>
 <form id="contractForm" method="POST" action="{{ route('patient.create.save') }}">
-    <input type="hidden" name="created_by" value="{{ $user->id }}">
+    <input type="hidden" name="created_by" value="{{ $user->userid }}">
     <div class="modal-body">
         @csrf
         <div class="row">
@@ -44,10 +44,18 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="lname">Date of Birth</label>
-                    <input type="date" class="form-control" id="dob" name="dob" placeholder="Date of Birth" required>
+                    <input type="date" class="form-control" id="dob" name="dob" placeholder="Date of Birth">
                 </div>
             </div>
         </div>
+        <!-- <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="fname">Email Address</label>
+                    <input type="email" class="form-control" id="email_ad" name="email_ad" placeholder="example@gmail.com" required>
+                </div>
+            </div>
+        </div> -->
 
         <div class="row">
             <div class="col-md-6">
@@ -91,16 +99,6 @@
         </div>
 
         <div class="row">
-            {{-- <div class="col-md-6">
-                <div class="form-group">
-                    <label>Facility</label>
-                    <div id="facility_body">
-                        <select class="js-example-basic-single w-100" id="facility_id" name="facility_id" required>
-                            <option value="">Please select facility</option>
-                        </select>
-                    </div>
-                </div>
-            </div> --}}
 
             <div class="col-md-6">
                 <div class="form-group">
@@ -138,38 +136,38 @@
         <strong>Fund Source</strong>
         <hr>
         <div class="row">
-            <div class="col-md-6">
+            <!-- <div class="col-md-6">
                 <div class="form-group">
                     <label >SAA</label>
                     <select class="js-example-basic-single w-100 select2" id="fundsource_id" name="fundsource_id" onchange="onchangeFundsource($(this))" required>
                         <option value="">Please select SAA</option>
                         @foreach($fundsources as $fundsource)
-                            <option value="{{ $fundsource->id }}">{{ $fundsource->saa }}</option>
+                            <option value="{{ $fundsource->id }}">{{ $fundsource->saa }}</option>onchangeForPatientCode($(this))
                         @endforeach
                     </select>
                 </div>
-            </div>
-
+            </div> -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="fname">Facility</label>
+                    <select class="js-example-basic-single w-100 select2" id="facility_id" name="facility_id" onchange="onchangeForProponent($(this))" required>
+                        <option value="">Select Faciltiy</option>
+                        @foreach($facilities as $facility)
+                            <option value="{{ $facility->id }}">{{ $facility->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div> 
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Proponent</label>
-                    <select class="js-example-basic-single w-100 select2" id="proponent_id" name="proponent_id" onchange="onchangeProponent($(this))" required disabled>
-
-                    </select>
+                    <select class="js-example-basic-single w-100 select2" id="proponent_id" name="proponent_id" onchange="onchangeForPatientCode($(this))" required disabled></select>
                 </div>
             </div>
         </div>
 
         <div class="row">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label for="fname">Facility</label>
-                    <select class="js-example-basic-single w-100 select2" id="facility_id" name="facility_id" onchange="onchangeForPatientCode($(this))" required disabled
-                    >
-
-                    </select>
-                </div>
-            </div> 
+            
             <div class="col-md-6">
                 <div class="form-group" id="patient-code-container">
                     <input type="text" class="form-control loading-input" id="patient_code" name="patient_code" placeholder="Patient Code" readonly>
@@ -185,7 +183,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Guaranteed Amount</label>
-                    <input type="number" step="any" class="form-control" id="guaranteed_amount" name="guaranteed_amount" placeholder="Guaranteed Amount">
+                    <input type="text" class="form-control" id="guaranteed_amount" oninput="check()" onkeyup= "validateAmount(this)" name="guaranteed_amount" placeholder="Guaranteed Amount">
                 </div>
             </div>
 
@@ -198,8 +196,9 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Remaining Balance</label>
-                    <input type="number" step="any" class="form-control" id="remaining_balance" name="remaining_balance" placeholder="Remaining Balance" readonly>
+                    <input type="text" class="form-control" id="remaining_balance" name="remaining_balance" placeholder="Remaining Balance" readonly>
                 </div>
+                <div id="suggestions"></div>
             </div>
         </div>
 
@@ -216,74 +215,95 @@
 
 <script>
 
-$(document).ready(function() {
-    
-    $('#fundsource_id').on('change', function() {
-        if ($(this).val() !== '') {
-            var selectOptionText = $(this).find('option:selected').text();
-            if(selectOptionText !== 'Please select SAA'){
-                $('#loading-image').show();
-            }
-        }
-    });
+    function parseNumberWithCommas(value) {
+        if(typeof value === 'string'){
+        return parseFloat(value.replace(/,/g, '')) || 0;
+       } else{
+        return parseFloat(value) || 0;
+       }
+    }
 
-   
-    $('#facility_id').on('change', function() {
-            // Set a timeout to hide the loading-image after a specified interval (e.g., 2000 milliseconds or 2 seconds)
+    function check(){
+        var rem = parseNumberWithCommas($('#remaining_balance').val());
+        var g_amount = parseNumberWithCommas($('#guaranteed_amount').val());
+        if(g_amount>rem){
+            Lobibox.alert('error', {
+                size: 'mini',
+                msg: 'Inputted amount is greater than the remaning balance!'
+            })
+            $('#guaranteed_amount').val('');
+        }
+    }
+
+    $(document).ready(function() {
+        
+        $('#fundsource_id').on('change', function() {
+            if ($(this).val() !== '') {
+                var selectOptionText = $(this).find('option:selected').text();
+                if(selectOptionText !== 'Please select SAA'){
+                    $('#loading-image').show();
+                }
+            }
+        });
+
+        $('#facility_id').on('change', function() {
             if ($(this).val() !== '') {
                 setTimeout(function() {
                     $('#loading-image').hide();
                 }, 1000); // Change the time interval as needed
             }
         });
+        $('#remaining_balance').on('click', function() {
+            console.log('sfsdf');
+        });
 
 
 
- // $('#province_id').change(function() {
-        
-        //     $('#muncity_id').prop('disabled', true);
-        //     $('#barangay_id').prop('disabled', true);
-        //     $('#muncity_id').html('<option value="">Please Select a Municipality</option>');
+    // $('#province_id').change(function() {
+            
+            //     $('#muncity_id').prop('disabled', true);
+            //     $('#barangay_id').prop('disabled', true);
+            //     $('#muncity_id').html('<option value="">Please Select a Municipality</option>');
 
-        //     // Enable the Municipality dropdown after a second
-        //     setTimeout(function() {
-        //         $('#muncity_id').prop('disabled', false);
-        //     }, 1000); // 1000 milliseconds = 1 second
+            //     // Enable the Municipality dropdown after a second
+            //     setTimeout(function() {
+            //         $('#muncity_id').prop('disabled', false);
+            //     }, 1000); // 1000 milliseconds = 1 second
 
-        // });
+            // });
 
-        // $('#muncity_id').change(function() {
-        //     $('#barangay_id').prop('disabled', true);
-        //     $('#barangay_id').html('<option value="">Please Select Barangay</option>')
-                
-        //     setTimeout(function() {
-        //         $('#barangay_id').prop('disabled', false);
-        //     }, 1000);
-        // });
+            // $('#muncity_id').change(function() {
+            //     $('#barangay_id').prop('disabled', true);
+            //     $('#barangay_id').html('<option value="">Please Select Barangay</option>')
+                    
+            //     setTimeout(function() {
+            //         $('#barangay_id').prop('disabled', false);
+            //     }, 1000);
+            // });
 
-        $('#province_id').change(function() {
-           $('#muncity_id').prop('disabled', true);
-           $('#barangay_id').prop('disabled', true);
-           $('#muncity_id').html('<option value="">Please Select Municipality</option>');
+            $('#province_id').change(function() {
+            $('#muncity_id').prop('disabled', true);
+            $('#barangay_id').prop('disabled', true);
+            $('#muncity_id').html('<option value="">Please Select Municipality</option>');
 
-           setTimeout(function() {
-               $('#muncity_id').prop('disabled', false);
-           }, 1000);
+            setTimeout(function() {
+                $('#muncity_id').prop('disabled', false);
+            }, 1000);
+
+            });
+
+        $('#muncity_id').change(function() {
+            
+            $('#barangay_id').prop('disabled', true);
+            $('#barangay_id').html('<option value="">Please Select Barangay</option>');
+
+            setTimeout(function() {
+                $('#barangay_id').prop('disabled', false);
+            }, 1000);
 
         });
 
-       $('#muncity_id').change(function() {
-         
-         $('#barangay_id').prop('disabled', true);
-         $('#barangay_id').html('<option value="">Please Select Barangay</option>');
-
-         setTimeout(function() {
-            $('#barangay_id').prop('disabled', false);
-         }, 1000);
-
-       });
-
-});
+    });
 
 
 
