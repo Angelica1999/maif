@@ -8,42 +8,25 @@ use App\Models\Patients;
 use App\Models\AddFacilityInfo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;   
+use App\Models\Muncity;
+use App\Models\Barangay;
 
 
 class FacilityController extends Controller
 {
     public function index(Request $request) {
-
+        // return 
+        // return Barangay::get();
+        $brgy = Barangay::pluck('muncity_id')->toArray();
+        // return Muncity::whereNotIn('id', $brgy)->get();
         $result = Facility::with('addFacilityInfo')
                 ->select(
                     'facility.id',
                     'facility.name',
                     'facility.address',
-                 )
-                ->where('hospital_type','private');
+                );
+                // ->where('hospital_type','private');
               //  ->paginate(15);
-        // $Facility = (new Facility())->getConnection()->getDatabaseName();
-        // $AddFacilityInfo = (new AddFacilityInfo())->getConnection()->getDatabaseName();
-        // $result = DB::table($Facility.'.facility')
-        //     ->select(
-        //         DB::raw($Facility.'.facility.name'),
-        //         DB::raw($AddFacilityInfo.'.addfacilityinfo.*'))
-        //     ->join($AddFacilityInfo.'.addfacilityinfo', $Facility.'.facility.id', '=', $AddFacilityInfo.'.addfacilityinfo.facility_id')
-        //     ->where($Facility.'.facility.hospital_type','private')
-        //     ->paginate(15);
-
-        
-        // $result = DB::table('doh_referral.facility')
-        //     ->select(
-        //         'doh_referral.facility.id as main_id',
-        //         'doh_referral.facility.name',
-        //         'doh_referral.facility.address',
-        //         'maif.addfacilityinfo.*'
-        //     )
-        //     ->leftJoin('maif.addfacilityinfo', 'doh_referral.facility.id', '=', 'maif.addfacilityinfo.facility_id')
-        //     ->where('doh_referral.facility.hospital_type','private')
-        //     ->paginate(15) 
-        //     ;
      
          if($request->viewAll){
             $request->keyword = '';
@@ -52,7 +35,7 @@ class FacilityController extends Controller
              $result->where('name', 'LIKE', "%$request->keyword%");
          }
 
-         $results = $result->paginate(15);
+         $results = $result->paginate(10);
 
         return view('facility.facility',[
             'results' => $results,
@@ -104,7 +87,7 @@ class FacilityController extends Controller
     
         $main_id = $request->input('main_id');    
         // Retrieve the facility record based on the main_id
-        $facility = AddFacilityInfo::where('facility_id', $main_id)->first();
+        $facility = AddFacilityInfo::where('facility_id', $main_id)->orderBy('updated_at', 'desc')->first();
 
         if (!$facility) {
             // If the facility doesn't exist, you can create a new instance.
@@ -118,6 +101,8 @@ class FacilityController extends Controller
             $facility->finance_officer = $request->input('finance_officer');
             $facility->finance_officer_email = $request->input('finance_officer_email');
             $facility->finance_officer_contact = $request->input('finance_officer_contact');
+            $facility->official_mail = $request->input('official_mail');
+            $facility->cc = $request->input('cc');
             $facility->vat = $request->input('vat');
             $facility->Ewt = $request->input('Ewt');
 
@@ -127,11 +112,12 @@ class FacilityController extends Controller
         }   //end of function
      public function getVatEwt()
      {
-       return  $facility = AddFacilityInfo::all();
-        // $VatAmount = $facility->vat;
-        // $EwtAmount = $facility->Ewt;
-        // return response()->json(['vat' => $VatAmount,
-        //                           'Ewt' => $EwtAmount]);
+        $facility = AddFacilityInfo::all();
+        if($facility){
+            return $facility;
+        }else{
+            return 0;
+        }
      }
       
 

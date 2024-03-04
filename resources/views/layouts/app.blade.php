@@ -24,6 +24,7 @@
     <link rel="shortcut icon" href="{{ asset('images/doh-logo.png') }}" />
     <!-- Scripts -->
     {{-- @vite(['resources/sass/app.scss', 'resources/js/app.js']) --}}
+    @yield('css')
 </head>
 <body>
     <div id="app">
@@ -35,7 +36,7 @@
                 <div class="main-panel">   
                     <div class="content-wrapper">
                         <div class="text-center p-2" style="background-color: #067536;width:100%;margin-bottom:30px;">
-                            <img src="{{ asset('images/maip_banner_2023.png') }}" alt="banner"/>  
+                            <img src="{{ asset('images/maip_banner_2023_updated.png') }}" alt="banner"/>  
                         </div>   
                         <div class="row">
                             @yield('content')
@@ -61,7 +62,7 @@
         var path_gif = "{{ asset('images/loading.gif') }}";
         var loading = '<center><img src="'+path_gif+'" alt=""></center>';
         
-
+      
         @if(session('facility_save'))
              <?php session()->forget('facility_save'); ?>
              Lobibox.notify('success', {
@@ -86,8 +87,127 @@
                 msg: 'Successfully saved Fund Source!'
             });
         @endif
-    </script>
+        @if(session('fundsource_update'))
+            <?php session()->forget('fundsource_update'); ?>
+            Lobibox.notify('success', {
+                msg: 'Successfully Upate Fund Source!'
+            });
+        @endif
+        @if(session('dv_create'))
+           <?php session()->forget('dv_create'); ?>
+           Lobibox.notify('success', {
+              msg: 'Disbursement was Created!'
+           });
+        @endif
+        @if(session('dv_update'))
+           <?php session()->forget('dv_create'); ?>
+           Lobibox.notify('success', {
+              msg: 'Disbursement was updated!'
+           });
+        @endif
+        @if(session('fund_transfer'))
+           <?php session()->forget('fund_transfer'); ?>
+           Lobibox.notify('success', {
+              msg: 'Funds successfuly transferred!'
+           });
+        @endif
+        @if(session('actual_amount'))
+           <?php session()->forget('actual_amount'); ?>
+           Lobibox.notify('success', {
+              msg: 'Actual Amount successfuly updated!'
+           });
+        @endif
+        @if(session('save_group'))
+           <?php session()->forget('save_group'); ?>
+           Lobibox.notify('success', {
+              msg: 'Group successfuly saved!'
+           });
+        @endif
+        @if(session('create_dv2'))
+           <?php session()->forget('save_group'); ?>
+           Lobibox.notify('success', {
+              msg: 'Disbursement Voucher V2 successfuly created!'
+           });
+        @endif
+        @if(session('email_sent'))
+            <?php session()->forget('email_sent'); ?>
+            Lobibox.notify('success', {
+              msg: 'Sucessfully sent an email!'
+           });
+        @endif
+        @if(session('email_unsent'))
+        <?php session()->forget('email_unsent'); ?>
+            window.close();
+            Lobibox.notify('error', {
+              msg: 'Cannot send an email, please provide correct email!'
+           });
+        @endif
+        @if(session('save_patientgroup'))
+           <?php session()->forget('save_patientgroup'); ?>
+           Lobibox.notify('success', {
+              msg: 'Successfully added a patient in a group!'
+           });
+        @endif
+        @if(session('update_group'))
+           <?php session()->forget('update_group'); ?>
+           Lobibox.notify('success', {
+              msg: 'Please update disbursement voucher!'
+           });
+        @endif
+        @if(session('remove_patientgroup'))
+           <?php session()->forget('remove_patientgroup'); ?>
+           Lobibox.notify('success', {
+              msg: 'Successfully removed a message!'
+           });
+        @endif
+        @if(session('breakdowns_created'))
+           <?php session()->forget('breakdowns_created'); ?>
+           Lobibox.notify('success', {
+              msg: 'Successfully created a breakdowns!'
+           });
+        @endif
+        @if(session('obligate'))
+           <?php session()->forget('obligate'); ?>
+           Lobibox.notify('success', {
+              msg: 'Dv was successfully obligated!'
+           });
+        @endif
+        @if(session('saa_exist'))
+           <?php session()->forget('saa_exist'); ?>
+           Lobibox.notify('error', {
+              msg: 'Saa exists already!'
+           });
+        @endif
+        @if(session()->has('patient_exist'))
+            <?php $patientCount = session('patient_exist'); ?>
+            <?php session()->forget('patient_exist'); ?>
+            Lobibox.notify('success', {
+               msg: 'This is the {{ $patientCount}} time this patient has been added!'
+            });
+         @endif
+         @if(session('pay_dv'))
+           <?php session()->forget('pay_dv'); ?>
+           Lobibox.notify('success', {
+              msg: 'Successfully paid the disbursement!'
+           });
+        @endif
+        @if(session('releaseAdded'))
+           <?php session()->forget('releaseAdded'); ?>
+         //   <div class="alert alert-success">
+         //       <i class="fa fa-check"></i> Successfully released!
+         //    </div>
+           Lobibox.notify('success', {
+              msg: ' Successfully released! '
+           });
+        @endif
+        @if(session('add_dvno'))
+           <?php session()->forget('add_dvno'); ?>
+           Lobibox.notify('success', {
+              msg: 'Successfully add dv no!'
+           });
+        @endif
 
+    </script>
     @yield('js')
 </body>
 </html>

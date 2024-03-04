@@ -2,6 +2,13 @@
 
 use Illuminate\Support\Str;
 
+// $host = "localhost";
+// $username="root";
+// $password = "D0h7_1T";
+$host = "192.168.110.31";
+$username="rtayong_31";
+$password = "rtayong_31";
+
 return [
 
     /*
@@ -110,6 +117,28 @@ return [
             'prefix_indexes' => true,
             // 'encrypt' => env('DB_ENCRYPT', 'yes'),
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
+        ],
+
+        'dohdtr' => [
+            'driver'    => 'mysql',
+			'host'      => $host,
+			'database'  => 'dohdtr',
+			'username'  => $username,
+			'password'  => $password,
+			'charset'   => 'utf8',
+			'collation' => 'utf8_bin',
+			'prefix'    => '',
+        ],
+
+        'dts' => [
+            'driver'    => 'mysql',
+			'host'      => $host,
+			'database'  => 'dts',
+			'username'  => $username,
+			'password'  => $password,
+			'charset'   => 'utf8',
+			'collation' => 'utf8_bin',
+			'prefix'    => '',
         ],
 
     ],

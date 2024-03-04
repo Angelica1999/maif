@@ -16,4 +16,8 @@ class Facility extends Model
     public function addFacilityInfo() {      
         return $this->belongsTo(AddFacilityInfo::class, 'id', 'facility_id');
     }
+    public function dv(){
+        return $this->hasmany(Dv::class, 'id', 'facility_id');
+    }
+
 }

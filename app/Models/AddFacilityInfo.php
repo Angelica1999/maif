@@ -12,4 +12,8 @@ class AddFacilityInfo extends Model
     protected $connection = 'mysql';
     protected $table = 'addfacilityinfo';
     protected $guarded = array();
+
+    public function facility() {   
+        return $this->belongsTo(Facility::class, 'facility_id','id');
+    }
 }

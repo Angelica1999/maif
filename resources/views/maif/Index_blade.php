@@ -27,7 +27,7 @@
             </form>
             <h4 class="card-title">Disbursement Voucher</h4>
             <p class="card-description">
-                MAIF-IP
+                MAIF-IPP
             </p>
             <div class="table-responsive">
                 <table class="table table-striped">

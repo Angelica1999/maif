@@ -18,7 +18,11 @@ class RouteServiceProvider extends ServiceProvider
      * @var string
      */
     public const MAIF = '/home';
-    public const BUDGET = '/fundsource';
+    public const BUDGET = '/fundsource_budget';
+    public const ACCOUNTING = '/dv1';
+    public const CASHIER = '/cashier/type';
+
+
 
     /**
      * Define your route model bindings, pattern filters, and other route configuration.
