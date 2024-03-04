@@ -37,7 +37,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Middle Name</label>
-                    <input type="text" class="form-control" id="mname" name="mname" placeholder="Middle Name" required>
+                    <input type="text" class="form-control" id="mname" name="mname" placeholder="Middle Name">
                 </div>
             </div>
 
@@ -61,7 +61,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Region</label>
-                    <select class="form-control" onchange="othersRegion($(this));" name="region" required>
+                    <select class="js-example-basic-single w-100 select2" onchange="othersRegion($(this));" name="region" required>
                         <option value="">Please select region</option>
                         <option value="Region 7" selected>Region 7</option>
                         <option value="NCR">NCR</option>
@@ -87,7 +87,7 @@
                 <div class="form-group">
                     <label for="lname">Province</label>
                     <div id="province_body">
-                        <select class="form-control" id="province_id" name="province_id" onchange="onchangeProvince($(this))" required>
+                        <select class="js-example-basic-single w-100 select2" id="province_id" name="province_id" onchange="onchangeProvince($(this))" required>
                             <option value="">Please select province</option>
                             @foreach($provinces as $prov)
                                 <option value="{{ $prov->id }}">{{ $prov->description }}</option>
@@ -104,8 +104,7 @@
                 <div class="form-group">
                     <label for="lname">Municipality</label>
                     <div id="muncity_body">
-                        <select class="js-example-basic-single w-100" id="muncity_id" name="muncity_id" onchange="onchangeMuncity($(this))" required disabled>
-                            <option value=""></option>
+                        <select class="js-example-basic-single w-100 select2" id="muncity_id" name="muncity_id" onchange="onchangeMuncity($(this))" required disabled>
                         </select>
                     </div>
                 </div>
@@ -115,8 +114,7 @@
                 <div class="form-group">
                     <label for="lname">Barangay</label>
                     <div id="barangay_body">
-                        <select class="js-example-basic-single w-100" id="barangay_id" name="barangay_id" required disabled>
-                            <option value=""></option>
+                        <select class="js-example-basic-single w-100 select2" id="barangay_id" name="barangay_id" required disabled>
                         </select>
                     </div>
                 </div>
@@ -183,7 +181,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Guaranteed Amount</label>
-                    <input type="text" class="form-control" id="guaranteed_amount" oninput="check()" onkeyup= "validateAmount(this)" name="guaranteed_amount" placeholder="Guaranteed Amount">
+                    <input type="text" class="form-control" id="guaranteed_amount" oninput="check()" onkeyup= "validateAmount(this)" name="guaranteed_amount" placeholder="Guaranteed Amount" required>
                 </div>
             </div>
 
@@ -281,25 +279,21 @@
             //     }, 1000);
             // });
 
-            $('#province_id').change(function() {
+        $('#province_id').change(function() {
             $('#muncity_id').prop('disabled', true);
-            $('#barangay_id').prop('disabled', true);
-            $('#muncity_id').html('<option value="">Please Select Municipality</option>');
-
+        
             setTimeout(function() {
                 $('#muncity_id').prop('disabled', false);
-            }, 1000);
+            }, 500);
 
-            });
+        });
 
         $('#muncity_id').change(function() {
             
             $('#barangay_id').prop('disabled', true);
-            $('#barangay_id').html('<option value="">Please Select Barangay</option>');
-
             setTimeout(function() {
                 $('#barangay_id').prop('disabled', false);
-            }, 1000);
+            }, 500);
 
         });
 

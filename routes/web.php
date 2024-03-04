@@ -45,11 +45,11 @@ Route::get('patient/sendpdf/{patientid}', [App\Http\Controllers\PrintController:
 Route::get('dv/pdf/{dvId}', [App\Http\Controllers\PrintController::class, 'dvPDF'])->name('dv.pdf');
 
 
-Route::get('facility/get/{province_id}', [App\Http\Controllers\HomeController::class, 'facilityGet'])->name('facility.get');
+// Route::get('facility/get/{province_id}', [App\Http\Controllers\HomeController::class, 'facilityGet'])->name('facility.get');
 Route::get('muncity/get/{province_id}', [App\Http\Controllers\HomeController::class, 'muncityGet'])->name('muncity.get');
 Route::get('barangay/get/{muncity_id}', [App\Http\Controllers\HomeController::class, 'barangayGet'])->name('barangay.get');
 Route::get('transaction/get', [App\Http\Controllers\FundSourceController::class, 'transactionGet'])->name('transaction.get');
-Route::get('/disbursement', [App\Http\Controllers\HomeController::class, 'disbursement'])->name('disbursement');
+// Route::get('/disbursement', [App\Http\Controllers\HomeController::class, 'disbursement'])->name('disbursement');
 
 Route::post('dv/create/save',  [App\Http\Controllers\DvController::class, 'createDvSave'])->name('dv.create.save');
 Route::get('facility/dv/{facility_id}', [App\Http\Controllers\DvController::class, 'dvfacility'])->name('facility.dv');
@@ -60,7 +60,7 @@ Route::get('/fundsource/saa/get', [App\Http\Controllers\FundSourceController::cl
 Route::get('/fundsource/create', [App\Http\Controllers\FundSourceController::class, 'createFundSource'])->name('fundsource.create');
 Route::post('/fundsource/create/save', [App\Http\Controllers\FundSourceController::class, 'createFundSourceSave'])->name('fundsource.create.save');
 Route::get('/proponent/get/{fundsource_id}', [App\Http\Controllers\FundSourceController::class, 'proponentGet'])->name('proponent.get');
-Route::get('facility/get/{facilityId}',  [App\Http\Controllers\FundSourceController::class, 'facilityGet'])->name('facility.get');
+// Route::get('facility/get/{facilityId}',  [App\Http\Controllers\FundSourceController::class, 'facilityGet'])->name('facility.get');
 Route::post('fundsource/update', [App\Http\Controllers\FundSourceController::class, 'updatefundsource'])->name('fundsource.update');
 Route::get('fundsource/transfer_funds/{fundsourceId}/{proponent_id}/{facility_id}', [App\Http\Controllers\FundSourceController::class, 'transferFunds'])->name('fundsource.transfer');
 Route::post('fundsource/transfer/save', [App\Http\Controllers\FundSourceController::class, 'saveTransferFunds'])->name('transfer.save');
@@ -71,9 +71,13 @@ Route::get('/facility/proponent/{facility_id}', [App\Http\Controllers\FundSource
 Route::get('/patient/code/{proponent_id}/{facility_id}', [App\Http\Controllers\FundSourceController::class, 'forPatientCode'])->name('facility.patient.code');
 Route::get('/patient/proponent/{fundsource_id}', [App\Http\Controllers\FundSourceController::class, 'forPatientFacilityCode'])->name('facility.patient.code');
 
-
 //DISBURSEMENT VOUCHER
 Route::get('/dv1', [App\Http\Controllers\DvController::class, 'dv'])->name('dv');
+// Route::get('/dv1/pending', [App\Http\Controllers\DvController::class, 'dvPending'])->name('dv.pending');
+// Route::get('/dv1/obligated', [App\Http\Controllers\DvController::class, 'dvObligate'])->name('dv.obligated');
+// Route::get('/dv1/w_dvno', [App\Http\Controllers\DvController::class, 'withDvNO'])->name('dv.withdv');
+// Route::get('/dv1/without_dvno', [App\Http\Controllers\DvController::class, 'withoutDvNO'])->name('dv.withoutdv');
+
 Route::get('/dv/create', [App\Http\Controllers\DvController::class, 'createDv'])->name('dv.create');
 Route::get('/getFund/{facilityId}{fund_source}',[App\Http\Controllers\DvController::class, 'getFund']);
 Route::get('/getvatEwt/{facilityId}',[App\Http\Controllers\DvController::class, 'getvatEwt'])->name('getvatEwt');
@@ -100,7 +104,7 @@ Route::get('/dv2/pdf', [App\Http\Controllers\PrintController::class, 'dv2Pdf'])-
 Route::get('dv2/pdf/{route_no}', [App\Http\Controllers\PrintController::class, 'dv2Pdf'])->name('dv2.pdf');
 Route::get('dv2/image/{route_no}', [App\Http\Controllers\PrintController::class, 'dv2Image'])->name('dv2.image');
 
-Route::match(['get', 'post'],'/update/amount/{patientId}', [App\Http\Controllers\HomeController::class, 'updateAmount'])->name('update.amount');
+Route::match(['get', 'post'],'/update/amount/{patientId}/{amount}', [App\Http\Controllers\HomeController::class, 'updateAmount'])->name('update.amount');
 Route::match(['get', 'post'],'/save/group/', [App\Http\Controllers\HomeController::class, 'saveGroup'])->name('save.group');
 Route::get('/group/{facility_id}/{proponentId}', [App\Http\Controllers\Dv2Controller::class, 'getGroup'])->name('group.get'); 
 Route::get('/proponentInfo/{facility_id}/{pro_group}', [App\Http\Controllers\Dv2Controller::class, 'getProponentInfo'])->name('proponent_info.get'); 
@@ -117,7 +121,7 @@ Route::post('group/patient/list', [App\Http\Controllers\HomeController::class, '
 
 Route::get('/fundsource_budget', [App\Http\Controllers\FundSourceController2::class, 'fundSource2'])->name('fundsource_budget');
 Route::post('/fundsource_budget/create', [App\Http\Controllers\FundSourceController2::class, 'createfundSource2'])->name('fundsource_budget.save');
-Route::get('/dvlist', [App\Http\Controllers\FundSourceController2::class, 'pendingDv'])->name('fundsource_budget.pendingDv');
+Route::get('/dvlist/{type}', [App\Http\Controllers\FundSourceController2::class, 'pendingDv'])->name('fundsource_budget.pendingDv');
 //creating breakdowns
 Route::get('fundsource/breakdowns/{fundsourceId}', [App\Http\Controllers\FundSourceController::class, 'createBDowns'])->name('fundsource.create_breakdowns');
 Route::match(['get','post'],'fundsource/breakdowns', [App\Http\Controllers\FundSourceController::class, 'saveBDowns'])->name('fundsource.save_breakdowns');
@@ -125,6 +129,15 @@ Route::get('facilities/get/{type}', [App\Http\Controllers\FundSourceController::
 Route::get('pro_div/get', [App\Http\Controllers\FundSourceController::class, 'pro_divGet'])->name('pro_div.get');
 Route::match(['get', 'post'],'dv/obligate', [App\Http\Controllers\DvController::class, 'obligate'])->name('dv.obligate');
 Route::get('dv/{route_no}/{dv_no}/{type}', [App\Http\Controllers\FundSourceController2::class, 'dv_display'])->name('display.dv');
+
+Route::get('/cashier/{type}', [App\Http\Controllers\FundSourceController2::class, 'cashierPending'])->name('cashier');
+Route::get('/cashier/paid', [App\Http\Controllers\FundSourceController2::class, 'cashierPaid'])->name('cashier.paid');
+Route::match(['get', 'post'],'dv/pay', [App\Http\Controllers\DvController::class, 'payDv'])->name('dv.pay');
+Route::match(['get', 'post'],'dv/add_dvno', [App\Http\Controllers\DvController::class, 'addDvNo'])->name('dv.add_dvno');
+
+Route::get('getsections/{id}', [App\Http\Controllers\DvController::class, 'getSections'])->name('division.section');
+Route::post('/document/release', [App\Http\Controllers\DvController::class, 'addRelease'])->name('document.release');
+Route::get('/sample', [App\Http\Controllers\FundSourceController2::class, 'sample'])->name('sample');
 
 
 

@@ -9,28 +9,27 @@ use App\Models\Fundsource;
 use App\Models\User;
 use PDF;
 
-class UtilizationController extends Controller
-{
+class UtilizationController extends Controller{
     //
     public function tracking(Request $request){
 
         $dv = Utilization::with(['proponentdata', 'fundSourcedata'])
-        ->where('fundsource_id', $request->fundsourceId)
-        ->where('proponentinfo_id', $request->proponentInfoId)
-        ->where('facility_id', $request->facilityId)
-        ->get();
+            ->where('fundsource_id', $request->fundsourceId)
+            ->where('proponentinfo_id', $request->proponentInfoId)
+            ->where('facility_id', $request->facilityId)
+            ->get();
 
         $userIds = $dv->pluck('created_by')->toArray();
         $user=[];
         foreach($userIds as $id){
             $user[] = User::where('userid', $id)->first();
         }
-        // return $user;
         $data = ['dv' => $dv, 'user'=>$user];
         return response()->json($data);
     }
    
     public function trackingBudget($fundsourceId, $type){
+
         $utilization = Utilization::whereNotNull('obligated')->where('fundsource_id', $fundsourceId)
             ->with('proponentdata', 'fundSourcedata', 'facilitydata', 'user_budget')->orderBy('id', 'desc')->get();
         if($type == 'for_modal'){

@@ -178,8 +178,36 @@
               msg: 'Saa exists already!'
            });
         @endif
-    </script>
+        @if(session()->has('patient_exist'))
+            <?php $patientCount = session('patient_exist'); ?>
+            <?php session()->forget('patient_exist'); ?>
+            Lobibox.notify('success', {
+               msg: 'This is the {{ $patientCount}} time this patient has been added!'
+            });
+         @endif
+         @if(session('pay_dv'))
+           <?php session()->forget('pay_dv'); ?>
+           Lobibox.notify('success', {
+              msg: 'Successfully paid the disbursement!'
+           });
+        @endif
+        @if(session('releaseAdded'))
+           <?php session()->forget('releaseAdded'); ?>
+         //   <div class="alert alert-success">
+         //       <i class="fa fa-check"></i> Successfully released!
+         //    </div>
+           Lobibox.notify('success', {
+              msg: ' Successfully released! '
+           });
+        @endif
+        @if(session('add_dvno'))
+           <?php session()->forget('add_dvno'); ?>
+           Lobibox.notify('success', {
+              msg: 'Successfully add dv no!'
+           });
+        @endif
 
+    </script>
     @yield('js')
 </body>
 </html>

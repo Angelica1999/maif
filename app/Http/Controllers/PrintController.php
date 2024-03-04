@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\DB;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\SMTP;
-// use Illuminate\Support\Facades\Response;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Image;
 use Illuminate\Support\Str;
@@ -29,6 +28,7 @@ class PrintController extends Controller
     }
 
     public function calculateAge($dob) {
+
         $dob = Carbon::parse($dob);
         $currentDate = Carbon::now();
         $age = $currentDate->diffInYears($dob);
@@ -46,7 +46,6 @@ class PrintController extends Controller
     
     public function patientPdf(Request $request, $patientid) {
         $patient = Patients::where('id',$patientid)->with('encoded_by')->first();
-        // return $patient;
         if(!$patient){
             return redirect()->route('Home.index')->with('error', 'Patient not found.');
         }
@@ -64,10 +63,8 @@ class PrintController extends Controller
     }
 
     public function sendPatientPdf($patientId) {
-        // return $_ENV['EMAIL_PASSWORD'];
 
         $patient = Patients::where('id', $patientId)->with('facility')->first();
-        // return $patient;
         if(!$patient){
             return redirect()->route('Home.index')->with('error', 'Patient not found.');
         }else{
@@ -81,14 +78,10 @@ class PrintController extends Controller
                 ];
                 $options = [];
                 $recipientEmail = $facility->official_mail;
-                // return $facility->cc;
                 $cc = str_replace(' ','',$facility->cc);
                 $cc_mails = explode(',',  $cc);
-                // $recipientEmail = "maangelica.cadayday@gmail.com";
-        
                 $pdf = PDF::loadView('maif.print_patient', $data, $options);
                 $pdfFilePath = storage_path("app\pdfs");
-                // return $pdfFilePath;
 
                 $pdf->save($pdfFilePath);
     
@@ -113,7 +106,6 @@ class PrintController extends Controller
         $chaki = [];
         if($ids !== null || $ids !== ''){
             $patients = Patients::whereIn('id', $ids)->with('facility')->get();
-            // return $patients;
             if($patients){
                 foreach($patients as $patient){
                     $facility = AddFacilityInfo::where('facility_id', $patient->facility_id)->first();
@@ -126,7 +118,6 @@ class PrintController extends Controller
                         ];
                         $options = [];
                         $recipientEmail = $facility->official_mail;
-                        // $recipientEmail = "maangelica.cadayday@gmail.com";
                         $cc = str_replace(' ','',$facility->cc);
                         $cc_mails = explode(',',  $cc);
                         
@@ -145,19 +136,16 @@ class PrintController extends Controller
                     }
                 }
             }
-            // return $chaki;
             return redirect()->route('home');
         }
         
     }
 
     private function sendMail($recipientEmail, $pdfFilePath, $cc_mails){
-        // return $cc_mails;
         try{
             $email_doh = 'maipp@ro7.doh.gov.ph';
             $email_password = 'lfeimyfauyznqnvm';
             $mail = new PHPMailer(true);
-            //Server settings
             $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
             $mail->isSMTP();                                            //Send using SMTP
             $mail->Host       = 'smtp.gmail.com';                     //Set the SMTP server to send through
@@ -197,7 +185,6 @@ class PrintController extends Controller
             unlink($pdfFilePath);
         }catch (Exception $e) {
             echo 'Error: ' . $e->getMessage();
-            // return redirect()->route('home')->with('email_unsent', true);
         }
     }
 
@@ -209,7 +196,7 @@ class PrintController extends Controller
         $all = [];
         foreach($saa as $id){
             $all []= $id;
-       }
+        }
         $fund_source = Fundsource::whereIn('id', $all)->get();
         if(!$dv){
             return redirect()->route('Home.index')->with('error', 'Patient not found.');
@@ -224,7 +211,9 @@ class PrintController extends Controller
         $pdf->setPaper('Folio');
         return $pdf->stream('dv.pdf');
     }
+
     public function dv2Pdf($route_no) {
+
         $dv2 = Dv2::where('route_no', $route_no)
                 ->leftJoin('patients as p1', 'dv2.lname', '=', 'p1.id')
                 ->leftJoin('patients as p2', 'dv2.lname2', '=', 'p2.id')
@@ -244,106 +233,94 @@ class PrintController extends Controller
         $pdf->setPaper('A4');
         return $pdf->stream('dv2.pdf');
     }
+
     public function dv2Image($route_no) {
-            try {
-                $dv2 = Dv2::where('route_no', $route_no)
-                    ->leftJoin('patients as p1', 'dv2.lname', '=', 'p1.id')
-                    ->leftJoin('patients as p2', 'dv2.lname2', '=', 'p2.id')
-                    ->select('dv2.*', 'p1.lname as lname1', 'p2.lname as lname_2')
-                    ->get();
-                // return $dv2;
-                $total = Dv2::where('route_no', $route_no)
-                    ->select(DB::raw('SUM(REPLACE(amount, ",", "")) as totalAmount'))
-                    ->first()->totalAmount;
-        
-                $imageWidth = 500; // Set your desired width
-                $imageHeight = 600; // Set your desired height
-                $image = imagecreate($imageWidth, $imageHeight);
-        
-                $backgroundColor = imagecolorallocate($image, 255, 255, 255); // white
-                $textColor = imagecolorallocate($image, 0, 0, 0); // black
-                $fontpath = 'public\admin\fonts\Karla\Karla-Bold.ttf';
-                $fontSize = 12;
-                $fontHeight = imagettfbbox($fontSize, 0, $fontpath, 'Sample')['1'];
 
-                $y = 50;
-                imagettftext($image, $fontSize + 4, 0, 100, $y, $textColor, $fontpath, 'Disbursement Voucher V2');
-                $y += $fontSize + 5;
-                imagettftext($image, $fontSize, 0, 190, $y, $textColor, $fontpath, 'MAIF-IPP');
+        try {
+            $dv2 = Dv2::where('route_no', $route_no)
+                ->leftJoin('patients as p1', 'dv2.lname', '=', 'p1.id')
+                ->leftJoin('patients as p2', 'dv2.lname2', '=', 'p2.id')
+                ->select('dv2.*', 'p1.lname as lname1', 'p2.lname as lname_2')
+                ->get();
+            $total = Dv2::where('route_no', $route_no)
+                ->select(DB::raw('SUM(REPLACE(amount, ",", "")) as totalAmount'))
+                ->first()->totalAmount;
+    
+            $imageWidth = 500; // Set your desired width
+            $imageHeight = 600; // Set your desired height
+            $image = imagecreate($imageWidth, $imageHeight);
+    
+            $backgroundColor = imagecolorallocate($image, 255, 255, 255); // white
+            $textColor = imagecolorallocate($image, 0, 0, 0); // black
+            $fontpath = 'public\admin\fonts\Karla\Karla-Bold.ttf';
+            $fontSize = 12;
+            $fontHeight = imagettfbbox($fontSize, 0, $fontpath, 'Sample')['1'];
 
-                $y += $fontSize + 30;
-                $boxWidth = 380;
-                $boxHeight = 50;
+            $y = 50;
+            imagettftext($image, $fontSize + 4, 0, 100, $y, $textColor, $fontpath, 'Disbursement Voucher V2');
+            $y += $fontSize + 5;
+            imagettftext($image, $fontSize, 0, 190, $y, $textColor, $fontpath, 'MAIF-IPP');
 
-                imagefilledrectangle($image, 60, $y, 65 + $boxWidth, $y + $boxHeight, $backgroundColor);
-                imagerectangle($image, 60, $y, 65 + $boxWidth, $y + $boxHeight, $textColor);
-                // imagettftext($image, $fontSize, 0, 70, $y + ($boxHeight + $fontHeight) / 2, $textColor, $fontpath, htmlspecialchars($dv2[0]->facility));
-                $text = htmlspecialchars($dv2[0]->facility);
+            $y += $fontSize + 30;
+            $boxWidth = 380;
+            $boxHeight = 50;
 
-                $maxWidth = 50; 
-                
-                $wrappedText = wordwrap($text, $maxWidth, "\n", true);
-                
-                $lines = explode("\n", $wrappedText);
-                
-                // Iterate through the lines and use imagettftext
-                foreach ($lines as $lineNumber => $line) {
-                    // Calculate the new $y position based on line number
-                    $yPosition = $y + ($boxHeight + $fontHeight) / 2 + ($lineNumber * $fontHeight);
-                
-                    // Use imagettftext with the line of text
-                    imagettftext($image, $fontSize, 0, 70, $yPosition, $textColor, $fontpath, $line);
-                    $y += 10;
+            imagefilledrectangle($image, 60, $y, 65 + $boxWidth, $y + $boxHeight, $backgroundColor);
+            imagerectangle($image, 60, $y, 65 + $boxWidth, $y + $boxHeight, $textColor);
+            $text = htmlspecialchars($dv2[0]->facility);
+            $maxWidth = 50; 
+            $wrappedText = wordwrap($text, $maxWidth, "\n", true);
+            $lines = explode("\n", $wrappedText);
+            
+            foreach ($lines as $lineNumber => $line) {
+                $yPosition = $y + ($boxHeight + $fontHeight) / 2 + ($lineNumber * $fontHeight);
+                imagettftext($image, $fontSize, 0, 70, $yPosition, $textColor, $fontpath, $line);
+                $y += 10;
 
-                }
-                $y += $fontSize + 30;
-               
-
-                $boxWidth = 400;
-                $boxHeight = 70;
-
-                foreach ($dv2 as $data) {
-
-                    imagefilledrectangle($image, 45, $y, 50 + $boxWidth, $y + $boxHeight, $backgroundColor);
-                    imagerectangle($image, 45, $y, 50 + $boxWidth, $y + $boxHeight, $textColor);
-
-                    imagettftext($image, $fontSize, 0, 160, $y + ($boxHeight + $fontHeight) / 2 - 15, $textColor, $fontpath, (!empty($data->ref_no) ? htmlspecialchars($data->ref_no) : ""));
-                    $y += $fontSize + 5;
-
-                    imagettftext($image, $fontSize, 0, 70, $y + ($boxHeight + $fontHeight) / 2 -10, $textColor, $fontpath, (!empty($data->lname1) ? htmlspecialchars($data->lname1) : $data->lname));
-                    imagettftext($image, $fontSize, 0, 320, $y + ($boxHeight + $fontHeight) / 2 -10, $textColor, $fontpath, (!empty($data->amount) ? $data->amount : 0.00));
-                    $y += $fontSize + 5;
-
-                    imagettftext($image, $fontSize, 0, 70, $y + ($boxHeight + $fontHeight) / 2-10, $textColor, $fontpath, (isset($data->lname_2) ? htmlspecialchars($data->lname_2) : ($data->lname2 != 0 ? $data->lname2 : '')));
-
-                    $y += $boxHeight + 5;
-                }
-
-                $y += $fontSize + 15;
-
-                $boxWidth = 270;
-                $boxHeight = 30;
-
-                $verticalCenter = $y + ($boxHeight + $fontHeight) / 2;
-
-                imagefilledrectangle($image, 180, $y, 180 + $boxWidth, $y + $boxHeight, $backgroundColor);
-                imagerectangle($image, 180, $y, 180 + $boxWidth, $y + $boxHeight, $textColor);
-
-                imagettftext($image, $fontSize, 0, 185, $verticalCenter, $textColor, $fontpath, 'Total Amount: PHP ' . number_format($total, 2, '.', ','));
-                $y += $boxHeight + 5;
-
-                // Output the image
-                $filename = $route_no . '.png';
-                header('Content-Type: image/jpeg');
-                // header('Content-Disposition: attachment; filename="'. $filename.'"');
-
-                imagejpeg($image);
-                imagedestroy($image);
-            } catch (\Exception $e) {
-                // Handle exceptions here
-                echo 'Error: ' . $e->getMessage();
             }
+            $y += $fontSize + 30;
+            $boxWidth = 400;
+            $boxHeight = 70;
+
+            foreach ($dv2 as $data) {
+
+                imagefilledrectangle($image, 45, $y, 50 + $boxWidth, $y + $boxHeight, $backgroundColor);
+                imagerectangle($image, 45, $y, 50 + $boxWidth, $y + $boxHeight, $textColor);
+
+                imagettftext($image, $fontSize, 0, 160, $y + ($boxHeight + $fontHeight) / 2 - 15, $textColor, $fontpath, (!empty($data->ref_no) ? htmlspecialchars($data->ref_no) : ""));
+                $y += $fontSize + 5;
+
+                imagettftext($image, $fontSize, 0, 70, $y + ($boxHeight + $fontHeight) / 2 -10, $textColor, $fontpath, (!empty($data->lname1) ? htmlspecialchars($data->lname1) : $data->lname));
+                imagettftext($image, $fontSize, 0, 320, $y + ($boxHeight + $fontHeight) / 2 -10, $textColor, $fontpath, (!empty($data->amount) ? $data->amount : 0.00));
+                $y += $fontSize + 5;
+
+                imagettftext($image, $fontSize, 0, 70, $y + ($boxHeight + $fontHeight) / 2-10, $textColor, $fontpath, (isset($data->lname_2) ? htmlspecialchars($data->lname_2) : ($data->lname2 != 0 ? $data->lname2 : '')));
+
+                $y += $boxHeight + 5;
+            }
+
+            $y += $fontSize + 15;
+
+            $boxWidth = 270;
+            $boxHeight = 30;
+
+            $verticalCenter = $y + ($boxHeight + $fontHeight) / 2;
+
+            imagefilledrectangle($image, 180, $y, 180 + $boxWidth, $y + $boxHeight, $backgroundColor);
+            imagerectangle($image, 180, $y, 180 + $boxWidth, $y + $boxHeight, $textColor);
+
+            imagettftext($image, $fontSize, 0, 185, $verticalCenter, $textColor, $fontpath, 'Total Amount: PHP ' . number_format($total, 2, '.', ','));
+            $y += $boxHeight + 5;
+
+            $filename = $route_no . '.png';
+            header('Content-Type: image/jpeg');
+            // header('Content-Disposition: attachment; filename="'. $filename.'"');
+
+            imagejpeg($image);
+            imagedestroy($image);
+        } catch (\Exception $e) {
+            echo 'Error: ' . $e->getMessage();
         }
+    }
         
-    // }
 }

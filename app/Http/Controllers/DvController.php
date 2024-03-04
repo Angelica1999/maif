@@ -16,6 +16,9 @@ use App\Models\ProponentInfo;
 use App\Models\Dv;
 use App\Models\AddFacilityInfo;
 use App\Models\Group;
+use App\Models\Section;
+use App\Models\Tracking_Releasev2;
+use Illuminate\Support\Facades\Http;
 
 class DvController extends Controller
 {
@@ -26,28 +29,43 @@ class DvController extends Controller
 
     public function dv(Request $request){
 
-       $result = Dv::with(['fundsource','facility', 'user'])->orderby('id', 'desc');
+        $dv_update = Dv::whereNotNull('dv_no')->with(['fundsource','facility', 'user'])->get();
 
+        foreach ($dv_update as $result) {
+            if($result->master->div_no != null){
+                $result->update(['dv_no' => $result->master->div_no]);
+            }
+        }
+                
         if($request->viewAll){
             $request->keyword = '';
-        }else if($request->keyword){
-            $result->where('route_no', 'LIKE', "%$request->keyword%");
         }
-        $results = $result->paginate(5);
+        // if(Auth::user()->userid == 1027){
+        //     $results = Dv::where()->with(['fundsource', 'facility', 'user', 'master'])
+        //                 ->when($request->keyword, function ($query) use ($request) {
+        //                     $query->where('route_no', 'LIKE', "%$request->keyword%");
+        //                 })
+        //             ->orderby('id', 'desc')
+        //             ->paginate(5);
+        // }else{
+            $results = Dv::with(['fundsource', 'facility', 'user', 'master'])
+                        ->when($request->keyword, function ($query) use ($request) {
+                            $query->where('route_no', 'LIKE', "%$request->keyword%");
+                        })
+                    ->orderby('id', 'desc')
+                    ->paginate(5);
+        // }
+       
 
         return view('dv.dv', [
             'disbursement' => $results,
-            'keyword' => $request->keyword,
+            'keyword' => $request->keyword ?: '',
             'user' => Auth::user()->userid
         ]);
+
     }
 
     public function getFundsource(Request $request){
-        // $fundsource = ProponentInfo::leftJoin('fundsource', 'proponent_info.fundsource_id', '=', 'fundsource.id')
-        //                 ->leftJoin('proponent', 'proponent_info.proponent_id', '=', 'proponent.id')
-        //                 ->where('proponent_info.facility_id', $request->facility_id)
-        //                 ->orWhere('proponent_info.facility_id', 702)
-        //                 ->select('proponent_info.*', 'fundsource.id', 'fundsource.saa', 'proponent.proponent', 'proponent.pro_group')->get();
         $fundsource = ProponentInfo::with('facility', 'fundsource', 'proponent')
                         ->where('proponent_info.facility_id', $request->facility_id)
                         ->orWhere('proponent_info.facility_id', 702)
@@ -87,6 +105,84 @@ class DvController extends Controller
         'facility' => $facility,
         'facilities' => $facilities,
         'saa' => $saa]);
+    }
+
+    public function addRelease(Request $req) {
+        $user = Auth::user();
+        $release_to_datein = date('Y-m-d H:i:s');
+        if($req->op != 0) {
+            $id = $req->op;
+            TrackingDetails::where('id',$id)->update(array(
+                'code' => 'temp;' . $req->section,
+                'action' => $req->remarks,
+                'date_in' => $release_to_datein,
+                'status' => 0
+            ));
+            $status='releaseUpdated';
+        } else {
+            if($req->currentID!=0)
+            {
+                $table = TrackingDetails::where('id',$req->currentID)->orderBy('id', 'DESC');
+                $code = isset($table->first()->code) ? $table->first()->code:null;
+
+                $tracking_release = new Tracking_Releasev2();
+                $tracking_release->released_by = $user->id;
+                $tracking_release->released_section_to = $req->section;
+                $tracking_release->released_date = $release_to_datein;
+                $tracking_release->remarks = $req->remarks;
+                $tracking_release->document_id = $table->first()->id;
+                $tracking_release->route_no = $req->route_no;
+                $tracking_release->status = "waiting";
+                $tracking_release->save();
+
+                $update = array(
+                    'code' => ''
+                );
+
+                $table->update($update);
+                $tmp = explode(';',$code);
+                $code = $tmp[0];
+                if($code=='return')
+                {
+                    $table->delete();
+                }
+            }else{
+                $tracking_details_info = TrackingDetails::where('route_no',$req->route_no)
+                        ->orderBy('id','desc')
+                        ->first();
+                $tracking_details_id = $tracking_details_info->id;
+                $tracking_details_id = $tracking_details_info->id;
+
+                $update = array(
+                    'code' => ''
+                );
+                $table = TrackingDetails::where('id',$tracking_details_id);
+                $table->update($update);
+            }
+
+            $q = new TrackingDetails();
+            $q->route_no = $req->route_no;
+            $q->date_in = $release_to_datein;
+            $q->action = $req->remarks;
+            $q->delivered_by = $user->id;
+            $q->code= 'temp;' . $req->section;
+            $q->alert= 0;
+            $q->received_by= 0;
+            $q->status= 0;
+            $q->save();
+
+            // Session::put("releaseAdded",[
+            //     "route_no" => $req->route_no,
+            //     "section_released_to_id" => $req->section,
+            //     "user_released_name" => $user->fname.' '.$user->lname,
+            //     "section_released_by_id" => $user->section,
+            //     "section_released_by_name" => Section::find($user->section)->description,
+            //     "remarks" => $req->remarks,
+            //     "status" => "released"
+            // ]);
+        }
+
+       return redirect()->back()->with('releaseAdded', true);
     }
 
     public function createDv(Request $request)
@@ -146,6 +242,7 @@ class DvController extends Controller
         $utilize_amount = [$request->input('saa1_utilize'),$request->input('saa2_utilize'),$request->input('saa3_utilize')];
         $discount = [$request->input('saa1_discount'),$request->input('saa2_discount'),$request->input('saa3_discount')];
         $dv= Dv::where('id', $check)->first();
+        // return $facility_id;
 
         if($dv) {
 
@@ -153,6 +250,7 @@ class DvController extends Controller
             // $dv->created_by = $dv->created_by;
             // $dv->route_no = $dv->route_no;
             $dv->modified_by = Auth::user()->userid;
+            $dv->dv_no = $request->input('dv_no');
             $saa = explode(',', $dv->fundsource_id);
             $saa = str_replace(['[', ']', '"'],'',$saa);
             $pro_id = explode(',', $dv->proponent_id);
@@ -160,23 +258,24 @@ class DvController extends Controller
             $amount = [$dv->amount1, !empty($dv->amount2)?$dv->amount2: 0 , !empty($dv->amount3)?$dv->amount3: 0];
             $index = 0;
 
-                foreach($saa as $id){
-                   $p_if = ProponentInfo::where('fundsource_id', $id)->where('facility_id', $dv->facility_id)->where('proponent_id',$pro_id[$index])->first();
-
+                foreach($saa as $index=>$id){
+                   $p_if = ProponentInfo::where('fundsource_id', $id)->where('facility_id', $facility_id[$index])->where('proponent_id',$pro_id[$index])->first();
+                    // return $p_if;
                    if($dv->deduction1 >= 3){
                         $total =((double)str_replace(',', '',$amount[$index]) / 1.12);
                    }else{
                         $total =((double)str_replace(',', '',$amount[$index]));
                    }
                    
-                   $return = $p_if -> remaining_balance + (double)str_replace(',', '',$amount[$index]);
+                   $return = (double)$p_if -> remaining_balance + (double)str_replace(',', '',$amount[$index]);
                    $p_if->remaining_balance = $return;
                    $index = $index + 1;
                    $p_if->save();
                }
             
-               TrackingMaster::where('route_no', $dv->route_no)->delete();
-               TrackingDetails::where('route_no', $dv->route_no)->delete();
+            //    TrackingMaster::where('route_no', $dv->route_no)->delete();
+            //    TrackingDetails::where('route_no', $dv->route_no)->delete();
+
             
         }else{
             $dv = new Dv();
@@ -186,6 +285,7 @@ class DvController extends Controller
         } 
 
         $dv->date = $request->input('datefield');
+        $dv->facility_used = json_encode($facility_id);
         $dv->group_id = $request->input('group_id');
         $dv->facility_id = $request->input('facilityname');
         $dv->address = $request->input('facilityAddress');
@@ -216,31 +316,37 @@ class DvController extends Controller
         $dv->proponent_id = json_encode($proponent_id);
         $dv->save();
         
-        $dts_user = DB::connection('dts')->select("SELECT id FROM users WHERE username = ? LIMIT 1",array($dv->created_by));
-        $desc = "Disbursement voucher for ". Facility::where('id', $dv->facility_id)->value('name');
-        $data = [$dv->route_no,"DV",$dv->created_at,$dts_user[0]->id,0,  $desc, 0.00,"", "", "", "", "", "", "", "", "", "", "0000-00-00 00:00:00",
-                    "", "", "", 0, "", "", "", "", "", "", ];
-        DB::connection('dts')->insert(
-            "INSERT INTO TRACKING_MASTER(route_no, doc_type, prepared_date, prepared_by, division_head, description, amount, pr_no, po_no, pr_date, purpose, po_date, 
-                source_fund, requested_by, route_to, route_from, supplier, event_date, event_location, event_participant, cdo_applicant, cdo_day, event_daterange, 
-                payee, item, dv_no, ors_no, fund_source_budget, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), now())",$data);
-        $tracking_master = TrackingMaster::where('route_no', $dv->route_no)->first();
-        $updated_route = date('Y-').$tracking_master->id;
-        $tracking_master->route_no = $updated_route;
-        $tracking_master->save();  
-        $dv->route_no = $updated_route;
-        $dv->save();
-        Group::whereIn('id',explode(',',$request->input('group_id')))->update(['route_no'=>$updated_route, 'status'=>0]);
-        //creating tracking_details
-        $data_details = [$updated_route, "", 0,$dv->created_at, $dts_user[0]->id, $dts_user[0]->id,  $desc, 0];
-        DB::connection('dts')->insert("INSERT INTO TRACKING_DETAILS(route_no, code, alert, date_in, received_by, delivered_by, action, status,created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, now(), now())",$data_details);
+        if($check == null || $check == '' ){
+        
+            $dts_user = DB::connection('dts')->select("SELECT id FROM users WHERE username = ? LIMIT 1",array($dv->created_by));
+            $desc = "Disbursement voucher for ". Facility::where('id', $dv->facility_id)->value('name');
+            $data = [$dv->route_no,"DV",$dv->created_at,$dts_user[0]->id,0,  $desc, 0.00,"", "", "", "", "", "", "", "", "", "", "0000-00-00 00:00:00",
+                        "", "", "", 0, "", "", "", "", "", "", ];
+            DB::connection('dts')->insert(
+                "INSERT INTO TRACKING_MASTER(route_no, doc_type, prepared_date, prepared_by, division_head, description, amount, pr_no, po_no, pr_date, purpose, po_date, 
+                    source_fund, requested_by, route_to, route_from, supplier, event_date, event_location, event_participant, cdo_applicant, cdo_day, event_daterange, 
+                    payee, item, dv_no, ors_no, fund_source_budget, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), now())",$data);
+            $tracking_master = TrackingMaster::where('route_no', $dv->route_no)->first();
+            $updated_route = date('Y-').$tracking_master->id;
+            $tracking_master->route_no = $updated_route;
+            $tracking_master->save();  
+            $dv->route_no = $updated_route;
+            $dv->save();
+            Group::whereIn('id',explode(',',$request->input('group_id')))->update(['route_no'=>$updated_route, 'status'=>0]);
+            //creating tracking_details
+            $data_details = [$updated_route, "", 0,$dv->created_at, $dts_user[0]->id, $dts_user[0]->id,  $desc, 0];
+            DB::connection('dts')->insert("INSERT INTO TRACKING_DETAILS(route_no, code, alert, date_in, received_by, delivered_by, action, status,created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, now(), now())",$data_details);
+        }
+       
 
         if ($dv->fundsource_id) {
-            $saaNumbersArray = is_array($dv->fundsource_id)
-                ? $dv->fundsource_id
-                : explode(',', $dv->fundsource_id);
+            // $saaNumbersArray = is_array($dv->fundsource_id)
+            //     ? $dv->fundsource_id
+            //     : explode(',', $dv->fundsource_id);
+            $saaNumbersArray= array_map('intval', json_decode($dv->fundsource_id));
+
             
             $id = array_values(array_filter([
                 $request->input('pro_id1'),
@@ -249,6 +355,7 @@ class DvController extends Controller
             ], function ($value) {
                 return $value !== '0';
             }));
+            // return $proponent_id;
 
                 foreach ($saaNumbersArray as $index=>$saa) {
                     
@@ -292,9 +399,11 @@ class DvController extends Controller
         if($dv){
             $all_saa = array_map('intval', json_decode($dv->fundsource_id));
             $all_proponent = array_map('intval', json_decode($dv->proponent_id));
+            $all_fac = array_map('intval', json_decode($dv->facility_used));
 
             $fund_source = Fundsource::whereIn('id', $all_saa)->get();
             $proponent = Proponent::whereIn('id', $all_proponent)->get();
+            $facilities = Facility::whereIn('id', $all_fac)->get();
 
             $orderMapping = array_flip($all_saa);
             $fund_source = $fund_source->sortBy(function ($item) use ($orderMapping) {
@@ -309,10 +418,15 @@ class DvController extends Controller
             $facility = Facility::where('id', $dv->facility_id)->first();
         
         }
-        // return $proponent;
-        return response()->json(['dv' =>$dv,'fund_source' => $fund_source,'facility' => $facility, 'proponent' => $proponent]);
+        // return $facilities;
+        return response()->json(['dv' =>$dv,'fund_source' => $fund_source,'facility' => $facility, 'facilities' => $facilities,'proponent' => $proponent]);
     }
-    
+
+    function getSections($id){
+        $sections = Section::where('division',$id)->orderBy('description','asc')->get();
+        return $sections;
+    }
+
     function obligate(Request $request){
         $dv= Dv::where('id', $request->input('dv_id'))->first();
         $gg = [];
@@ -335,10 +449,62 @@ class DvController extends Controller
                 $utilization->obligated_by = Auth::user()->userid;
                 $utilization->save();
             }
+            $dv->ors_no = $request->ors_no;
             $dv->obligated = 1;
             $dv->save();
+
+
+
         }
-        return redirect()->route('fundsource_budget.pendingDv')->with('', true);
+        return redirect()->route('fundsource_budget.pendingDv', ['type' => 'pending'])->with('', true);
+
+    }
+
+    function payDv(Request $request){
+        $dv= Dv::where('id', $request->input('dv_id'))->first();
+        if($dv){
+            $util = Utilization::where('div_id', $dv->route_no)
+            ->where('status', '=', 0)
+            ->update([
+                'paid' => 1,
+                'paid_by' => Auth::user()->userid,
+            ]);
+        
+            $dv->paid = 1;
+            $dv->paid_by = Auth::user()->userid;
+            $dv->save();
+        }
+        
+        return redirect()->back()->with('pay_dv', true);
+
+    }
+
+    function addDvNo(Request $request){
+        $dv= Dv::where('id', $request->input('dv_id'))->first();
+        if($dv){
+            $dv->dv_no = $request->input('dv_no');
+            $dv->save();
+
+            // $response = Http::get('http://mis.cvchd7/dts3/document/dv_no/' . $dv->dv_no . '/' . $dv->route_no . '/' .Auth::user()->userid);
+            // return $response;
+            // if($response == 'success'){
+            //      return redirect()->back()->with(
+            //          'add_dvno', true        
+            //         );
+            // }
+            return redirect()->back()->with([
+                    'add_dvno' => true        
+                ]);
+        }
+
+      
+        // Process the response
+        // $data = $response->json();
+
+        
+        // $url = "http://localhost/dts3/document/dv_no/{$dv->dv_no}/{$dv->route_no}";
+        // return($url);
+        //;
 
     }
 

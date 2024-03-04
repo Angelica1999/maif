@@ -37,7 +37,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Middle Name</label>
-                    <input type="text" class="form-control" value="{{ $patient->mname }}" id="mname" name="mname" placeholder="Middle Name" required>
+                    <input type="text" class="form-control" value="{{ $patient->mname }}" id="mname" name="mname" placeholder="Middle Name" >
                 </div>
             </div>
 

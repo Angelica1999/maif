@@ -34,7 +34,7 @@
             <div class="form-group">
               <label>Facility:</label>
               <div id="facility_body">
-                  <select style="height:600px;" class="form-control trans_fac" id="to_facility" name="to_facility" onchange="source_id(this)" required>
+                  <select style="height:48px" class="form-control trans_fac" id="to_facility" name="to_facility" onchange="source_id(this)" required>
                     <option value="">Please select facility</option>
                     @foreach($fundsources as $per_facility)
                       <option value="{{$per_facility->facility->id}}" data-saa="{{$per_facility->saa}}" data-proId="{{$per_facility->pro_id}}" data-val="{{$per_facility->source_id}}" >{{$per_facility->pro_name.' - '.$per_facility->saa.' - '.$per_facility->facility->name}}</option>

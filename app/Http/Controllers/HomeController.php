@@ -39,8 +39,8 @@ class HomeController extends Controller
      */
 
 
-     public function index(Request $request)
-     {
+     public function index(Request $request){
+
          $patients = Patients::with([
              'province' => function ($query) {
                  $query->select('id', 'description');
@@ -124,17 +124,15 @@ class HomeController extends Controller
             }])
             ->paginate(15);
 
-
-        // $facilities = ProponentInfo::groupBy('facility_id')->select(DB::raw('MAX(facility_id) as facility_id'))->with('facility');
         if($request->viewAll){
             $request->keyword = '';
         }
-        // return $facilities;
 
         return view('report.facility_report', ['facilities'=>$facilities, 'keyword' => $request->keyword]);
     }
 
     public function getProponentReport($pro_group){
+
         $proponentIds = Proponent::where('pro_group', $pro_group)->pluck('id')->toArray();
         $utilization = Utilization::whereIn('proponentinfo_id', $proponentIds)
             ->select( DB::raw('MAX(utilization.div_id) as route_no'), DB::raw('MAX(utilization.utilize_amount) as utilize_amount'),  
@@ -166,9 +164,7 @@ class HomeController extends Controller
             </tr>";
         if($utilization){
             foreach($utilization as $row) {
-
                 if($row->status !== 1){
-
                     $user = $row->user->lname .', '. $row->user->fname .' '. $row->user->mname;
                     $created_on = date('F j, Y', strtotime($row->created_at));
                     $facility = $row->facilitydata->name;
@@ -280,14 +276,14 @@ class HomeController extends Controller
                     $transfer = Transfer::where('id', $row->transfer_id)->with('from_fundsource')->with('from_facilityInfo')->with('from_proponentInfo')->first();
                     $remarks = 'transferred from '.$transfer->from_proponentInfo->proponent.' - '.$transfer->from_fundsource->saa.' - '. $transfer->from_facilityInfo->name;
                 }
-                    $table_body .= "<tr>
-                        <td style='vertical-align:top;'>$saa</td>
-                        <td style='vertical-align:top;'>$proponent</td>
-                        <td style='vertical-align:top;'>$utilize</td>
-                        <td style='vertical-align:top;'>$discount</td>
-                        <td style='vertical-align:top;'>$remarks</td>
-                        <td style='vertical-align:top;'>$created_on</td>
-                        </tr>";
+                $table_body .= "<tr>
+                    <td style='vertical-align:top;'>$saa</td>
+                    <td style='vertical-align:top;'>$proponent</td>
+                    <td style='vertical-align:top;'>$utilize</td>
+                    <td style='vertical-align:top;'>$discount</td>
+                    <td style='vertical-align:top;'>$remarks</td>
+                    <td style='vertical-align:top;'>$created_on</td>
+                    </tr>";
             }
         }
         
@@ -298,23 +294,21 @@ class HomeController extends Controller
         return $display;
     }
 
-    public function updateAmount(Request $request, $patientId)
-    {
+    public function updateAmount($patientId, $amount){
+
         $patient = Patients::find($patientId);
-        $newAmount = str_replace(',', '',$request->input('amount'));
+        $newAmount = str_replace(',', '',$amount);
 
         if (!$patient) {
             return response()->json(['error' => 'Patient not found'], 404);
         }else{
             if($patient->group_id !== null && $patient->group_id !== ""){
                 $group = Group::where('id', $patient->group_id)->first();
-                // return $group;
-                $updated_a = (str_replace(',','', $group->amount) - $patient->actual_amount) + floatval($newAmount);
+                $updated_a = floatval(str_replace(',', '', $group->amount)) - floatval($patient->actual_amount) + floatval($newAmount);
                 $stat = $group->status;
                 $group->status = 1;
                 $group->amount = number_format($updated_a, 2, '.',',');
                 $group->save();
-            }else{
             }
             $patient->actual_amount = $newAmount;
             $patient->save();
@@ -323,14 +317,14 @@ class HomeController extends Controller
     }
 
     public function createPatient() {
-        $user = Auth::user();
         return view('maif.create_patient',[
             'provinces' => Province::get(),
             'fundsources' => Fundsource::get(),
             'facilities' => Facility::get(),
-            'user' => $user
+            'user' => Auth::user()
         ]);
     }
+    
     public function group(Request $request){ 
         $groups = Group::with('proponent', 'facility', 'user', 'patient')
             ->when(
@@ -349,19 +343,18 @@ class HomeController extends Controller
         ->withCount('patient')
         ->orderBy('id', 'desc')
         ->paginate(15); 
-
+        
         if($request->viewAll){
             $request->keyword ='';
         } 
-        // return $groups;
         return view('group.group', ['groups'=>$groups, 'keyword'=>$request->keyword]);
     }
   
     public function getPatientGroup($group_id){
         $patient_list = Patients::where('group_id', $group_id)->with('muncity')->with('province')->with('barangay')->get();
-        // return Group::where('id', $group_id)->first();
         return view('group.patients_group', ['patient_list'=>$patient_list, 'group'=>Group::where('id', $group_id)->first()]);
     }
+
     public function getPatient($patient_id){
         $patient = Patients::where('id', $patient_id)->first();
         $group = Group::where('id', $patient->group_id)->first();
@@ -378,6 +371,7 @@ class HomeController extends Controller
           session()->flash('remove_patientgroup', true); 
     }
     public function getPatients($facility_id, $proponent_id){
+
         return Patients::where(function($query) {
             $query->whereNull('group_id')
                   ->orWhere('group_id', '=', '');
@@ -387,9 +381,11 @@ class HomeController extends Controller
         ->where('proponent_id', $proponent_id)
         ->where('actual_amount', '!=', 0)
         ->get();
+
     }
+
     public function updateGroupList(Request $request){
-        // Patients::where('id', $request->input('fac_id'))->update(['group_id'=>$request->input('group_id')]);
+        
         $patient = Patients::where('id', $request->input('fac_id'))->first();
         $group = Group::where('id', $request->input('group_id'))->first();
         $amount = str_replace(',','',$group->amount) + str_replace(',','', $patient->actual_amount);
@@ -404,7 +400,9 @@ class HomeController extends Controller
             session()->flash('update_group', true);
         }
     }
+
     public function saveGroup(Request $request){
+
         $patients = $request->input('group_patients');
         $patientsArray = explode(',', $patients);
         $group = new Group();
@@ -416,12 +414,25 @@ class HomeController extends Controller
         $group->save();
         Patients::whereIn('id', $patientsArray)->update(['group_id' => $group->id]);
         return redirect()->back()->with('save_group', true);
-
     }
+
     public function createPatientSave(Request $request) {
-        session()->flash('patient_save', true);
+        
         $data = $request->all();
         Patients::create($request->all());
+        $patientCount = Patients::where('fname', $request->fname)
+            ->where('lname', $request->lname)
+            ->where('mname', $request->mname)
+            ->where('region', $request->region)
+            ->where('province_id', $request->province_id)
+            ->where('muncity_id', $request->muncity_id)
+            ->where('barangay_id', $request->barangay_id)
+            ->count();
+        if($patientCount>0){
+            session()->flash('patient_exist', $patientCount);
+        }else{
+            session()->flash('patient_save', true);
+        }
 
         return redirect()->back();
     }
@@ -446,10 +457,9 @@ class HomeController extends Controller
                                 ])->orderBy('updated_at', 'desc')
                                 ->first();
 
-                                $municipal = Muncity::select('id', 'description')->get();
-                                $barangay = Barangay::select('id', 'description')->get();
-                               // $Proponent = Proponent::find($patient->proponent_id);
-                                //$Facility = Facility::find($patient->facility_id);
+        $municipal = Muncity::select('id', 'description')->get();
+        $barangay = Barangay::select('id', 'description')->get();
+
         return view('maif.update_patient',[
             'provinces' => Province::get(),
             'fundsources' => Fundsource::get(),
@@ -461,20 +471,22 @@ class HomeController extends Controller
         ]);
     }
  
-   public function updatePatient(Request $request)
-   {
+   public function updatePatient(Request $request){
+
         $patient_id = $request->input('patient_id');
-       
         $patient = Patients::where('id', $patient_id)->first();
+
         if(!$patient){
             return redirect()->back()->with('error', 'Patient not found');
         }
+
         session()->flash('patient_update', true);
         $patient->fname = $request->input('fname');
         $patient->lname = $request->input('lname');
         $patient->mname = $request->input('mname');
         $patient->dob   = $request->input('dob');
         $patient->region = $request->input('region');
+
         if($patient->region !== "Region 7"){
             $patient->other_province = $request->input('other_province');
             $patient->other_muncity = $request->input('other_muncity');
@@ -495,11 +507,9 @@ class HomeController extends Controller
         return redirect()->back();
    }  
 
-
-
-    public function facilityGet(Request $request) {
-        return Facility::where('province',$request->province_id)->where('hospital_type','private')->get();
-    }
+    // public function facilityGet(Request $request) {
+    //     return Facility::where('province',$request->province_id)->where('hospital_type','private')->get();
+    // }
 
     public function muncityGet(Request $request) {
         return Muncity::where('province_id',$request->province_id)->get();
@@ -515,28 +525,4 @@ class HomeController extends Controller
             'facilities' => $facilities
         ]);
     }
-
-    public function disbursement(){
-
-        return view('maif.Disbursement.disbursement');
-    }
-
-    public function dv(){
-
-        return view('dv.dv');
-    }
-    public function checkdate(){
-
-        return date('Y-m-d H:i:s');
-        // return now();
-    }
-    public function checkdatenow(){
-
-        // return date('Y-m-d H:i:s');
-        return now();
-    }
-   
-
- 
-
 }

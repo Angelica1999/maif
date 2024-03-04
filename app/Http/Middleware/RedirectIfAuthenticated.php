@@ -39,6 +39,8 @@ class RedirectIfAuthenticated
                         return redirect(RouteServiceProvider::MAIF);
                     }elseif($userId == 1027){
                         return redirect(RouteServiceProvider::ACCOUNTING);
+                    }elseif($joinedData->section == 7){
+                        return redirect(RouteServiceProvider::CASHIER);
                     }
                 }
                 // if (auth()->user()->roles == 'maif') {

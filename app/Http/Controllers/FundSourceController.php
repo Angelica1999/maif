@@ -93,7 +93,8 @@ class FundSourceController extends Controller
     }
 
     public function createFundSourceSave(Request $request) {
-        $user = Auth::user();
+        // $user = Auth::user();
+        return $user;
         if(isset($request->saa_exist)) {
             $fundsource = Fundsource::find($request->saa_exist);
         } else {
@@ -158,7 +159,6 @@ class FundSourceController extends Controller
             ])->first();
     
         $specificProponent = $fundsources->proponents->first();
-    // return $fundsources->proponents;
         return view('fundsource.update_fundsource', [
             'fundsource' => $fundsources,
             'fundsources' => Fundsource::get(),
@@ -166,7 +166,7 @@ class FundSourceController extends Controller
             'proponent_spec' => $specificProponent,
         ]);
     }
-        //createBDowns
+
     public function createBDowns($fundsourceId){
 
         $fundsource = Fundsource::where('id', $fundsourceId)-> with([
@@ -191,11 +191,9 @@ class FundSourceController extends Controller
         $fund_id = $request->input('fundsource_id');
 
         if($fund_id){
-            // ProponentInfo::where('fundsource_id', $fund_id)->delete();
         }
         if($breakdowns){
             foreach($breakdowns as $breakdown){
-                //save proponent
                 $pro_exists = Proponent::where('proponent', $breakdown['proponent'])->where('fundsource_id', $breakdown['fundsource_id'])->where('proponent_code', $breakdown['proponent_code'])->first();
                 if(!$pro_exists){
                     $check = Proponent::where('proponent', $breakdown['proponent'])->where('proponent_code', $breakdown['proponent_code'])->first();
@@ -216,12 +214,12 @@ class FundSourceController extends Controller
                 }else{
                     $proponentId = $pro_exists->id;
                 }
-                //save proponent_info
                 $info = ProponentInfo::where('proponent_id', $proponentId)->where('facility_id', $breakdown['facility_id'])->where('fundsource_id', $breakdown['fundsource_id'])->first();
                 if($info){
                     if(str_replace(',','', $info->alocated_funds) != str_replace(',','',$breakdown['alocated_funds'])){
                         $info->alocated_funds = $breakdown['alocated_funds'];
-                        $info->remaining_balance = $breakdown['alocated_funds'];
+                        $info->admin_cost =number_format( (double)str_replace(',','',$breakdown['alocated_funds']) * .01 , 2,'.', ',');
+                        $info->remaining_balance = (double)str_replace(',','',$breakdown['alocated_funds']) - (double)str_replace(',','', $info->admin_cost);
                         $info->save();
                     }
                 }else{
@@ -230,7 +228,8 @@ class FundSourceController extends Controller
                     $p_info->proponent_id = $proponentId;
                     $p_info->facility_id = $breakdown['facility_id'];
                     $p_info->alocated_funds = $breakdown['alocated_funds'];
-                    $p_info->remaining_balance = $breakdown['alocated_funds'];
+                    $p_info->admin_cost =number_format((double)str_replace(',','',$breakdown['alocated_funds']) * .01 , 2,'.', ',');
+                    $p_info->remaining_balance = (double)str_replace(',','',$breakdown['alocated_funds']) - (double)str_replace(',','',$p_info->admin_cost);
                     $p_info->created_by = Auth::user()->userid;
                     $p_info->save();
                 }
@@ -389,10 +388,10 @@ class FundSourceController extends Controller
     }
 
     public function facilityProponentGet($facility_id) {
-        $ids = ProponentInfo::where('facility_id', $facility_id)->pluck('id')->toArray();
+        $ids = ProponentInfo::where('facility_id', $facility_id)->pluck('proponent_id')->toArray();
 
         $proponents = Proponent::select( DB::raw('MAX(proponent) as proponent'), DB::raw('MAX(pro_group) as id'))
-            ->groupBy('pro_group')
+            ->groupBy('pro_group') ->whereIn('id', $ids)
             ->get();
 
         return $proponents;

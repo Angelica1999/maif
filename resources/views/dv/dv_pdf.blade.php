@@ -235,7 +235,7 @@
                     </td>
                     <td style=" border-left: 0 ; text-align:right; vertical-align:top" >
                      <span><?php echo number_format($subsidy, 2, '.', ',') ?></span><br>
-                     <span>{{number_format(str_replace(',','',$dv->accumulated), 2, '.', ',')}}</span>
+                     <span>{{!Empty($dv->accumulated)?number_format(str_replace(',','',$dv->accumulated), 2, '.', ','):''}}</span>
 
                     </td>
                     

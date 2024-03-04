@@ -68,8 +68,13 @@
     }
    
 </style>
-
-<form  method="post" action="{{ route('dv.obligate') }}" id ="dv_form"> 
+@if($type == "obligate" && $section == 6)
+  <form  method="post" action="{{ route('dv.obligate') }}" id ="dv_form"> 
+@elseif( $section == 7 && $type == "obligate")
+  <form  method="post" action="{{ route('dv.pay') }}" id ="dv_form"> 
+@elseif( $section == 5 && $type == "add_dvno")
+  <form  method="post" action="{{ route('dv.add_dvno') }}" id ="dv_form"> 
+@endif
     @csrf   
  <input type="hidden" name="dv_id" id="dv_id" value="{{$dv->id}}">
  <div class="clearfix"></div>
@@ -100,7 +105,11 @@
                     <b>
                       <span style="margin-bottom: 20px">Fund Cluster :</span><br>
                       <span style="margin-top: 20px">Date: {{ date('F j, Y', strtotime($dv->date))}}</span><br>
-                      <span>DV No. :{{$dv->dv_no}}</span>   
+                      @if( $section == 5 && $type == "add_dvno")
+                          <span>DV No.</span> <input type="text" name="dv_no" id="dv_no" style="width:100px; height: 28px;" class="ft15" value="{{$dv->dv_no}}" required>
+                      @else
+                        <span>DV No. :{{$dv->dv_no}}</span>   
+                      @endif
                     </b>    
                     </td>
                   </tr>
@@ -134,7 +143,14 @@
                     <span?>Tin/Employee No. :</span>
                     </td>
                     <td style="width:27%; border-left: 0 " >
-                    <span>ORS/BURS No. :</span>
+                    <div>
+                      @if($section == 6)
+                        <span>ORS/BURS No. :</span>
+                        <input type="text" name="ors_no" id="ors_no" value="{{!Empty($dv->ors_no)?$dv->ors_no:''}}" style="width:150px; height: 28px;" class="ft15" required>
+                      @elseif($section == 7)
+                        <span>ORS/BURS No. : &nbsp; {{$dv->ors_no}}</span>
+                      @endif
+                    </div>
                     </td>
                   </tr>
             </table>
@@ -159,7 +175,8 @@
           
               $vat = $total*$dv->deduction1/100;
               $ewt = $total*$dv->deduction2/100;
-              $subsidy = $total_overall - (float)str_replace(',','',$dv->accumulated);
+              $accumulated = !Empty($dv->accumulated)? (float)str_replace(',','',$dv->accumulated):0;
+              $subsidy = $total_overall - $accumulated ;
             ?>
             <tr class="header">
                     <td height=2.5% width =58%> Particulars</td>
@@ -258,7 +275,7 @@
                     </td>
                     <td style=" border-left: 0 ; text-align:right; vertical-align:top" >
                       <span><?php echo number_format($subsidy, 2, '.', ',') ?></span><br>
-                      <span>{{number_format(str_replace(',','',$dv->accumulated),2,'.',',')}}</span>
+                      <span>{{!Empty($dv->accumulated)?number_format(str_replace(',','',$dv->accumulated),2,'.',','):''}}</span>
                     </td>
                     <td style=" border-left: 0 ; text-align:right; vertical-align:top" >
                       <br><br><span><?php echo number_format($vat + $ewt, 2, '.', ',')?></span><br>
@@ -359,9 +376,14 @@
     </div>
     <div class="modal-footer" id="dv_footer">
         <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal"><i class="typcn typcn-times"></i>Close</button>
-        @if($type == "obligate")
+        @if($type == "obligate" && $section == 6)
         <button type="submit" style="background-color:#17c964;color:white" id="submitBtn" class="btn btn-sm"><i class="typcn typcn-tick menu-icon"></i>Obligate</button>
+        @elseif( $section == 5 && $type == "add_dvno")
+          <button type="submit" style="background-color:#17c964;color:white" id="submitBtn" class="btn btn-sm"><i class="typcn typcn-tick menu-icon"></i>Save</button>
+        @elseif( $section == 7 && $type == "obligate")
+          <button type="submit" style="background-color:#17c964;color:white" id="submitBtn" class="btn btn-sm"><i class="typcn typcn-tick menu-icon"></i>Pay</button>
         @endif
+
         <input type="hidden" name="group_id" id="group_id" >
 
     </div>

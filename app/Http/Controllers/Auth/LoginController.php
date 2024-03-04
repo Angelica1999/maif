@@ -46,6 +46,8 @@ class LoginController extends Controller
                     return RouteServiceProvider::MAIF;
                 } elseif($userId == 1027){
                     return RouteServiceProvider::ACCOUNTING;
+                }elseif($joinedData->section == 7){
+                    return RouteServiceProvider::CASHIER;
                 }
             }
         // if (auth()->user()->roles == 'maif') {

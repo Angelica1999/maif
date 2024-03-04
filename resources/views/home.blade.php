@@ -1,5 +1,6 @@
+@include('maif.editable_style')
 <style>
-    .loading-container {
+  .loading-container {
         position: fixed;
         top: 50%;
         left: 50%;
@@ -12,9 +13,8 @@
         width: 100%; 
         height: 100%; 
     }
-</style>
+  </style>
 @extends('layouts.app')
-
 @section('content')
 
 <div class="col-lg-12 grid-margin stretch-card">
@@ -55,61 +55,38 @@
                 </div>
             </form>
             @if(isset($patients) && $patients->count() > 0)
+
             <div class="table-responsive">
                 <table class="table table-striped">
                 <thead>
                     <tr>
+                        <th></th>
+                        <th style="text-align:center">
+                            <div style="display: flex; gap: 1px;">
+                                <button class="btn-info select_all" style="width: 25px; display: flex; justify-content: center; align-items: center;">
+                                    <i class="typcn typcn-input-checked"></i>
+                                </button>
+                                <button class="btn-danger select_all" style="width: 25px; display: flex; justify-content: center; align-items: center;">
+                                    <i class="typcn typcn-times menu-icon"></i>
+                                </button>
+                            </div>
+                        </th>
+                        <th style="min-width:10px;">Group</th>
+                        <th style="min-width:100px">Actual Amount</th>
                         <th>
-                            
-                        </th>
-                        <th style="min-width:120px; text-align:center">
-                            
-                            <button class="btn-info select_all" ><i class="typcn typcn-input-checked"></i></button>
-                            <button class="btn-danger unselect_all"><i class="typcn typcn-times menu-icon"></i></button>
-                        </th>
-                        <th style="min-width:50px; text-align:center">
-                            GroupCheck
-                        </th>
-                        <th>
-                            <!-- Firstname -->
                             <!-- <span class="fa fa-plus" style="cursor:pointer;" onclick="">Firstname</span> -->
                             <a style="color:black;"  href="{{route('home', ['key' => 'fname'])}}" >Firstname</a>
-
                         </th>
-                        <th>
-                            <a style="color:black;"  href="{{route('home', ['key' => 'mname'])}}" >Middlename</a>
-                        </th>
-                        <th>
-                            <a style="color:black;"  href="{{route('home', ['key' => 'lname'])}}" >Lastname</a>
-                        </th>
-                        <!-- <th style="min-width:120px">
-                            DOB
-                        </th> -->
-                        {{-- <th>
-                            Facility
-                        </th> --}}
-                        <th style="min-width:90px;">
-                            <a style="color:black;"  href="{{route('home', ['key' => 'region'])}}" >Region</a>
-                        </th>
-                        <th>
-                            <a style="color:black;"  href="{{route('home', ['key' => 'province'])}}" >Province</a>
-                        </th>
-                        <th>
-                            <a style="color:black;"  href="{{route('home', ['key' => 'municipality'])}}" >Municipality</a>
-                        </th>
-                        <th>
-                            <a style="color:black;"  href="{{route('home', ['key' => 'barangay'])}}" >Barangay</a>
-                        </th>
-                        <th style="min-width:180px">
-                            Guaranteed Amount
-                        </th>
-                        <th>
-                            Actual Amount
-                        </th>
-                        <th style="min-width:180px">
-                            Created By
-                        </th>
-                    
+                        <th><a style="color:black;"  href="{{route('home', ['key' => 'mname'])}}" >Middlename</a></th>
+                        <th><a style="color:black;"  href="{{route('home', ['key' => 'lname'])}}" >Lastname</a></th>
+                        <!-- <th style="min-width:120px">DOB</th> -->
+                        {{-- <th>Facility</th> --}}
+                        <th style="min-width:90px;"><a style="color:black;"  href="{{route('home', ['key' => 'region'])}}" >Region</a></th>
+                        <th><a style="color:black;"  href="{{route('home', ['key' => 'province'])}}" >Province</a></th>
+                        <th><a style="color:black;"  href="{{route('home', ['key' => 'municipality'])}}" >Municipality</a></th>
+                        <th><a style="color:black;"  href="{{route('home', ['key' => 'barangay'])}}" >Barangay</a></th>
+                        <th style="min-width:180px">Guaranteed Amount</th>
+                        <th style="min-width:180px">Created By</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -118,40 +95,31 @@
                             <td>
                                 <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}" style="background-color:teal;color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
                                 <a href="{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}" type="button" style="width:50px;" class="btn btn-success btn-xs" id="send_btn">Send</a>
-
                             </td> 
                             <td style="text-align:center" class="group-email" data-patient-id="{{ $patient->id }}" >
                                 <input class="sent_mails[] " id="mail_ids[]" name="mail_ids[]" type="hidden">
                                 <input type="checkbox" style="width: 60px; height: 20px;" name="mailCheckbox[]" id="mailCheckboxId_{{ $index }}" 
-                                    class="group-mailCheckBox" onclick="getAllMail()">
+                                    class="group-mailCheckBox" >
                             </td>
                             <td style="text-align:center" class="group-amount" data-patient-id="{{ $patient->id }}" data-proponent-id="{{$patient->proponent_id}}" 
                                 data-amount="{{$patient->actual_amount}}" data-facility-id="{{$patient->facility_id}}" >
                                 @if($patient->group_id == null)
                                 <input type="checkbox" style="width: 60px; height: 20px;" name="someCheckbox[]" id="someCheckboxId_{{ $index }}" 
-                                    class="group-checkbox" onclick="calculateAmount()">
+                                    class="group-checkbox">
                                 @else
                                     w/group
                                 @endif
+                            </td>
+                            <td class="editable-amount" data-actual-amount="{{!Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}" data-patient-id="{{ $patient->id }}" data-guaranteed-amount="{{str_replace(',', '', $patient->guaranteed_amount)}}">
+                                <a href="#" class="number_editable"  title="Actual Amount" id="{{ $patient->id }}">{{!Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}</a>
                             </td>
                             <td>
                                 <a href="#create_patient"   onclick="editPatient('{{ $patient->id }}')" data-backdrop="static" data-toggle="modal">
                                     {{ $patient->fname }}
                                 </a>
                             </td>   
-                            <td>
-                                {{ $patient->mname }}
-                            </td>
-                            <td>
-                                {{ $patient->lname }}
-                            </td>
-                            <!-- <td>
-                                @if($patient->dob !== null)
-                                    {{ date("M j, Y",strtotime($patient->dob)) }}
-                                @else
-                                    N/A
-                                @endif
-                            </td> -->
+                            <td>{{ $patient->mname }}</td>
+                            <td>{{ $patient->lname }}</td>
                             {{-- <td>
                                 @if(isset($patient->facility->description))
                                     {{ $patient->facility->description }}
@@ -159,9 +127,7 @@
                                     {{ $patient->other_facility }}
                                 @endif
                             </td> --}}
-                            <td>
-                                {{ $patient->region }}
-                            </td>
+                            <td>{{ $patient->region }}</td>
                             <td>
                                 @if(isset($patient->province->description))
                                     {{ $patient->province->description }}
@@ -183,13 +149,7 @@
                                     {{ $patient->other_barangay }}
                                 @endif
                             </td>
-                            <td>
-                                {{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }}
-                            </td>
-                            <td class="editable-amount" data-patient-id="{{ $patient->id }}" data-guaranteed-amount="{{str_replace(',', '', $patient->guaranteed_amount)}}">
-                                    <input name="amount" type="text" style="border:none; background-color:none;" class="edit-mode" onkeyup="validateAmount(this)" 
-                                        oninput="updateAmount(this)" value="{{number_format($patient->actual_amount, 2, '.', ',') }}" class="group-checkbox"/>
-                            </td>
+                            <td>{{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }}</td>
                             <td>{{ $patient->encoded_by->lname .', '. $patient->encoded_by->fname }}</td>
                         </tr>
                     @endforeach
@@ -208,64 +168,119 @@
         </div>
     </div>
 </div>
-
-<div class="modal fade" id="create_patient" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="create_patient" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="opacity:1">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel"></h5>
+                <h5 class="modal-title" id="exampleModalLabel">Create Patient</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">×</span>
                 </button>
             </div>
             <div class="modal_body">
-                
             </div>
         </div>
     </div>
 </div>
-
 <div class="loading-container">
     <img src="public\images\loading.gif" alt="Loading..." class="loading-spinner">
 </div>
-
 @endsection
-
 @section('js')
+<script src="{{ asset('admin/vendors/x-editable/bootstrap-editable.min.js?v=1') }}"></script>
 
-    <script>
+@include('maif.editable_js')
 
-        $('.send_mailform').submit(function(e) {
-            $('.loading-container').show();
-            console.log('click');
-        });
+<script>
 
-        $('#send_btn').submit(function(e) {
-            $('.loading-container').show();
-            console.log('click');
-        });
+    $('.send_mailform').on('click', function(e) {
+        $('.loading-container').show();
+        console.log('click');
+    });
 
+    $('#send_btn').on('click', function(e) {
+        $('.loading-container').show();
+        console.log('click');
+    });
 
-        function calculateAmount(){
+    function error(){
+        Lobibox.alert('error',{
+        size: 'mini',
+        msg: "There is an impostor! Find it"
+    });
+    }
+    function amountError(){
+        Lobibox.alert('error',{
+        size: 'mini',
+        msg: "There is no actual amount! Fill it"
+    });
+    }
+
+    $(document).ready(function () {
+
+        $.fn.editable.defaults.mode = 'popup';
+
+        $(".number_editable").editable({
+            type : 'number',
+            name: 'actual_amount',
+            title: $(this).data("title"),
+            emptytext: 'empty',
+
+            success: function(response, newValue) {
+                var cell = $(this).closest('.editable-amount');
+                var patientId = cell.data('patient-id');
+                var guaranteed_amount = cell.data('guaranteed-amount');
+                var actual_amount = cell.data('actual-amount');
+                // var patientId = $(this).data('id');
+                console.log('patientId', patientId);
+                var url = "{{ url('update/amount').'/' }}" + patientId +'/'+ newValue;
+                var json = {
+                    "_token" : "<?php echo csrf_token(); ?>",
+                    "value" : newValue
+                };
+                console.log('patientId', newValue);
             
-        }
-        function getAllMail(){
+                if(newValue == ''){
+                    Lobibox.alert('error',{
+                        size: 'mini',
+                        msg: "Actual amount accepts number only!"
+                    }); 
+                    newValue = 0;
+                    window.location.href = '{{ route("home") }}';
+                    return;  
+                }
+                var c_amount = newValue.replace(/,/g,'');
 
+                if(c_amount>guaranteed_amount){
+                    $(this).html(newValue);
+                    Lobibox.alert('error',{
+                        size: 'mini',
+                        msg: "Inputted actual amount if greater than guaranteed amount!"
+                    }); 
+                    window.location.href = '{{ route("home") }}';
+                    console.log('sdasd', newValue);
+
+                    return;           
+                }
+
+                $.post(url,json,function(result){
+                    console.log(result);
+                    Lobibox.notify('success', {
+                        title: "",
+                        msg: "Successfully update actual amount!",
+                        size: 'mini',
+                        rounded: true
+                    });
+                });
+            }
+        });    
+
+        function setNull(){
+            $('.group-btn').hide();
+            $('.totalAmountLabel').hide();
+            $('.group_amountT').val('').hide();
         }
-        function error(){
-            Lobibox.alert('error',{
-            size: 'mini',
-            msg: "There is an impostor! Find it"
-        });
-        }
-        function amountError(){
-            Lobibox.alert('error',{
-            size: 'mini',
-            msg: "There is no actual amount! Fill it"
-        });
-        }
-        $(document).ready(function () {
-            
+        
         $('.group-checkbox').change(function () {
             if ($(this).prop('checked')) {
                 console.log('chakadal');
@@ -298,6 +313,8 @@
                 var amount = $(this).closest('.group-amount').data('amount');
                 if(amount == null || amount == '' || amount == undefined){
                     amountError();
+                    setNull();
+                    totalAmount = 0;
                     $('.group-checkbox').prop('checked', false);
                 }else{
                     console.log('amoutn', amount);
@@ -316,22 +333,21 @@
                     }
                 }
             });
-
-            totalAmount = totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            $('.group_amountT').val(totalAmount).show();
-            $('.group_facility').val(facilityId);
-            $('.group_proponent').val(proponentId);
-            $('.group_patients').val(patientId.join(','));
-            console.log('asad',$('.group_patients').val());
-            $('.group-btn').show();
-            $('.totalAmountLabel').show();
-            console.log('Total Amount:', totalAmount);
+            if(totalAmount > 0){
+                totalAmount = totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                $('.group_amountT').val(totalAmount).show();
+                $('.group_facility').val(facilityId);
+                $('.group_proponent').val(proponentId);
+                $('.group_patients').val(patientId.join(','));
+                console.log('asad',$('.group_patients').val());
+                $('.group-btn').show();
+                $('.totalAmountLabel').show();
+                console.log('Total Amount:', totalAmount);
+            }
 
             if(checkedCheckboxes.length == '0'){
                 console.log('herehere', checkedCheckboxes.length);
-                $('.group-btn').hide();
-                $('.totalAmountLabel').hide();
-                $('.group_amountT').val('').hide();
+                setNull();
             }
 
         });
@@ -371,44 +387,7 @@
             $('.group-mailCheckBox').trigger('change');
         });
     });
-    var timer;
-    function updateAmount(inputField) {
 
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-            var cell = $(inputField).closest('.editable-amount');
-            var patientId = cell.data('patient-id');
-            var guaranteed_amount = cell.data('guaranteed-amount');
-            var url = "{{ url('update/amount').'/' }}" + patientId;
-
-            var newAmount = $(inputField).val();
-            var c_amount = newAmount.replace(/,/g,'');
-
-            if(c_amount>guaranteed_amount){
-                Lobibox.alert('error',{
-                    size: 'mini',
-                    msg: "Inputted actual amount if greater than guaranteed amount!"
-                }); 
-                $(inputField).val('');
-                return;           
-            }
-
-            $.ajax({
-                url: url,
-                type: 'GET',
-                data: { amount: newAmount },
-                success: function (result) {
-                    window.location.href = "{{ route('home') }}";
-            
-                },
-                error: function (xhr, status, error) {
-                    console.error('AJAX request failed:', status, error);
-                }
-            });
-
-        }, 1500);
-        
-    }
     function validateAmount(element) {
         if (event.keyCode === 32) {
             event.preventDefault();
@@ -426,9 +405,8 @@
 
     function createPatient() {
         $('.modal_body').html(loading);
-        $('.modal-title').html("Create Patient");
         var url = "{{ route('patient.create') }}";
-        setTimeout(function(){
+        // setTimeout(function(){
             $.ajax({
                 url: url,
                 type: 'GET',
@@ -436,7 +414,7 @@
                     $('.modal_body').html(result);
                 }
             });
-        },500);
+        // },0);
     }
 
     function editPatient(id) {
@@ -465,9 +443,8 @@
             $("#barangay_body").html("<input type='text' class='form-control' name='other_barangay' required>");
         }else {
 
-            $("#province_body").html("<select class=\"form-control\" id=\"province_id\"  name=\"province_id\" onchange=\"onchangeProvince($(this))\" required>\n" +
-                "\n" +
-                "                                    </select>");
+            $("#province_body").html("<select class=\"js-example-basic-single w-100 select2\" id=\"province_id\"  name=\"province_id\" onchange=\"onchangeProvince($(this))\" required>\n" +
+                "\n" + "</select>");
 
             $('#province_id').empty();
             var $newOption = $("<option selected='form-control'></option>").val("").text('Please select province');
@@ -500,7 +477,7 @@
             $('#muncity_id').prop('disabled', true);
             $('#barangay_id').prop('disabled', true);
 
-            $('#muncity_id').html('<option value="">Please Select a Muncity</option>')
+            // $('#muncity_id').html('<option value="">Please Select a Muncity</option>')
 
             setTimeout(function() {
                 $('#muncity_id').prop('disabled', false)
@@ -510,7 +487,7 @@
         $('#muncity_id').change(function() {
             $('#barangay_id').prop('disabled', true);
 
-            $('#barangay_id').html('<option value="">Please Select a barangay</option>')
+            // $('#barangay_id').html('<option value="">Please Select a barangay</option>')
 
             setTimeout(function() {
                 $('#barangay_id').prop('disabled', false)
@@ -521,6 +498,8 @@
    } 
 
     function onchangeProvince(data) {
+        
+        console.log('data', data.val());
         if(data.val()) {
             $.get("{{ url('muncity/get').'/' }}"+data.val(), function(result) {
                 $('#muncity_id').html('');
@@ -530,11 +509,7 @@
                     value: "",
                     text: "Please select a municipality"
                 }));
-                $('#barangay_id').append($('<option>', {
-                    value: "",
-                    text: "Please select a barangays"
-                }));
-
+              
                 $.each(result, function(index, optionData) {
                     $('#muncity_id').append($('<option>', {
                         value: optionData.id,
@@ -553,7 +528,7 @@
 
                 $('#barangay_id').append($('<option>', {
                     value: "",
-                    text: "Please select a barangays"
+                    text: "Please select Barangay"
                 }));
 
                 $.each(result, function(index, optionData) {

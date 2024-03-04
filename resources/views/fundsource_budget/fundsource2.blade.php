@@ -16,7 +16,6 @@
                         <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit">Search</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll">View All</button>
-                        <button type="button" href="#create_fundsource2" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md">Create</button>
                     </div>
                 </div>
             </form>
@@ -37,7 +36,8 @@
                                     </div>
                                         <ul class="list-arrow mt-3">
                                         <li><span class="ml-3">Allocated Funds: <strong class="text-info">{{ !Empty($fund->alocated_funds)? number_format(floatval(str_replace(',', '',$fund->alocated_funds)), 2, '.', ','):0 }}</strong></span></li>
-                                        <li><span class="ml-3">Remaining Balance: <strong class="text-info">{{!Empty($fund->remaining_balance)? number_format(floatval(str_replace(',', '',$fund->remaining_balance)), 2, '.', ','):0 }}</strong></span> </li>    
+                                        <li><span class="ml-3">Administrative Cost: <strong class="text-info">{{!Empty($fund->admin_cost)? number_format(floatval(str_replace(',', '',$fund->admin_cost)), 2, '.', ','):0 }}</strong></span> </li>    
+                                        <li><span class="ml-3">Remaining Balance: <strong class="text-info">{{!Empty($fund->remaining_balance)? number_format(floatval(str_replace(',', '',$fund->remaining_balance)), 2, '.', ','):0 }}</strong></span> </li>      
                                     </ul>
 
                                 </div>
@@ -116,176 +116,115 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="track_details" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Tracking Details</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="table-container">
-                <table class="table table-list table-hover table-striped" id="track_details">
-                    <thead>
-                        <tr style="text-align:center;">
-                            <th>FundSource</th>
-                            <th>Proponent</th>
-                            <th>Facility</th>
-                            <th>Balance</th>
-                            <th>Utilize Amount</th>
-                            <th>Route No</th>
-                            <th>Obligated By</th>
-                            <th>Obligated On</th>
-                            <th>Remarks</th>
-                        </tr>
-                    </thead>
-                    <tbody id="t_body">
-                    </tbody>
-                </table>
-            </div>
-            <div class="modal-footer tracking_footer">
-            </div>
-        </div>
-       
-    </div>
-</div>
-<div class="modal fade" id="obligate" role="dialog" style="overflow-y:scroll;">
-    <div class="modal-dialog modal-lg" role="document" style="width:900px">
-    <div class="modal-content">
-            <div class="modal-header" style="background-color:#17c964;padding:15px; color:white">
-                <h4 class="modal-title"><i class="fa fa-plus" style="margin-right:auto;"></i> Disbursement Voucher</h4>
-                <button type="button" class="close" id="exit" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" style="color:white;">&times;</span></button>
-            </div>
-            <div class="modal_body">
-                <div class="modal_content"></div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" id="i_frame" tabindex="-2" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" >
-    <div class="modal-dialog modal-lg " role="document" style="max-width:1000px">
-        <div class="modal-content">
-            <div class="modal-header" >
-                <h4 class="modal-title" id="exampleModalLabel" >Disbursement Tracking Details</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <iframe id="track_iframe" width="100%" height="400" frameborder="0"></iframe>
-            </div>
-        </div>
-    </div>
-</div>
+
+@include('modal')
 
 @endsection
 
 @section('js')
     <script>
-     $(document).ready(function () {
+        $(document).ready(function () {
+            
+            $(".for_clone").on("click", ".add_saa", function () {
+                var clonedDiv = $(".for_clone .row:first").clone(true);
+                $(clonedDiv).find('#saa').val('');
+                $(clonedDiv).find('#allocated_funds').val('');
+                $(clonedDiv).find(".add_saa").text("-");
+                $(clonedDiv).find(".add_saa").removeClass("add_saa").addClass("remove_saa");
+                $(".for_clone").append(clonedDiv);
+            });
+
+            $(".for_clone").on("click", ".remove_saa", function () {
+                $(this).closest(".row").remove();
+            });
         
-        $(".for_clone").on("click", ".add_saa", function () {
-            var clonedDiv = $(".for_clone .row:first").clone(true);
-            $(clonedDiv).find('#saa').val('');
-            $(clonedDiv).find('#allocated_funds').val('');
-            $(clonedDiv).find(".add_saa").text("-");
-            $(clonedDiv).find(".add_saa").removeClass("add_saa").addClass("remove_saa");
-            $(".for_clone").append(clonedDiv);
         });
 
-        $(".for_clone").on("click", ".remove_saa", function () {
-            $(this).closest(".row").remove();
+        var saaE = document.getElementById('saa');
+
+        saaE.addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
         });
-    
-    });
 
-    var saaE = document.getElementById('saa');
+        function track_details(event){
+            event.stopPropagation();
+            $('#track_details').modal('show');
 
-    saaE.addEventListener('input', function() {
-        this.value = this.value.toUpperCase();
-    });
+            var fundsourceId = event.target.getAttribute('data-fundsource-id');
+            var i = 0;
+            var type = "for_modal";
+            var url = "{{ url('budget/tracking').'/' }}"+ fundsourceId +'/' + 'for_modal';
+            $.ajax({
+            url: url,
+            type: 'GET',
+            
+                success: function(result) {
+                    $('#t_body').empty(); 
+                    $('.tracking_footer').empty();
 
-    function track_details(event){
-        event.stopPropagation();
-        $('#track_details').modal('show');
+                    if(result.length > 0){
+                        result.forEach(function(item) {
+                            var saa = item.fund_sourcedata && item.fund_sourcedata.saa !== null ? item.fund_sourcedata.saa : '-';
+                            var proponentName = item.proponentdata && item.proponentdata.proponent !== null ? item.proponentdata.proponent : '-';
+                            var facility = item.facilitydata && item.facilitydata.name !== null ? item.facilitydata.name : '-';
+                            var user = item.user_budget && item.user_budget.lname !== null ? item.user_budget.lname +', '+item.user_budget.fname : '-';
 
-        var fundsourceId = event.target.getAttribute('data-fundsource-id');
-        var i = 0;
-        var type = "for_modal";
-        var url = "{{ url('budget/tracking').'/' }}"+ fundsourceId +'/' + 'for_modal';
-        $.ajax({
-        url: url,
-        type: 'GET',
-        
-            success: function(result) {
-                $('#t_body').empty(); 
-                $('.tracking_footer').empty();
-
-                if(result.length > 0){
-                    result.forEach(function(item) {
-                        var saa = item.fund_sourcedata && item.fund_sourcedata.saa !== null ? item.fund_sourcedata.saa : '-';
-                        var proponentName = item.proponentdata && item.proponentdata.proponent !== null ? item.proponentdata.proponent : '-';
-                        var facility = item.facilitydata && item.facilitydata.name !== null ? item.facilitydata.name : '-';
-                        var user = item.user_budget && item.user_budget.lname !== null ? item.user_budget.lname +', '+item.user_budget.fname : '-';
-
-                        var timestamp = item.updated_at;
-                        var date = new Date(timestamp);
-                        var formattedDate = date.toLocaleString('en-US', {
-                            month: 'long',
-                            day: 'numeric',
-                            year: 'numeric'
+                            var timestamp = item.updated_at;
+                            var date = new Date(timestamp);
+                            var formattedDate = date.toLocaleString('en-US', {
+                                month: 'long',
+                                day: 'numeric',
+                                year: 'numeric'
+                            });
+                            var formattedTime = date.toLocaleTimeString('en-US', {
+                                hour: 'numeric',
+                                minute: 'numeric'
+                            });
+                            var stat='';
+                            if(item.obligated == 1){
+                                stat = 'Obligated';
+                            }else if(item.status == 2){
+                                stat = 'Transfered/Deducted';
+                            }else if(item.status == 3){
+                                stat = 'Transfered/Added';
+                            }
+                            var beg_balance = item.budget_bbalance.replace(',', '');
+                            var utilize = (item.budget_utilize !== null)?number_format(parseFloat(item.budget_utilize.replace(/,/g, '')), 2, '.', ','):'';
+                            console.log("balance", item.dv_no);
+                            var route = item.div_id.toString();
+                            var new_row = '<tr style="text-align:center">' +
+                                '<td>' + saa + '</td>' +
+                                '<td>' + proponentName + '</td>' +
+                                '<td>' + facility + '</td>' +
+                                '<td>' + number_format(parseFloat(beg_balance.replace(',', '')), 2, '.', ',') + '</td>' +
+                                '<td>' +(item.div_id != 0 ?'<a class="modal-link" href="#i_frame" data-routeId="'+route+'" onclick="openModal(this)">' + utilize + '</a>' :utilize) +'</td>' +
+                                // '<td>' + (item.div_id != 0 ? '<a href="{{ route("dv", ["keyword" => ""]) }}' + encodeURIComponent(route) + '">' + route + '</a>' : '') + '</td>' +
+                                '<td>' +(item.div_id != 0 ?'<a class="modal-link" href="#obligate" data-backdrop="static" data-toggle="modal" data-dvNo="'+item.dv_no+'" data-routeId="'+route+'" onclick="getDv(this)">' + item.dv_no + '</a>' :'') +'</td>' +
+                                '<td>' + item.user_budget.lname +', '+item.user_budget.fname+ '</td>' +
+                                '<td>' + formattedDate+'<br>'+ formattedTime + '</td>' +
+                                '<td>' + stat + '</td>' +
+                                '</tr>';
+                            $('#t_body').append(new_row);
+                            i= i+1;
                         });
-                        var formattedTime = date.toLocaleTimeString('en-US', {
-                            hour: 'numeric',
-                            minute: 'numeric'
+                        var printButton = $('<a>', { 
+                            href: "{{ url('budget/tracking') }}/" + fundsourceId +'/'+ 'pdf',
+                            target: '_blank',
+                            type: 'button',
+                            class: 'btn btn-success btn-sm',
+                            text: 'PDF'
                         });
-                        var stat='';
-                        if(item.obligated == 1){
-                            stat = 'Obligated';
-                        }else if(item.status == 2){
-                            stat = 'Transfered/Deducted';
-                        }else if(item.status == 3){
-                            stat = 'Transfered/Added';
-                        }
-                        var beg_balance = item.budget_bbalance.replace(',', '');
-                        var utilize = (item.budget_utilize !== null)?number_format(parseFloat(item.budget_utilize.replace(/,/g, '')), 2, '.', ','):'';
-                        console.log("balance", item.dv_no);
-                        var route = item.div_id.toString();
-                        var new_row = '<tr style="text-align:center">' +
-                            '<td>' + saa + '</td>' +
-                            '<td>' + proponentName + '</td>' +
-                            '<td>' + facility + '</td>' +
-                            '<td>' + number_format(parseFloat(beg_balance.replace(',', '')), 2, '.', ',') + '</td>' +
-                            '<td>' +(item.div_id != 0 ?'<a class="modal-link" href="#i_frame" data-routeId="'+route+'" onclick="openModal(this)">' + utilize + '</a>' :utilize) +'</td>' +
-                            // '<td>' + (item.div_id != 0 ? '<a href="{{ route("dv", ["keyword" => ""]) }}' + encodeURIComponent(route) + '">' + route + '</a>' : '') + '</td>' +
-                            '<td>' +(item.div_id != 0 ?'<a class="modal-link" href="#obligate" data-backdrop="static" data-toggle="modal" data-dvNo="'+item.dv_no+'" data-routeId="'+route+'" onclick="getDv(this)">' + item.dv_no + '</a>' :'') +'</td>' +
-                            '<td>' + item.user_budget.lname +', '+item.user_budget.fname+ '</td>' +
-                            '<td>' + formattedDate+'<br>'+ formattedTime + '</td>' +
-                            '<td>' + stat + '</td>' +
+                    $('.tracking_footer').append(printButton);
+                    }else{
+                        var new_row = '<tr>' +
+                            '<td colspan ="9">' + "No Data Available" + '</td>' +
                             '</tr>';
                         $('#t_body').append(new_row);
-                        i= i+1;
-                    });
-                    var printButton = $('<a>', { 
-                        href: "{{ url('budget/tracking') }}/" + fundsourceId +'/'+ 'pdf',
-                        target: '_blank',
-                        type: 'button',
-                        class: 'btn btn-success btn-sm',
-                        text: 'PDF'
-                    });
-                $('.tracking_footer').append(printButton);
-                }else{
-                    var new_row = '<tr>' +
-                        '<td colspan ="9">' + "No Data Available" + '</td>' +
-                        '</tr>';
-                    $('#t_body').append(new_row);
+                    }
                 }
-               
-            }
-        });
+            });
 
-    }
+        }
     
         function openModal( link) {
             var routeNo = $(link).data('routeid');
@@ -364,20 +303,20 @@
             }, 500);
         }
 
-        function createFundSource() {
-            $('.modal_body').html(loading);
-            $('.modal-title').html("Create Fundsource");
-            var url = "{{ route('fundsource.create') }}";
-            setTimeout(function(){
-                $.ajax({
-                    url: url,
-                    type: 'GET',
-                    success: function(result) {
-                        $('.modal_body').html(result);
-                    }
-                });
-            },500);
-        }
+        // function createFundSource() {
+        //     $('.modal_body').html(loading);
+        //     $('.modal-title').html("Create Fundsource");
+        //     var url = "{{ route('fundsource.create') }}";
+        //     setTimeout(function(){
+        //         $.ajax({
+        //             url: url,
+        //             type: 'GET',
+        //             success: function(result) {
+        //                 $('.modal_body').html(result);
+        //             }
+        //         });
+        //     },500);
+        // }
 
         function addTransaction() {
             event.preventDefault();

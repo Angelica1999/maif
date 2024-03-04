@@ -16,6 +16,8 @@
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit">Search</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll">View All</button>
+                        <button type="button" href="#create_fundsource2" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md">Create</button>
+
                         <!-- <button type="button" href="#create_fundsource" onclick="createFundSource()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md">Create</button> -->
                     </div>
                 </div>
@@ -43,12 +45,15 @@
                                             <li>
                                                 <b>{{ $proponentInfo->facility->name }}</b>
                                                 <div class="d-flex justify-content-between align-items-center">
-                                                    <span class="ml-3">Allocated Funds: <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->alocated_funds)), 2, '.', ',') }}</strong></span>
-                                                    <button style="width:120px" id="track" data-fundsource-id="{{ $proponentInfo->fundsource_id }}" data-proponentInfo-id="{{ $proponentInfo->proponent_id }}" data-facility-id="{{ $proponentInfo->facility_id }}" data-target="#track_details" onclick="track_details(event)" class='btn btn-sm btn-outline-info track_details'>Track</button>
+                                                    <span class="ml-3">Allocated Funds &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->alocated_funds)), 2, '.', ',') }}</strong></span>
+                                                    <button style="width:120px" id="track" data-fundsource-id="{{ $proponentInfo->fundsource_id }}" data-proponentInfo-id="{{ $proponentInfo->proponent_id }}" data-facility-id="{{ $proponentInfo->facility_id }}" data-target="#track_details2" onclick="track_details2(event)" class='btn btn-sm btn-outline-info track_details2'>Track</button>
                                                 </div>
                                                 <div class="d-flex justify-content-between align-items-center">
-                                                    <span class="ml-3">Remaining Balance: <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->remaining_balance)), 2, '.', ',') }}</strong></span>
+                                                    <span class="ml-3">Administrative Cost : <strong class="text-info">{{ $proponentInfo->admin_cost}}</strong></span>
                                                     <button style="width:120px" id="transfer_funds" data-toggle="modal" href="#transfer_fundsource" onclick="transferFunds({{ $fund->id }},{{ $proponentInfo->proponent_id }},{{ $proponentInfo->facility_id }})" class='btn btn-sm btn-outline-success ml-2 transfer_funds'>Transfer Funds</button>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <span class="ml-3">Remaining Balance &nbsp;: <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->remaining_balance)), 2, '.', ',') }}</strong></span>
                                                 </div>
                                                 <div class="d-flex justify-content-end mt-2"></div>
                                             </li>
@@ -75,7 +80,6 @@
     </div>
 </div>
 
-
 <div class="modal fade" id="create_fundsource" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -91,95 +95,27 @@
     </div>
 </div>
 
-<div class="modal fade" id="transfer_fundsource" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Transfer Fund Source</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal_body">
-                
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="track_details" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Tracking Details</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="table-container">
-                <table class="table table-list table-hover table-striped" id="track_details">
-                    <thead>
-                        <tr style="text-align:center;">
-                            <th>FundSource</th>
-                            <th>Proponent</th>
-                            <th>Beginning Balance</th>
-                            <th>Tax</th>
-                            <th>Utilize Amount</th>
-                            <th>Route No</th>
-                            <th>Created By</th>
-                            <th>Utilized On</th>
-                            <th>Remarks</th>
-                            <th>Obligated</th>
-                        </tr>
-                    </thead>
-                    <tbody id="t_body">
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- <div class="modal" id="iframeModal1" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document" >
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title">Tracking Details</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <iframe id="track_Iframe" width="100%" height="400" frameborder="0"></iframe>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div> -->
-
-<div class="modal fade" id="i_frame" tabindex="-2" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" >
-    <div class="modal-dialog modal-lg " role="document" style="max-width:1000px">
-        <div class="modal-content">
-            <div class="modal-header" >
-                <h4 class="modal-title" id="exampleModalLabel" >Disbursement Tracking Details</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <iframe id="track_iframe" width="100%" height="400" frameborder="0"></iframe>
-            </div>
-        </div>
-    </div>
-</div>
-
+@include('modal')
 @endsection
 
 @section('js')
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 
     <script>
+          function createFundSource() {
+            $('.modal_body').html(loading);
+            $('.modal-title').html("Create Fundsource");
+            var url = "{{ route('fundsource.create') }}";
+            setTimeout(function(){
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function(result) {
+                        $('.modal_body').html(result);
+                    }
+                });
+            },500);
+        }
 
         // @if($user->section != 6)
         //     $('.update_saa').hide();
@@ -187,9 +123,9 @@
         //     $('.btn-md').hide();
         // @endif
 
-        function track_details(event){
+        function track_details2(event){
             event.stopPropagation();
-            $('#track_details').modal('show');
+            $('#track_details2').modal('show');
 
          var fundsourceId = event.target.getAttribute('data-fundsource-id');
          var proponentInfoId = event.target.getAttribute('data-proponentInfo-id');
@@ -202,7 +138,7 @@
             type: 'GET',
             
             success: function(result) {
-                $('#t_body').empty(); 
+                $('#track_body').empty(); 
                 var dataArray = result.dv;
                 var user_info = result.user;
                 if(dataArray.length > 0){
@@ -245,9 +181,10 @@
                             '<td>' + user_info[i].lname +', '+user_info[i].fname+ '</td>' +
                             '<td>' + formattedDate+'<br>'+ formattedTime + '</td>' +
                             '<td>' + stat + '</td>' +
-                            '<td>' + (item.obligated == 1 ? '<i class="typcn typcn-tick menu-icon"></i>' : '') + '</td>';
+                            '<td>' + (item.obligated == 1 ? '<i class="typcn typcn-tick menu-icon"></i>' : '') + '</td>' +
+                            '<td>' + (item.paid == 1 ? '<i class="typcn typcn-tick menu-icon"></i>' : '') + '</td>';
                             '</tr>';
-                        $('#t_body').append(new_row);
+                        $('#track_body').append(new_row);
                         i= i+1;
                     });
                 
@@ -255,7 +192,7 @@
                     var new_row = '<tr>' +
                         '<td colspan ="10">' + "No Data Available" + '</td>' +
                         '</tr>';
-                    $('#t_body').append(new_row);
+                    $('#track_body').append(new_row);
                 }
             }
             });
@@ -264,7 +201,8 @@
     
         function openModal( link) {
             var routeNo = $(link).data('routeid');
-            setTimeout(function() {
+            setTimeout(function() { 
+                // var src = "http://192.168.110.135/dts3/document/trackMaif/" + routeNo;
                 var src = "https://mis.cvchd7.com/dts/document/trackMaif/" + routeNo;
                 $("#track_iframe").attr("src", src);
                 $('#i_frame').modal('show');

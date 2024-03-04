@@ -347,12 +347,15 @@
 
                 },
                 success: function (response) {
-                    console.log('res', response);
+                    $('#create_fundsource').modal('hide');
                     window.location.href = '{{ route("fundsource") }}';
-                    $('.loading-container').css('display', 'none');
+
                     Lobibox.notify('success', {
                         msg: 'Successfully created a breakdowns!'
                     });
+                    console.log('res', response);
+                    $('.loading-container').css('display', 'none');
+                   
                 },
                 error: function (error) {
                     console.error('Error:', error);

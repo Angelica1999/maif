@@ -1,15 +1,22 @@
+<?php
+    use App\Models\TrackingDetails;
+?>
 @extends('layouts.app')
 @section('content')
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
+           
             <form method="GET" action="">
                 <div class="input-group float-right w-50" style="min-width: 600px;">
                     <input type="text" class="form-control" name="keyword" placeholder="Route No" value="{{$keyword}}">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit">Search</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll">View All</button>
-                        <button type="button" href="#create_dv" onclick="createDv()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md">Create</button>
+                        @if(Auth::user()->userid != 1027)
+                            <button type="button" href="#create_dv" onclick="createDv()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md">Create</button>
+                        @else
+                        @endif
                     </div>
                 </div>
             </form>
@@ -17,29 +24,58 @@
             <p class="card-description">
                 MAIF-IPP
             </p>
+            <!-- @if(Auth::user()->userid != 1027)
+                <input type="hidden" id="maif_tab" value="maif">
+                <ul class="nav nav-tabs" id="dvTabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="all-tab" href="{{ route('dv') }}">All</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="pending-tab" data-toggle="tab" href="#pending">Pending</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="obligated-tab" data-toggle="tab" href="#obligated">Obligated</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="paid-tab" data-toggle="tab" href="#paid">Paid</a>
+                    </li>
+                </ul>
+            @else
+            <input type="hidden" id="accounting_tab" value="accounting">
+                <ul class="nav nav-tabs" id="dvTabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="all-tab" href="{{ route('dv') }}">All</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="withdv-tab" data-toggle="tab" href="#withdv">w/ dv_no</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="withoutdv-tab" data-toggle="tab" href="#withoutdv">w/o dv_no</a>
+                    </li>
+                </ul>
+            @endif -->
             @if(isset($disbursement) && $disbursement->count() > 0)
-            <div class="table-responsive">
+            <div class="table-responsive ">
                 <table class="table table-striped" style="width:100%">
                 <thead>
                     <tr>
                         <th style="min-width: 150px;"></th>
                         <th style="min-width: 120px;">Route No</th>
+                        <th>Status</th>
                         <th>Payee</th>
                         <th  style="min-width: 120px;">Saa Number</th>
                         <th style="min-width: 140px;">Prepared Date</th>
                         <th style="min-width: 150px;">Exclusive Month</th>
-                        <th>Amount1</th>
-                        <th>Amount2</th>
-                        <th>Amount3</th>
+                        <th>Amount</th>
                         <th  style="min-width: 150px;">Total Amount</th>
-                        <th> Deduction(Vat/Ewt)</th>
-                        <th style="min-width: 170px;">Deduction Amount</th>
-                        <th style="min-width: 210px;">Total Deduction Amount</th> 
+                        <th>Vat/Ewt</th>
+                        <th style="min-width: 180px;">Deduction (VAT/EWT)</th>
+                        <th style="min-width: 130px;">Total Deduction</th> 
                         <th>OverAllTotal</th>
                         <th style="min-width: 120px;">Created By</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="table_body">
                     @foreach($disbursement as $dvs)
                         <tr> 
                             <td>                 
@@ -49,11 +85,41 @@
                                 @endif
                             </td>
                             <td> 
-                                <a  data-dvId="{{$dvs->id}}" href="#create_dv" onclick="updateDv()" style="background-color:teal;color:white;" type="button" class="btn btn-xs" data-backdrop="static" data-toggle="modal">
-                                    @if($dvs->facility)
-                                        {{ $dvs->route_no }}
+                                
+                                @if(Auth::user()->userid != 1027)
+                                    <a  data-dvId="{{$dvs->id}}" href="#create_dv" onclick="updateDv()" style="background-color:teal;color:white;" type="button" class="btn btn-xs" data-backdrop="static" data-toggle="modal">
+                                        @if($dvs->facility)
+                                            {{ $dvs->route_no }}
+                                        @endif
+                                    </a>
+                                    <?php
+                                        $routed = TrackingDetails::where('route_no',$dvs->route_no)
+                                            ->count();
+                                    ?>
+                                    @if($routed < 2)
+                                        <?php
+                                            $doc_id = TrackingDetails::where('route_no',$dvs->route_no)
+                                                    ->orderBy('id','desc')
+                                                    ->first()
+                                                    ->id;
+                                        ?>
+                                        <button data-toggle="modal" data-target="#releaseTo" data-id="{{ $doc_id }}" data-route_no="{{ $dvs->route_no }}" onclick="putRoute($(this))" style="width:85px;" type="button" class="btn btn-info btn-xs">Release To</button>
                                     @endif
-                                </a>
+                                @else
+                                    <a href="#obligate"  onclick="obligateDv('{{$dvs->route_no}}','{{ $dvs->dv_no}}', 'add_dvno')" style="background-color:teal;color:white;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">{{ $dvs->route_no }}</a>
+                                @endif
+                                
+                                
+                            </td> 
+                            <td>
+                                @if($dvs->obligated !== null && $dvs->paid !== null)
+                                    proccessed
+                                @elseif($dvs->obligated == null && $dvs->paid == null)
+                                    pending
+                                @elseif($dvs->obligated !== null && $dvs->paid == null)
+                                    obligated
+                                @endif
+                               
                             </td> 
                             <td>{{ $dvs->facility->name }}</td> 
                             <td>
@@ -74,14 +140,17 @@
                                     {{date('F j, Y', strtotime($dvs->month_year_from))}}
                                     @endif
                             </td>
-                            <td>{{$dvs->amount1}}</td>
-                            <td>{{$dvs->amount2}}</td>
-                            <td>{{$dvs->amount3}}</td>
+                            <td>
+                                {{$dvs->amount1}} <br>
+                                {{$dvs->amount2}} <br>
+                                {{$dvs->amount3}}
+                            </td>
+                           
                             <td>{{$dvs->total_amount}}</td>
                             <td>
-                                {{$dvs->deduction1}}% VAT
+                                VAT - {{$dvs->deduction1}}% 
                                 <br>
-                                {{$dvs->deduction2}}% EWT
+                                EWT - {{$dvs->deduction2}}% 
                             </td>
                             <td>
                                 {{$dvs->deduction_amount1}} <br>
@@ -100,7 +169,7 @@
             </div>
             @else
                 <div class="alert alert-danger" role="alert" style="width: 100%;">
-                <i class="typcn typcn-times menu-icon"></i>
+                    <i class="typcn typcn-times menu-icon"></i>
                     <strong>No disbursement voucher found!</strong>
                 </div>
             @endif
@@ -109,26 +178,6 @@
             </div>
         </div>
     </div>
-</div>
-
-<div class="modal" id="iframeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title" id="exampleModalLabel">Tracking Details</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <!-- Embed iframe with dynamic src -->
-        <iframe id="trackIframe" width="100%" height="400" frameborder="0"></iframe>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
 </div>
 
 <div class="modal fade" id="create_dv" role="dialog" style="overflow-y:scroll;">
@@ -145,68 +194,79 @@
     </div>
 </div>
 
-<div class="modal fade" id="edit_dv" role="dialog" style="overflow-y:scroll;">
-    <div class="modal-dialog modal-lg" role="document" style="width:900px">
-    <div class="modal-content">
-            <div class="modal-header" style="background-color:#17c964;padding:15px; color:white">
-                <h4 class="modal-title"><i class="fa fa-plus" style="margin-right:auto;"></i> Disbursement Voucher</h4>
-                <button type="button" class="close" id="exit" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" style="color:white;">&times;</span></button>
-            </div>
-            <div class="modal_body">
-                <div class="modal_content"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true" >
-    <div class="modal-dialog modal-sm" style="background-color: #17c964; color:white">
-        <div class="modal-content">
-            <div class="modal-header" style="background-color: #17c964;" >
-                <h5 id="confirmationModalLabel"><strong?>Confirmation</strong></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body" style="text-align:center; color:black">
-                Are you sure you want to select a new facility? If yes, all selected data will be cleared out.
-            </div>
-            <div class="modal-footer" style="background-color: #17c964; color:white" >
-                <button type="button" class="btn btn-sm btn-info confirmation" id="confirmButton">Confirm</button>
-                <button type="button" class="btn btn-sm btn-danger confirmation" data-dismiss="modal" id="cancelButton">Cancel</button>
-            </div>
-        </div>
-    </div>
-</div>
 <div class="modal fade" id="create_dv2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" name ="route_no" id="exampleModalLabel">Create Disbursement V2</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-                </button>
+                <b><h5 class="modal-title" name ="route_no" id="exampleModalLabel">Create Disbursement V2</h5> </b>
             </div>
             <div class="modal_body">
-                
             </div>
         </div>
     </div>
 </div>
 
 
+@include('modal')
 @endsection
 
 @section('js')
+<script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 
 <script>
+
     @if($user == 1027)
+        $(document).ready(function() {
+            $('#dv2_btn').prop('disabled', false).hide();
+        });
+    @endif
+
+    function obligateDv(route_no, dv_no, type){
+    console.log('dv', type);
+        $('.modal_body').html(loading);
+        $('.modal-title').html("Disbursement Voucher");
+        var url = "{{ url('dv').'/' }}"+route_no + '/'+dv_no +'/' + type;
+        setTimeout(function(){
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function(result) {
+                    $('.modal_body').html(result);
+                }
+            });
+        },1000);
+    }
+
     $(document).ready(function() {
-        $('#dv2_btn').prop('disabled', false).hide();
+        // Initialize Select2 for the specific class
+        $('#division').select2();
+        $('#section').select2();
+
     });
 
-    @endif
-    
+    function putRoute(form){
+        var route_no = form.data('route_no');
+        $('#route_no').val(route_no);
+        $('#op').val(0);
+        $('#currentID').val(form.data('id'));
+        console.log('id', form.data('id'));
+    }
+
+    $('.filter-division').on('change',function(){
+        // checkDestinationForm();
+        var id = $(this).val();
+        $('.filter-section').html('<option value="">Select section...</option>')
+        $.get("{{ url('getsections').'/' }}"+id, function(result) {
+            $.each(result, function(index, optionData) {
+                console.log('res', result);
+
+                $('.filter-section').append($('<option>', {
+                        value: optionData.id,
+                        text: optionData.description
+                }));  
+            });
+        });
+    });
     function openModal() {
         var routeNoo = event.target.getAttribute('data-routeId');  
         setTimeout(function() {
@@ -330,8 +390,8 @@
 
         var facility_id = $('#facilityDropdown').val();
         var proponentId = $('#saa1').find(':selected').attr('dataproponent');
-        console.log('facility', facility_id);
-        console.log('facility', proponentId);
+        // console.log('facility', facility_id);
+        // console.log('facility', proponentId);
 
         $.get("{{ url('group').'/' }}"+facility_id+'/'+proponentId, function(result) {
                 console.log('res', result);
@@ -521,7 +581,8 @@
     }
     function confirmationModal(){
         var saa1 = $('#saa1').val();
-        if(saa1 !== null && saa1 !== undefined && saa1 !== '' && update !== 0){
+        console.log('confirm', saa1);
+        if(saa1 !== null && saa1 !== undefined && saa1 !== ''){
             $('#confirmationModal').modal('show');
             $('#confirmButton').on('click', function(){
                 console.log('remove', remove);
@@ -569,6 +630,12 @@
             var selected_fac1 = $('#saa1').find(':selected').attr('datafacility');
             var selected_fac2 = $('#saa2').find(':selected').attr('datafacility');
             var selected_fac3 = $('#saa3').find(':selected').attr('datafacility');
+            console.log('selectedSaaId', selectedSaaId);
+
+            console.log('facility_id', facility_id);
+            console.log('selected_proponent1',selected_proponent1);
+            console.log('pro_group',pro_group);
+            console.log('selected_fac1',selected_fac1);
 
             if(facility_id !== null && facility_id !== undefined && facility_id !== ''){
                 // $.get("{{ url('/getallocated').'/' }}" +facility_id, function(result) {
@@ -594,6 +661,7 @@
 
                     $('#pro_id1').val((result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId && item.proponent_id == selected_proponent1
                             && item.facility_id == selected_fac1) || {}).id || 0);
+                            
                     $('#pro_id2').val((result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId2 && item.proponent_id == selected_proponent2
                             && item.facility_id == selected_fac2) || {}).id || 0);
                     $('#pro_id3').val((result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId3 && item.proponent_id == selected_proponent3
@@ -748,6 +816,7 @@
                     saa1Alcated_fund3 = parseFloat(saa1Alcated_fund3);
                     
                     if (con1 > saa1Alcated_fund1) {
+                        console.log('firstcheck');
 
                         if(saa1Alcated_fund1 ==0){
                             $('#inputValue1').val('');
@@ -772,6 +841,8 @@
                             });
                         }
                     }else if(con2>saa1Alcated_fund2){
+                        console.log('secondcheck');
+
                         if(saa1Alcated_fund2 == 0){
                             $('#inputValue2').val('');
                             $('#dropdownContent2 input[type="checkbox"]').prop('checked', false);
@@ -797,6 +868,8 @@
                         }
                         
                     }else if(con3>saa1Alcated_fund3){
+                        console.log('thirdcheck');
+
                         $('#inputValue3').val();
                         $('#dropdownContent3 input[type="checkbox"]').prop('checked', false);
                         invalid1();
@@ -891,7 +964,7 @@
         console.log('sadsd', route_no);
         
         $('.modal_body').html(loading);
-        $('.modal-title').html(route_no);    
+        $('.modal-title').html("DV route: "+ route_no);    
         
         var url = "{{ url('/dv2').'/' }}" + route_no;
         setTimeout(function(){
@@ -923,6 +996,7 @@
     }
 
     function updateDv() {
+
         $('.modal_body').html(loading);
         $('.modal-title').html("Update Disbursement Voucher");
         $('#dv_form').attr('action', "{{ route('dv.create.save') }}");
@@ -935,6 +1009,12 @@
             type: 'GET',
             success: function (result) {
                 var first_res = result;
+
+                removeNullOptions();
+
+                $.get("{{ url('/getDv').'/' }}" + dvId, function (result) {
+                $('.modal_body').html(first_res);
+
                 var printButton = $('<a>', {
                     href: "{{ route('dv.pdf', '') }}/" + dvId,
                     target: '_blank',
@@ -944,10 +1024,8 @@
                 });
 
                 $('#dv_footer').append(printButton);
-                removeNullOptions();
-                $.get("{{ url('/getDv').'/' }}" + dvId, function (result) {
-                    $('.modal_body').html(first_res);
                     $('#dv').val(dvId);
+                    $('#dv_no').val(result.dv.dv_no);
                     console.log('kkkk', $('#dv').val());
                     if(result.dv.obligated == 1){
                         $('.btn-primary').hide();
@@ -961,6 +1039,7 @@
                     var facility = result.dv.facility_id;
                     update = 0;
                     $('#facilityDropdown').val(facility).trigger('change');
+                    $('#for_facility_id').val(facility);
                     onchangeSaa($('#saa1'), result.proponent[0].id, result.proponent[0].pro_group);
                     console.log('chakii',result.facility.name);        
                     counter = 0;
@@ -969,13 +1048,24 @@
                         vat = 1.12;
                     }
                     if(result.fund_source[0].saa !== null || result.fund_source[0].saa !== undefined){
+                        $('#saa1_infoId').val(result.proponent[0].id);
                         setTimeout(function() {
-                            $('#saa1').val(result.fund_source[0].id)
-                                .attr('dataproponent', result.proponent[0].id)
-                                .attr('dataprogroup', result.proponent[0].pro_group)
-                                .trigger('change');
-                                $('#saa1').prop('disabled', false).show();
-                        }, 1400);
+                            $('#saa1 option').each(function () {
+                                var value =  $(this).val();
+                                var group = $(this).attr('dataprogroup');
+                                var proponent = $(this).attr('dataproponent');
+                                var facility = $(this).attr('datafacility');
+                                if(value == result.fund_source[0].id && proponent == result.proponent[0].id 
+                                    && group == result.proponent[0].pro_group &&  facility == result.facilities[0].id){
+                                    $(this).prop('selected',true);
+                                    $('#saa1').trigger('change');
+                                    console.log('gotgot',result.proponent[0].id);        
+
+                                }
+                            });
+                        }, 1500);
+                        console.log('chakii',result.proponent[0].id);        
+
                         $('#inputValue1').val(result.dv.amount1).prop('disabled', false).show();
                         $('#vat').val(result.dv.deduction1);
                         $('#ewt').val(result.dv.deduction2);
@@ -990,18 +1080,26 @@
                         toggleSAADropdowns($('#saa1'), result.proponent[0].id, result.proponent[0].pro_group);
                         console.log('result', result.fund_source);
                         if(result.dv.amount2 !== null){
+                            $('#saa2_infoId').val(result.proponent[1].id);
                             console.log('saa2', result.fund_source[1].id)
                             $('#RemoveSAAButton').prop('disabled', false).show();
                             $('#saa2').prop('disabled', false).show();
                             setTimeout(function() {
-                                $('#saa2').val(result.fund_source[1].id)
-                                    .attr('dataproponent', result.proponent[1].id)
-                                    .attr('dataprogroup', result.proponent[1].pro_group)
-                                    .trigger('change');
-                            }, 1400);
+                                $('#saa2 option').each(function () {
+                                    var value =  $(this).val();
+                                    var group = $(this).attr('dataprogroup');
+                                    var proponent = $(this).attr('dataproponent');
+                                    var facility = $(this).attr('datafacility');
+                                    if(value == result.fund_source[1].id && proponent == result.proponent[1].id 
+                                        && group == result.proponent[1].pro_group &&  facility == result.facilities[1].id){
+                                        $(this).prop('selected',true);
+                                        $('#saa2').trigger('change');
+                                    }
+                                });
+                            }, 1500);
                             
                             $('#inputValue2').val(result.dv.amount2).prop('disabled', false).show();
-                            $('#saa2').val(result.fund_source[1].id);
+                            // $('#saa2').val(result.fund_source[1].id);
                             $('#vatValue2').val((parseFloat(result.dv.amount2.replace(/,/g,''))/vat * result.dv.deduction1/100).toFixed(2)).show();
                             $('#ewtValue2').val((parseFloat(result.dv.amount2.replace(/,/g,''))/vat * result.dv.deduction2/100).toFixed(2)).show();
                             $('#save_amount2').val(parseFloat(result.dv.amount2.replace(/,/g,'')));
@@ -1010,12 +1108,20 @@
                         }else{
                             $('#RemoveSAAButton1').prop('disabled', false).show();
                             $('#saa2').prop('disabled', false).show();
+                            $('#saa2_infoId').val(result.proponent[2].id);
                             setTimeout(function() {
-                                $('#saa2').val(result.fund_source[2].id)
-                                    .attr('dataproponent', result.proponent[2].id)
-                                    .attr('dataprogroup', result.proponent[2].pro_group)
-                                    .trigger('change');
-                            }, 1400);
+                                $('#saa2 option').each(function () {
+                                    var value =  $(this).val();
+                                    var group = $(this).attr('dataprogroup');
+                                    var proponent = $(this).attr('dataproponent');
+                                    var facility = $(this).attr('datafacility');
+                                    if(value == result.fund_source[2].id && proponent == result.proponent[2].id 
+                                        && group == result.proponent[2].pro_group &&  facility == result.facilities[2].id){
+                                        $(this).prop('selected',true);
+                                        $('#saa2').trigger('change');
+                                    }
+                                });
+                            }, 1500);
                             $('#inputValue3').val(result.dv.amount3).prop('disabled', false).show();
                             $('#vatValue3').val((parseFloat(result.dv.amount3.replace(/,/g,''))/vat * result.dv.deduction1/100).toFixed(2)).show();
                             $('#ewtValue3').val((parseFloat(result.dv.amount3.replace(/,/g,''))/vat * result.dv.deduction2/100).toFixed(2)).show();
@@ -1024,15 +1130,23 @@
                         }
                         
                     } if(result.fund_source[2] !== null && result.fund_source[2] !== undefined){
+                        $('#saa3_infoId').val(result.proponent[2].id);
                         toggleSAADropdowns($('#saa1'), result.proponent[0].id, result.proponent[0].pro_group);
                         $('#saa3').prop('disabled', false).show();
                         $('#inputValue3').val(result.dv.amount3).prop('disabled', false).show();
                         setTimeout(function() {
-                            $('#saa3').val(result.fund_source[2].id)
-                                .attr('dataproponent', result.proponent[2].id)
-                                .attr('dataprogroup', result.proponent[2].pro_group)
-                                .trigger('change');
-                        }, 1400);
+                                $('#saa3 option').each(function () {
+                                    var value =  $(this).val();
+                                    var group = $(this).attr('dataprogroup');
+                                    var proponent = $(this).attr('dataproponent');
+                                    var facility = $(this).attr('datafacility');
+                                    if(value == result.fund_source[2].id && proponent == result.proponent[2].id 
+                                        && group == result.proponent[2].pro_group &&  facility == result.facilities[2].id){
+                                        $(this).prop('selected',true);
+                                        $('#saa3').trigger('change');
+                                    }
+                                });
+                            }, 1500);
                         $('#vatValue3').val((parseFloat(result.dv.amount3.replace(/,/g,''))/vat * result.dv.deduction1/100).toFixed(2)).show();
                         $('#ewtValue3').val((parseFloat(result.dv.amount3.replace(/,/g,''))/vat * result.dv.deduction2/100).toFixed(2)).show();
                         $('#save_amount3').val(parseFloat(result.dv.amount3.replace(/,/g,'')));
@@ -1047,6 +1161,7 @@
                     $('.total').text(result.dv.total_amount);
                     $('#totalInput').val(result.dv.total_amount);
                     $('.totalDeduction').text(result.dv.total_deduction_amount);
+                    console.log('deduction',result.dv.total_deduction_amount );
                     $('#totalDeduction').val(result.dv.total_deduction_amount);
                     $('.overallTotal').text(result.dv.overall_total_amount);
                     $('#overallTotal').val(result.dv.overall_total_amount);
@@ -1077,10 +1192,14 @@
                 removeNullOptions();
 
                 });
+                setTimeout(function() {
+                           fundAmount();
+                        }, 1500);
                 }); 
             }
         });
         }, 0);
+
     }
         
 

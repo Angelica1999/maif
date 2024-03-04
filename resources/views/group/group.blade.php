@@ -70,54 +70,10 @@
     </div>
 </div>
 
-<div class="modal fade" id="view_patients" role="dialog" style="overflow-y:scroll;">
-    <div class="modal-dialog modal-lg" role="document" style="width:1200px">
-    <div class="modal-content">
-            <div class="modal-header" style="background-color:#17c964;padding:15px; color:white">
-                <h4 class="modal-title"><i class="fa fa-plus" style="margin-right:auto;"></i> Patients</h4>
-                <button type="button" class="close" id="exit" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" style="color:white;">&times;</span></button>
-            </div>
-            <div class="modal_body">
-                <div class="modal_content"></div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal fade" tabindex="-1" role="dialog" id="addPatient">
-    <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-            <div class="modal-header" style="background-color: #17c964; color:white" >
-                <h5 id="confirmationModalLabel"><strong?>Add Patient</strong></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true" id="remove">&times;</span>
-                </button>
-            </div>
-            <form action="{{route('save.patients')}}" method="POST">
-                <div class="modal-body ">
-                @csrf
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="fname">Facility</label>
-                                <select class="js-example-basic-single w-100 facility" style="width:250px" id="fac_id" name="fac_id" required>
-                                    <option value="">Select Patient</option>
-                                </select>
-                            </div>
-                        </div> 
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button id="cancel" type="button" class="btn btn-warning btn-xs" data-dismiss="modal">Cancel</button>
-                    <button class="btn btn-success btn-xs" type="submit">Submit</button>
-                    <input type="hidden" class="for_group" name="group_id" id="group_id">
-                </div>
-            </form>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
 
 
 
+@include('modal')
 @endsection
 @section('js')
 <script>

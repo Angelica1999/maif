@@ -11,26 +11,26 @@
                     </p>
                     <div class="row">
                         <div class="cgrid-margin grid-margin-md-0 stretch-card" style="width:100%">
-                            <div class="card" style="padding: 10px; border: 1px solid black" >
+                            <div class="card" style="padding: 10px; border: 1px solid gray" >
                                 <br>
                                 <input class=" form-control mx-auto d-block text-center" value="{{$dv->facility->name .'('.$dv->proponent.')'}}" name="facility" style="width:80%; height:40px; font-weight:bold" readonly>
                                 <div class="auto_generated">
                                 @if(isset($group))
                                 @foreach($group as $per_group)
-                                    <div class="card" style="margin: 2px auto; text-align: center; width: 90%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box; padding:10px; border:1px solid black;">
+                                    <div class="card" style="margin: 2px auto; text-align: center; width: 90%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box; padding:10px; border:1px solid lightgray;">
                                         <div style="display: flex; justify-content: space-between; width: 100%; box-sizing: border-box;">
-                                            <input class="form-control mx-auto d-block text-center" id="ref_no" name="ref_no[]" placeholder="Control No" style="width:80%; height:35px; border:1px solid black">
+                                            <input class="form-control mx-auto d-block text-center" id="ref_no" name="ref_no[]" placeholder="Control No" style="width:80%; height:35px;">
                                         </div>
                                         <br>
                                         <div style="display: flex; justify-content: space-between; width: 100%; box-sizing: border-box;">
                                             <div style="overflow: hidden; text-overflow: ellipsis; height: 100%; box-sizing: border-box;">
-                                                <select name="g_lname1[]"  onchange="" style="width:80%;border:1px solid black; height:30px" class="js-example-basic-single1" required>
+                                                <select name="g_lname1[]"  onchange="" style="width:80%; height:30px" class="js-example-basic-single1" required>
                                                     <option value="">-Lastname-</option>
                                                     @foreach($per_group->patient as $pat)
                                                         <option value="{{$pat->id}}">{{$pat->lname}}</option>
                                                     @endforeach
                                                 </select>
-                                                <select name="g_lname2[]"  onchange="" style="width:80%;border:1px solid black; height:30px; margin-top:5px" class="js-example-basic-single2">
+                                                <select name="g_lname2[]"  onchange="" style="width:80%; height:30px; margin-top:5px" class="js-example-basic-single2">
                                                     <option value="0" >-Lastname-</option>
                                                     @foreach($per_group->patient as $pat)
                                                         <option value="{{$pat->id}}">{{$pat->lname}}</option>
@@ -38,7 +38,7 @@
                                                 </select>
                                             </div>
                                             <div style="overflow: hidden; text-overflow: ellipsis; height: 100%; box-sizing: border-box;">
-                                                <input class="mx-auto d-block text-center amount_total" id="amount[]" name="amount[]" value="{{$per_group->amount}}" style="width:80%;border:1px solid black; height:30px; margin-top:5px" readonly>
+                                                <input class="form-control mx-auto d-block text-center amount_total" id="amount[]" name="amount[]" value="{{$per_group->amount}}" style="width:80%; height:30px; margin-top:5px" readonly>
                                             </div>
                                         </div>
                                     </div>
@@ -52,19 +52,19 @@
                                 @endforeach
                                 @endif
                                     <div class="for_clone" style="display:none">
-                                        <div class="card" style="margin: 2px auto; text-align: center; width: 90%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box; padding:10px; border:1px solid black;">
+                                        <div class="card" style="margin: 2px auto; text-align: center; width: 90%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box; padding:10px; border:1px solid lightgray;">
                                             <div style="display: flex; justify-content: space-between; width: 100%; box-sizing: border-box;">
-                                                <input class="form-control mx-auto d-block text-center" id="ref_no" name="ref_no[]" placeholder="Control No" style="width:80%; height:35px; border:1px solid black">
+                                                <input class="form-control mx-auto d-block text-center" id="ref_no" name="ref_no[]" placeholder="Control No" style="width:80%; height:35px; ">
                                                 <button type="button" class= "btn-info clone-button">+</button>
                                             </div>
                                             <br>
                                             <div style="display: flex; justify-content: space-between; width: 100%; box-sizing: border-box;">
                                                 <div style="overflow: hidden; text-overflow: ellipsis; height: 100%; box-sizing: border-box;">
-                                                    <input class="form-control mx-auto d-block text-center" name="g_lname1[]" placeholder="LastName" style="width:80%; height:35px; border:1px solid black">
-                                                    <input class="form-control mx-auto d-block text-center" name="g_lname2[]" value="" placeholder="LastName" style="width:80%; height:35px; border:1px solid black;  margin-top:5px">
+                                                    <input class="form-control mx-auto d-block text-center" name="g_lname1[]" placeholder="LastName" style="width:80%; height:35px; ">
+                                                    <input class="form-control mx-auto d-block text-center" name="g_lname2[]" value="" placeholder="LastName" style="width:80%; height:35px; margin-top:5px">
                                                 </div>
                                                 <div style="overflow: hidden; text-overflow: ellipsis; height: 100%; box-sizing: border-box;">
-                                                    <input class="mx-auto d-block text-center amount_total" id="amount[]" name="amount[]" value="" oninput="calculateSum()" onkeyup="validateAmount(this)" style="width:90%;border:1px solid black; height:30px; margin-top:5px" >
+                                                    <input class="form-control mx-auto d-block text-center amount_total" id="amount[]" name="amount[]" value="" oninput="calculateSum()" onkeyup="validateAmount(this)" style="width:90%; height:30px; margin-top:5px" >
                                                 </div>
                                             </div>
                                         </div>
@@ -81,16 +81,18 @@
                         </div>
 
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Create Dv2</button>
-                    </div>
+                   
                 
                 </div>
             </div>
         </div>
     </div>
+    <div class="modal-footer">
+        <button style = "background-color:lightgray"  class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> Close</button>
+        <button type="submit" class="btn btn-primary">Create Dv2</button>
+    </div>
 </form>
+
 
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 <script>
