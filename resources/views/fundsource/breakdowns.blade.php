@@ -152,7 +152,7 @@
                                 <label>Facility:</label>
                                 <div class="form-group">
                                     <div class="facility_select">
-                                        <select class="form-control break_fac" id="breakdown_select" name="facility_id[]" >
+                                        <select class="form-control break_fac" id="breakdown_select" name="facility_id[]">
                                             <option value="">Please select facility</option>
                                             @foreach($facilities as $facility)
                                                 <option value="{{ $facility->id }}">{{ $facility->name }}</option>
