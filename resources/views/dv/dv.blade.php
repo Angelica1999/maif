@@ -96,7 +96,7 @@
                                         $routed = TrackingDetails::where('route_no',$dvs->route_no)
                                             ->count();
                                     ?>
-                                    @if($routed < 2)
+                                    <!-- @if($routed < 2) -->
                                         <?php
                                             $doc_id = TrackingDetails::where('route_no',$dvs->route_no)
                                                     ->orderBy('id','desc')
@@ -104,9 +104,9 @@
                                                     ->id;
                                         ?>
                                         <button data-toggle="modal" data-target="#releaseTo" data-id="{{ $doc_id }}" data-route_no="{{ $dvs->route_no }}" onclick="putRoute($(this))" style="width:85px;" type="button" class="btn btn-info btn-xs">Release To</button>
-                                    @endif
+                                    <!-- @endif -->
                                 @else
-                                    <a href="#obligate"  onclick="obligateDv('{{$dvs->route_no}}','{{ $dvs->dv_no}}', 'add_dvno')" style="background-color:teal;color:white;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">{{ $dvs->route_no }}</a>
+                                    <a href="#obligate"  onclick="obligateDv('{{$dvs->route_no}}','0', 'add_dvno')" style="background-color:teal;color:white;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">{{ $dvs->route_no }}</a>
                                 @endif
                                 
                                 

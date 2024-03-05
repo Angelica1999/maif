@@ -73,6 +73,7 @@ Route::get('/patient/proponent/{fundsource_id}', [App\Http\Controllers\FundSourc
 
 //DISBURSEMENT VOUCHER
 Route::get('/dv1', [App\Http\Controllers\DvController::class, 'dv'])->name('dv');
+
 // Route::get('/dv1/pending', [App\Http\Controllers\DvController::class, 'dvPending'])->name('dv.pending');
 // Route::get('/dv1/obligated', [App\Http\Controllers\DvController::class, 'dvObligate'])->name('dv.obligated');
 // Route::get('/dv1/w_dvno', [App\Http\Controllers\DvController::class, 'withDvNO'])->name('dv.withdv');

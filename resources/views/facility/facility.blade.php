@@ -81,8 +81,23 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="update_facility" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal_body">
+            <input type="hidden" id="main_id" name="main_id" value="">
+            </div>
+        </div>
+    </div>
+</div>
 
-@include('modal')
+<!-- @include('modal') -->
 @endsection
 @section('js')
     <script>

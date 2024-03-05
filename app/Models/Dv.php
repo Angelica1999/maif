@@ -55,4 +55,7 @@ class Dv extends Model
     public function master(){
         return $this->belongsTo(TrackingMaster::class, 'route_no','route_no');
     }
+    public function release(){
+        return $this->belongsTo(Tracking_Releasev2::class, 'route_no','route_no');
+    }
 }

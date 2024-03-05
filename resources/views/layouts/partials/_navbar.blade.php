@@ -20,8 +20,10 @@
       <ul class="navbar-nav navbar-nav-right">
         <li class="nav-item nav-profile dropdown">
           <a class="nav-link dropdown-toggle  pl-0 pr-0" href="#" data-toggle="dropdown" id="profileDropdown">
-            <i class="typcn typcn-user-outline mr-0"></i>
-            <span class="nav-profile-name">{{ Auth::user()->lname}}, {{Auth::user()->fname}}</span>
+            <h5 class="mr-0">
+                <i class="typcn typcn-user-outline" style="font-size: 1.5em;"></i>
+                {{ Auth::user()->lname }}, {{ Auth::user()->fname }}
+            </h5>
           </a>
           <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
             <a class="dropdown-item">

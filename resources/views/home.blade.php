@@ -54,8 +54,7 @@
 
                 </div>
             </form>
-            @if(isset($patients) && $patients->count() > 0)
-
+            @if(count($patients) > 0)
             <div class="table-responsive">
                 <table class="table table-striped">
                 <thead>

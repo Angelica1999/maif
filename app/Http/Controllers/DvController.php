@@ -40,29 +40,27 @@ class DvController extends Controller
         if($request->viewAll){
             $request->keyword = '';
         }
-        // if(Auth::user()->userid == 1027){
-        //     $results = Dv::where()->with(['fundsource', 'facility', 'user', 'master'])
-        //                 ->when($request->keyword, function ($query) use ($request) {
-        //                     $query->where('route_no', 'LIKE', "%$request->keyword%");
-        //                 })
-        //             ->orderby('id', 'desc')
-        //             ->paginate(5);
-        // }else{
-            $results = Dv::with(['fundsource', 'facility', 'user', 'master'])
-                        ->when($request->keyword, function ($query) use ($request) {
-                            $query->where('route_no', 'LIKE', "%$request->keyword%");
-                        })
-                    ->orderby('id', 'desc')
-                    ->paginate(5);
-        // }
-       
-
-        return view('dv.dv', [
-            'disbursement' => $results,
-            'keyword' => $request->keyword ?: '',
-            'user' => Auth::user()->userid
-        ]);
-
+        
+        $results = Dv::with(['fundsource', 'facility', 'user', 'master'])
+                    ->when($request->keyword, function ($query) use ($request) {
+                        $query->where('route_no', 'LIKE', "%$request->keyword%");
+                    })
+                ->orderby('id', 'desc')
+                ->paginate(5);
+        
+        if(Auth::user()->userid == 1027){
+            return view('dv.acc_dv', [
+                'disbursement' => $results,
+                'keyword' => $request->keyword ?: '',
+                'user' => Auth::user()->userid
+            ]);
+        }else{
+            return view('dv.dv', [
+                'disbursement' => $results,
+                'keyword' => $request->keyword ?: '',
+                'user' => Auth::user()->userid
+            ]);
+        }
     }
 
     public function getFundsource(Request $request){
@@ -361,9 +359,9 @@ class DvController extends Controller
                     
                     $cleanedSaa = str_replace(['[', ']', '"'], '', $saa);
                     $utilize = new Utilization();
-                    if($dv){
-                        $utilize->modified_by = Auth::user()->userid;
-                    }
+                    // if($dv){
+                    //     $utilize->modified_by = Auth::user()->userid;
+                    // }
                     $utilize->status = 0;
                     $utilize->fundsource_id = trim($cleanedSaa);
                     $utilize->proponentinfo_id = $proponent_id[$index];
@@ -388,7 +386,6 @@ class DvController extends Controller
                     $proponent_info->save();
                 }
             }
-
             return redirect()->back()->with('dv_create', true);
     }
     
@@ -418,7 +415,6 @@ class DvController extends Controller
             $facility = Facility::where('id', $dv->facility_id)->first();
         
         }
-        // return $facilities;
         return response()->json(['dv' =>$dv,'fund_source' => $fund_source,'facility' => $facility, 'facilities' => $facilities,'proponent' => $proponent]);
     }
 
@@ -439,7 +435,6 @@ class DvController extends Controller
                 $info = Fundsource::where('id', $saa_list)->first();
                 $info->remaining_balance = $info->remaining_balance - floatval(str_replace(',','', $amount[$index]));
                 $info->save();
-
                 $utilization = Utilization::where('div_id', $dv->route_no)->where('fundsource_id', $saa_list)
                     ->where('proponentinfo_id', $proponent[$index])->orderBy('id', 'desc')->latest()->first();
                     $gg[]=$utilization;
@@ -452,11 +447,16 @@ class DvController extends Controller
             $dv->ors_no = $request->ors_no;
             $dv->obligated = 1;
             $dv->save();
-
-
-
+            $response = Http::withoutVerifying()->get('https://mis.cvchd7.com/dts/document/ors_no/' . $dv->ors_no . '/' . $dv->route_no . '/' .Auth::user()->userid);
+            if($response){
+                if($response == '0'){
+                     return redirect()->route('fundsource_budget.pendingDv', ['type' => 'pending'])->with('', true);
+                }
+            }else{
+                return redirect()->route('fundsource_budget.pendingDv', ['type' => 'pending'])->with('', true);
+            }
         }
-        return redirect()->route('fundsource_budget.pendingDv', ['type' => 'pending'])->with('', true);
+        // return redirect()->route('fundsource_budget.pendingDv', ['type' => 'pending'])->with('', true);
 
     }
 
@@ -473,9 +473,21 @@ class DvController extends Controller
             $dv->paid = 1;
             $dv->paid_by = Auth::user()->userid;
             $dv->save();
+
+            $response = Http::withoutVerifying()->get('https://mis.cvchd7.com/dts/document/paid/'. $dv->route_no . '/' .Auth::user()->userid);
+            if($response){
+                if($response == '0'){
+                    return redirect()->back()->with(
+                        'pay_dv', true        
+                        );
+                }
+            }else{
+                return redirect()->back()->with([
+                    'pay_dv' => true        
+                ]);
+            }
         }
-        
-        return redirect()->back()->with('pay_dv', true);
+        // return redirect()->back()->with('pay_dv', true);
 
     }
 
@@ -485,27 +497,22 @@ class DvController extends Controller
             $dv->dv_no = $request->input('dv_no');
             $dv->save();
 
-            // $response = Http::get('http://mis.cvchd7/dts3/document/dv_no/' . $dv->dv_no . '/' . $dv->route_no . '/' .Auth::user()->userid);
-            // return $response;
-            // if($response == 'success'){
-            //      return redirect()->back()->with(
-            //          'add_dvno', true        
-            //         );
-            // }
-            return redirect()->back()->with([
+            $response = Http::withoutVerifying()->get('https://mis.cvchd7.com/dts/document/dv_no/' . $dv->dv_no . '/' . $dv->route_no . '/' .Auth::user()->userid);
+            if($response){
+                // $res = $response;
+                if($response == "0"){
+
+                    return redirect()->back()->with(
+                        'add_dvno', true        
+                        );
+                }
+            }else{
+                return redirect()->back()->with([
                     'add_dvno' => true        
                 ]);
+            }
+          
         }
-
-      
-        // Process the response
-        // $data = $response->json();
-
-        
-        // $url = "http://localhost/dts3/document/dv_no/{$dv->dv_no}/{$dv->route_no}";
-        // return($url);
-        //;
-
     }
 
     function facilityGet(Request $request){

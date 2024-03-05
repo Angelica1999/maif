@@ -178,7 +178,7 @@
         @endif
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" id="close_b" data-dismiss="modal">Close</button>
         <button type="submit" class="btn btn-primary">Save</button>
     </div>
 </form>
@@ -195,6 +195,11 @@
 
         // $('.modal_body').empty();
     });
+
+    $('#close_b').on('click', function(){ 
+            console.log('chakiiii');
+            location.reload();
+        });
 
     function calculateFunds(inputElement){
         clearTimeout(timer);
@@ -261,18 +266,26 @@
             });
             
             var divisor = {{$fundsource[0]->proponents->count()}};
-            var dividend = formData.length;
+            var dividend = Math.round(formData.length/4);
+
+            console.log('htrry', formData);
+            console.log('htrry', divisor);
             console.log('htrry', dividend % divisor);
             console.log('htrry', dividend);
             console.log('htrry', dividend/divisor );
             console.log('htrry', dividend % divisor );
 
             var count = {{$pro_count}};
+            console.log('count', count);
+            var to_deduct = 0;
             if(count>0){
-                formData.splice(formData.length - count);
+                if(count >=5){
+                    to_deduct = count/5 * 3;
+                }
+                formData.splice(formData.length/4 - to_deduct);
             }
 
-            console.log('Collected Data:', formData);
+            console.log('Collected Datasdsad:', formData);
             return formData;
     }
 
