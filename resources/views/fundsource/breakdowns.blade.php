@@ -282,7 +282,11 @@
                 if(count >=5){
                     to_deduct = count/5 * 3;
                 }
-                formData.splice(formData.length/4 - to_deduct);
+                var cal = count * 6;
+                console.log('htrry', cal );
+
+                // var add1 = Math.floor(formData.length/4);
+                formData.splice(formData.length - cal + count);
             }
 
             console.log('Collected Datasdsad:', formData);

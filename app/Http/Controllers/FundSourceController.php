@@ -218,8 +218,13 @@ class FundSourceController extends Controller
                 if($info){
                     if(str_replace(',','', $info->alocated_funds) != str_replace(',','',$breakdown['alocated_funds'])){
                         $info->alocated_funds = $breakdown['alocated_funds'];
-                        $info->admin_cost =number_format( (double)str_replace(',','',$breakdown['alocated_funds']) * .01 , 2,'.', ',');
-                        $info->remaining_balance = (double)str_replace(',','',$breakdown['alocated_funds']) - (double)str_replace(',','', $info->admin_cost);
+                        if((double)str_replace(',','',$breakdown['alocated_funds']) >= 1000000){
+                            $info->admin_cost =number_format( (double)str_replace(',','',$breakdown['alocated_funds']) * .01 , 2,'.', ',');
+                            $info->remaining_balance = (double)str_replace(',','',$breakdown['alocated_funds']) - (double)str_replace(',','', $info->admin_cost);
+                        }else{
+                            $info->admin_cost = 0;
+                            $info->remaining_balance = $breakdown['alocated_funds'];
+                        }
                         $info->save();
                     }
                 }else{
@@ -228,8 +233,13 @@ class FundSourceController extends Controller
                     $p_info->proponent_id = $proponentId;
                     $p_info->facility_id = $breakdown['facility_id'];
                     $p_info->alocated_funds = $breakdown['alocated_funds'];
-                    $p_info->admin_cost =number_format((double)str_replace(',','',$breakdown['alocated_funds']) * .01 , 2,'.', ',');
-                    $p_info->remaining_balance = (double)str_replace(',','',$breakdown['alocated_funds']) - (double)str_replace(',','',$p_info->admin_cost);
+                    if((double)str_replace(',','',$breakdown['alocated_funds']) >= 1000000){
+                        $p_info->admin_cost =number_format((double)str_replace(',','',$breakdown['alocated_funds']) * .01 , 2,'.', ',');
+                        $p_info->remaining_balance = (double)str_replace(',','',$breakdown['alocated_funds']) - (double)str_replace(',','',$p_info->admin_cost);
+                    }else{
+                        $p_info->admin_cost = 0;
+                        $p_info->remaining_balance = $breakdown['alocated_funds'];
+                    }
                     $p_info->created_by = Auth::user()->userid;
                     $p_info->save();
                 }
