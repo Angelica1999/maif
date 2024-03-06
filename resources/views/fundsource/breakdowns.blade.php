@@ -32,7 +32,7 @@
         <br>
 
         @if($fundsource[0]->proponents->count() > 0)
-            @foreach($fundsource[0]->proponents as $pro)
+            @foreach($fundsource[0]->proponents as $index => $pro)
 
                 <div class="clone">
                     <div class="card" style="border:none;">
@@ -47,13 +47,17 @@
                                 <b><label>Proponent Code:</label></b>
                                 <div class="form-group" style="display: flex; align-items: center;">
                                     <input type="text" class="form-control proponent_code" name="proponent_code[]" value="{{$pro->proponent_code}}" style="flex: 1; width:1000px;">
-                                    <button type="button" class="form-control clone_pro-btn" style="width: 10px; margin-left: 5px; color:white; background-color:#00688B">+</button>
+                                    <!-- @if($index == 0) -->
+                                        <button type="button" class="form-control clone_pro-btn" style="width: 10px; margin-left: 5px; color:white; background-color:#00688B">+</button>
+                                    <!-- @else
+                                        <button type="button" class="form-control remove_pro-btn" style="width: 10px; margin-left: 5px; color:white; background-color:#00688B">-</button>
+                                    @endif -->
                                 </div>
                             </div>
                         </div>
                         @if($pro->proponentInfo->count() >0)
 
-                        @foreach($pro->proponentInfo as $proInfo)
+                        @foreach($pro->proponentInfo as $index => $proInfo)
                         <div class="card1">
                             <div class="row">
                                 <div class="col-md-5">
@@ -82,7 +86,11 @@
                                                 readonly
                                             @endif
                                             >
-                                            <button type="button" class="form-control btn-info clone_facility-btn" style="width: 5px; margin-left: 5px; color:white; background-color:#355E3B">+</button>
+                                            @if($index == 0)
+                                                <button type="button" class="form-control btn-info clone_facility-btn" style="width: 5px; margin-left: 5px; color:white; background-color:#355E3B">+</button>
+                                            @else
+                                                <button type="button" class="form-control btn-info remove_fac-clone" onclick="remove({{$proInfo->id}})" style="width: 5px; margin-left: 5px; color:white; background-color:#355E3B">-</button>
+                                            @endif
                                             <button type="button" id="transfer_funds" href="#transfer_fundsource" onclick="transferFunds({{ $fundsource[0]->id }}, {{ $proInfo->proponent_id }}, {{ $proInfo->facility_id }})" class="form-control btn-info transfer_funds" style="width: 5px; margin-left: 5px; color:white; background-color:#01796F"><i class="typcn typcn-arrow-right-thick menu-icon"></i></button>
                                         </div>
                                     </div>
@@ -185,12 +193,36 @@
 <div class="loading-container">
     <img src="public\images\loading.gif" alt="Loading..." class="loading-spinner">
 </div>
+<div class="modal fade" id="confirm_remove" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true" >
+    <div class="modal-dialog modal-sm" style="background-color: #17c964; color:white">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #17c964;" >
+                <h5 id="confirmationModalLabel"><strong?>Confirmation</strong></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="text-align:center; color:black">
+                Are you sure you want to remove this facility?
+            </div>
+            <div class="modal-footer" style="background-color: #17c964; color:white" >
+                <button type="button" class="btn btn-sm btn-info confirmation" id="confirmButton">Confirm</button>
+                <button type="button" class="btn btn-sm btn-danger confirmation" data-dismiss="modal" id="cancelButton">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 <script>
     var timer;
+    function remove(infoId){
+        $.get("{{ url('proponentInfo/').'/' }}"+infoId, function(result) {
+                   console.log('rs', result);
+        });
+    }
     $('.btn-secondary').on('click', function(){
 
         // $('.modal_body').empty();
@@ -282,7 +314,11 @@
                 if(count >=5){
                     to_deduct = count/5 * 3;
                 }
-                formData.splice(formData.length/4 - to_deduct);
+                var cal = count * 6;
+                console.log('htrry', cal );
+
+                // var add1 = Math.floor(formData.length/4);
+                formData.splice(formData.length - cal + count);
             }
 
             console.log('Collected Datasdsad:', formData);

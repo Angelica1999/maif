@@ -140,6 +140,9 @@ Route::get('getsections/{id}', [App\Http\Controllers\DvController::class, 'getSe
 Route::post('/document/release', [App\Http\Controllers\DvController::class, 'addRelease'])->name('document.release');
 Route::get('/sample', [App\Http\Controllers\FundSourceController2::class, 'sample'])->name('sample');
 
+Route::match(['get', 'post'],'proponentInfo/{infoId}', [App\Http\Controllers\FundSourceController::class, 'removeInfo'])->name('remove.proInfo');
+
+
 
 
 
