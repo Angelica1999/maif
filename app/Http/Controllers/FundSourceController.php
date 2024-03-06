@@ -175,7 +175,7 @@ class FundSourceController extends Controller
             ])->get();
 
         $randomBytes = random_bytes(16); 
-
+        // return $fundsource;
         return view('fundsource.breakdowns', [
             'fundsource' => $fundsource,
             'pro_count' => ProponentInfo::where('fundsource_id', $fundsourceId)->count(),
@@ -183,6 +183,12 @@ class FundSourceController extends Controller
             'uniqueCode' => bin2hex($randomBytes)
         ]);
 
+    }
+
+    public function removeInfo($infoId){
+        if($infoId){
+            ProponentInfo::where('id', $infoId)->delete();
+        }
     }
     
     public function saveBDowns(Request $request){
