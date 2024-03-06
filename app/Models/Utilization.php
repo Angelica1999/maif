@@ -13,7 +13,7 @@ class Utilization extends Model
     protected $guarded = array();
 
     public function proponentdata(){
-        return $this->belongsTo(Proponent::class, 'proponentinfo_id', 'id');
+        return $this->belongsTo(Proponent::class, 'proponent_id', 'id');
     }
 
     public function fundSourcedata(){

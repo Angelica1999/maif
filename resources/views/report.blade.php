@@ -49,6 +49,7 @@
             @endif
             
             <div class="pl-5 pr-5 mt-5">
+                {!! $proponents->appends(request()->query())->links('pagination::bootstrap-5') !!}  
             </div>
         </div>
     </div>

@@ -42,21 +42,33 @@
                                     <p class="card-description">{{ $proponent->proponent }}</p>
                                     <ul class="list-arrow mt-3">
                                         @foreach($proponent->proponentInfo as $proponentInfo)
-                                            <li>
-                                                <b>{{ $proponentInfo->facility->name }}</b>
+
+                                            @if( $proponentInfo->facility !== null)
+                                                <li><b>{{ $proponentInfo->facility->name }}</b></li>
+                                            @else
+                                                <?php 
+                                                    $facilityIds = json_decode($proponentInfo->facility_id);
+                                                    $facilities = Facility::whereIn('id',array_map('intval', $facilityIds))->get();
+                                                ?>
+                                                <li>
+                                                @foreach($facilities as $facility)
+                                                    <b>{{ $facility->name }}</b><br>
+                                                @endforeach
+                                                </li>
+                                            @endif
+
                                                 <div class="d-flex justify-content-between align-items-center">
                                                     <span class="ml-3">Allocated Funds &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->alocated_funds)), 2, '.', ',') }}</strong></span>
-                                                    <button style="width:120px" id="track" data-fundsource-id="{{ $proponentInfo->fundsource_id }}" data-proponentInfo-id="{{ $proponentInfo->proponent_id }}" data-facility-id="{{ $proponentInfo->facility_id }}" data-target="#track_details2" onclick="track_details2(event)" class='btn btn-sm btn-outline-info track_details2'>Track</button>
+                                                    <button style="width:120px" id="track" data-proponentInfo-id="{{ $proponentInfo->id }}" data-target="#track_details2" onclick="track_details2(event)" class='btn btn-sm btn-outline-info track_details2'>Track</button>
                                                 </div>
                                                 <div class="d-flex justify-content-between align-items-center">
                                                     <span class="ml-3">Administrative Cost : <strong class="text-info">{{ $proponentInfo->admin_cost}}</strong></span>
-                                                    <button style="width:120px" id="transfer_funds" data-toggle="modal" href="#transfer_fundsource" onclick="transferFunds({{ $fund->id }},{{ $proponentInfo->proponent_id }},{{ $proponentInfo->facility_id }})" class='btn btn-sm btn-outline-success ml-2 transfer_funds'>Transfer Funds</button>
+                                                    <button style="width:120px" id="transfer_funds" data-toggle="modal" href="#transfer_fundsource" onclick="transferFunds({{ $proponentInfo->id }})" class='btn btn-sm btn-outline-success ml-2 transfer_funds'>Transfer Funds</button>
                                                 </div>
                                                 <div class="d-flex justify-content-between align-items-center">
                                                     <span class="ml-3">Remaining Balance &nbsp;: <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->remaining_balance)), 2, '.', ',') }}</strong></span>
                                                 </div>
                                                 <div class="d-flex justify-content-end mt-2"></div>
-                                            </li>
                                         @endforeach
                                     </ul>
                                     <!-- <div> -->
@@ -137,6 +149,21 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="transfer_fundsource" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Transfer Fund Source</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal_body">
+                
+            </div>
+        </div>
+    </div>
+</div>
 
 @include('modal')
 @endsection
@@ -175,24 +202,23 @@
             event.stopPropagation();
             $('#track_details2').modal('show');
 
-         var fundsourceId = event.target.getAttribute('data-fundsource-id');
-         var proponentInfoId = event.target.getAttribute('data-proponentInfo-id');
-         var facilityId = event.target.getAttribute('data-facility-id');
+         var info_id = event.target.getAttribute('data-proponentInfo-id');
          var i = 0;
+         console.log('id', info_id);
          
-         var url = "{{ url('tracking').'/' }}"+ fundsourceId + '/' +proponentInfoId + '/' + facilityId;
+         var url = "{{ url('tracking').'/' }}"+ info_id;
             $.ajax({
             url: url,
             type: 'GET',
             
             success: function(result) {
                 $('#track_body').empty(); 
-                var dataArray = result.dv;
-                var user_info = result.user;
-                if(dataArray.length > 0){
-                    dataArray.forEach(function(item) {
+    
+                if(result.length > 0){
+                    result.forEach(function(item) {
                         var saa = item.fund_sourcedata && item.fund_sourcedata.saa !== null ? item.fund_sourcedata.saa : '-';
                         var proponentName = item.proponentdata && item.proponentdata.proponent !== null ? item.proponentdata.proponent : '-';
+                        var user = item.user && item.user !== null ? item.user.lname + ', ' + item.user.fname : '-';
                         var timestamp = item.created_at;
                         var date = new Date(timestamp);
                         var formattedDate = date.toLocaleString('en-US', {
@@ -226,7 +252,7 @@
                             '<td>' + discount + '</td>' +
                             '<td>' +(item.div_id != 0 ?'<a class="modal-link" href="#i_frame" data-routeId="'+route+'" onclick="openModal(this)">' + utilize + '</a>' :utilize) +'</td>' +
                             '<td>' + (item.div_id != 0 ? '<a href="{{ route("dv", ["keyword" => ""]) }}' + encodeURIComponent(route) + '">' + route + '</a>' : '') + '</td>' +
-                            '<td>' + user_info[i].lname +', '+user_info[i].fname+ '</td>' +
+                            '<td>' + user + '</td>' +
                             '<td>' + formattedDate+'<br>'+ formattedTime + '</td>' +
                             '<td>' + stat + '</td>' +
                             '<td>' + (item.obligated == 1 ? '<i class="typcn typcn-tick menu-icon"></i>' : '') + '</td>' +
@@ -304,16 +330,15 @@
                 });
             }, 200);
         }//createBreakdowns
-        function transferFunds(fundsourceId, proponent_id, facility_id){
+        function transferFunds(info_id){
             console.log('ahsdsd');
             // var proponent_id = event.target.getAttribute('data-proponentInfo-id');
             // var facility_id = event.target.getAttribute('data-facility-id');
-            var proponent_id = proponent_id;
-            var facility_id = facility_id;
+            // var proponent_id = proponent_id;
+            // var facility_id = facility_id;
             $('.modal_body').html(loading);
             $('.modal-title').html("Transfer Funds");
-            console.log('fundsourceId', fundsourceId);
-            var url = "{{ url('fundsource/transfer_funds').'/' }}"+ fundsourceId+'/'+proponent_id+'/'+ facility_id;
+            var url = "{{ url('fundsource/transfer_funds').'/' }}"+ info_id;
             setTimeout(function() {
                 $.ajax({
                     url: url,

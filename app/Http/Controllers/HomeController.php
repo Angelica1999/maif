@@ -115,14 +115,18 @@ class HomeController extends Controller
     }
 
     public function reportFacility(Request $request){
-        $facilities = ProponentInfo::groupBy('facility_id')
-            ->select(DB::raw('MAX(facility_id) as facility_id'))
-            ->with(['facility' => function ($query) use ($request) {
-                if (!$request->viewAll && $request->keyword) {
-                    $query->where('name', 'LIKE', "%$request->keyword%");
-                }
-            }])
-            ->paginate(15);
+        // $facilities = ProponentInfo::groupBy('facility_id')
+        //     ->select(DB::raw('MAX(facility_id) as facility_id'))
+        //     ->with(['facility' => function ($query) use ($request) {
+        //         if (!$request->viewAll && $request->keyword) {
+        //             $query->where('name', 'LIKE', "%$request->keyword%");
+        //         }
+        //     }])
+        //     ->paginate(15);
+        $facilities = Facility::when(!$request->viewAll && $request->keyword, function ($query) use ($request) {
+            $query->where('name', 'LIKE', "%$request->keyword%");
+        })
+        ->paginate(15);
 
         if($request->viewAll){
             $request->keyword = '';
@@ -132,9 +136,8 @@ class HomeController extends Controller
     }
 
     public function getProponentReport($pro_group){
-
         $proponentIds = Proponent::where('pro_group', $pro_group)->pluck('id')->toArray();
-        $utilization = Utilization::whereIn('proponentinfo_id', $proponentIds)
+        $utilization = Utilization::whereIn('proponent_id', $proponentIds)
             ->select( DB::raw('MAX(utilization.div_id) as route_no'), DB::raw('MAX(utilization.utilize_amount) as utilize_amount'),  
                 DB::raw('MAX(proponent.proponent) as proponent_name'), DB::raw('MAX(utilization.created_at) as created_at'),
                 DB::raw('MAX(utilization.created_by) as created_by'), DB::raw('MAX(utilization.facility_id) as facility_id'),
@@ -243,8 +246,11 @@ class HomeController extends Controller
         return $display;
     }
     public function getFacilityReport($facility_id){
-        $utilize = Utilization::where('facility_id', $facility_id)->with('facilitydata')->with('fundSourcedata')->with('proponentdata')->where('status', '<>', '1')->get();
-        // return $utilize;
+        $utilize = Utilization::
+                        where('facility_id', $facility_id)
+                    ->orWhereJsonContains('facility_id', $facility_id)
+                    ->with('facilitydata')->with('fundSourcedata')->with('proponentdata')->where('status', '<>', '1')->get();
+        // return count($utilize);
         $title = Facility::where('id', $facility_id)->value('name');
         $filename = $title.'.xls';
         header("Content-Type: application/xls");
@@ -269,12 +275,26 @@ class HomeController extends Controller
                 $utilize = $row->utilize_amount;
                 $remarks = "processed";
                 if($row->status ==2){ //from
+
                     $transfer = Transfer::where('id', $row->transfer_id)->with('to_fundsource')->with('to_facilityInfo')->with('to_proponentInfo')->first();
-                    // return $transfer->to_proponent;
-                    $remarks = 'transferred to '.$transfer->to_proponentInfo->proponent.' - '.$transfer->to_fundsource->saa.' - '. $transfer->to_facilityInfo->name;
+                          if(is_string($transfer->from_facility)){
+                            $facility_n = Facility::whereIn('id',array_map('intval', json_decode($transfer->from_facility)))->pluck('name')->toArray();
+                            $facility_n = implode(', ', $facility_n);
+                          }else{
+                            $facility_n = Facility::where('id', $transfer->from_facility)->value('name');
+                          }
+                    $remarks = 'transferred to '.$transfer->to_proponentInfo->proponent.' - '.$transfer->to_fundsource->saa.' - '. $facility_n;
+
                 }else if($row->status ==3){ //to
+
                     $transfer = Transfer::where('id', $row->transfer_id)->with('from_fundsource')->with('from_facilityInfo')->with('from_proponentInfo')->first();
-                    $remarks = 'transferred from '.$transfer->from_proponentInfo->proponent.' - '.$transfer->from_fundsource->saa.' - '. $transfer->from_facilityInfo->name;
+                    if(is_string($transfer->to_facility)){
+                        $facility_n = Facility::whereIn('id',array_map('intval', json_decode($transfer->to_facility)))->pluck('name')->toArray();
+                        $facility_n = implode(', ', $facility_n);
+                      }else{
+                        $facility_n = Facility::where('id', $transfer->to_facility)->value('name');
+                      }
+                    $remarks = 'transferred from '.$transfer->from_proponentInfo->proponent.' - '.$transfer->from_fundsource->saa.' - '. $facility_n;
                 }
                 $table_body .= "<tr>
                     <td style='vertical-align:top;'>$saa</td>

@@ -64,12 +64,14 @@ class DvController extends Controller
     }
 
     public function getFundsource(Request $request){
-        $fundsource = ProponentInfo::with('facility', 'fundsource', 'proponent')
-                        ->where('proponent_info.facility_id', $request->facility_id)
-                        ->orWhere('proponent_info.facility_id', 702)
-                        ->get();
+       
+        $info = ProponentInfo::with('facility', 'fundsource', 'proponent')
+                    ->whereJsonContains('proponent_info.facility_id', $request->facility_id)
+                    ->orWhere('proponent_info.facility_id', $request->facility_id)
+                    ->orWhere('proponent_info.facility_id', 702)
+                    ->get();
         $facility = Facility::where('id', $request->facility_id)->first();
-        return response()->json(['fundsource' => $fundsource, 'facility' => $facility]);
+        return response()->json(['info' => $info, 'facility' => $facility]);
     }
 
     public function saveUpdateDV(Request $request){
@@ -232,49 +234,41 @@ class DvController extends Controller
 
     function createDvSave(Request $request){
         $check = $request->input('dv');       
-        $facility_id = array_values(array_filter([$request->input('fac_id1'), $request->input('fac_id2'), $request->input('fac_id3')],
+        $facility_used = array_values(array_filter([$request->input('fac_id1'), $request->input('fac_id2'), $request->input('fac_id3')],
                             function($value){return $value !== '0' && $value !==null;}));
-        $proponent_id = array_values(array_filter([$request->input('saa1_infoId'), $request->input('saa2_infoId'), $request->input('saa3_infoId')],
+        $info = array_values(array_filter([$request->input('saa1_infoId'), $request->input('saa2_infoId'), $request->input('saa3_infoId')],
                             function($value){return  $value !=='0' && $value !==null;}));
         $per_amount = [$request->input('amount1'),$request->input('amount2'),$request->input('amount3')];
         $utilize_amount = [$request->input('saa1_utilize'),$request->input('saa2_utilize'),$request->input('saa3_utilize')];
         $discount = [$request->input('saa1_discount'),$request->input('saa2_discount'),$request->input('saa3_discount')];
         $dv= Dv::where('id', $check)->first();
-        // return $facility_id;
-
+        $all_pro = array_values(array_filter([$request->input('pro_id1'), $request->input('pro_id2'), $request->input('pro_id3')],
+                        function($value){return $value !== '0' && $value !==null;}));
         if($dv) {
 
             Utilization::where('div_id', $dv->route_no)->update(['status'=>1]);
-            // $dv->created_by = $dv->created_by;
-            // $dv->route_no = $dv->route_no;
             $dv->modified_by = Auth::user()->userid;
             $dv->dv_no = $request->input('dv_no');
             $saa = explode(',', $dv->fundsource_id);
             $saa = str_replace(['[', ']', '"'],'',$saa);
-            $pro_id = explode(',', $dv->proponent_id);
-            $pro_id = str_replace(['[', ']', '"'],'',$pro_id);
+
             $amount = [$dv->amount1, !empty($dv->amount2)?$dv->amount2: 0 , !empty($dv->amount3)?$dv->amount3: 0];
             $index = 0;
 
-                foreach($saa as $index=>$id){
-                   $p_if = ProponentInfo::where('fundsource_id', $id)->where('facility_id', $facility_id[$index])->where('proponent_id',$pro_id[$index])->first();
-                    // return $p_if;
-                   if($dv->deduction1 >= 3){
-                        $total =((double)str_replace(',', '',$amount[$index]) / 1.12);
-                   }else{
-                        $total =((double)str_replace(',', '',$amount[$index]));
-                   }
-                   
-                   $return = (double)$p_if -> remaining_balance + (double)str_replace(',', '',$amount[$index]);
-                   $p_if->remaining_balance = $return;
-                   $index = $index + 1;
-                   $p_if->save();
-               }
-            
-            //    TrackingMaster::where('route_no', $dv->route_no)->delete();
-            //    TrackingDetails::where('route_no', $dv->route_no)->delete();
+            foreach($saa as $index=>$id){
+                $p_if = ProponentInfo::where('id', $info[$index])->first();
 
-            
+                if($dv->deduction1 >= 3){
+                    $total =((double)str_replace(',', '',$amount[$index]) / 1.12);
+                }else{
+                    $total =((double)str_replace(',', '',$amount[$index]));
+                }
+                
+                $return = (double)$p_if -> remaining_balance + (double)str_replace(',', '',$amount[$index]);
+                $p_if->remaining_balance = $return;
+                $index = $index + 1;
+                $p_if->save();
+            }
         }else{
             $dv = new Dv();
             $dv->created_by = Auth::user()->userid;
@@ -283,7 +277,8 @@ class DvController extends Controller
         } 
 
         $dv->date = $request->input('datefield');
-        $dv->facility_used = json_encode($facility_id);
+        $dv->facility_used = json_encode($facility_used);
+        $dv->info_id = json_encode($info);
         $dv->group_id = $request->input('group_id');
         $dv->facility_id = $request->input('facilityname');
         $dv->address = $request->input('facilityAddress');
@@ -311,7 +306,7 @@ class DvController extends Controller
         $dv->total_deduction_amount = $request->input('totalDeduction');
         $dv->overall_total_amount = $request->input('overallTotal1');
         $dv->accumulated = $request->input('accumulated');
-        $dv->proponent_id = json_encode($proponent_id);
+        $dv->proponent_id = json_encode($all_pro);
         $dv->save();
         
         if($check == null || $check == '' ){
@@ -340,12 +335,7 @@ class DvController extends Controller
        
 
         if ($dv->fundsource_id) {
-            // $saaNumbersArray = is_array($dv->fundsource_id)
-            //     ? $dv->fundsource_id
-            //     : explode(',', $dv->fundsource_id);
             $saaNumbersArray= array_map('intval', json_decode($dv->fundsource_id));
-
-            
             $id = array_values(array_filter([
                 $request->input('pro_id1'),
                 $request->input('pro_id2'),
@@ -359,22 +349,21 @@ class DvController extends Controller
                     
                     $cleanedSaa = str_replace(['[', ']', '"'], '', $saa);
                     $utilize = new Utilization();
-                    // if($dv){
-                    //     $utilize->modified_by = Auth::user()->userid;
-                    // }
                     $utilize->status = 0;
                     $utilize->fundsource_id = trim($cleanedSaa);
-                    $utilize->proponentinfo_id = $proponent_id[$index];
-                    $utilize->facility_id = $facility_id[$index];
+                    $utilize->proponentinfo_id = $info[$index];
+                    $utilize->proponent_id = $all_pro[$index];
+                    $utilize->facility_id = $facility_used[$index];
+                    $utilize->facility_id = $dv->facility_id;
 
-                    $proponent_info = ProponentInfo::where('fundsource_id', trim($cleanedSaa))->where('facility_id', $facility_id[$index])
-                        ->where('proponent_id', $proponent_id[$index])->where('id', $id[$index] )->first();
-                    // return $proponent_info;
+                    $proponent_info = ProponentInfo::where('id', $info[$index])->first();
+
                     $utilize->div_id = $dv->route_no;
                     $utilize->beginning_balance = $proponent_info->remaining_balance;
                     $utilize->discount = $discount[$index];
                     $utilize->utilize_amount = $utilize_amount[$index];
                     $utilize->created_by = Auth::user()->userid;
+
                     if($proponent_info && $proponent_info != null){
                         $cleanedValue = str_replace(',', '', $proponent_info->remaining_balance);
                         $proponent_info->remaining_balance = (float)$cleanedValue - (float)str_replace(',', '',$per_amount[$index]);
@@ -391,31 +380,38 @@ class DvController extends Controller
     
     public function getDv(Request $request){
        
-        $dv = Dv::where('id', $request->dvId)->first();
-        
+        $dv = Dv::where('id', $request->dvId)->with('facility')->first();
+
         if($dv){
-            $all_saa = array_map('intval', json_decode($dv->fundsource_id));
-            $all_proponent = array_map('intval', json_decode($dv->proponent_id));
-            $all_fac = array_map('intval', json_decode($dv->facility_used));
-
-            $fund_source = Fundsource::whereIn('id', $all_saa)->get();
-            $proponent = Proponent::whereIn('id', $all_proponent)->get();
-            $facilities = Facility::whereIn('id', $all_fac)->get();
-
-            $orderMapping = array_flip($all_saa);
-            $fund_source = $fund_source->sortBy(function ($item) use ($orderMapping) {
-                return $orderMapping[$item->id];
-            })->values();
-
-            $orderProponent = array_flip($all_proponent);
-            $proponent = $proponent->sortBy(function ($item) use ($orderProponent) {
-                return $orderProponent[$item->id];
-            })->values();
-                        
-            $facility = Facility::where('id', $dv->facility_id)->first();
-        
+            $info = array_map('intval', json_decode($dv->info_id));
+            $proponentInfo = ProponentInfo::whereIn('id', $info)->with(['proponent', 'fundsource', 'facility'])->get();
+            return response()->json(['dv' =>$dv,'proponentInfo' => $proponentInfo]);
         }
-        return response()->json(['dv' =>$dv,'fund_source' => $fund_source,'facility' => $facility, 'facilities' => $facilities,'proponent' => $proponent]);
+
+        
+        // if($dv){
+        //     $all_saa = array_map('intval', json_decode($dv->fundsource_id));
+        //     $all_proponent = array_map('intval', json_decode($dv->proponent_id));
+        //     $all_fac = array_map('intval', json_decode($dv->facility_used));
+
+        //     $fund_source = Fundsource::whereIn('id', $all_saa)->get();
+        //     $proponent = Proponent::whereIn('id', $all_proponent)->get();
+        //     $facilities = Facility::whereIn('id', $all_fac)->get();
+
+        //     $orderMapping = array_flip($all_saa);
+        //     $fund_source = $fund_source->sortBy(function ($item) use ($orderMapping) {
+        //         return $orderMapping[$item->id];
+        //     })->values();
+
+        //     $orderProponent = array_flip($all_proponent);
+        //     $proponent = $proponent->sortBy(function ($item) use ($orderProponent) {
+        //         return $orderProponent[$item->id];
+        //     })->values();
+                        
+        //     $facility = Facility::where('id', $dv->facility_id)->first();
+        
+        // }
+        // return response()->json(['dv' =>$dv,'fund_source' => $fund_source,'facility' => $facility, 'facilities' => $facilities,'proponent' => $proponent]);
     }
 
     function getSections($id){

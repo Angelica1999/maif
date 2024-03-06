@@ -449,26 +449,33 @@
                 $('#saa2').append($('<option>', {value: '',text: 'Select SAA'}));
                 $('#saa3').append($('<option>', {value: '',text: 'Select SAA'}));
                 $.each(result, function(index, optionData) {
-                    if(optionData.facility.id == facility_id){
-                        text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent;
+                    if(optionData.facility !== null){
+                        console.log('facility', optionData.facility.id);
+                        if(optionData.facility.id == facility_id){
+                            text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent;
+                        }else{
+                            text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + optionData.facility.name;
+                        }
                     }else{
-                        text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + optionData.facility.name;
+                        text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent;
                     }
                     $('#saa2').append($('<option>', {
                         value: optionData.fundsource_id,
                         text: text_display,
                         dataval: optionData.remaining_balance,
-                        dataproponent: optionData.proponent_id,
-                        dataprogroup: pro_group,
-                        datafacility: optionData.facility.id
+                        dataproponentInfo_id: optionData.id,
+                        dataprogroup: optionData.proponent.pro_group,
+                        dataproponent: optionData.proponent.id
+
                     }));
                     $('#saa3').append($('<option>', {
                         value: optionData.fundsource_id,
                         text: text_display,
                         dataval: optionData.remaining_balance,
-                        dataproponent: optionData.proponent_id,
-                        dataprogroup: pro_group,
-                        datafacility: optionData.facility.id
+                        dataproponentInfo_id: optionData.id,
+                        dataprogroup: optionData.proponent.pro_group,
+                        dataproponent: optionData.proponent.id
+
                     }));
                 });
             });
@@ -556,25 +563,34 @@
 
     function handleChangesF(facility_id){
         $.get("{{ url('fetch/fundsource').'/' }}"+facility_id, function(result) {
+            console.log('res', result);
+
+            console.log('facility', facility_id);
             $('#facilityAddress').text(result.facility.address);
             $("#facilitaddress").val(result.facility.address);
             $('#hospitalAddress').text(result.facility.name);
             $('#for_facility_id').val(facility_id);
-            var data_result = result.fundsource;
+            var data_result = result.info;
             var text_display;
             $.each(data_result, function(index, optionData){
-                if(optionData.facility.id == facility_id){
-                    text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent;
+                console.log('df', optionData);
+                if(optionData.facility !== null){
+                    console.log('facility', optionData.facility.id);
+                    if(optionData.facility.id == facility_id){
+                        text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent;
+                    }else{
+                        text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + optionData.facility.name;
+                    }
                 }else{
-                    text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + optionData.facility.name;
+                    text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent;
                 }
                 $('#saa1').append($('<option>', {
                         value: optionData.fundsource_id,
                         text: text_display,
                         dataval: optionData.remaining_balance,
-                        dataproponent: optionData.proponent_id,
+                        dataproponentInfo_id: optionData.id,
                         dataprogroup: optionData.proponent.pro_group,
-                        datafacility: optionData.facility.id
+                        dataproponent: optionData.proponent.id
                 }));
             });
         });
@@ -623,63 +639,53 @@
             var vat = $('#vat').val();
             var ewt = $('#ewt').val();
             var facility_id = $('#for_facility_id').val();
-            var selected_proponent1 = $('#saa1').find(':selected').attr('dataproponent');
+            // var selected_proponent1 = $('#saa1').find(':selected').attr('dataproponent');
             var pro_group = $('#saa1').find(':selected').attr('dataprogroup');
-            var selected_proponent2 = $('#saa2').find(':selected').attr('dataproponent');
-            var selected_proponent3 = $('#saa3').find(':selected').attr('dataproponent');
-            var selected_fac1 = $('#saa1').find(':selected').attr('datafacility');
-            var selected_fac2 = $('#saa2').find(':selected').attr('datafacility');
-            var selected_fac3 = $('#saa3').find(':selected').attr('datafacility');
-            console.log('selectedSaaId', selectedSaaId);
+            // var selected_proponent2 = $('#saa2').find(':selected').attr('dataproponent');
+            // var selected_proponent3 = $('#saa3').find(':selected').attr('dataproponent');
+            // var selected_fac1 = $('#saa1').find(':selected').attr('datafacility');
+            // var selected_fac2 = $('#saa2').find(':selected').attr('datafacility');
+            // var selected_fac3 = $('#saa3').find(':selected').attr('datafacility'); dataproponentInfo_id
+            var info1 = $('#saa1').find(':selected').attr('dataproponentInfo_id');
+            var info2 = $('#saa2').find(':selected').attr('dataproponentInfo_id');
+            var info3 = $('#saa3').find(':selected').attr('dataproponentInfo_id');
+            $('#saa1_infoId').val(info1);
+            $('#saa2_infoId').val(info2);
+            $('#saa3_infoId').val(info3);
+            $('#pro_id1').val($('#saa1').find(':selected').attr('dataproponent'));
+            $('#pro_id2').val($('#saa2').find(':selected').attr('dataproponent'));
+            $('#pro_id3').val($('#saa3').find(':selected').attr('dataproponent'));
 
-            console.log('facility_id', facility_id);
-            console.log('selected_proponent1',selected_proponent1);
-            console.log('pro_group',pro_group);
-            console.log('selected_fac1',selected_fac1);
 
             if(facility_id !== null && facility_id !== undefined && facility_id !== ''){
                 // $.get("{{ url('/getallocated').'/' }}" +facility_id, function(result) {
                 $.get("{{ url('/balance')}}", function(result) {
 
-                    var saa1Alocated_Funds1 = (result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId && item.proponent_id == selected_proponent1 
-                                                && item.facility_id == selected_fac1 )|| {}).remaining_balance|| 0;
-                    var saa1Alocated_Funds2 = (result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId2 && item.proponent_id == selected_proponent2 
-                                                && item.facility_id == selected_fac2 ) || {}).remaining_balance|| 0;
-                    var saa1Alocated_Funds3 = (result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId3 && item.proponent_id == selected_proponent3
-                                                && item.facility_id == selected_fac3 )|| {}).remaining_balance|| 0;
+                    var saa1Alocated_Funds1 = (result.allocated_funds.find(item =>item.id == info1)|| {}).remaining_balance|| 0;
+                    var saa1Alocated_Funds2 = (result.allocated_funds.find(item =>item.id == info2) || {}).remaining_balance|| 0;
+                    var saa1Alocated_Funds3 = (result.allocated_funds.find(item =>item.id == info3)|| {}).remaining_balance|| 0;
                     var inputValue1 = parseNumberWithCommas(document.getElementById('inputValue1').value) || 0;
                     var inputValue2 = parseNumberWithCommas(document.getElementById('inputValue2')?.value ?? '0');
                     var inputValue3 = parseNumberWithCommas(document.getElementById('inputValue3')?.value ?? '0');
 
                     saa1Alocated_Funds = parseNumberWithCommas(saa1Alocated_Funds1);
-                    $('#saa1_infoId').val((result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId && item.proponent_id == selected_proponent1
-                            && item.facility_id == selected_fac1) || {}).proponent_id || 0);
-                    $('#saa2_infoId').val((result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId2 && item.proponent_id == selected_proponent2
-                            && item.facility_id == selected_fac2) || {}).proponent_id || 0);
-                    $('#saa3_infoId').val((result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId3 && item.proponent_id == selected_proponent3
-                            && item.facility_id == selected_fac3) || {}).proponent_id || 0);
+                    // $('#saa1_infoId').val((result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId && item.proponent_id == selected_proponent1
+                    //         && item.facility_id == selected_fac1) || {}).proponent_id || 0);
+                    // $('#saa2_infoId').val((result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId2 && item.proponent_id == selected_proponent2
+                    //         && item.facility_id == selected_fac2) || {}).proponent_id || 0);
+                    // $('#saa3_infoId').val((result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId3 && item.proponent_id == selected_proponent3
+                    //         && item.facility_id == selected_fac3) || {}).proponent_id || 0);
 
-                    $('#pro_id1').val((result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId && item.proponent_id == selected_proponent1
-                            && item.facility_id == selected_fac1) || {}).id || 0);
-                            
-                    $('#pro_id2').val((result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId2 && item.proponent_id == selected_proponent2
-                            && item.facility_id == selected_fac2) || {}).id || 0);
-                    $('#pro_id3').val((result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId3 && item.proponent_id == selected_proponent3
-                            && item.facility_id == selected_fac3) || {}).id || 0);
-
-                    $('#fac_id1').val((result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId && item.proponent_id == selected_proponent1
-                            && item.facility_id == selected_fac1) || {}).facility_id || 0);
-                    $('#fac_id2').val((result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId2 && item.proponent_id == selected_proponent2
-                            && item.facility_id == selected_fac2) || {}).facility_id || 0);
-                    $('#fac_id3').val((result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId3 && item.proponent_id == selected_proponent3
-                            && item.facility_id == selected_fac3) || {}).facility_id || 0);
+                    $('#fac_id1').val((result.allocated_funds.find(item =>item.id == info1) || {}).facility_id || 0);
+                    $('#fac_id2').val((result.allocated_funds.find(item =>item.id == info2) || {}).facility_id || 0);
+                    $('#fac_id3').val((result.allocated_funds.find(item =>item.id == info3) || {}).facility_id || 0);
                 
-                    new_saa1 = (result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId && item.proponent_id == selected_proponent1
-                            && item.facility_id == selected_fac1) || {}).fundsource_id|| 0;
-                    new_saa2 = (result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId2 && item.proponent_id == selected_proponent2
-                            && item.facility_id == selected_fac2) || {}).fundsource_id|| 0;
-                    new_saa3 = (result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId3 && item.proponent_id == selected_proponent3
-                            && item.facility_id == selected_fac3) || {}).fundsource_id|| 0;
+                    // new_saa1 = (result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId && item.proponent_id == selected_proponent1
+                    //         && item.facility_id == selected_fac1) || {}).fundsource_id|| 0;
+                    // new_saa2 = (result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId2 && item.proponent_id == selected_proponent2
+                    //         && item.facility_id == selected_fac2) || {}).fundsource_id|| 0;
+                    // new_saa3 = (result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId3 && item.proponent_id == selected_proponent3
+                    //         && item.facility_id == selected_fac3) || {}).fundsource_id|| 0;
 
                     // fac_id = (result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId3 && item.proponent_id == selected_proponent3) || {}).facility_id|| 0;
                     
@@ -688,6 +694,7 @@
                     setElementValue('#totalInput', all_data);
 
                     // $('#totalInput').val(all_data.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                    console.log('data', all_data);
                     $('#totalDebit').text(all_data.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
 
                     var ewt_input = ((all_data * ewt) / 100).toFixed(2);
@@ -771,29 +778,21 @@
                     console.log('dv', allocated);
                     if(allocated !== null && allocated !== undefined && allocated !==''){
                         console.log('checkpoint', allocated);
-                        var save_saa1 = parseNumberWithCommas($('#saa1').val()) || 0;
-                        var save_saa2 = parseNumberWithCommas($('#saa2').val()) || 0;
-                        var save_saa3 = parseNumberWithCommas($('#saa3').val()) || 0;
-                        var save_fac1 = parseNumberWithCommas(document.getElementById('save_fac1').value) || 0; 
-                        var new_fac1 = parseNumberWithCommas(document.getElementById('fac_id1').value) || 0;
-                        console.log('amounttttt', $('#save_amount2').val()) ;
-                        console.log('save saa', save_saa1) ;
-                        console.log('new saa', new_saa1) ;
-                        console.log('amounttttt', save_fac1) ;
-                        console.log('amounttttt', new_fac1) ;
+                        var save_info1 = parseNumberWithCommas($('#save_saa1').val()) || 0;
+                        var save_info2 = parseNumberWithCommas($('#save_saa2').val()) || 0;
+                        var save_info3 = parseNumberWithCommas($('#save_saa3').val()) || 0;
 
-                        if(save_saa1 == new_saa1 && save_fac1 == new_fac1){
+                        if(save_info1 == info1){
                             saa1Alcated_fund1 = (saa1Alcated_fund1 + parseFloat($('#save_amount1').val())).toFixed(2);
                         }
-                        if($('#save_amount2').val() !== null && $('#save_amount2').val() !== undefined && $('#save_amount2').val() !=='' && save_saa2 == new_saa2 && save_fac1 == new_fac1){
+                        if($('#save_amount2').val() !== null && $('#save_amount2').val() !== undefined && $('#save_amount2').val() !=='' && save_info2 == info2){
                             saa1Alcated_fund2 = saa1Alcated_fund2 + parseFloat($('#save_amount2').val());   
                             console.log('amounttttt') ;
                         }
-                        if($('#save_amount3').val() !== null && $('#save_amount3').val() !== undefined && $('#save_amount3').val() !==''&& save_saa3 == new_saa3 && save_fac1 == new_fac1){
+                        if($('#save_amount3').val() !== null && $('#save_amount3').val() !== undefined && $('#save_amount3').val() !==''&& save_info3 == info3 ){
                             saa1Alcated_fund3 = saa1Alcated_fund3 + parseFloat($('#save_amount3').val());
                         }
                     }
-                    console.log('alocated1', saa1Alcated_fund1);
                     
                     if(event == 1){
                         $('#balance').text('Saa1 Remaining Balance: ' + saa1Alcated_fund1);
@@ -1014,7 +1013,6 @@
 
                 $.get("{{ url('/getDv').'/' }}" + dvId, function (result) {
                 $('.modal_body').html(first_res);
-
                 var printButton = $('<a>', {
                     href: "{{ route('dv.pdf', '') }}/" + dvId,
                     target: '_blank',
@@ -1026,7 +1024,6 @@
                 $('#dv_footer').append(printButton);
                     $('#dv').val(dvId);
                     $('#dv_no').val(result.dv.dv_no);
-                    console.log('kkkk', $('#dv').val());
                     if(result.dv.obligated == 1){
                         $('.btn-primary').hide();
                     }else{
@@ -1034,37 +1031,42 @@
                     }
                     $('#accumulated').prop('disabled', false).show();
                     $('#accumulated').val(result.dv.accumulated);
-                    $('#totalDebit').text(formatNumberWithCommas(parseNumberWithCommas
-                        (result.dv.total_amount)-parseNumberWithCommas(result.dv.accumulated), 2, '.',','));
+                    var totalAmount = parseNumberWithCommas(result.dv.total_amount);
+                    var accumulated = parseNumberWithCommas(result.dv.accumulated);
+
+                    var roundedResult = Math.round((totalAmount - accumulated) * 100) / 100; // Round to 2 decimal places
+                    console.log('round', roundedResult);
+
+                    $('#totalDebit').text(formatNumberWithCommas(roundedResult.toFixed(2), 2, '.', ','));
+
+
                     var facility = result.dv.facility_id;
                     update = 0;
                     $('#facilityDropdown').val(facility).trigger('change');
                     $('#for_facility_id').val(facility);
-                    onchangeSaa($('#saa1'), result.proponent[0].id, result.proponent[0].pro_group);
-                    console.log('chakii',result.facility.name);        
+                    onchangeSaa($('#saa1'), result.proponentInfo[0].id, result.proponentInfo[0].pro_group);
+                    console.log('chakii',result.dv.facility.name);        
                     counter = 0;
                     var vat=1;
                     if(result.dv.deduction1>3){
                         vat = 1.12;
                     }
-                    if(result.fund_source[0].saa !== null || result.fund_source[0].saa !== undefined){
-                        $('#saa1_infoId').val(result.proponent[0].id);
+                    if(result.proponentInfo[0] !== null || result.proponentInfo[0] !== undefined){
+                        $('#saa1_infoId').val(result.proponentInfo[0].id);
                         setTimeout(function() {
                             $('#saa1 option').each(function () {
                                 var value =  $(this).val();
                                 var group = $(this).attr('dataprogroup');
                                 var proponent = $(this).attr('dataproponent');
                                 var facility = $(this).attr('datafacility');
-                                if(value == result.fund_source[0].id && proponent == result.proponent[0].id 
-                                    && group == result.proponent[0].pro_group &&  facility == result.facilities[0].id){
+                                var info_id = $(this).attr('dataproponentInfo_id');
+
+                                if( info_id == result.proponentInfo[0].id){
                                     $(this).prop('selected',true);
                                     $('#saa1').trigger('change');
-                                    console.log('gotgot',result.proponent[0].id);        
-
                                 }
                             });
                         }, 1500);
-                        console.log('chakii',result.proponent[0].id);        
 
                         $('#inputValue1').val(result.dv.amount1).prop('disabled', false).show();
                         $('#vat').val(result.dv.deduction1);
@@ -1072,16 +1074,13 @@
                         $('#vatValue1').val((parseFloat(result.dv.amount1.replace(/,/g,''))/vat * result.dv.deduction1/100).toFixed(2));
                         $('#ewttValue1').val((parseFloat(result.dv.amount1.replace(/,/g,''))/vat * result.dv.deduction2/100).toFixed(2));
                         $('#save_amount1').val(parseFloat(result.dv.amount1.replace(/,/g,'')));
-                        $('#save_saa1').val(result.fund_source[0].id);
-                        $('#save_fac1').val(result.dv.facility_id);
+                        $('#save_saa1').val(result.proponentInfo[0].id);
                         var oki = parseFloat(result.dv.amount1) * result.dv.deduction1;
                         saaCounter = 1;
-                    } if(result.fund_source[1] !== null && result.fund_source[1] !== undefined){
-                        toggleSAADropdowns($('#saa1'), result.proponent[0].id, result.proponent[0].pro_group);
-                        console.log('result', result.fund_source);
+                    } if(result.proponentInfo[1] !== null && result.proponentInfo[1] !== undefined){
+                        toggleSAADropdowns($('#saa1'), result.proponentInfo[0].id, result.proponentInfo[0].pro_group);
                         if(result.dv.amount2 !== null){
-                            $('#saa2_infoId').val(result.proponent[1].id);
-                            console.log('saa2', result.fund_source[1].id)
+                            $('#saa2_infoId').val(result.proponentInfo[1].id);
                             $('#RemoveSAAButton').prop('disabled', false).show();
                             $('#saa2').prop('disabled', false).show();
                             setTimeout(function() {
@@ -1090,8 +1089,9 @@
                                     var group = $(this).attr('dataprogroup');
                                     var proponent = $(this).attr('dataproponent');
                                     var facility = $(this).attr('datafacility');
-                                    if(value == result.fund_source[1].id && proponent == result.proponent[1].id 
-                                        && group == result.proponent[1].pro_group &&  facility == result.facilities[1].id){
+                                    var info_id = $(this).attr('dataproponentInfo_id');
+
+                                    if(info_id == result.proponentInfo[1].id){
                                         $(this).prop('selected',true);
                                         $('#saa2').trigger('change');
                                     }
@@ -1103,35 +1103,36 @@
                             $('#vatValue2').val((parseFloat(result.dv.amount2.replace(/,/g,''))/vat * result.dv.deduction1/100).toFixed(2)).show();
                             $('#ewtValue2').val((parseFloat(result.dv.amount2.replace(/,/g,''))/vat * result.dv.deduction2/100).toFixed(2)).show();
                             $('#save_amount2').val(parseFloat(result.dv.amount2.replace(/,/g,'')));
-                            $('#save_saa2').val(result.fund_source[0].id);
+                            $('#save_saa2').val(result.proponentInfo[1].id);
                             saaCounter = 2;
                         }else{
                             $('#RemoveSAAButton1').prop('disabled', false).show();
                             $('#saa2').prop('disabled', false).show();
-                            $('#saa2_infoId').val(result.proponent[2].id);
+                            $('#saa2_infoId').val(result.proponentInfo[2].id);
                             setTimeout(function() {
                                 $('#saa2 option').each(function () {
                                     var value =  $(this).val();
                                     var group = $(this).attr('dataprogroup');
                                     var proponent = $(this).attr('dataproponent');
                                     var facility = $(this).attr('datafacility');
-                                    if(value == result.fund_source[2].id && proponent == result.proponent[2].id 
-                                        && group == result.proponent[2].pro_group &&  facility == result.facilities[2].id){
+                                    var info_id = $(this).attr('dataproponentInfo_id');
+
+                                    if(info_id == result.proponentInfo[2].id){
                                         $(this).prop('selected',true);
                                         $('#saa2').trigger('change');
                                     }
                                 });
                             }, 1500);
-                            $('#inputValue3').val(result.dv.amount3).prop('disabled', false).show();
-                            $('#vatValue3').val((parseFloat(result.dv.amount3.replace(/,/g,''))/vat * result.dv.deduction1/100).toFixed(2)).show();
-                            $('#ewtValue3').val((parseFloat(result.dv.amount3.replace(/,/g,''))/vat * result.dv.deduction2/100).toFixed(2)).show();
-                            $('#save_amount3').val(parseFloat(result.dv.amount3.replace(/,/g,'')));
-                            $('#save_saa3').val(result.fund_source[0].id);
+                            $('#inputValue2').val(result.dv.amount3).prop('disabled', false).show();
+                            $('#vatValue2').val((parseFloat(result.dv.amount3.replace(/,/g,''))/vat * result.dv.deduction1/100).toFixed(2)).show();
+                            $('#ewtValue2').val((parseFloat(result.dv.amount3.replace(/,/g,''))/vat * result.dv.deduction2/100).toFixed(2)).show();
+                            $('#save_amount2').val(parseFloat(result.dv.amount3.replace(/,/g,'')));
+                            $('#save_saa2').val(result.proponentInfo[2].id);
                         }
                         
-                    } if(result.fund_source[2] !== null && result.fund_source[2] !== undefined){
-                        $('#saa3_infoId').val(result.proponent[2].id);
-                        toggleSAADropdowns($('#saa1'), result.proponent[0].id, result.proponent[0].pro_group);
+                    } if(result.proponentInfo[2] !== null && result.proponentInfo[2] !== undefined){
+                        $('#saa3_infoId').val(result.proponentInfo[2].id);
+                        toggleSAADropdowns($('#saa1'), result.proponentInfo[0].id, result.proponentInfo[0].pro_group);
                         $('#saa3').prop('disabled', false).show();
                         $('#inputValue3').val(result.dv.amount3).prop('disabled', false).show();
                         setTimeout(function() {
@@ -1140,8 +1141,9 @@
                                     var group = $(this).attr('dataprogroup');
                                     var proponent = $(this).attr('dataproponent');
                                     var facility = $(this).attr('datafacility');
-                                    if(value == result.fund_source[2].id && proponent == result.proponent[2].id 
-                                        && group == result.proponent[2].pro_group &&  facility == result.facilities[2].id){
+                                    var info_id = $(this).attr('dataproponentInfo_id');
+
+                                    if(info_id == result.proponentInfo[2].id){
                                         $(this).prop('selected',true);
                                         $('#saa3').trigger('change');
                                     }
@@ -1150,7 +1152,7 @@
                         $('#vatValue3').val((parseFloat(result.dv.amount3.replace(/,/g,''))/vat * result.dv.deduction1/100).toFixed(2)).show();
                         $('#ewtValue3').val((parseFloat(result.dv.amount3.replace(/,/g,''))/vat * result.dv.deduction2/100).toFixed(2)).show();
                         $('#save_amount3').val(parseFloat(result.dv.amount3.replace(/,/g,'')));
-                        $('#save_saa3').val(result.fund_source[0].id);
+                        $('#save_saa3').val(result.proponentInfo[2].id);
                         $('#RemoveSAAButton1').prop('disabled', false).show();
                     }
                     console.log('saa2saa2', document.getElementById('saa2').value);
@@ -1179,9 +1181,6 @@
                         var to_date = `${to.getFullYear()}-${(to.getMonth() + 1).toString().padStart(2, '0')}`;
                         $('#billingMonth2').val(to_date);
                     }
-                    
-                    var id = result.fund_source[0].id;
-                    var val = result.dv.facility_id;
 
                     $('#DeductForCridet').text(result.dv.total_deduction_amount);
                     $('#OverTotalCredit').text(result.dv.overall_total_amount);

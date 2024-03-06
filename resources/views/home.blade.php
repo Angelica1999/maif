@@ -570,7 +570,6 @@
 
     function onchangeForPatientCode(data) {
         console.log('sdsad', data.val());
-        console.log('sdsad',facility_id);
         if(data.val()) {
             $.get("{{ url('patient/code').'/' }}"+data.val()+"/"+facility_id, function(result) {
                 console.log(result.patient_code);
@@ -585,7 +584,7 @@
                 var res = result.proponent_info;
                 
                 $.each(res, function(index, optionData) {
-                    suggestions.push(res[index].saa +' - '+res[index].remaining_balance);
+                    suggestions.push(res[index].fundsource.saa +' - '+res[index].remaining_balance);
                 });
                 var suggestionsDiv = $('#suggestions');
                 suggestionsDiv.empty();
