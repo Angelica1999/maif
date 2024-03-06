@@ -64,15 +64,26 @@
                                 <label>Facility:</label>
                                     <div class="form-group">
                                         <div class="facility_select">
-                                            <select class="form-control break_fac" id="{{$proInfo->id}}" name="facility_id[]" 
+                                            <select class="form-control break_fac" id="{{$proInfo->id}}" name="facility_id[]" multiple
                                             @if($proInfo->alocated_funds != $proInfo->remaining_balance)
-                                                disabled
-                                            @endif
-                                            >
-                                                <option value="">Please select facility</option>
+                                            
+                                            @endif >
+                                            <option value="">Please select facility</option>
+
+                                            @if($proInfo->facility != null)
                                                 @foreach($facilities as $facility)
                                                     <option value="{{ $facility->id }}" {{$proInfo->facility_id == $facility->id ? 'selected' :''}}>{{ $facility->name }}</option>
                                                 @endforeach
+                                            @else
+                                                <?php 
+                                                    $facilityIds = array_map('intval', json_decode($proInfo->facility_id));
+                                                ?>
+                                                @foreach($facilities as $facility)
+                                                    <option value="{{ $facility->id }}" {{ in_array($facility->id, $facilityIds) ? 'selected' : '' }}>
+                                                        {{ $facility->name }}
+                                                    </option>
+                                                @endforeach
+                                            @endif
                                             </select>
                                         </div>
                                     </div>
@@ -81,9 +92,10 @@
                                     <label>Allocated Funds:</label>
                                     <div class="form-group">
                                         <div class="form-group" style="display: flex; align-items: center;">
+                                            <input type="hidden" class="info_id" value="{{!empty($proInfo->id)?$proInfo->id:0}}">
                                             <input type="text" class="form-control alocated_funds" id="alocated_funds[]" name="alocated_funds[]" oninput="calculateFunds(this)" onkeyup="validateAmount(this)" value="{{number_format(str_replace(',', '',$proInfo->alocated_funds), 2, '.', ',')}}" style="flex: 1; width:160px;"
                                             @if($proInfo->alocated_funds != $proInfo->remaining_balance)
-                                                readonly
+                                                
                                             @endif
                                             >
                                             @if($index == 0)
@@ -111,7 +123,7 @@
                                 <label>Facility:</label>
                                 <div class="form-group">
                                     <div class="facility_select">
-                                        <select class="form-control break_fac" id="breakdown_select" name="facility_id[]" >
+                                        <select class="form-control break_fac" id="breakdown_select" name="facility_id[]" multiple>
                                             <option value="">Please select facility</option>
                                             @foreach($facilities as $facility)
                                                 <option value="{{ $facility->id }}">{{ $facility->name }}</option>
@@ -124,6 +136,7 @@
                                 <label>Allocated Funds:</label>
                                 <div class="form-group">
                                     <div class="form-group" style="display: flex; align-items: center;">
+                                        <input type="hidden" class="info_id" value="0">
                                         <input type="text" class="form-control alocated_funds" id="alocated_funds[]" name="alocated_funds[]" onkeyup="validateAmount(this)" oninput="calculateFunds(this)" placeholder="Allocated Fund" style="flex: 1; width:160px;">
                                         <button type="button" class="form-control btn-info clone_facility-btn" style="width: 5px; margin-left: 5px; color:white; background-color:#355E3B">+</button>
                                     </div>
@@ -160,7 +173,7 @@
                                 <label>Facility:</label>
                                 <div class="form-group">
                                     <div class="facility_select">
-                                        <select class="form-control break_fac" id="breakdown_select" name="facility_id[]">
+                                        <select class="form-control break_fac" id="breakdown_select" name="facility_id[]" multiple>
                                             <option value="">Please select facility</option>
                                             @foreach($facilities as $facility)
                                                 <option value="{{ $facility->id }}">{{ $facility->name }}</option>
@@ -193,36 +206,17 @@
 <div class="loading-container">
     <img src="public\images\loading.gif" alt="Loading..." class="loading-spinner">
 </div>
-<div class="modal fade" id="confirm_remove" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true" >
-    <div class="modal-dialog modal-sm" style="background-color: #17c964; color:white">
-        <div class="modal-content">
-            <div class="modal-header" style="background-color: #17c964;" >
-                <h5 id="confirmationModalLabel"><strong?>Confirmation</strong></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body" style="text-align:center; color:black">
-                Are you sure you want to remove this facility?
-            </div>
-            <div class="modal-footer" style="background-color: #17c964; color:white" >
-                <button type="button" class="btn btn-sm btn-info confirmation" id="confirmButton">Confirm</button>
-                <button type="button" class="btn btn-sm btn-danger confirmation" data-dismiss="modal" id="cancelButton">Cancel</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
 
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 <script>
     var timer;
+
     function remove(infoId){
         $.get("{{ url('proponentInfo/').'/' }}"+infoId, function(result) {
-                   console.log('rs', result);
+            console.log('rs', result);
         });
     }
+
     $('.btn-secondary').on('click', function(){
 
         // $('.modal_body').empty();
@@ -263,7 +257,8 @@
                     if(facility_id !== '' && facility_id !== undefined){
                         console.log('djfkdf', facility_id);
 
-                        var allocated_funds = $(row).find('.alocated_funds').val();
+                        var allocated_funds = $(row).find('.alocated_funds').val(); 
+                        var info_id = $(row).find('.info_id').val(); 
 
                         var cloneData = {
                             proponent: proponent,
@@ -271,6 +266,7 @@
                             facility_id: facility_id,
                             alocated_funds: allocated_funds,
                             remaining_balance: allocated_funds,
+                            info_id: info_id,
                             fundsource_id:{{$fundsource[0]->id}}
 
                         };

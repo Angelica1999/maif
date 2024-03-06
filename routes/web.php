@@ -62,7 +62,7 @@ Route::post('/fundsource/create/save', [App\Http\Controllers\FundSourceControlle
 Route::get('/proponent/get/{fundsource_id}', [App\Http\Controllers\FundSourceController::class, 'proponentGet'])->name('proponent.get');
 // Route::get('facility/get/{facilityId}',  [App\Http\Controllers\FundSourceController::class, 'facilityGet'])->name('facility.get');
 Route::post('fundsource/update', [App\Http\Controllers\FundSourceController::class, 'updatefundsource'])->name('fundsource.update');
-Route::get('fundsource/transfer_funds/{fundsourceId}/{proponent_id}/{facility_id}', [App\Http\Controllers\FundSourceController::class, 'transferFunds'])->name('fundsource.transfer');
+Route::get('fundsource/transfer_funds/{info_id}', [App\Http\Controllers\FundSourceController::class, 'transferFunds'])->name('fundsource.transfer');
 Route::post('fundsource/transfer/save', [App\Http\Controllers\FundSourceController::class, 'saveTransferFunds'])->name('transfer.save');
 Route::get('proponent/{proponent_id}', [App\Http\Controllers\FundSourceController::class, 'fetchProponent'])->name('proponent.fetch');
 
@@ -92,7 +92,8 @@ Route::get('/dv/create/save', [App\Http\Controllers\DvController::class, 'create
 Route::get('getDv/{dvId}', [App\Http\Controllers\DvController::class, 'getDv'])->name('getDv');
 Route::get('user/{userid}', [App\Http\Controllers\DvController::class, 'getUser'])->name('getUser');
 
-Route::get('tracking/{fundsourceId}/{proponentInfoId}/{facilityId}', [App\Http\Controllers\UtilizationController::class, 'tracking'])->name('tracking');
+// Route::get('tracking/{fundsourceId}/{proponentInfoId}/{facilityId}', [App\Http\Controllers\UtilizationController::class, 'tracking'])->name('tracking');
+Route::get('tracking/{info_id}', [App\Http\Controllers\UtilizationController::class, 'tracking'])->name('tracking');
 Route::get('budget/tracking/{fundsourceId}/{type}', [App\Http\Controllers\UtilizationController::class, 'trackingBudget'])->name('budget.tracking');
 
 

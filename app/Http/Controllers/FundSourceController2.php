@@ -48,10 +48,15 @@ class FundSourceController2 extends Controller{
           $fundsource = new Fundsource();
           $fundsource->saa = $saas[$index];
           $fundsource->alocated_funds = str_replace(',','',$fund);
-          $admin_cost = (double) str_replace(',','',$fund) * 0.01;
-          // return (double) str_replace(',','',$fund) * 0.01;
-          $fundsource->admin_cost = $admin_cost;
-          $fundsource->remaining_balance = (double)str_replace(',','',$fund) - $admin_cost ;
+          if((double)str_replace(',','',$fund) >= 1000000){
+            $admin_cost = (double) str_replace(',','',$fund) * 0.01;
+            $fundsource->admin_cost = $admin_cost;
+            $fundsource->remaining_balance = (double)str_replace(',','',$fund) - $admin_cost ;
+          }else{
+            $fundsource->admin_cost = 0;
+            $fundsource->remaining_balance = str_replace(',','',$fund);
+          }
+          
           $fundsource->created_by = Auth::user()->userid;
           $fundsource->save();
           session()->flash('fundsource_save', true);

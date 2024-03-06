@@ -25,15 +25,15 @@
             </p>
             <!-- <a href="{{route('report')}}" style="height:30px; background-color:teal; color:white;" type="button" class="btn btn-xs">Proponent</a>
             <a href="" style="height:30px; background-color: #228B22; color:white;" type="button" class="btn btn-xs">Facility</a> -->
-            @if(isset($facilities) && isset($facilities[0]->facility))
+            @if(count($facilities) > 0)
                 <div class="row">
                     @foreach($facilities as $facility)
                         <div class="col-md-4 mt-2 grid-margin grid-margin-md-0 stretch-card">
                             <div class="card">
                                 <div class="card-body">
                                     <div style ="display:flex; justify-content:space-between;">
-                                        <h4 class="card-title" style=" text-align:left;">{{ $facility->facility->name }}</h4>
-                                        <a href="{{ route('facility.report', ['facility_id' => $facility->facility_id]) }}" style="height:30px; background-color:#1D4646; color:white" type="button" class="btn btn-sm">View</a>
+                                        <h4 class="card-title" style=" text-align:left;">{{ $facility->name }}</h4>
+                                        <a href="{{ route('facility.report', ['facility_id' => $facility->id]) }}" style="height:30px; background-color:#1D4646; color:white" type="button" class="btn btn-sm">View</a>
                                     </div>
                                 </div>
                             </div>
@@ -48,6 +48,7 @@
             @endif
                 
             <div class="pl-5 pr-5 mt-5">
+                {!! $facilities->appends(request()->query())->links('pagination::bootstrap-5') !!}
             </div>
         </div>
     </div>

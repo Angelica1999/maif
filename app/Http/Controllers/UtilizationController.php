@@ -11,21 +11,10 @@ use PDF;
 
 class UtilizationController extends Controller{
     //
-    public function tracking(Request $request){
-
-        $dv = Utilization::with(['proponentdata', 'fundSourcedata'])
-            ->where('fundsource_id', $request->fundsourceId)
-            ->where('proponentinfo_id', $request->proponentInfoId)
-            ->where('facility_id', $request->facilityId)
-            ->get();
-
-        $userIds = $dv->pluck('created_by')->toArray();
-        $user=[];
-        foreach($userIds as $id){
-            $user[] = User::where('userid', $id)->first();
-        }
-        $data = ['dv' => $dv, 'user'=>$user];
-        return response()->json($data);
+    public function tracking($info_id){
+        
+        $utilization = Utilization::where('proponentinfo_id', $info_id)->with(['user', 'proponentdata', 'fundSourcedata'])->get();
+        return response()->json($utilization);
     }
    
     public function trackingBudget($fundsourceId, $type){

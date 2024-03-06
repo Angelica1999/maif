@@ -22,7 +22,7 @@
             <label>Facility:</label>
                 <div class="form-group">
                     <div class="facility_select">
-                        <select class="form-control break_fac" id="{{ $uniqueCode }}" name="facility_id[]" >
+                        <select class="form-control break_fac" id="{{ $uniqueCode }}" name="facility_id[]" multiple>
                             <option value="">Please select facility</option>
                             @foreach($facilities as $facility)
                                 <option value="{{ $facility->id }}">{{ $facility->name }}</option>
@@ -35,6 +35,7 @@
                 <label>Allocated Funds:</label>
                 <div class="form-group">
                     <div class="form-group" style="display: flex; align-items: center;">
+                        <input type="hidden" class="info_id" value="0">
                         <input type="text" class="form-control alocated_funds" id="alocated_funds[]" name="alocated_funds[]" oninput="calculateFunds(this)" onkeyup="validateAmount(this)" placeholder="Allocated Fund" style="flex: 1; width:160px;">
                         <button type="button" class="form-control btn-info clone_facility-btn" style="width: 5px; margin-left: 5px; color:white; background-color:#355E3B">+</button>
                     </div>

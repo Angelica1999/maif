@@ -457,7 +457,8 @@
         $("#accumulated").val('');
         $('#totalDebit').text(formatNumberWithCommas(subsidy));
       }else{
-        $('#totalDebit').text(formatNumberWithCommas(subsidy-accumulated));
+        var res = (subsidy-accumulated).toFixed(2);
+        $('#totalDebit').text(formatNumberWithCommas(res));
       }
     }
 
