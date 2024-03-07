@@ -90,7 +90,7 @@
         @if(session('fundsource_update'))
             <?php session()->forget('fundsource_update'); ?>
             Lobibox.notify('success', {
-                msg: 'Successfully Upate Fund Source!'
+                msg: 'Successfully update Fund Source!'
             });
         @endif
         @if(session('dv_create'))

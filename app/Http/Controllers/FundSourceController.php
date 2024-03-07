@@ -44,7 +44,13 @@ class FundSourceController extends Controller
             $request->keyword = '';
         }
         else if($request->keyword) {
-            $fundsources = $fundsources->where('saa', 'LIKE', "%$request->keyword%");
+            // $fundsources = $fundsources->where('saa', 'LIKE', "%$request->keyword%");
+            $fundsources = $fundsources->where('saa', 'LIKE', "%$request->keyword%")
+            ->orWhereHas('proponents', function ($query) use ($request) {
+                $query->whereHas('proponentInfo', function ($subquery) use ($request) {
+                    $subquery->where('proponent', 'LIKE', "%$request->keyword%");
+                });
+            });
         } 
         $fundsources = $fundsources
                         ->orderBy('id','desc')
@@ -69,6 +75,26 @@ class FundSourceController extends Controller
         return view('fundsource_budget.fundsource2',[
             'fundsources' => $fundsources
         ]);
+    }
+
+    public function getFundsource($type, $fundsource_id, Request $request){
+        if($type == 'display'){
+            return Fundsource::where('id', $fundsource_id)->first();
+        }else if($type == 'save'){
+            $fundsource =  Fundsource::where('id', $fundsource_id)->first();
+            
+            if($fundsource){
+                $fundsource->saa = $request->input('saa');
+                $fundsource->alocated_funds =str_replace(',','',  $request->input('allocated_funds'));
+                $admin_cost = (double)str_replace(',','',  $request->input('allocated_funds')) * .01;
+                $fundsource->admin_cost = $admin_cost;
+                $fundsource->remaining_balance = (double)str_replace(',','',  $request->input('allocated_funds')) -  $admin_cost;
+                $fundsource->created_by = Auth::user()->userid;
+                $fundsource->save();
+
+                return redirect()->back()->with('fundsource_update', true);
+            }
+        }
     }
 
 

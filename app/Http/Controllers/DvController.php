@@ -432,8 +432,9 @@ class DvController extends Controller
                 $info->remaining_balance = $info->remaining_balance - floatval(str_replace(',','', $amount[$index]));
                 $info->save();
                 $utilization = Utilization::where('div_id', $dv->route_no)->where('fundsource_id', $saa_list)
-                    ->where('proponentinfo_id', $proponent[$index])->orderBy('id', 'desc')->latest()->first();
+                    ->where('proponent_id', $proponent[$index])->orderBy('id', 'desc')->latest()->first();
                     $gg[]=$utilization;
+
                 $utilization->budget_bbalance = $info->remaining_balance + floatval(str_replace(',','', $amount[$index]));
                 $utilization->budget_utilize = $amount[$index];
                 $utilization->obligated = 1;

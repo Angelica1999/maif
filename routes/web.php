@@ -129,6 +129,8 @@ Route::get('fundsource/breakdowns/{fundsourceId}', [App\Http\Controllers\FundSou
 Route::match(['get','post'],'fundsource/breakdowns', [App\Http\Controllers\FundSourceController::class, 'saveBDowns'])->name('fundsource.save_breakdowns');
 Route::get('facilities/get/{type}', [App\Http\Controllers\FundSourceController::class, 'facilitiesGet'])->name('facilities.get');
 Route::get('pro_div/get', [App\Http\Controllers\FundSourceController::class, 'pro_divGet'])->name('pro_div.get');
+Route::match(['post', 'get'],'fundsource/{type}/{fundsource_id}', [App\Http\Controllers\FundSourceController::class, 'getFundsource'])->name('update.fundsource');
+
 Route::match(['get', 'post'],'dv/obligate', [App\Http\Controllers\DvController::class, 'obligate'])->name('dv.obligate');
 Route::get('dv/{route_no}/{dv_no}/{type}', [App\Http\Controllers\FundSourceController2::class, 'dv_display'])->name('display.dv');
 

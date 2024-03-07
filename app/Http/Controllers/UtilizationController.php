@@ -21,6 +21,7 @@ class UtilizationController extends Controller{
 
         $utilization = Utilization::whereNotNull('obligated')->where('fundsource_id', $fundsourceId)
             ->with('proponentdata', 'fundSourcedata', 'facilitydata', 'user_budget')->orderBy('id', 'desc')->get();
+            return $utilization;
         if($type == 'for_modal'){
             return $utilization;
         }else if ($type == 'pdf'){

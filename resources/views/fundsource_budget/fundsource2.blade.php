@@ -30,9 +30,14 @@
                             <div class="card">
                                 <div class="card-body">
                                     <div style ="display:flex; justify-content:space-between;">
-                                        <h4 class="card-title" style=" text-align:left">{{ $fund->saa }}</h4>
+                                        @if($section == 6)
+                                            <h4 class="card-title" style=" text-align:left">{{ $fund->saa }}</h4>
+                                        @else
+                                            <b><h3><a href="#update_fundsource" onclick="updateFundsource('{{ $fund->id }}')" data-backdrop="static" data-toggle="modal">{{$fund->saa}}</a></h3></b>
+                                        @endif
                                         <!-- <button class="btn btn-sm update_saa" style="cursor: pointer; text-align: right; background-color:#417524; color:white;" data-proponent-id="" data-backdrop="static" data-toggle="modal" onclick="editfundsource()" href="#create_fundsource">Update</button> -->
-                                        <button style="width:120px" id="track" data-fundsource-id="{{  $fund->id }}" data-target="#track_details" onclick="track_details(event)" class='btn btn-sm btn-outline-info track_details'>Track</button>
+
+                                        <button style="width:120px" id="track" data-fundsource-id="{{  $fund->id }}" data-target="#track_details" onclick="track_details(event)" class='btn btn-sm btn-outline-success track_details'>Track</button>
                                     </div>
                                         <ul class="list-arrow mt-3">
                                         <li><span class="ml-3">Allocated Funds: <strong class="text-info">{{ !Empty($fund->alocated_funds)? number_format(floatval(str_replace(',', '',$fund->alocated_funds)), 2, '.', ','):0 }}</strong></span></li>
@@ -101,21 +106,51 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="transfer_fundsource" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="update_fundsource" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Transfer Fund Source</h5>
+                <b><h5 class="modal-title" id="exampleModalLabel">Update Fundsource</h5></b>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">×</span>
                 </button>
             </div>
-            <div class="modal_body">
-                
+                <form id="update_fundsource2">
+                    @csrf    
+                    <div class="modal_body">
+
+                        <div class="card" style="padding:10px">
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="fname">SAA:</label>
+                                        <input type="text" class="form-control saa" id="saa" name="saa" required>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="lname">Allocated Funds:</label>
+                                        <input type="text" class="form-control allocated_funds" onkeyup="validateAmount(this)" id="allocated_funds" name="allocated_funds" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
+                </form>
             </div>
+            
         </div>
     </div>
 </div>
+
+
 
 @include('modal')
 
@@ -123,6 +158,23 @@
 
 @section('js')
     <script>
+
+        function updateFundsource(fundsource_id){
+            console.log('id', fundsource_id);
+            $('#update_fundsource2').attr('action', "{{ route('update.fundsource', ['type' => 'save', 'fundsource_id' => ':fundsource_id']) }}".replace(':fundsource_id', fundsource_id));
+            var url = "{{ url('fundsource').'/' }}" +'display' +'/'+ fundsource_id;
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function(result) {
+                    $('.saa').val(result.saa);
+                    var formattedAmount = result.alocated_funds.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    $('.allocated_funds').val(formattedAmount);
+                    console.log('result', result);
+                }
+            });
+        }
+
         $(document).ready(function () {
             
             $(".for_clone").on("click", ".add_saa", function () {
@@ -151,6 +203,7 @@
             $('#track_details').modal('show');
 
             var fundsourceId = event.target.getAttribute('data-fundsource-id');
+            console.log('fundsource',fundsourceId );
             var i = 0;
             var type = "for_modal";
             var url = "{{ url('budget/tracking').'/' }}"+ fundsourceId +'/' + 'for_modal';

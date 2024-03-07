@@ -22,6 +22,11 @@ class FundSourceController2 extends Controller{
     }
 
     public function fundSource2(Request $request) {
+      $section = DB::connection('dohdtr')
+                    ->table('users')
+                    ->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
+                    ->where('users.userid', '=', Auth::user()->userid)
+                    ->value('users.section');
       $fundsources = Fundsource:: orderBy('id', 'asc')->paginate(15);
       if($request->viewAll) {
         $request->keyword = '';
@@ -33,6 +38,7 @@ class FundSourceController2 extends Controller{
       return view('fundsource_budget.fundsource2',[
           'fundsources' => $fundsources,
           'keyword' => $request->keyword,
+          'section' => $section
       ]);
     }
 
