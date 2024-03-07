@@ -46,7 +46,7 @@ class DvController extends Controller
                         $query->where('route_no', 'LIKE', "%$request->keyword%");
                     })
                 ->orderby('id', 'desc')
-                ->paginate(5);
+                ->paginate(50);
         
         if(Auth::user()->userid == 1027){
             return view('dv.acc_dv', [
