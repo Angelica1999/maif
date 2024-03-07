@@ -103,7 +103,7 @@
                                             @else
                                                 <button type="button" class="form-control btn-info remove_fac-clone" onclick="remove({{$proInfo->id}})" style="width: 5px; margin-left: 5px; color:white; background-color:#355E3B">-</button>
                                             @endif
-                                            <button type="button" id="transfer_funds" href="#transfer_fundsource" onclick="transferFunds({{ $fundsource[0]->id }}, {{ $proInfo->proponent_id }}, {{ $proInfo->facility_id }})" class="form-control btn-info transfer_funds" style="width: 5px; margin-left: 5px; color:white; background-color:#01796F"><i class="typcn typcn-arrow-right-thick menu-icon"></i></button>
+                                            <button type="button" id="transfer_funds" href="#transfer_fundsource" onclick="transferFunds({{ $proInfo->id }})" class="form-control btn-info transfer_funds" style="width: 5px; margin-left: 5px; color:white; background-color:#01796F"><i class="typcn typcn-arrow-right-thick menu-icon"></i></button>
                                         </div>
                                     </div>
                                 </div>
