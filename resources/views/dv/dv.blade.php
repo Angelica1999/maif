@@ -692,10 +692,11 @@
                     var all_data = inputValue1 + inputValue2 + inputValue3;
                     $('.total').text(all_data.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
                     setElementValue('#totalInput', all_data);
-
                     // $('#totalInput').val(all_data.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-                    console.log('data', all_data);
-                    $('#totalDebit').text(all_data.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                    var accumulated = parseNumberWithCommas(document.getElementById('accumulated').value) || 0;
+                    var new_data = (all_data-accumulated).toFixed(2);
+                    console.log('data', new_data);
+                    $('#totalDebit').text(new_data.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
 
                     var ewt_input = ((all_data * ewt) / 100).toFixed(2);
                     $('#forEwt_leftDeduction').val((parseFloat(ewt_input)).toFixed(2));

@@ -447,6 +447,7 @@
     });
 
     function calculateSubsidy(){
+      console.log('subsidy click');
       var subsidy = parseNumberWithCommas($("#totalInput").val()) || 0;
       var accumulated = parseNumberWithCommas($("#accumulated").val()) || 0;
       if(accumulated>subsidy){
