@@ -244,6 +244,7 @@
                     <h4 class="text-success"><i style = "font-size:30px"class="typcn typcn-location-arrow menu-icon"></i> Select Destination</h4><hr />
                     @csrf
                     <input type="hidden" name="route_no" id="route_no">
+                    <input type="hidden" name="multiple" id="multiple">
                     <input type="hidden" name="op" id="op" value="0">
                     <input type="hidden" name="currentID" id="currentID" value="0">
                     <div class="form-group">
@@ -270,7 +271,7 @@
                     </div>
                     <div class="form-group">
                             <label>Remarks</label>
-                            <textarea name="remarks" class="form-control" rows="5" style="resize: vertical;" placeholder="Please enter your remark(s) of return..." required></textarea>
+                            <textarea name="remarks" class="form-control" rows="5" style="resize: vertical;" placeholder="Please enter your remark(s) of return..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
