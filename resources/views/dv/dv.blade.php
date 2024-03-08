@@ -15,6 +15,8 @@
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll">View All</button>
                         @if(Auth::user()->userid != 1027)
                             <button type="button" href="#create_dv" onclick="createDv()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md">Create</button>
+                            <button type="button" id="release_btn" data-target="#releaseTo" style="display:none;" onclick="putRoutes($(this))" data-target="#releaseTo" data-backdrop="static" data-toggle="modal" class="btn btn-info btn-md">Release All</button>
+                            <input type="hidden" class="all_route" id="all_route" name="all_route">
                         @else
                         @endif
                     </div>
@@ -61,6 +63,16 @@
                     <tr>
                         <th style="min-width: 150px;"></th>
                         <th style="min-width: 120px;">Route No</th>
+                        <th style="text-align:center">
+                            <div style="display: flex; gap: 1px;">
+                                <button class="btn-info select_all" style="width: 25px; display: flex; justify-content: center; align-items: center;">
+                                    <i class="typcn typcn-input-checked"></i>
+                                </button>
+                                <button class="btn-danger unselect_all" style="width: 25px; display: flex; justify-content: center; align-items: center;">
+                                    <i class="typcn typcn-times menu-icon"></i>
+                                </button>
+                            </div>
+                        </th>
                         <th>Status</th>
                         <th>Payee</th>
                         <th  style="min-width: 120px;">Saa Number</th>
@@ -76,7 +88,7 @@
                     </tr>
                 </thead>
                 <tbody class="table_body">
-                    @foreach($disbursement as $dvs)
+                    @foreach($disbursement as $index=> $dvs)
                         <tr> 
                             <td>                 
                                 <button type="button" class="btn btn-xs col-sm-12" style="background-color:teal;color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$dvs->route_no}}" id="track_load" onclick="openModal()">Track</button>
@@ -95,22 +107,21 @@
                                     <?php
                                         $routed = TrackingDetails::where('route_no',$dvs->route_no)
                                             ->count();
+                                        $doc_id = TrackingDetails::where('route_no',$dvs->route_no)
+                                                ->orderBy('id','desc')
+                                                ->first()
+                                                ->id;
                                     ?>
-                                    <!-- @if($routed < 2) -->
-                                        <?php
-                                            $doc_id = TrackingDetails::where('route_no',$dvs->route_no)
-                                                    ->orderBy('id','desc')
-                                                    ->first()
-                                                    ->id;
-                                        ?>
-                                        <button data-toggle="modal" data-target="#releaseTo" data-id="{{ $doc_id }}" data-route_no="{{ $dvs->route_no }}" onclick="putRoute($(this))" style="width:85px;" type="button" class="btn btn-info btn-xs">Release To</button>
-                                    <!-- @endif -->
+                                    <button data-toggle="modal" data-target="#releaseTo" data-id="{{ $doc_id }}" data-route_no="{{ $dvs->route_no }}" onclick="putRoute($(this))" style="width:85px;" type="button" class="btn btn-info btn-xs">Release To</button>
                                 @else
                                     <a href="#obligate"  onclick="obligateDv('{{$dvs->route_no}}','0', 'add_dvno')" style="background-color:teal;color:white;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">{{ $dvs->route_no }}</a>
                                 @endif
                                 
-                                
                             </td> 
+                            <td style="text-align:center" class="group-release" data-route_no="{{ $dvs->route_no }}" data-id="{{ $doc_id }}" >
+                                <input type="checkbox" style="width: 60px; height: 20px;" name="release_dv[]" id="releaseDvId_{{ $index }}" 
+                                    class="group-releaseDv" >
+                            </td>
                             <td>
                                 @if($dvs->obligated !== null && $dvs->paid !== null)
                                     proccessed
@@ -215,6 +226,45 @@
 
 <script>
 
+     //select_all
+     $('.select_all').on('click', function(){
+        document.getElementById('release_btn').style.display = 'inline-block';
+        console.log('click');
+        $('.group-releaseDv').prop('checked', true);
+        $('.group-releaseDv').trigger('change');
+    });
+    //unselect_all
+    $('.unselect_all').on('click', function(){
+        document.getElementById('release_btn').style.display = 'none';
+        console.log('click');
+        $('.group-releaseDv').prop('checked', false);
+        $('.group-releaseDv').trigger('change');
+    });
+
+    $('.group-releaseDv').change(function () {
+        document.getElementById('release_btn').style.display = 'inline-block';
+           
+        var checkedMailBoxes = $('.group-releaseDv:checked');
+        var ids = [];
+        var routes = [];
+
+        checkedMailBoxes.each(function () {
+            var doc_id = $(this).closest('.group-release').data('id');
+            var route = $(this).closest('.group-release').data('route_no');
+            ids.push(doc_id);
+            routes.push(route);
+        });
+        if(ids.length ==  0){
+            document.getElementById('release_btn').style.display = 'none';
+        }
+        $('#release_btn').val(ids);
+        $('#all_route').val(routes);
+
+        console.log('chakiii', ids);
+        console.log('chakiii', routes);
+
+    });
+
     @if($user == 1027)
         $(document).ready(function() {
             $('#dv2_btn').prop('disabled', false).hide();
@@ -244,12 +294,22 @@
 
     });
 
+    function putRoutes(form){
+        $('#route_no').val($('#all_route').val());
+        $('#currentID').val($('#release_btn').val());
+        $('#multiple').val('multiple');
+        $('#op').val(0);
+        console.log('route_no', $('#route_no').val());
+        console.log('route_no', $('#currentID').val());
+    }
+
     function putRoute(form){
         var route_no = form.data('route_no');
         $('#route_no').val(route_no);
         $('#op').val(0);
         $('#currentID').val(form.data('id'));
         console.log('id', form.data('id'));
+        $('#multiple').val('single');
     }
 
     $('.filter-division').on('change',function(){

@@ -119,81 +119,88 @@ class DvController extends Controller
     }
 
     public function addRelease(Request $req) {
-        $user = Auth::user();
-        $release_to_datein = date('Y-m-d H:i:s');
-        if($req->op != 0) {
-            $id = $req->op;
-            TrackingDetails::where('id',$id)->update(array(
-                'code' => 'temp;' . $req->section,
-                'action' => $req->remarks,
-                'date_in' => $release_to_datein,
-                'status' => 0
-            ));
-            $status='releaseUpdated';
-        } else {
-            if($req->currentID!=0)
-            {
-                $table = TrackingDetails::where('id',$req->currentID)->orderBy('id', 'DESC');
-                $code = isset($table->first()->code) ? $table->first()->code:null;
+        $routes = explode(',',$req->route_no);
+        $doc_id = explode(',',$req->currentID);
 
-                $tracking_release = new Tracking_Releasev2();
-                $tracking_release->released_by = $user->id;
-                $tracking_release->released_section_to = $req->section;
-                $tracking_release->released_date = $release_to_datein;
-                $tracking_release->remarks = $req->remarks;
-                $tracking_release->document_id = $table->first()->id;
-                $tracking_release->route_no = $req->route_no;
-                $tracking_release->status = "waiting";
-                $tracking_release->save();
+        foreach($routes as $index => $route_no){
 
-                $update = array(
-                    'code' => ''
-                );
+            // return $route;
+            $user = Auth::user();
+            $release_to_datein = date('Y-m-d H:i:s');
 
-                $table->update($update);
-                $tmp = explode(';',$code);
-                $code = $tmp[0];
-                if($code=='return')
-                {
-                    $table->delete();
+            if($req->op != 0) {
+                $id = $req->op;
+                TrackingDetails::where('id',$id)->update(array(
+                    'code' => 'temp;' . $req->section,
+                    'action' => ($req->remarks == null || $req->remarks == '')? '' : $req->remarks,
+                    'date_in' => $release_to_datein,
+                    'status' => 0
+                ));
+                $status='releaseUpdated';
+            } else {
+                if($req->currentID!=0){
+
+                    $table = TrackingDetails::where('id',$doc_id[$index])->orderBy('id', 'DESC');
+                    $code = isset($table->first()->code) ? $table->first()->code:null;
+
+                    $tracking_release = new Tracking_Releasev2();
+                    $tracking_release->released_by = $user->id;
+                    $tracking_release->released_section_to = $req->section;
+                    $tracking_release->released_date = $release_to_datein;
+                    $tracking_release->remarks = ($req->remarks == null || $req->remarks == '')? '' : $req->remarks;
+                    $tracking_release->document_id = $table->first()->id;
+                    $tracking_release->route_no = $route_no;
+                    $tracking_release->status = "waiting";
+                    $tracking_release->save();
+
+                    $update = array(
+                        'code' => ''
+                    );
+
+                    $table->update($update);
+                    $tmp = explode(';',$code);
+                    $code = $tmp[0];
+                    if($code=='return')
+                    {
+                        $table->delete();
+                    }
+                }else{
+                    $tracking_details_info = TrackingDetails::where('route_no',$route_no)
+                            ->orderBy('id','desc')
+                            ->first();
+                    $tracking_details_id = $tracking_details_info->id;
+                    $tracking_details_id = $tracking_details_info->id;
+
+                    $update = array(
+                        'code' => ''
+                    );
+                    $table = TrackingDetails::where('id',$tracking_details_id);
+                    $table->update($update);
                 }
-            }else{
-                $tracking_details_info = TrackingDetails::where('route_no',$req->route_no)
-                        ->orderBy('id','desc')
-                        ->first();
-                $tracking_details_id = $tracking_details_info->id;
-                $tracking_details_id = $tracking_details_info->id;
 
-                $update = array(
-                    'code' => ''
-                );
-                $table = TrackingDetails::where('id',$tracking_details_id);
-                $table->update($update);
+                $q = new TrackingDetails();
+                $q->route_no = $route_no;
+                $q->date_in = $release_to_datein;
+                $q->action = ($req->remarks == null || $req->remarks == '')? '' : $req->remarks;
+                $q->delivered_by = $user->id;
+                $q->code= 'temp;' . $req->section;
+                $q->alert= 0;
+                $q->received_by= 0;
+                $q->status= 0;
+                $q->save();
+
+                // Session::put("releaseAdded",[
+                //     "route_no" => $req->route_no,
+                //     "section_released_to_id" => $req->section,
+                //     "user_released_name" => $user->fname.' '.$user->lname,
+                //     "section_released_by_id" => $user->section,
+                //     "section_released_by_name" => Section::find($user->section)->description,
+                //     "remarks" => $req->remarks,
+                //     "status" => "released"
+                // ]);
             }
-
-            $q = new TrackingDetails();
-            $q->route_no = $req->route_no;
-            $q->date_in = $release_to_datein;
-            $q->action = $req->remarks;
-            $q->delivered_by = $user->id;
-            $q->code= 'temp;' . $req->section;
-            $q->alert= 0;
-            $q->received_by= 0;
-            $q->status= 0;
-            $q->save();
-
-            // Session::put("releaseAdded",[
-            //     "route_no" => $req->route_no,
-            //     "section_released_to_id" => $req->section,
-            //     "user_released_name" => $user->fname.' '.$user->lname,
-            //     "section_released_by_id" => $user->section,
-            //     "section_released_by_name" => Section::find($user->section)->description,
-            //     "remarks" => $req->remarks,
-            //     "status" => "released"
-            // ]);
         }
-
-       return redirect()->back()->with('releaseAdded', true);
+        return redirect()->back()->with('releaseAdded', true);
     }
 
     public function createDv(Request $request)
