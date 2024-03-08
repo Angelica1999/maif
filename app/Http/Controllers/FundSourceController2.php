@@ -75,7 +75,7 @@ class FundSourceController2 extends Controller{
     public function pendingDv(Request $request, $type){
 
         if($type == 'pending'){
-          $result = Dv::whereNull('obligated')->whereNotNull('dv_no')->with(['fundsource','facility', 'master'])->orderby('id', 'desc');
+          $result = Dv::whereNull('obligated')->whereNotNull('dv_no')->where('dv_no', '!=', '')->with(['fundsource','facility', 'master'])->orderby('id', 'desc');
         }else if($type == 'obligated'){
           $result = Dv::whereNotNull('obligated')->whereNotNull('dv_no')->with(['fundsource','facility', 'master'])->orderby('id', 'desc');
         }
@@ -87,7 +87,7 @@ class FundSourceController2 extends Controller{
         }
         $id = $result->pluck('created_by')->unique();
         $name = User::whereIn('userid', $id)->get()->keyBy('userid'); 
-        $results = $result->paginate(5);
+        $results = $result->paginate(50);
         
         return view('fundsource_budget.dv_list', [
           'disbursement' => $results,

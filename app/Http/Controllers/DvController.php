@@ -30,6 +30,17 @@ class DvController extends Controller
     public function dv(Request $request){
 
         $dv_update = Dv::whereNotNull('dv_no')->with(['fundsource','facility', 'user'])->get();
+        $dv= Dv::whereNull('dv_no')->get();
+        // return $dv;
+        
+        foreach($dv as $d){
+            $master = TrackingMaster::where('route_no', $d->route_no)->first();
+            $dv_here = Dv::where('route_no',  $d->route_no)->first();
+            if($master->dv_no !== null){
+                $dv_here->dv_no = $master->dv_no;
+                $dv_here->save();
+            }
+        }
 
         foreach ($dv_update as $result) {
             if($result->master->div_no != null){
