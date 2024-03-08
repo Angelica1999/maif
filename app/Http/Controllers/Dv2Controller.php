@@ -64,19 +64,66 @@ class Dv2Controller extends Controller
     }
 
     public function createDv2($route_no){
-        $dv_1 = Dv::where('route_no', $route_no)->first();
-        $groupIdArray = explode(',', $dv_1->group_id);
-        $proponentArray = json_decode($dv_1->proponent_id, true);
-        $dv = Dv::where('route_no', $route_no)
-            ->leftJoin('proponent', function ($join) use ($proponentArray) {
-                $join->on('proponent.id', '=', \DB::raw($proponentArray[0]));
-            })
-            ->with('facility')->first();
-        $group = Group::whereIn('id', $groupIdArray)->with('patient')->get();
-        $total = Group::whereIn('id', $groupIdArray)
-                    ->select(DB::raw('SUM(REPLACE(amount, ",", "")) as totalAmount'))
-                    ->first()->totalAmount;
-        return view('dv.create_dv2', ['dv'=> $dv, 'group'=>$group, 'total'=>$total]);
+        $dv2_exist = Dv2::where('route_no', $route_no)->first();
+        
+        if($dv2_exist){
+
+            $dv2 = Dv2::where('route_no', $route_no)
+                        ->leftJoin('patients as p1', 'dv2.lname', '=', 'p1.id')
+                        ->leftJoin('patients as p2', 'dv2.lname2', '=', 'p2.id')
+                        ->select('dv2.*', 'p1.lname as lname1', 'p2.lname as lname_2')
+                        ->get();
+            $total = Dv2::where('route_no', $route_no)
+                        ->select(DB::raw('SUM(REPLACE(amount, ",", "")) as totalAmount'))
+                        ->first()->totalAmount;   
+            return view('dv2.update_dv2', ['dv2'=> $dv2,'total' => $total]);
+        }else{
+            $dv_1 = Dv::where('route_no', $route_no)->first();
+            $groupIdArray = explode(',', $dv_1->group_id);
+            $proponentArray = json_decode($dv_1->proponent_id, true);
+            $dv = Dv::where('route_no', $route_no)
+                ->leftJoin('proponent', function ($join) use ($proponentArray) {
+                    $join->on('proponent.id', '=', \DB::raw($proponentArray[0]));
+                })
+                ->with('facility')->first();
+            $group = Group::whereIn('id', $groupIdArray)->with('patient')->get();
+            $total = Group::whereIn('id', $groupIdArray)
+                        ->select(DB::raw('SUM(REPLACE(amount, ",", "")) as totalAmount'))
+                        ->first()->totalAmount;
+            return view('dv.create_dv2', ['dv'=> $dv, 'group'=>$group, 'total'=>$total]);
+        }
+    }
+
+    public function updateDv2(Request $request){
+        $route_no = $request->input('route_no');
+        $amount = $request->input('amount');
+        $control_no = $request->input('ref_no');
+        $lname = $request->input('g_lname1');
+        $lname2 = $request->input('g_lname2');
+        $facility = $request->input('facility');
+
+        Dv2::where('route_no', $route_no)->delete();
+
+        foreach($control_no as $index => $ref){
+            if($lname[$index] !== null){
+                $dv2 = new Dv2();
+                $dv2->route_no = $request->input('route_no');
+                $dv2->ref_no = $ref;
+                $dv2->lname = $lname[$index];
+                if($lname2[$index] !== null || $lname2[$index]){
+                    $dv2->lname2 = $lname2[$index];
+                }else{
+                    $dv2->lname2 = 0;
+                }
+                $dv2->amount = $amount[$index];
+                $dv2->facility = $facility;
+                $dv2->created_by = Auth::user()->userid;
+                $dv2->save();
+            }
+           
+        }
+        return redirect()->route('dv2')->with('update_dv2', true);
+
     }
 
     public function saveDv2(Request $request){

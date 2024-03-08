@@ -206,6 +206,12 @@
               msg: 'Successfully add dv no!'
            });
         @endif
+        @if(session('update_dv2'))
+           <?php session()->forget('update_dv2'); ?>
+           Lobibox.notify('success', {
+              msg: 'Successfully update dv2!'
+           });
+        @endif
 
     </script>
     @yield('js')

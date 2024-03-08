@@ -101,6 +101,7 @@ Route::get('budget/tracking/{fundsourceId}/{type}', [App\Http\Controllers\Utiliz
 Route::get('/dv2', [App\Http\Controllers\Dv2Controller::class, 'dv2'])->name('dv2');
 Route::get('/dv2/{route_no}', [App\Http\Controllers\Dv2Controller::class, 'createDv2'])->name('dv2.create');
 Route::match(['get', 'post'], '/dv2/save', [App\Http\Controllers\Dv2Controller::class, 'saveDv2'])->name('dv2.save');
+Route::match(['get', 'post'], '/dv2/update', [App\Http\Controllers\Dv2Controller::class, 'updateDv2'])->name('dv2.update');
 
 Route::get('/dv2/pdf', [App\Http\Controllers\PrintController::class, 'dv2Pdf'])->name('dv2.pdf');
 Route::get('dv2/pdf/{route_no}', [App\Http\Controllers\PrintController::class, 'dv2Pdf'])->name('dv2.pdf');
