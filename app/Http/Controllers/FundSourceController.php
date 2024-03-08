@@ -249,7 +249,7 @@ class FundSourceController extends Controller
                 }
                 // $info = ProponentInfo::where('proponent_id', $proponentId)->where('facility_id', $breakdown['facility_id'])->where('fundsource_id', $breakdown['fundsource_id'])->first();
                 
-                if( $breakdown['info_id'] !== "0"){
+                if( $breakdown['info_id'] !== "0" && $breakdown['info_id'] !== "undefined" ){
                     
                     $info = ProponentInfo::where('id',  $breakdown['info_id'])->first();
                     $compare = (double) str_replace(',','',$info->remaining_balance) + (double) str_replace(',','',$info->admin_cost);

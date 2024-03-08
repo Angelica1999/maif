@@ -174,9 +174,14 @@
                       <br><br><br><br>
                       <span style="text-align:center;"><?php echo number_format($total_overall, 2, '.', ',')?></span>
                       <br><br><br><br>
-                      <span style="text-align:center;"><?php echo number_format($vat + $ewt, 2, '.', ',')?></span><br><br>
+                      <?php
+                        $vatFormatted = number_format($vat, 2, '.', '');
+                        $ewtFormatted = number_format($ewt, 2, '.', '');
+                        $result = number_format($vatFormatted + $ewtFormatted, 2, '.', ',');
+                      ?>
+                      <span style="text-align:center;"><?php echo $result; ?></span><br><br>
                       <span style="text-align:center;">_________________</span><br>
-                      <span style="text-align:center;"><?php echo number_format($total_overall -  ($vat + $ewt), 2, '.', ',')?></span>
+                      <span style="text-align:center;"><?php echo number_format($total_overall -  (str_replace(',','',$result)), 2, '.', ',')?></span>
                     </div> 
                   </td>
                   </tr>
@@ -240,8 +245,8 @@
                     </td>
                     
                     <td style=" border-left: 0 ; text-align:right; vertical-align:top" >
-                    <br><br><span><?php echo number_format($vat + $ewt, 2, '.', ',')?></span><br>
-                      <span><?php echo number_format($total_overall -  ($vat + $ewt), 2, '.', ',')?></span>
+                    <br><br><span><?php echo $result; ?></span><br>
+                      <span><?php echo number_format($total_overall -  (str_replace(',','',$result)), 2, '.', ',')?></span>
                     </td>
                   </tr>
                 </table>

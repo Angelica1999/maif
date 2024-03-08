@@ -216,7 +216,11 @@
               
                         <span type="text" style="width:95%; margin-left:10px;" class="saa">Control No:{{!Empty($dv->control_no)?$dv->control_no:''}}<span><br>
                         <span style="margin-left:10px; font-weight:bold">Amount Due</span>
-                        
+                        <?php
+                          $vatFormatted = number_format($vat, 2, '.', '');
+                          $ewtFormatted = number_format($ewt, 2, '.', '');
+                          $result = number_format($vatFormatted + $ewtFormatted, 2, '.', ',');
+                        ?>
                     </td>
                     <td style="width:14%; border-left: 0 " ></td>
                     <td style="width:14%; border-left: 0 " ></td>
@@ -225,9 +229,9 @@
                       <br><br><br><br>
                       <span style="text-align:center;"><?php echo number_format($total_overall, 2, '.', ',')?></span>
                       <br><br><br><br>
-                      <span style="text-align:center;"><?php echo number_format($vat + $ewt, 2, '.', ',')?></span><br><br>
+                      <span style="text-align:center;"><?php echo $result?></span><br><br>
                       <span style="text-align:center;">_________________</span><br>
-                      <span style="text-align:center;"><?php echo number_format($total_overall -  ($vat + $ewt), 2, '.', ',')?></span>
+                      <span style="text-align:center;"><?php echo number_format($total_overall -  (str_replace(',','',$result)), 2, '.', ',')?></span>
                     </div>
                   </td>
                   </tr>
@@ -278,8 +282,8 @@
                       <span>{{!Empty($dv->accumulated)?number_format(str_replace(',','',$dv->accumulated),2,'.',','):''}}</span>
                     </td>
                     <td style=" border-left: 0 ; text-align:right; vertical-align:top" >
-                      <br><br><span><?php echo number_format($vat + $ewt, 2, '.', ',')?></span><br>
-                      <span><?php echo number_format($total_overall -  ($vat + $ewt), 2, '.', ',')?></span>
+                      <br><br><span><?php echo $result; ?></span><br>
+                      <span><?php echo number_format($total_overall -  (str_replace(',','',$result)), 2, '.', ',')?></span>
                     </td>
                   </tr>
             </table>
