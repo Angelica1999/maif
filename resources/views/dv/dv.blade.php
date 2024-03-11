@@ -63,6 +63,7 @@
                     <tr>
                         <th style="min-width: 150px;"></th>
                         <th style="min-width: 120px;">Route No</th>
+                        <th>Status</th>
                         <th style="text-align:center">
                             <div style="display: flex; gap: 1px;">
                                 <button class="btn-info select_all" style="width: 25px; display: flex; justify-content: center; align-items: center;">
@@ -73,7 +74,7 @@
                                 </button>
                             </div>
                         </th>
-                        <th>Status</th>
+                        <th>Remarks</th>
                         <th>Payee</th>
                         <th  style="min-width: 120px;">Saa Number</th>
                         <th style="min-width: 140px;">Prepared Date</th>
@@ -118,6 +119,14 @@
                                 @endif
                                 
                             </td> 
+                            <td>
+                                @if($routed > 2)
+                                    Forwarded
+                                @else
+                                @endif
+
+                            </td>
+
                             <td style="text-align:center" class="group-release" data-route_no="{{ $dvs->route_no }}" data-id="{{ $doc_id }}" >
                                 <input type="checkbox" style="width: 60px; height: 20px;" name="release_dv[]" id="releaseDvId_{{ $index }}" 
                                     class="group-releaseDv" >
