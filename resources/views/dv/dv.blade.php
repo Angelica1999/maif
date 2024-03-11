@@ -911,7 +911,9 @@
                             invalid1();
                         }else{
                             invalid('1', function(type) {
+                                console.log('11');
                                 if (type === 'ok') {
+                                    console.log('okii');
                                     $('#inputValue1').val('');
                                     nullVal();
                                     $('#dropdownContent1 input[type="checkbox"]').prop('checked', false);
@@ -928,7 +930,6 @@
                             });
                         }
                     }else if(con2>saa1Alcated_fund2){
-                        console.log('secondcheck');
 
                         if(saa1Alcated_fund2 == 0){
                             $('#inputValue2').val('');
@@ -936,8 +937,10 @@
                             invalid1();
                         }else{
                             invalid('2', function(type) {
+                                console.log('22');
+
                                 if (type === 'ok') {
-                                    $('#inputValue2').val();
+                                    $('#inputValue2').val('');
                                     nullVal();
                                     $('#dropdownContent2 input[type="checkbox"]').prop('checked', false);
                                 } else if (type === 'add') {
@@ -957,7 +960,7 @@
                     }else if(con3>saa1Alcated_fund3){
                         console.log('thirdcheck');
 
-                        $('#inputValue3').val();
+                        $('#inputValue3').val('');
                         $('#dropdownContent3 input[type="checkbox"]').prop('checked', false);
                         invalid1();
                     }    
@@ -1154,8 +1157,8 @@
                                     $('#saa1').trigger('change');
                                 }
                             });
-                        }, 1500);
 
+                        }, 2000);
                         $('#inputValue1').val(result.dv.amount1).prop('disabled', false).show();
                         $('#vat').val(result.dv.deduction1);
                         $('#ewt').val(result.dv.deduction2);
@@ -1184,7 +1187,7 @@
                                         $('#saa2').trigger('change');
                                     }
                                 });
-                            }, 1500);
+                            }, 2000);
                             
                             $('#inputValue2').val(result.dv.amount2).prop('disabled', false).show();
                             // $('#saa2').val(result.fund_source[1].id);
@@ -1210,7 +1213,7 @@
                                         $('#saa2').trigger('change');
                                     }
                                 });
-                            }, 1500);
+                            }, 2000);
                             $('#inputValue2').val(result.dv.amount3).prop('disabled', false).show();
                             $('#vatValue2').val((parseFloat(result.dv.amount3.replace(/,/g,''))/vat * result.dv.deduction1/100).toFixed(2)).show();
                             $('#ewtValue2').val((parseFloat(result.dv.amount3.replace(/,/g,''))/vat * result.dv.deduction2/100).toFixed(2)).show();
@@ -1236,7 +1239,7 @@
                                         $('#saa3').trigger('change');
                                     }
                                 });
-                            }, 1500);
+                            }, 2000);
                         $('#vatValue3').val((parseFloat(result.dv.amount3.replace(/,/g,''))/vat * result.dv.deduction1/100).toFixed(2)).show();
                         $('#ewtValue3').val((parseFloat(result.dv.amount3.replace(/,/g,''))/vat * result.dv.deduction2/100).toFixed(2)).show();
                         $('#save_amount3').val(parseFloat(result.dv.amount3.replace(/,/g,'')));
@@ -1281,7 +1284,7 @@
                 });
                 setTimeout(function() {
                            fundAmount();
-                        }, 1500);
+                        }, 2000);
                 }); 
             }
         });

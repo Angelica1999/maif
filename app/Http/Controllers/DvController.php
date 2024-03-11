@@ -410,7 +410,13 @@ class DvController extends Controller
 
         if($dv){
             $info = array_map('intval', json_decode($dv->info_id));
-            $proponentInfo = ProponentInfo::whereIn('id', $info)->with(['proponent', 'fundsource', 'facility'])->get();
+            $idsString = implode(',', $info);
+            
+            $proponentInfo = ProponentInfo::whereIn('id', $info)
+                ->with(['proponent', 'fundsource', 'facility'])
+                ->orderByRaw("FIELD(id, $idsString)")
+                ->get();
+            
             return response()->json(['dv' =>$dv,'proponentInfo' => $proponentInfo]);
         }
 
