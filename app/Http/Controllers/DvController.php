@@ -76,11 +76,19 @@ class DvController extends Controller
 
     public function getFundsource(Request $request){
        
+        // $info = ProponentInfo::with('facility', 'fundsource', 'proponent')
+        //             ->whereJsonContains('proponent_info.facility_id', $request->facility_id)
+        //             ->orWhereJsonContains('proponent_info.facility_id', 702)
+        //             ->orWhereIn('proponent_info.facility_id', [$request->facility_id, 702])
+        //             ->get();
         $info = ProponentInfo::with('facility', 'fundsource', 'proponent')
-                    ->whereJsonContains('proponent_info.facility_id', $request->facility_id)
-                    ->orWhere('proponent_info.facility_id', $request->facility_id)
-                    ->orWhere('proponent_info.facility_id', 702)
+                    ->where(function ($query) use ($request) {
+                        $query->whereJsonContains('proponent_info.facility_id', '702')
+                            ->orWhereJsonContains('proponent_info.facility_id', [$request->facility_id]);
+                    })
+                    ->orWhereIn('proponent_info.facility_id', [$request->facility_id, '702'])
                     ->get();
+        // return count($info); 
         $facility = Facility::where('id', $request->facility_id)->first();
         return response()->json(['info' => $info, 'facility' => $facility]);
     }
