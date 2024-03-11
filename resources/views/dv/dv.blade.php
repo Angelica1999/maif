@@ -122,7 +122,6 @@
                             <td>
                                 @if($routed > 2)
                                     Forwarded
-                                @else
                                 @endif
 
                             </td>
