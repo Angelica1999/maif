@@ -144,7 +144,7 @@ class PrintController extends Controller
     private function sendMail($recipientEmail, $pdfFilePath, $cc_mails){
         try{
             $email_doh = 'maipp@ro7.doh.gov.ph';
-            $email_password = 'lfeimyfauyznqnvm';
+            $email_password = 'betvdmvyribwcyba';
             $mail = new PHPMailer(true);
             $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
             $mail->isSMTP();                                            //Send using SMTP
