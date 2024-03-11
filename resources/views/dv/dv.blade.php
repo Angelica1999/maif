@@ -494,9 +494,10 @@
         console.log(1, proponentId);
         console.log(1, pro_group);
 
-     
-        $('#saa2').empty();
-        $('#saa3').empty();
+        //previously requested that saa2 and saa3 will depend on the selected proponent in saa1
+
+        // $('#saa2').empty();
+        // $('#saa3').empty();
        
         var facility_id = $('#facilityDropdown').val();
         // if(data.val()){
@@ -504,41 +505,42 @@
             // if(update !== 0){
             //     fundAmount();
             // }
-            $.get("{{ url('proponentInfo').'/' }}"+facility_id+'/'+pro_group, function(result) {
-                console.log('hereres', result);
-                $('#saa2').append($('<option>', {value: '',text: 'Select SAA'}));
-                $('#saa3').append($('<option>', {value: '',text: 'Select SAA'}));
-                $.each(result, function(index, optionData) {
-                    if(optionData.facility !== null){
-                        console.log('facility', optionData.facility.id);
-                        if(optionData.facility.id == facility_id){
-                            text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent;
-                        }else{
-                            text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + optionData.facility.name;
-                        }
-                    }else{
-                        text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent;
-                    }
-                    $('#saa2').append($('<option>', {
-                        value: optionData.fundsource_id,
-                        text: text_display,
-                        dataval: optionData.remaining_balance,
-                        dataproponentInfo_id: optionData.id,
-                        dataprogroup: optionData.proponent.pro_group,
-                        dataproponent: optionData.proponent.id
+            // $.get("{{ url('proponentInfo').'/' }}"+facility_id+'/'+pro_group, function(result) {
+            //     console.log('hereres', result);
+            //     $('#saa2').append($('<option>', {value: '',text: 'Select SAA'}));
+            //     $('#saa3').append($('<option>', {value: '',text: 'Select SAA'}));
+            //     $.each(result, function(index, optionData) {
+            //         if(optionData.facility !== null){
+            //             console.log('facility', optionData.facility.id);
+            //             if(optionData.facility.id == facility_id){
+            //                 text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent;
+            //             }else{
+            //                 text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + optionData.facility.name;
+            //             }
+            //         }else{
+            //             text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent;
+            //         }
+            //         $('#saa2').append($('<option>', {
+            //             value: optionData.fundsource_id,
+            //             text: text_display,
+            //             dataval: optionData.remaining_balance,
+            //             dataproponentInfo_id: optionData.id,
+            //             dataprogroup: optionData.proponent.pro_group,
+            //             dataproponent: optionData.proponent.id
 
-                    }));
-                    $('#saa3').append($('<option>', {
-                        value: optionData.fundsource_id,
-                        text: text_display,
-                        dataval: optionData.remaining_balance,
-                        dataproponentInfo_id: optionData.id,
-                        dataprogroup: optionData.proponent.pro_group,
-                        dataproponent: optionData.proponent.id
+            //         }));
+            //         $('#saa3').append($('<option>', {
+            //             value: optionData.fundsource_id,
+            //             text: text_display,
+            //             dataval: optionData.remaining_balance,
+            //             dataproponentInfo_id: optionData.id,
+            //             dataprogroup: optionData.proponent.pro_group,
+            //             dataproponent: optionData.proponent.id
 
-                    }));
-                });
-            });
+            //         }));
+            //     });
+            // });
+            
             if($('#saa2').val()){
                 if(c1 == 1){
                     $('#inputValue2').val(formatNumberWithCommas(rem));
@@ -630,8 +632,13 @@
             $("#facilitaddress").val(result.facility.address);
             $('#hospitalAddress').text(result.facility.name);
             $('#for_facility_id').val(facility_id);
+
             var data_result = result.info;
             var text_display;
+
+            $('#saa2').append($('<option>', {value: '',text: 'Select SAA'}));
+            $('#saa3').append($('<option>', {value: '',text: 'Select SAA'}));
+
             $.each(data_result, function(index, optionData){
                 console.log('df', optionData);
                 if(optionData.facility !== null){
@@ -652,7 +659,27 @@
                         dataprogroup: optionData.proponent.pro_group,
                         dataproponent: optionData.proponent.id
                 }));
+                
+                $('#saa2').append($('<option>', {
+                            value: optionData.fundsource_id,
+                            text: text_display,
+                            dataval: optionData.remaining_balance,
+                            dataproponentInfo_id: optionData.id,
+                            dataprogroup: optionData.proponent.pro_group,
+                            dataproponent: optionData.proponent.id
+                }));
+                $('#saa3').append($('<option>', {
+                        value: optionData.fundsource_id,
+                        text: text_display,
+                        dataval: optionData.remaining_balance,
+                        dataproponentInfo_id: optionData.id,
+                        dataprogroup: optionData.proponent.pro_group,
+                        dataproponent: optionData.proponent.id
+                }));
             });
+            $('#saa1').prop('disabled', false);
+            $('#inputValue1').prop('disabled', false);
+
         });
     }
     function confirmationModal(){

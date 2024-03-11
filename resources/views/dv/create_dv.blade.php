@@ -551,12 +551,12 @@
       });
     });
 
-    $('#facilityDropdown').change(function(){
-          setTimeout(function() {
-            $('#inputValue1').prop('disabled', false);
-            $('#saa1').prop('disabled', false);
-          }, 700);
-    });
+    // $('#facilityDropdown').change(function(){
+    //       setTimeout(function() {
+    //         $('#inputValue1').prop('disabled', false);
+    //         $('#saa1').prop('disabled', false);
+    //       }, 700);
+    // });
     
     $('#saa2').change(function(){
         $('#inputValue2').prop('disabled', false);
