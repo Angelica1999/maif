@@ -120,7 +120,7 @@
                                 
                             </td> 
                             <td>
-                                @if($routed > 2)
+                                @if($routed > 1)
                                     Forwarded
                                 @endif
 
