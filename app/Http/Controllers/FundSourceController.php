@@ -201,11 +201,16 @@ class FundSourceController extends Controller
             ])->get();
 
         $randomBytes = random_bytes(16); 
-        // return $fundsource;
+        $proponents = Proponent::select( DB::raw('MAX(id) as id'), DB::raw('MAX(proponent) as proponent'),
+                            DB::raw('MAX(proponent_code) as proponent_code'))
+                        ->groupBy('proponent_code')
+                        ->get(); 
+
         return view('fundsource.breakdowns', [
             'fundsource' => $fundsource,
             'pro_count' => ProponentInfo::where('fundsource_id', $fundsourceId)->count(),
             'facilities' => Facility::get(),
+            'proponents' => $proponents,
             'uniqueCode' => bin2hex($randomBytes)
         ]);
 
@@ -248,7 +253,6 @@ class FundSourceController extends Controller
                     $proponentId = $pro_exists->id;
                 }
                 // $info = ProponentInfo::where('proponent_id', $proponentId)->where('facility_id', $breakdown['facility_id'])->where('fundsource_id', $breakdown['fundsource_id'])->first();
-                
                 if( $breakdown['info_id'] !== "0" && $breakdown['info_id'] !== "undefined" ){
                     
                     $info = ProponentInfo::where('id',  $breakdown['info_id'])->first();
@@ -546,8 +550,13 @@ class FundSourceController extends Controller
                 'uniqueCode' => bin2hex($randomBytes)
             ]);
         }else{
+            $proponents = Proponent::select( DB::raw('MAX(id) as id'), DB::raw('MAX(proponent) as proponent'),
+                            DB::raw('MAX(proponent_code) as proponent_code'))
+                        ->groupBy('proponent_code')
+                        ->get(); 
             return view('fundsource.clone_prodiv',[
                 'facilities' => Facility::get(),
+                'proponents' => $proponents,
                 'uniqueCode' => bin2hex($randomBytes)
             ]);
         }
