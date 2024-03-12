@@ -263,7 +263,6 @@
     });
 
     $('#close_b').on('click', function(){ 
-            console.log('chakiiii');
             location.reload();
         });
 

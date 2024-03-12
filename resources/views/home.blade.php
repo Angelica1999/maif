@@ -194,12 +194,10 @@
 
     $('.send_mailform').on('click', function(e) {
         $('.loading-container').show();
-        console.log('click');
     });
 
     $('#send_btn').on('click', function(e) {
         $('.loading-container').show();
-        console.log('click');
     });
 
     function error(){
@@ -230,14 +228,11 @@
                 var patientId = cell.data('patient-id');
                 var guaranteed_amount = cell.data('guaranteed-amount');
                 var actual_amount = cell.data('actual-amount');
-                // var patientId = $(this).data('id');
-                console.log('patientId', patientId);
                 var url = "{{ url('update/amount').'/' }}" + patientId +'/'+ newValue;
                 var json = {
                     "_token" : "<?php echo csrf_token(); ?>",
                     "value" : newValue
                 };
-                console.log('patientId', newValue);
             
                 if(newValue == ''){
                     Lobibox.alert('error',{
@@ -245,7 +240,8 @@
                         msg: "Actual amount accepts number only!"
                     }); 
                     newValue = 0;
-                    window.location.href = '{{ route("home") }}';
+                    location.reload();
+                    // window.location.href = '{{ route("home") }}';
                     return;  
                 }
                 var c_amount = newValue.replace(/,/g,'');
@@ -256,20 +252,19 @@
                         size: 'mini',
                         msg: "Inputted actual amount if greater than guaranteed amount!"
                     }); 
-                    window.location.href = '{{ route("home") }}';
-                    console.log('sdasd', newValue);
-
+                    location.reload();
+                    // window.location.href = '{{ route("home") }}';
                     return;           
                 }
 
                 $.post(url,json,function(result){
-                    console.log(result);
                     Lobibox.notify('success', {
                         title: "",
                         msg: "Successfully update actual amount!",
                         size: 'mini',
                         rounded: true
                     });
+                    location.reload();
                 });
             }
         });    
@@ -282,7 +277,6 @@
         
         $('.group-checkbox').change(function () {
             if ($(this).prop('checked')) {
-                console.log('chakadal');
                 var selectedProponentId = $(this).closest('.group-amount').data('proponent-id');
                 var selectedFacilityId = $(this).closest('.group-amount').data('facility-id');
 
@@ -302,7 +296,6 @@
                 $('.group-checkbox').prop('disabled', false);
             }
             var checkedCheckboxes = $('.group-checkbox:checked');
-            console.log('asadfsfsds', checkedCheckboxes.length);
             var totalAmount = 0;
             var patientId = [];
             var proponentId = 0;
@@ -316,7 +309,6 @@
                     totalAmount = 0;
                     $('.group-checkbox').prop('checked', false);
                 }else{
-                    console.log('amoutn', amount);
                     var currentProponent = $(this).closest('.group-amount').data('proponent-id');
                     var currentFacility = $(this).closest('.group-amount').data('facility-id');
                     var patient = $(this).closest('.group-amount').data('patient-id');
@@ -338,14 +330,11 @@
                 $('.group_facility').val(facilityId);
                 $('.group_proponent').val(proponentId);
                 $('.group_patients').val(patientId.join(','));
-                console.log('asad',$('.group_patients').val());
                 $('.group-btn').show();
                 $('.totalAmountLabel').show();
-                console.log('Total Amount:', totalAmount);
             }
 
             if(checkedCheckboxes.length == '0'){
-                console.log('herehere', checkedCheckboxes.length);
                 setNull();
             }
 
@@ -370,18 +359,15 @@
                 $('.send_mails').hide();
             }
             $('.send_mails').val(ids);
-            console.log('chakiii', ids);
 
         });
         //select_all
         $('.select_all').on('click', function(){
-            console.log('click');
             $('.group-mailCheckBox').prop('checked', true);
             $('.group-mailCheckBox').trigger('change');
         });
         //unselect_all
         $('.unselect_all').on('click', function(){
-            console.log('click');
             $('.group-mailCheckBox').prop('checked', false);
             $('.group-mailCheckBox').trigger('change');
         });
@@ -432,7 +418,6 @@
     }
 
     function othersRegion(data) {
-        console.log(data)
         if(data.val() != "Region 7"){
             {{-- var patientProvinceDescription = "{{ $patients->other_province }}"--}}
             // $("#facility_body").html("<input type='text' class='form-control' name='other_facility' required>");
@@ -498,7 +483,6 @@
 
     function onchangeProvince(data) {
         
-        console.log('data', data.val());
         if(data.val()) {
             $.get("{{ url('muncity/get').'/' }}"+data.val(), function(result) {
                 $('#muncity_id').html('');
@@ -515,7 +499,7 @@
                         text: optionData.description
                     }));
                 });
-                
+                $('#muncity_id').prop('disabled', false);
             });
         }
     }
@@ -524,7 +508,6 @@
         if(data.val()) {
             $.get("{{ url('barangay/get').'/' }}"+data.val(), function(result) {
                 $('#barangay_id').html('');
-
                 $('#barangay_id').append($('<option>', {
                     value: "",
                     text: "Please select Barangay"
@@ -556,7 +539,6 @@
                     value: "",
                     text: "Select Proponent"
                 }));
-                console.log('optionData', result);
                 $.each(result, function(index, optionData) {
                     $('#proponent_id').append($('<option>', {
                         value: result[index].id,
@@ -569,10 +551,8 @@
     }
 
     function onchangeForPatientCode(data) {
-        console.log('sdsad', data.val());
         if(data.val()) {
             $.get("{{ url('patient/code').'/' }}"+data.val()+"/"+facility_id, function(result) {
-                console.log(result.patient_code);
                 $("#patient_code").val(result.patient_code);
                 const formattedBalance = new Intl.NumberFormat('en-US', {
                     minimumFractionDigits: 2,
@@ -597,9 +577,9 @@
         }
     }
 
-    $('#remaining_balance').on('click', function() {
-        console.log('click');
-    });
+    // $('#remaining_balance').on('click', function() {
+    //     console.log('click');
+    // });
 
 // function onchangeForPatientProp(data) {
 //      var proponent_id = data('proponent-id');

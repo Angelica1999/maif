@@ -279,23 +279,22 @@
             //     }, 1000);
             // });
 
-        $('#province_id').change(function() {
-            $('#muncity_id').prop('disabled', true);
+        // $('#province_id').change(function() {
+        //     $('#muncity_id').prop('disabled', true);
         
-            setTimeout(function() {
-                $('#muncity_id').prop('disabled', false);
-            }, 500);
+        //     setTimeout(function() {
+        //         $('#muncity_id').prop('disabled', false);
+        //     }, 500);
 
-        });
+        // });
 
-        $('#muncity_id').change(function() {
+        // $('#muncity_id').change(function() {
             
-            $('#barangay_id').prop('disabled', true);
-            setTimeout(function() {
-                $('#barangay_id').prop('disabled', false);
-            }, 500);
+        //     $('#barangay_id').prop('disabled', true);
+        //     setTimeout(function() {
+        //     }, 500);
 
-        });
+        // });
 
     });
 
