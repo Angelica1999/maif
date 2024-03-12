@@ -334,11 +334,11 @@ class DvController extends Controller
         $dv->accumulated = $request->input('accumulated');
         $dv->proponent_id = json_encode($all_pro);
         $dv->save();
-        
+
+        $desc = "Disbursement voucher for ". Facility::where('id', $dv->facility_id)->value('name') ." amounting to Php ". number_format($dv->total_amount, 2, '.',',');
+
         if($check == null || $check == '' ){
-        
             $dts_user = DB::connection('dts')->select("SELECT id FROM users WHERE username = ? LIMIT 1",array($dv->created_by));
-            $desc = "Disbursement voucher for ". Facility::where('id', $dv->facility_id)->value('name');
             $data = [$dv->route_no,"DV",$dv->created_at,$dts_user[0]->id,0,  $desc, 0.00,"", "", "", "", "", "", "", "", "", "", "0000-00-00 00:00:00",
                         "", "", "", 0, "", "", "", "", "", "", ];
             DB::connection('dts')->insert(
@@ -357,6 +357,23 @@ class DvController extends Controller
             $data_details = [$updated_route, "", 0,$dv->created_at, $dts_user[0]->id, $dts_user[0]->id,  $desc, 0];
             DB::connection('dts')->insert("INSERT INTO TRACKING_DETAILS(route_no, code, alert, date_in, received_by, delivered_by, action, status,created_at, updated_at)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, now(), now())",$data_details);
+        }else{
+            
+            // Update 
+            $trackingMaster = TrackingMaster::where('route_no', $dv->route_no)->first();
+
+            if ($trackingMaster) {
+                $trackingMaster->description = $desc;
+                $trackingMaster->save();
+            }
+
+            $trackingDetails = TrackingDetails::where('route_no', $dv->route_no)->first();
+
+            if ($trackingDetails) {
+                $trackingDetails->action = $desc;
+                $trackingDetails->save();
+            }
+
         }
        
 
