@@ -61,7 +61,7 @@
                 <div class="ml-2">
                     <p>Republic of the Philippines<br>
                         Department of Health<br>
-                        <span class="col text-center" style="font-size: 12px"><strong>MAIFIP - Medical Assistance to Indigent and Fanancialy - Incapacitated Patients</strong></span>
+                        <span class="col text-center" style="font-size: 12px"><strong>MAIFIP - Medical Assistance to Indigent and Financially - Incapacitated Patients</strong></span>
                     </p>
                 </div>
             </div>
@@ -127,7 +127,7 @@
                 <div class="ml-2">
                     <p>Republic of the Philippines<br>
                         Department of Health<br>
-                        <span class="col text-center" style="font-size: 12px"><strong>MAIFIP - Medical Assistance to Indigent and Fanancialy - Incapacitated Patients</strong></span>
+                        <span class="col text-center" style="font-size: 12px"><strong>MAIFIP - Medical Assistance to Indigent and Financially - Incapacitated Patients</strong></span>
                     </p>
                 </div>
             </div>
