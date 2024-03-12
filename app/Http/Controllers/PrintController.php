@@ -45,7 +45,7 @@ class PrintController extends Controller
     }
     
     public function patientPdf(Request $request, $patientid) {
-        $patient = Patients::where('id',$patientid)->with('encoded_by')->first();
+        $patient = Patients::where('id',$patientid)->with('encoded_by', 'province', 'muncity', 'barangay')->first();
         if(!$patient){
             return redirect()->route('Home.index')->with('error', 'Patient not found.');
         }

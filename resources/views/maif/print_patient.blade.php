@@ -73,7 +73,7 @@
         </div>
 
         <div class="form-group ml-1">
-            <p>This is to certify that patient <strong>{{ $patient->fname . ' ' . $patient->mname . ' ' . $patient->lname}}</strong>, {{ $age }}, of CITY OF PASIG NCR SECOND DISTRICT, was extended by this office, a total of {{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }} medical assistance stated below based on the existing guidelines of Administrative Order No. 2023 - 0016, dated August 11, 2023:</p>
+            <p>This is to certify that patient <strong>{{ $patient->fname . ' ' . $patient->mname . ' ' . $patient->lname}}</strong>, {{ $age }}, of {{$patient->barangay->description . ', '. $patient->muncity->description . ', '. $patient->province->description}}, was extended by this office, a total of {{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }} medical assistance stated below based on the existing guidelines of Administrative Order No. 2023 - 0016, dated August 11, 2023:</p>
         </div>
 
         <table class="table table-white ml-1">
@@ -139,7 +139,7 @@
         </div>
 
         <div class="form-group">
-            <p>This is to certify that patient <strong>{{ $patient->fname . ' ' . $patient->mname . ' ' . $patient->lname}}</strong>, {{ $age }}, of CITY OF PASIG NCR SECOND DISTRICT, was extended by this office, a total of {{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }} medical assistance stated below based on the existing guidelines of Administrative Order No. 2023 - 0016, dated August 11, 2023:</p>
+            <p>This is to certify that patient <strong>{{ $patient->fname . ' ' . $patient->mname . ' ' . $patient->lname}}</strong>, {{ $age }}, of {{$patient->barangay->description . ', '. $patient->muncity->description . ', '. $patient->province->description}}, was extended by this office, a total of {{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }} medical assistance stated below based on the existing guidelines of Administrative Order No. 2023 - 0016, dated August 11, 2023:</p>
         </div>
 
         <table class="table table-white">
