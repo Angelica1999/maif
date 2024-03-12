@@ -332,7 +332,7 @@ class HomeController extends Controller
             }
             $patient->actual_amount = $newAmount;
             $patient->save();
-            session()->flash('actual_amount', true);
+            // session()->flash('actual_amount', true);
         }
     }
 
@@ -532,7 +532,7 @@ class HomeController extends Controller
     // }
 
     public function muncityGet(Request $request) {
-        return Muncity::where('province_id',$request->province_id)->get();
+        return Muncity::where('province_id',$request->province_id)->whereNull('vaccine_used')->get();
     }
 
     public function barangayGet(Request $request) {
