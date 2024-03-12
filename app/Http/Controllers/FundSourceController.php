@@ -85,10 +85,16 @@ class FundSourceController extends Controller
             
             if($fundsource){
                 $fundsource->saa = $request->input('saa');
-                $fundsource->alocated_funds =str_replace(',','',  $request->input('allocated_funds'));
-                $admin_cost = (double)str_replace(',','',  $request->input('allocated_funds')) * .01;
-                $fundsource->admin_cost = $admin_cost;
-                $fundsource->remaining_balance = (double)str_replace(',','',  $request->input('allocated_funds')) -  $admin_cost;
+                $fundsource->alocated_funds = str_replace(',','',  $request->input('allocated_funds'));
+                if((double)str_replace(',','',  $request->input('allocated_funds')) >= 1000000){
+                    $admin_cost = (double)str_replace(',','',  $request->input('allocated_funds')) * .01;
+                    $fundsource->admin_cost = $admin_cost;
+                    $fundsource->remaining_balance = (double)str_replace(',','',  $request->input('allocated_funds')) -  $admin_cost;
+                }else{
+                    $fundsource->admin_cost = 0;
+                    $fundsource->remaining_balance = str_replace(',','',  $request->input('allocated_funds'));
+                }
+                
                 $fundsource->created_by = Auth::user()->userid;
                 $fundsource->save();
 
@@ -226,9 +232,10 @@ class FundSourceController extends Controller
 
         $breakdowns = $request->input('breakdowns');
         $fund_id = $request->input('fundsource_id');
+        $get_fundsource = Fundsource::where('id', $fund_id)->first();
+        // if($fund_id){
 
-        if($fund_id){
-        }
+        // }
         if($breakdowns){
             foreach($breakdowns as $breakdown){
 
@@ -262,8 +269,14 @@ class FundSourceController extends Controller
                         $info->facility_id = json_encode($breakdown['facility_id']);
                         $info->proponent_id = $proponentId;
                         $info->alocated_funds = $breakdown['alocated_funds'];
-                        $info->admin_cost =number_format( (double)str_replace(',','',$breakdown['alocated_funds']) * .01 , 2,'.', ',');
-                        $info->remaining_balance = (double)str_replace(',','',$breakdown['alocated_funds']) - (double)str_replace(',','', $info->admin_cost);
+                        if((double)str_replace(',','',$get_fundsource->alocated_funds) >= 1000000){
+                            $info->admin_cost =number_format( (double)str_replace(',','',$breakdown['alocated_funds']) * .01 , 2,'.', ',');
+                            $info->remaining_balance = (double)str_replace(',','',$breakdown['alocated_funds']) - (double)str_replace(',','', $info->admin_cost);
+                        }else{
+                            $info->admin_cost = 0;
+                            $info->remaining_balance = $breakdown['alocated_funds'];
+                        }
+                           
                         $info->created_by = Auth::user()->userid;
                         $info->save();
                     }else{
@@ -278,19 +291,19 @@ class FundSourceController extends Controller
                     $p_info->proponent_id = $proponentId;
                     $p_info->facility_id = json_encode($breakdown['facility_id']);
                     $p_info->alocated_funds = $breakdown['alocated_funds'];
-                    // if((double)str_replace(',','',$breakdown['alocated_funds']) >= 1000000){
-                    $p_info->admin_cost =number_format((double)str_replace(',','',$breakdown['alocated_funds']) * .01 , 2,'.', ',');
-                    $p_info->remaining_balance = (double)str_replace(',','',$breakdown['alocated_funds']) - (double)str_replace(',','',$p_info->admin_cost);
-                    // }else{
-                    //     $p_info->admin_cost = 0;
-                    //     $p_info->remaining_balance = $breakdown['alocated_funds'];
-                    // }
+                    if((double)str_replace(',','',$get_fundsource->alocated_funds) >= 1000000){
+                        $p_info->admin_cost =number_format((double)str_replace(',','',$breakdown['alocated_funds']) * .01 , 2,'.', ',');
+                        $p_info->remaining_balance = (double)str_replace(',','',$breakdown['alocated_funds']) - (double)str_replace(',','',$p_info->admin_cost);
+                    }else{
+                        $p_info->admin_cost = 0;
+                        $p_info->remaining_balance = $breakdown['alocated_funds'];
+                    }
                     $p_info->created_by = Auth::user()->userid;
                     $p_info->save();
                 }
             }
         }
-        return redirect()->back()->with('breakdowns_created', true);
+        // return redirect()->back()->with('breakdowns_created', true);
     }
 
     public function updatefundsource(Request $request) {

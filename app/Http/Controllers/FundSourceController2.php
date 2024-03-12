@@ -27,12 +27,12 @@ class FundSourceController2 extends Controller{
                     ->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
                     ->where('users.userid', '=', Auth::user()->userid)
                     ->value('users.section');
-      $fundsources = Fundsource:: orderBy('id', 'asc')->paginate(15);
+      $fundsources = Fundsource:: orderBy('id', 'desc')->paginate(15);
       if($request->viewAll) {
         $request->keyword = '';
       }
       else if($request->keyword) {
-          $fundsources = Fundsource::where('saa', 'LIKE', "%$request->keyword%")->orderBy('id', 'asc')->paginate(15);
+          $fundsources = Fundsource::where('saa', 'LIKE', "%$request->keyword%")->orderBy('id', 'desc')->paginate(15);
       } 
       
       return view('fundsource_budget.fundsource2',[
@@ -43,33 +43,34 @@ class FundSourceController2 extends Controller{
     }
 
     public function createfundSource2(Request $request){
-      $funds = $request->input('allocated_funds');
-      $saas = $request->input('saa');
-      foreach($funds as $index => $fund){
-        $saa_ex = Fundsource::where('saa', $saas[$index])->first();
-        // return $fund ; 
-        if($saa_ex){
-          session()->flash('saa_exist', true);
-        }else{
-          $fundsource = new Fundsource();
-          $fundsource->saa = $saas[$index];
-          $fundsource->alocated_funds = str_replace(',','',$fund);
-          if((double)str_replace(',','',$fund) >= 1000000){
-            $admin_cost = (double) str_replace(',','',$fund) * 0.01;
-            $fundsource->admin_cost = $admin_cost;
-            $fundsource->remaining_balance = (double)str_replace(',','',$fund) - $admin_cost ;
-          }else{
-            $fundsource->admin_cost = 0;
-            $fundsource->remaining_balance = str_replace(',','',$fund);
-          }
-          
-          $fundsource->created_by = Auth::user()->userid;
-          $fundsource->save();
-          session()->flash('fundsource_save', true);
+
+        $funds = $request->input('allocated_funds');
+        $saas = $request->input('saa');
+        foreach($funds as $index => $fund){
+            $saa_ex = Fundsource::where('saa', $saas[$index])->first();
+          // return $fund ; 
+            if($saa_ex){
+                session()->flash('saa_exist', true);
+            }else{
+                $fundsource = new Fundsource();
+                $fundsource->saa = $saas[$index];
+                $fundsource->alocated_funds = str_replace(',','',$fund);
+
+                if((double)str_replace(',','',$fund) >= 1000000){
+                    $admin_cost = (double) str_replace(',','',$fund) * 0.01;
+                    $fundsource->admin_cost = $admin_cost;
+                    $fundsource->remaining_balance = (double)str_replace(',','',$fund) - $admin_cost ;
+                }else{
+                    $fundsource->admin_cost = 0;
+                    $fundsource->remaining_balance = str_replace(',','',$fund);
+                }
+                
+                $fundsource->created_by = Auth::user()->userid;
+                $fundsource->save();
+                session()->flash('fundsource_save', true);
+            }
         }
-        
-      }
-      return redirect()->back();
+        return redirect()->back();
     }
 
     public function pendingDv(Request $request, $type){

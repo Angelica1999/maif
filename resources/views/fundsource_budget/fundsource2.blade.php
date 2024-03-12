@@ -115,37 +115,35 @@
                 <span aria-hidden="true">×</span>
                 </button>
             </div>
-                <form id="update_fundsource2">
-                    @csrf    
-                    <div class="modal_body">
+            <form id="update_fundsource2">
+                @csrf    
+                <div class="modal_body">
 
-                        <div class="card" style="padding:10px">
+                    <div class="card" style="padding:10px">
 
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="fname">SAA:</label>
-                                        <input type="text" class="form-control saa" id="saa" name="saa" required>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="lname">Allocated Funds:</label>
-                                        <input type="text" class="form-control allocated_funds" onkeyup="validateAmount(this)" id="allocated_funds" name="allocated_funds" required>
-                                    </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fname">SAA:</label>
+                                    <input type="text" class="form-control saa" id="saa" name="saa" required>
                                 </div>
                             </div>
-                            
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="lname">Allocated Funds:</label>
+                                    <input type="text" class="form-control allocated_funds" onkeyup="validateAmount(this)" id="allocated_funds" name="allocated_funds" required>
+                                </div>
+                            </div>
                         </div>
+                        
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Update</button>
-                    </div>
-                </form>
-            </div>
-            
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </div>
+            </form>            
         </div>
     </div>
 </div>

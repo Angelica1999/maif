@@ -65,8 +65,6 @@
     @endif
     @if($joinedData->section == 105 || $joinedData->section == 80)
 
-        
-
         <ul class="nav flex-column" style=" margin-bottom: 0;">
             <li class="nav-item">
                 <a class="nav-link" href="#">
@@ -195,8 +193,6 @@
         </ul>
     @endif
     @if($joinedData->section == 7)
-
-
       <ul class="nav flex-column" style=" margin-bottom: 0;">
             <li class="nav-item">
                 <a class="nav-link" href="#">
