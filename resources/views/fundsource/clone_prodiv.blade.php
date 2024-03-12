@@ -4,7 +4,15 @@
         <div class="col-md-5">
             <b><label>Proponent:</label></b>
             <div class="form-group">
-                <input type="text" class="form-control proponent" name="proponent[]" placeholder="Proponent">
+                <!-- <input type="text" class="form-control proponent" name="proponent[]" placeholder="Proponent"> -->
+                <select class="form-control proponent" id="{{ $uniqueCode . '1' }}" name="proponent[]" onchange="proponentCode($(this))">
+                    <option value="">Select/Input Proponent</option>
+                    @foreach($proponents as $proponent)
+                        <option value="{{ $proponent->proponent }}" data-proponent-code="{{ $proponent->proponent_code }}">
+                            {{ $proponent->proponent }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
         </div>
         <div class="col-md-7">
@@ -49,4 +57,7 @@
 </div>
 <script>
     $("#"+"{{ $uniqueCode }}").select2();
+    $("#"+"{{ $uniqueCode . '1' }}").select2({
+        tags: true,
+    });
 </script>
