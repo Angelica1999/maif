@@ -270,6 +270,11 @@ class DvController extends Controller
         $dv= Dv::where('id', $check)->first();
         $all_pro = array_values(array_filter([$request->input('pro_id1'), $request->input('pro_id2'), $request->input('pro_id3')],
                         function($value){return $value !== '0' && $value !==null;}));
+        
+        if(Auth::user()->userid == 1027){
+            $dv->dv_no = $request->input('dv_no');
+        }
+
         if($dv) {
 
             Utilization::where('div_id', $dv->route_no)->update(['status'=>1]);
