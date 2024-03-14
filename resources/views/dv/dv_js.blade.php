@@ -42,7 +42,7 @@
 
     });
 
-    @if($user == 1027)
+    @if($user == 1027 || $user == 2660)
         $(document).ready(function() {
             $('#dv2_btn').prop('disabled', false).hide();
         });

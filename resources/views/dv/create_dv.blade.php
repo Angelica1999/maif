@@ -103,7 +103,7 @@
                                 <br>
                                 <div>
                                     <span>DV No:</span>
-                                    @if(Auth::user()->userid == 1027)
+                                    @if(Auth::user()->userid == 1027 || Auth::user()->userid == 2660)
                                       &nbsp;<input type="text" name="dv_no" id="dv_no" style="width:150px; height: 28px;" class="ft15" required>
                                     @endif
                                 </div>

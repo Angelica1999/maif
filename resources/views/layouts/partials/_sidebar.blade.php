@@ -167,7 +167,7 @@
         </li>
     @endif
 
-    @if(Auth::user()->userid == 1027)
+    @if(Auth::user()->userid == 1027 || Auth::user()->userid == 2660)
         <ul class="nav flex-column" style=" margin-bottom: 0;">
             <li class="nav-item">
                 <a class="nav-link" href="#">

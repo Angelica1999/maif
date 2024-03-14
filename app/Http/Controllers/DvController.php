@@ -59,7 +59,7 @@ class DvController extends Controller
                 ->orderby('id', 'desc')
                 ->paginate(50);
         
-        if(Auth::user()->userid == 1027){
+        if(Auth::user()->userid == 1027 || Auth::user()->userid == 2660){
             return view('dv.acc_dv', [
                 'disbursement' => $results,
                 'keyword' => $request->keyword ?: '',
@@ -271,7 +271,7 @@ class DvController extends Controller
         $all_pro = array_values(array_filter([$request->input('pro_id1'), $request->input('pro_id2'), $request->input('pro_id3')],
                         function($value){return $value !== '0' && $value !==null;}));
         
-        if(Auth::user()->userid == 1027){
+        if(Auth::user()->userid == 1027 || Auth::user()->userid == 2660){
             $dv->dv_no = $request->input('dv_no');
         }
 
@@ -301,6 +301,7 @@ class DvController extends Controller
                 $p_if->save();
             }
         }else{
+
             $dv = new Dv();
             $dv->created_by = Auth::user()->userid;
             $dv->route_no = date('Y-') . Auth::user()->userid . date('mdHis');
@@ -340,12 +341,12 @@ class DvController extends Controller
         $dv->proponent_id = json_encode($all_pro);
         $dv->save();
 
-        $desc = "Disbursement voucher for ". Facility::where('id', $dv->facility_id)->value('name') ." amounting to Php ". number_format($dv->total_amount, 2, '.',',');
+        $desc = "Disbursement voucher for " . Facility::where('id', $dv->facility_id)->value('name') . " amounting to Php " . number_format(str_replace(',', '', $dv->total_amount), 2, '.', ',');
 
         if($check == null || $check == '' ){
             $dts_user = DB::connection('dts')->select("SELECT id FROM users WHERE username = ? LIMIT 1",array($dv->created_by));
             $data = [$dv->route_no,"DV",$dv->created_at,$dts_user[0]->id,0,  $desc, 0.00,"", "", "", "", "", "", "", "", "", "", "0000-00-00 00:00:00",
-                        "", "", "", 0, "", "", "", "", "", "", ];
+                        "", "", "", 0, "", !Empty($dv->dv_no)? $dv->dv_no:"", "", "", "", "", ];
             DB::connection('dts')->insert(
                 "INSERT INTO TRACKING_MASTER(route_no, doc_type, prepared_date, prepared_by, division_head, description, amount, pr_no, po_no, pr_date, purpose, po_date, 
                     source_fund, requested_by, route_to, route_from, supplier, event_date, event_location, event_participant, cdo_applicant, cdo_day, event_daterange, 

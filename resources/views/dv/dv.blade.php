@@ -13,7 +13,7 @@
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit">Search</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll">View All</button>
-                        @if(Auth::user()->userid != 1027)
+                        @if(Auth::user()->userid != 1027 || Auth::user()->userid == 2660)
                             <button type="button" href="#create_dv" onclick="createDv()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md">Create</button>
                             <button type="button" id="release_btn" data-target="#releaseTo" style="display:none; background:teal; color:white" onclick="putRoutes($(this))" data-target="#releaseTo" data-backdrop="static" data-toggle="modal" class="btn btn-md">Release All</button>
                             <input type="hidden" class="all_route" id="all_route" name="all_route">
@@ -91,13 +91,13 @@
                         <tr> 
                             <td>                 
                                 <button type="button" class="btn btn-xs col-sm-12" style="background-color:#165A54;color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$dvs->route_no}}" id="track_load" onclick="openModal()">Track</button>
-                                @if(Auth::user()->userid != 1027)
+                                @if(Auth::user()->userid != 1027 || Auth::user()->userid == 2660)
                                     <button type="button" class="btn btn-xs btn-success col-sm-12 create-dv2-btn" data-toggle="modal" href="#create_dv2" data-routeId="{{$dvs->route_no}}" onclick="createDv2()">Create DV2</button>
                                 @endif
                             </td>
                             <td> 
                                 <a  data-dvId="{{$dvs->id}}" href="#create_dv" onclick="updateDv()" style="background-color:teal;color:white;" type="button" class="btn btn-xs" data-backdrop="static" data-toggle="modal">
-                                @if(Auth::user()->userid != 1027)
+                                @if(Auth::user()->userid != 1027 || Auth::user()->userid == 2660)
                                     @if($dvs->facility)
                                         {{ $dvs->route_no }}
                                     @endif
