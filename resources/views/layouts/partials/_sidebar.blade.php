@@ -63,7 +63,7 @@
             </li>
         </ul>
     @endif
-    @if($joinedData->section == 105 || $joinedData->section == 80)
+    @if($joinedData->section == 105 || $joinedData->section == 80 || $joinedData->section == 36)
 
         <ul class="nav flex-column" style=" margin-bottom: 0;">
             <li class="nav-item">
