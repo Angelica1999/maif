@@ -42,7 +42,7 @@ class LoginController extends Controller
             if ($joinedData) {
                 if ($joinedData->section == 6) {
                     return RouteServiceProvider::BUDGET;
-                } elseif ($joinedData->section == 80) {
+                } elseif ($joinedData->section == 80 || $joinedData->section == 36  || $joinedData->section == 105) {
                     return RouteServiceProvider::MAIF;
                 } elseif($userId == 1027 || $userId == 2660){
                     return RouteServiceProvider::ACCOUNTING;
