@@ -45,7 +45,7 @@
                         <tr> 
                             <td>                 
                                 <button type="button" class="btn btn-xs col-sm-12" style="background-color:#165A54;color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$dvs->route_no}}" id="track_load" onclick="openModal()">Track</button>
-                                @if(Auth::user()->userid != 1027)
+                                @if(Auth::user()->userid != 1027 || Auth::user()->userid == 2660)
                                     <button type="button" class="btn btn-xs btn-success col-sm-12 create-dv2-btn" data-toggle="modal" href="#create_dv2" data-routeId="{{$dvs->route_no}}" onclick="createDv2()">Create DV2</button>
                                 @endif
                             </td>

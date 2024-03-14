@@ -44,7 +44,7 @@ class LoginController extends Controller
                     return RouteServiceProvider::BUDGET;
                 } elseif ($joinedData->section == 80) {
                     return RouteServiceProvider::MAIF;
-                } elseif($userId == 1027){
+                } elseif($userId == 1027 || $userId == 2660){
                     return RouteServiceProvider::ACCOUNTING;
                 }elseif($joinedData->section == 7){
                     return RouteServiceProvider::CASHIER;
