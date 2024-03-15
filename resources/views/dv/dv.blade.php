@@ -63,6 +63,7 @@
                     <tr>
                         <th style="min-width: 150px;"></th>
                         <th style="min-width: 120px;">Route No</th>
+                        <th>Modified</th>
                         <th>Status</th>
                         <th style="text-align:center">
                             <div style="display: flex; gap: 1px;">
@@ -110,12 +111,14 @@
                                                 ->first()
                                                 ->id;
                                     ?>
-                                    <button data-toggle="modal" data-target="#releaseTo" data-id="{{ $doc_id }}" data-route_no="{{ $dvs->route_no }}" onclick="putRoute($(this))" style="width:85px;" type="button" class="btn btn-info btn-xs">Release To</button>
+                                    <button data-toggle="modal" data-target="#releaseTo" data-id="{{ $doc_id }}" data-route_no="{{ $dvs->route_no }}" onclick="putRoute($(this))" style="width:87px;" type="button" class="btn btn-info btn-xs">Release To</button>
                                 @else
-                                    <a href="#obligate"  onclick="obligateDv('{{$dvs->route_no}}','0', 'add_dvno')" style="background-color:teal;color:white;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">{{ $dvs->route_no }}</a>
+                                    <a href="#obligate"  onclick="obligateDv('{{$dvs->route_no}}','0', 'add_dvno')" style="background-color:teal;color:white; width:85px;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">{{ $dvs->route_no }}</a>
                                 @endif
-                                
                             </td> 
+                            <td>
+                                <a href="#dv_history" onclick="getHistory('{{$dvs->route_no}}')" style="background-color:teal;color:white; width:85px;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">Edit History</a>
+                            </td>
                             <td>
                                 @if($routed > 1)
                                     Forwarded
@@ -206,14 +209,13 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <b><h5 class="modal-title" name ="route_no" id="exampleModalLabel">Create Disbursement V2</h5> </b>
+                <b><h5 class="modal-title" name ="route_no" id="exampleModalLabel">Create Disbursement V2</h5></b>
             </div>
             <div class="modal_body">
             </div>
         </div>
     </div>
 </div>
-
 
 @include('modal')
 @endsection

@@ -3,6 +3,21 @@
 
 <script>
 
+    function getHistory(route_no){
+        console.log('route', route_no);
+        $('.modal-body').html(loading);
+        var url = "{{ url('/dv/history').'/' }}"+route_no;
+        setTimeout(function(){
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function(result) {
+                    $('.modal-body').html(result);
+                }
+            });
+        },1000);
+    }
+
      //select_all
      $('.select_all').on('click', function(){
         document.getElementById('release_btn').style.display = 'inline-block';

@@ -85,7 +85,7 @@ Route::get('/getvatEwt/{facilityId}',[App\Http\Controllers\DvController::class, 
 Route::get('/getallocated/{facilityId}',[App\Http\Controllers\DvController::class, 'getAlocated'])->name('getallocated');
 //modify im getting proponent_info since not all saa is same facility due to cvchd that can be used by another facility;
 Route::get('/balance',[App\Http\Controllers\DvController::class, 'getAllInfo'])->name('proponent_info.all');
-
+Route::get('/dv/history/{route_no}',[App\Http\Controllers\DvController::class, 'dvHistory'])->name('dv.history');
 
 
 Route::get('/dv/create/save', [App\Http\Controllers\DvController::class, 'createDvSave'])->name('dv.create.save');

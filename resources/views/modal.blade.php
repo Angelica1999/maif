@@ -1,3 +1,23 @@
+<div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true" >
+    <div class="modal-dialog modal-sm" style="background-color: #17c964; color:white">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #17c964;" >
+                <h5 id="confirmationModalLabel"><strong?>Confirmation</strong></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="text-align:center; color:black">
+                Are you sure you want to select a new facility? If yes, all selected data will be cleared out.
+            </div>
+            <div class="modal-footer" style="background-color: #17c964; color:white" >
+                <button type="button" class="btn btn-sm btn-info confirmation" id="confirmButton">Confirm</button>
+                <button type="button" class="btn btn-sm btn-danger confirmation" data-dismiss="modal" id="cancelButton">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end-->
 <div class="modal fade" id="track_details" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
@@ -52,7 +72,7 @@
                             <th>Beginning Balance</th>
                             <th>Tax</th>
                             <th>Utilize Amount</th>
-                            <th>DV No</th>
+                            <th>Route No</th>
                             <th>Created By</th>
                             <th>Utilized On</th>
                             <th>Remarks</th>
@@ -159,43 +179,21 @@
     </div>
 </div>
 <!--end-->
-
-<!--end-->
-
-<!--end-->
-<div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true" >
-    <div class="modal-dialog modal-sm" style="background-color: #17c964; color:white">
-        <div class="modal-content">
-            <div class="modal-header" style="background-color: #17c964;" >
-                <h5 id="confirmationModalLabel"><strong?>Confirmation</strong></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body" style="text-align:center; color:black">
-                Are you sure you want to select a new facility? If yes, all selected data will be cleared out.
-            </div>
-            <div class="modal-footer" style="background-color: #17c964; color:white" >
-                <button type="button" class="btn btn-sm btn-info confirmation" id="confirmButton">Confirm</button>
-                <button type="button" class="btn btn-sm btn-danger confirmation" data-dismiss="modal" id="cancelButton">Cancel</button>
-            </div>
+<div class="modal fade" id="dv_history" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content"> 
+            <form action="" method="POST">
+                <h4 class="text-success"><i style = "font-size:30px"class="typcn typcn-location-arrow menu-icon"></i>History</h4><hr />
+                <div class="modal-body">
+                    @csrf
+                </div>
+                <div class="modal-footer">
+                    <button style = "background-color:lightgray"  class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> Close</button>
+                </div>
+            </form>
         </div>
-    </div>
-</div>
-<!--end-->
-<div class="modal fade" id="view_patients" role="dialog" style="overflow-y:scroll;">
-    <div class="modal-dialog modal-lg" role="document" style="width:1200px">
-    <div class="modal-content">
-            <div class="modal-header" style="background-color:#17c964;padding:15px; color:white">
-                <h4 class="modal-title"><i class="fa fa-plus" style="margin-right:auto;"></i> Patients</h4>
-                <button type="button" class="close" id="exit" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" style="color:white;">&times;</span></button>
-            </div>
-            <div class="modal_body">
-                <div class="modal_content"></div>
-            </div>
-        </div>
-    </div>
-</div>
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 <!--end-->
 <!-- <div class="loading-container" style="display:none">
     <img src="public\images\loading.gif" alt="Loading..." class="loading-spinner">

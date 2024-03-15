@@ -69,9 +69,19 @@
         </div>
     </div>
 </div>
-
-
-
+<div class="modal fade" id="view_patients" tabindex="-1" role="dialog" style="overflow-y:scroll;">
+    <div class="modal-dialog modal-lg" role="document" style="width:1200px">
+    <div class="modal-content">
+            <div class="modal-header" style="background-color:#17c964;padding:15px; color:white">
+                <h4 class="modal-title"><i class="fa fa-plus" style="margin-right:auto;"></i> Patients</h4>
+                <button type="button" class="close" id="exit" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" style="color:white;">&times;</span></button>
+            </div>
+            <div class="modal_body">
+                <div class="modal_content"></div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @include('modal')
 @endsection
@@ -86,6 +96,9 @@
         });
     });
     $('.facility').select2();
+    $('#exit').on('click', function(){
+        location.reload();
+    });
     function viewPatients(group_id){
         console.log('patients', group_id);
         $('.modal_body').html(loading);        
