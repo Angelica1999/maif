@@ -48,13 +48,18 @@
                                             @else
                                                 <?php 
                                                     $facilityIds = json_decode($proponentInfo->facility_id);
-                                                    $facilities = Facility::whereIn('id',array_map('intval', $facilityIds))->get();
                                                 ?>
                                                 <li>
-                                                @foreach($facilities as $facility)
-                                                    <b>{{ $facility->name }}</b><br>
-                                                @endforeach
+                                                    @foreach($facilityIds as $facilityId)
+                                                        @php
+                                                            $facility = $facilities->where('id', $facilityId)->first();
+                                                        @endphp
+                                                        @if($facility)
+                                                            <b>{{ $facility->name }}</b><br>
+                                                        @endif
+                                                    @endforeach
                                                 </li>
+
                                             @endif
 
                                                 <div class="d-flex justify-content-between align-items-center">

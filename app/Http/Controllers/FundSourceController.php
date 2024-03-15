@@ -21,6 +21,7 @@ class FundSourceController extends Controller
     }
 
     public function fundSource(Request $request) {
+        
         $fundsources = Fundsource::              
             with([
                 'proponents' => function ($query) {
@@ -65,6 +66,7 @@ class FundSourceController extends Controller
             'fundsources' => $fundsources,
             'keyword' => $request->keyword,
             'utilizations' => $utilizations,
+            'facilities' => Facility::get(),
             'user' => $user
         ]);
     }
