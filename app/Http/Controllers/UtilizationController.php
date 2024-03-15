@@ -13,7 +13,10 @@ class UtilizationController extends Controller{
     //
     public function tracking($info_id){
         
-        $utilization = Utilization::where('proponentinfo_id', $info_id)->with(['user', 'proponentdata', 'fundSourcedata'])->get();
+        $utilization = Utilization::where('proponentinfo_id', $info_id)
+                            ->with(['user', 'proponentdata', 'fundSourcedata'])
+                            ->get()
+                            ->unique('div_id');
         return response()->json($utilization);
     }
    

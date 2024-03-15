@@ -105,14 +105,14 @@
             </p>
         </div>
         <div class="col text-center">
-            <p>Osmeña Boulevard, Sambag II, Cebu City,6000 Philippines 
-                (032) 260-9740 loc.111 0915-395-6599 <a href="https://doh.gov.ph">doh.gov.ph</a></p>
+            <!-- <p>Osmeña Boulevard, Sambag II, Cebu City,6000 Philippines 
+                (032) 260-9740 loc.111 0915-395-6599 <a href="https://doh.gov.ph">doh.gov.ph</a></p> -->
         </div>  
         
           <!-- Footer Section -->
           <div class="footer">
         <!-- Your footer content goes here -->
-        <p class="text-center">&copy; 2023 dohro7ofcrdard@gmail.com. All rights reserved.</p>
+        <!-- <p class="text-center">&copy; 2023 dohro7ofcrdard@gmail.com. All rights reserved.</p> -->
     </div>
 
         <hr> <!-- Horizontal line representing the footer -->
@@ -171,13 +171,13 @@
             </p>
         </div>
         <div class="col text-center">
-            <p>Osmeña Boulevard, Sambag II, Cebu City,6000 Philippines 
-                (032) 260-9740 loc.111 0915-395-6599 <a href="https://doh.gov.ph">doh.gov.ph</a></p>
+            <!-- <p>Osmeña Boulevard, Sambag II, Cebu City,6000 Philippines 
+                (032) 260-9740 loc.111 0915-395-6599 <a href="https://doh.gov.ph">doh.gov.ph</a></p> -->
         </div>       
        <!-- Footer Section -->
     <div class="footer text-center">
         <!-- Your footer content goes here -->
-        <p>&copy; 2023 dohro7ofcrdard@gmail.com. All rights reserved.</p>
+        <!-- <p>&copy; 2023 dohro7ofcrdard@gmail.com. All rights reserved.</p> -->
     </div>
     </body>
 </html>

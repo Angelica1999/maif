@@ -406,7 +406,7 @@
         $('.modal_body').html(loading);
         $('.modal-title').html("Edit Patient");
         var url = "{{ url('patient/edit').'/' }}"+id;
-        setTimeout(function(){
+        // setTimeout(function(){
             $.ajax({
                 url: url,
                 type: 'GET',
@@ -414,7 +414,7 @@
                     $('.modal_body').html(result);
                 }
             });
-        },500);
+        // },500);
     }
 
     function othersRegion(data) {

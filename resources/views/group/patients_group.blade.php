@@ -41,15 +41,14 @@
             @endif
         </table>
     </div>
-
     <div class="modal-footer" id="dv_footer">
         <span>Total Amount:</span>
-        <input type="text" class="form-control amount_total" style="width:150px" name="t_amount" id="t_amount" value="{{number_format(str_replace(',','',$group->amount),2,'.',',')}}">
-        <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal"><i class="typcn typcn-times"></i>Close</button>
+        <input type="text" class="form-control amount_total" style="width:150px" name="t_amount" id="t_amount" value="{{number_format(str_replace(',','',$group->amount),2,'.',',')}}" readonly>
         <input type="hidden" name="group_id" id="group_id" >
     </div>
 </form>
-<div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true" >
+
+<div class="modal fade" id="group_confirm" tabindex="1" role="dialog">
     <div class="modal-dialog modal-sm" style="background-color: #17c964; color:white">
         <div class="modal-content">
             <div class="modal-header" style="background-color: #17c964;" >
@@ -68,6 +67,7 @@
         </div>
     </div>
 </div>
+
 <script>
     $(document).ready(function () {
         $(document).on("click", ".remove-button", function () {
@@ -76,13 +76,13 @@
             var amount = $(this).data("amount");
             var total = parseFloat($('.amount_total').val().replace(/,/g, ''));
             var result = total - amount;
-            $('#confirmationModal').modal('show');
+            $('#group_confirm').modal('show');
             $('#confirmButton').on('click', function(){
                 console.log('button clicked 2');
                 $.get("{{ url('patient/').'/' }}"+patient_id, function(result) {
                    console.log('rs', result);
                 });
-                $('#confirmationModal').modal('hide');
+                $('#group_confirm').modal('hide');
                 to_remove.remove();
                 $('.amount_total').val(formatNumberWithCommas(result));
             });

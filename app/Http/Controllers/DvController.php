@@ -628,6 +628,11 @@ class DvController extends Controller
         $allocatedFunds = ProponentInfo::select('alocated_funds','fundsource_id', 'id', 'remaining_balance', 'proponent_id', 'facility_id')->get();
         return response()->json(['allocated_funds' => $allocatedFunds]);
     }
+    public function dvHistory($route_no){
+        return view('dv.dv_md_history', [
+            'utilizations' => Utilization::with('fundSourcedata', 'proponentdata', 'user')->where('div_id', $route_no)->get()
+        ]);
+    }
 
     
 
