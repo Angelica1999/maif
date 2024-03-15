@@ -75,7 +75,7 @@
                             <th>Route No</th>
                             <th>Created By</th>
                             <th>Utilized On</th>
-                            <th>Remarks</th>
+                            <!-- <th>Remarks</th> -->
                             <th>Obligated</th>
                             <th>Paid</th>
                         </tr>
