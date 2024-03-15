@@ -432,13 +432,13 @@
 
                 },
                 success: function (response) {
-                    location.reload();
+                    // location.reload();
                     Lobibox.notify('success', {
                         msg: "Successfully created breakdowns!",
                     });
                     $('#create_fundsource').modal('hide');
                     $('.loading-container').css('display', 'none');
-                    // window.location.href = '{{ route("fundsource") }}';
+                    window.location.href = '{{ route("fundsource") }}';
                 },
                 error: function (error) {
                     console.error('Error:', error);
