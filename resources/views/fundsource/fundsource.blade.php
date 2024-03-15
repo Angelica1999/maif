@@ -254,7 +254,7 @@
                             '<td>' + (item.div_id != 0 ? '<a href="{{ route("dv", ["keyword" => ""]) }}' + encodeURIComponent(route) + '">' + route + '</a>' : '') + '</td>' +
                             '<td>' + user + '</td>' +
                             '<td>' + formattedDate+'<br>'+ formattedTime + '</td>' +
-                            '<td>' + stat + '</td>' +
+                            // '<td>' + stat + '</td>' +
                             '<td>' + (item.obligated == 1 ? '<i class="typcn typcn-tick menu-icon"></i>' : '') + '</td>' +
                             '<td>' + (item.paid == 1 ? '<i class="typcn typcn-tick menu-icon"></i>' : '') + '</td>';
                             '</tr>';
