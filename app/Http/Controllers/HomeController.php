@@ -109,7 +109,7 @@ class HomeController extends Controller
         }else if($request->keyword){
             $proponents->where('proponent', 'LIKE', "%$request->keyword%");
         }
-        $proponents = $proponents->paginate(15);
+        $proponents = $proponents->orderBy('id', 'desc')->paginate(15);
 
         return view('report', ['proponents'=> $proponents, 'keyword'=>$request->keyword]);
     }
@@ -142,53 +142,86 @@ class HomeController extends Controller
                 DB::raw('MAX(proponent.proponent) as proponent_name'), DB::raw('MAX(utilization.created_at) as created_at'),
                 DB::raw('MAX(utilization.created_by) as created_by'), DB::raw('MAX(utilization.facility_id) as facility_id'),
                 DB::raw('MAX(utilization.fundsource_id) as fundsource_id'), DB::raw('MAX(utilization.transfer_id) as transfer_id'),
-                DB::raw('MAX(utilization.status) as status'))
+                DB::raw('MAX(utilization.status) as status'), DB::raw('MAX(utilization.id) as id'))
             ->groupBy(DB::raw('CASE WHEN utilization.div_id = 0 THEN utilization.id ELSE utilization.div_id END'))
             ->leftJoin('proponent', 'proponent.id', '=', 'utilization.proponentinfo_id')
             ->with('fundSourcedata')
             ->with('facilitydata')
             ->with('user')
+            ->orderBy('id', 'asc')
             ->get();
         $proponent = Proponent::where('pro_group', $pro_group)->first();
         $title = $proponent->proponent;
         $filename = $title.'.xls';
-        header("Content-Type: application/xls");
-        header("Content-Disposition: attachment; filename=$filename");
-        header("Pragma: no-cache");
-        header("Expires: 0");
+        // header("Content-Type: application/xls");
+        // header("Content-Disposition: attachment; filename=$filename");
+        // header("Pragma: no-cache");
+        // header("Expires: 0");
         $table_body = "<tr>
                 <th>Route No</th>
                 <th>SAA</th>
                 <th>Facility</th>
+                <th>Allocation</th>
                 <th>Utilize Amount</th>
+                <th>Percentage</th>
                 <th>Discount</th>
+                <th>Balance</th>
                 <th>Patients</th>
                 <th>Created On</th>
             </tr>";
+            // return $utilization;
+        $all = ProponentInfo::whereIn('proponent_id', $proponentIds)->get();
+        $allocation_funds = $all->sum(function ($info) {
+            return (float) str_replace(',', '', $info->alocated_funds);
+        });  
+        $deduct = 0;
         if($utilization){
+
             foreach($utilization as $row) {
+
                 if($row->status !== 1){
                     $user = $row->user->lname .', '. $row->user->fname .' '. $row->user->mname;
                     $created_on = date('F j, Y', strtotime($row->created_at));
-                    $facility = $row->facilitydata->name;
                     $saa = $row->fundSourcedata->saa;
 
                     if($row->route_no == 0){
-                        $transfer = Transfer::where('id', $row->transfer_id)->with('to_fundsource')->with('from_fundsource')->with('to_facilityInfo')->with('from_facilityInfo')->first();
-                        // if($row->status = 2){ //2-deducted // 3 -added
-                        $facility_new = 'from '. $transfer->from_fundsource->saa.' - '.  $transfer->from_facilityInfo->name.' to '. $transfer->to_fundsource->saa.' - '.  $transfer->to_facilityInfo->name;
-                        $table_body .= "<tr>
-                            <td style='vertical-align:top;'>Transfer</td>
-                            <td style='vertical-align:top;'>$saa</td>
-                            <td style='vertical-align:top;'>$facility_new</td>
-                            <td style='vertical-align:top;'>$row->utilize_amount</td>
-                            <td style='vertical-align:top;'></td>
-                            <td style='vertical-align:top;'></td>
-                            <td style='vertical-align:top;'>$created_on</td>
-                        </tr>";
+                        // to be open and recalculated once it is finalize to transfer funds to another proponent
+                        // $transfer = Transfer::where('id', $row->transfer_id)->with('to_fundsource')->with('from_fundsource')->with('to_facilityInfo')->with('from_facilityInfo')->first();
+                        
+                        // $from_fac = array_map(fn($value) => (int)$value, json_decode($transfer->from_facility));
+                        // $from_facilities =  Facility::whereIn('id', $from_fac)->pluck('name')->toArray();
+                        // $to_fac = array_map(fn($value) => (int)$value, json_decode($transfer->to_facility));
+                        // $to_facilities =  Facility::whereIn('id', $to_fac)->pluck('name')->toArray();
+
+                        // if($row->status == 2){ //2-deducted 
+                        //     $allocation_funds = $allocation_funds + str_replace(',','', $transfer->from_amount);
+                        //     $rem_bal = $allocation_funds - str_replace(',','', $transfer->from_amount);
+                        //     $transfer_rem = 'Transfer (deducted)';
+                        //     // $allocation_funds = 
+                        // }else if($row->status == 3){ // 3 -added
+                        //     $allocated = $allocation_funds - str_replace(',','', $transfer->to_amount);
+                        //     $rem_bal = $allocation_funds + str_replace(',','', $transfer->to_amount);
+                        //     $transfer_rem = 'Transfer (added)';
+                        // }
+                        // // return $from_facilities;
+
+                        // $facility_new = 'from '. $transfer->from_fundsource->saa.' - '.  implode(',', $from_facilities).' to '. $transfer->to_fundsource->saa.' - '.  implode(',', $to_facilities);
+                        // $table_body .= "<tr>
+                        //     <td style='vertical-align:top;'>$transfer_rem</td>
+                        //     <td style='vertical-align:top;'>$saa</td>
+                        //     <td style='vertical-align:top;'>$facility_new</td>
+                        //     <td style='vertical-align:top;'>$allocated</td>
+                        //     <td style='vertical-align:top;'>$row->utilize_amount</td>
+                        //     <td style='vertical-align:top;'></td>
+                        //     <td style='vertical-align:top;'></td>
+                        //     <td style='vertical-align:top;'>$rem_bal</td>
+                        //     <td style='vertical-align:top;'></td>
+                        //     <td style='vertical-align:top;'>$created_on</td>
+                        // </tr>";
                     }else{
+                        $facility = $row->facilitydata->name;
                         $dv = Dv::where('route_no', $row->route_no)->first();
-                        $saa_Ids = json_decode($dv->fundsource_id, true);
+                        $saa_Ids = json_decode($dv->fundsource_id);
                         $saa_name = Fundsource::whereIn('id',$saa_Ids)->pluck('saa')->toArray();
                         $saaString = implode('<br>', $saa_name);
                         $groupIdArray = explode(',', $dv->group_id);
@@ -221,16 +254,24 @@ class HomeController extends Controller
                             $discount3 !== null ? $discount3 : null,
                         ]);
                         $all_amount = implode('<br>', $amounts);
+                        $rem_bal =  $allocation_funds - str_replace(',','', $dv->total_amount);
                         $discount_all = implode('<br>', $discounts);
+                        $percentage = number_format((str_replace(',', '', $dv->total_amount) / $allocation_funds) * 100, 2);
+                        $al_disp = number_format($allocation_funds, 2);
+                        $rem_disp = number_format($rem_bal, 2);
                         $table_body .= "<tr>
                             <td style='vertical-align:top;'>$row->route_no</td>
                             <td style='vertical-align:top;'>$saaString</td>
                             <td style='vertical-align:top;'>$facility</td>
+                            <td style='vertical-align:top;'>$al_disp</td>
                             <td style='vertical-align:top;'>$all_amount</td>
+                            <td style='vertical-align:top;'>$percentage %</td>
                             <td style='vertical-align:top;'>$discount_all</td>
+                            <td style='vertical-align:top;'>$rem_disp</td>
                             <td style='vertical-align:top;'>$string_patient</td>
                             <td style='vertical-align:top;'>$created_on</td>
                         </tr>";
+                        $allocation_funds = $rem_bal;
                     }
                 }
             }

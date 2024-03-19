@@ -425,7 +425,7 @@ class FundSourceController extends Controller
                 $from_utilize->transfer_id = $transfer->id;
                 $from_utilize->save();
     
-                $from->alocated_funds = str_replace(',', '',$from->remaining_balance) - str_replace(',', '',$request->input('to_amount'));
+                $from->alocated_funds = str_replace(',', '',$from->alocated_funds) - str_replace(',', '',$request->input('to_amount'));
                 $from->remaining_balance = str_replace(',', '',$from->remaining_balance) - str_replace(',', '',$request->input('to_amount'));
                 $from->save();
 
@@ -446,7 +446,7 @@ class FundSourceController extends Controller
                 $to_utilize->transfer_id = $transfer->id;
                 $to_utilize->save();
     
-                $to->alocated_funds = str_replace(',', '',$to->remaining_balance) + str_replace(',', '',$request->input('to_amount')); 
+                $to->alocated_funds = str_replace(',', '',$to->alocated_funds) + str_replace(',', '',$request->input('to_amount')); 
                 $to->remaining_balance = str_replace(',', '',$to->remaining_balance) + str_replace(',', '',$request->input('to_amount')); 
                 $to->save();
             }
