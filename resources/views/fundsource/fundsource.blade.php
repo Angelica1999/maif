@@ -63,11 +63,11 @@
 
                                                 <div class="d-flex justify-content-between align-items-center">
                                                     <span class="ml-3">Allocated Funds &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->alocated_funds)), 2, '.', ',') }}</strong></span>
-                                                    <button style="width:120px" id="track" data-proponentInfo-id="{{ $proponentInfo->id }}" data-target="#track_details2" onclick="track_details2(event)" class='btn btn-sm btn-outline-info track_details2'>Track</button>
+                                                    <button style="width:120px" id="track" data-backdrop="static" data-proponentInfo-id="{{ $proponentInfo->id }}" data-toggle="modal" href="#track_details2" onclick="track_details2(event)" class='btn btn-sm btn-outline-info track_details2'>Track</button>
                                                 </div>
                                                 <div class="d-flex justify-content-between align-items-center">
                                                     <span class="ml-3">Administrative Cost : <strong class="text-info">{{ $proponentInfo->admin_cost}}</strong></span>
-                                                    <button style="width:120px" id="transfer_funds" data-toggle="modal" href="#transfer_fundsource" onclick="transferFunds({{ $proponentInfo->id }})" class='btn btn-sm btn-outline-success ml-2 transfer_funds'>Transfer Funds</button>
+                                                    <button style="width:120px" id="transfer_funds" data-backdrop="static" data-toggle="modal" href="#transfer_fundsource" onclick="transferFunds({{ $proponentInfo->id }})" class='btn btn-sm btn-outline-success ml-2 transfer_funds'>Transfer Funds</button>
                                                 </div>
                                                 <div class="d-flex justify-content-between align-items-center">
                                                     <span class="ml-3">Remaining Balance &nbsp;: <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->remaining_balance)), 2, '.', ',') }}</strong></span>
@@ -95,7 +95,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="create_fundsource" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -110,6 +109,71 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="track_details2" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tracking Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="table-container">
+                <table class="table table-list table-hover table-striped" id="track_details2">
+                    <thead>
+                        <tr style="text-align:center;">
+                            <th>FundSource</th>
+                            <th>Proponent</th>
+                            <th>Beginning Balance</th>
+                            <th>Tax</th>
+                            <th>Utilize Amount</th>
+                            <th>Route No</th>
+                            <th>Created By</th>
+                            <th>Utilized On</th>
+                            <!-- <th>Remarks</th> -->
+                            <th>Obligated</th>
+                            <th>Paid</th>
+                        </tr>
+                    </thead>
+                    <tbody id="track_body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="i_frame" tabindex="-2" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+    <div class="modal-dialog modal-lg " role="document" style="max-width:1000px">
+        <div class="modal-content">
+            <div class="modal-header" >
+                <h4 class="modal-title" id="exampleModalLabel" >Disbursement Tracking Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <iframe id="track_iframe" width="100%" height="400" frameborder="0"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="transfer_fundsource" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Transfer Fund Source</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal_body">
+                
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="create_fundsource2" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -164,25 +228,8 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="transfer_fundsource" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Transfer Fund Source</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal_body">
-                
-            </div>
-        </div>
-    </div>
-</div>
 
-@include('modal')
 @endsection
-
 @section('js')
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 
@@ -222,6 +269,7 @@
         function track_details2(event){
             event.stopPropagation();
             $('#track_details2').modal('show');
+            console.log('Track button clicked');
 
          var info_id = event.target.getAttribute('data-proponentInfo-id');
          var i = 0;
@@ -289,6 +337,9 @@
                         '</tr>';
                     $('#track_body').append(new_row);
                 }
+            },
+            error: function (xhr, status, error) {
+                console.log('Track AJAX error:', error);
             }
             });
 
