@@ -153,10 +153,10 @@ class HomeController extends Controller
         $proponent = Proponent::where('pro_group', $pro_group)->first();
         $title = $proponent->proponent;
         $filename = $title.'.xls';
-        // header("Content-Type: application/xls");
-        // header("Content-Disposition: attachment; filename=$filename");
-        // header("Pragma: no-cache");
-        // header("Expires: 0");
+        header("Content-Type: application/xls");
+        header("Content-Disposition: attachment; filename=$filename");
+        header("Pragma: no-cache");
+        header("Expires: 0");
         $table_body = "<tr>
                 <th>Route No</th>
                 <th>SAA</th>
