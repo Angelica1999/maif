@@ -235,9 +235,7 @@ class FundSourceController extends Controller
         $breakdowns = $request->input('breakdowns');
         $fund_id = $request->input('fundsource_id');
         $get_fundsource = Fundsource::where('id', $fund_id)->first();
-        // if($fund_id){
-
-        // }
+        
         if($breakdowns){
             foreach($breakdowns as $breakdown){
 
@@ -272,7 +270,7 @@ class FundSourceController extends Controller
                         $info->proponent_id = $proponentId;
                         $info->alocated_funds = $breakdown['alocated_funds'];
                         if((double)str_replace(',','',$get_fundsource->alocated_funds) >= 1000000){
-                            $info->admin_cost =number_format( (double)str_replace(',','',$breakdown['alocated_funds']) * .01 , 2,'.', ',');
+                            $info->admin_cost =number_format( (double)str_replace(',','',$breakdown['alocated_funds']) * ($get_fundsource->cost_value/100) , 2,'.', ',');
                             $info->remaining_balance = (double)str_replace(',','',$breakdown['alocated_funds']) - (double)str_replace(',','', $info->admin_cost);
                         }else{
                             $info->admin_cost = 0;
@@ -294,7 +292,7 @@ class FundSourceController extends Controller
                     $p_info->facility_id = json_encode($breakdown['facility_id']);
                     $p_info->alocated_funds = $breakdown['alocated_funds'];
                     if((double)str_replace(',','',$get_fundsource->alocated_funds) >= 1000000){
-                        $p_info->admin_cost =number_format((double)str_replace(',','',$breakdown['alocated_funds']) * .01 , 2,'.', ',');
+                        $p_info->admin_cost =number_format((double)str_replace(',','',$breakdown['alocated_funds']) * ($get_fundsource->cost_value/100) , 2,'.', ',');
                         $p_info->remaining_balance = (double)str_replace(',','',$breakdown['alocated_funds']) - (double)str_replace(',','',$p_info->admin_cost);
                     }else{
                         $p_info->admin_cost = 0;

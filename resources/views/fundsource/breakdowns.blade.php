@@ -233,6 +233,8 @@
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 <script>
     var timer;
+    var click = 0;
+    var remove_click = 0;
 
     $(document).ready(function () {
         $('#proponent').select2({
@@ -262,9 +264,9 @@
         // $('.modal_body').empty();
     });
 
-    $('#close_b').on('click', function(){ 
-            location.reload();
-        });
+    // $('#close_b').on('click', function(){ 
+    //         location.reload();
+    //     });
 
     function calculateFunds(inputElement){
         clearTimeout(timer);
@@ -290,11 +292,9 @@
                 var proponent_code = $(clone).find('.proponent_code').val();;
 
                 $(clone).find('.row').each(function (rowIndex, row) {
-                    console.log('check', )
                     nu++;
                     var facility_id = $(row).find('.break_fac').val();
                     if(facility_id !== '' && facility_id !== undefined){
-                        console.log('djfkdf', facility_id);
 
                         var allocated_funds = $(row).find('.alocated_funds').val(); 
                         var info_id = $(row).find('.info_id').val(); 
@@ -319,7 +319,7 @@
             });
             console.log('num', num);
             console.log('nu', nu);
-            console.log('Collected Data:', formData);
+            // console.log('Collected Data:', formData);
 
             formData = formData.filter(function (data, index, array) {
                 return (
@@ -334,37 +334,48 @@
                 );
             });
             
-            var divisor = {{$fundsource[0]->proponents->count()}};
-            var dividend = Math.round(formData.length/4);
+            // var divisor = {{$fundsource[0]->proponents->count()}};
+            // var dividend = Math.round(formData.length/4);
 
-            console.log('htrry', formData);
-            console.log('htrry', divisor);
-            console.log('htrry', dividend % divisor);
-            console.log('htrry', dividend);
-            console.log('htrry', dividend/divisor );
-            console.log('htrry', dividend % divisor );
+            // console.log('htrry', formData);
+            // console.log('htrry', divisor);
+            // console.log('htrry', dividend % divisor);
+            // console.log('htrry', dividend);
+            // console.log('htrry', dividend/divisor );
+            // console.log('htrry', dividend % divisor );
 
+            // var count = {{$pro_count}};
+
+            // console.log('count', count);
+            // var to_deduct = 0;
+            // if(count>0){
+            //     if(count >=5){
+            //         to_deduct = count/5 * 3;
+            //     }
+            //     var cal = count * 5;
+            //     console.log('htrry', cal );
+
+            //     // var add1 = Math.floor(formData.length/4);
+            //     formData.splice(formData.length - count + count);
+            // }
+
+            // console.log('Collected Datasdsad:', formData);
+            // console.log('Collected Datasdsad:', formData.length);
             var count = {{$pro_count}};
-            console.log('count', count);
-            var to_deduct = 0;
-            if(count>0){
-                if(count >=5){
-                    to_deduct = count/5 * 3;
-                }
-                var cal = count * 6;
-                console.log('htrry', cal );
-
-                // var add1 = Math.floor(formData.length/4);
-                formData.splice(formData.length - cal + count);
+            if(count > 0){
+                formData.splice(count+click);
             }
+            formData.splice(formData.length - remove_click);
 
             console.log('Collected Datasdsad:', formData);
             return formData;
     }
 
     $(document).ready(function() {
+
         $('#breakdown_select').select2();
         $('.clone').on('click', '.clone_pro-btn', function () {
+            click = 1 + click;
             console.log('here');
             $('.loading-container').show();
             var $this = $(this); 
@@ -378,6 +389,7 @@
         });
 
         $(document).off('click', '.clone .card1 .clone_facility-btn').on('click', '.clone .card1 .clone_facility-btn', function () {
+            click = 1 + click;
             $('.loading-container').show();
             var $this = $(this);
             setTimeout(function () {
@@ -395,6 +407,7 @@
 
         $(document).on('click', '.clone .remove_pro-btn', function () {
             console.log('remove fac');
+            remove_click = 1 + remove_click;
 
             $(this).closest('.clone').remove();
             $(this).closest('.clone hr').remove();
@@ -402,6 +415,8 @@
 
         $(document).on('click', '.clone .remove_fac-clone', function () {
             $(this).closest('.row').remove();
+            remove_click = 1 + remove_click;
+
         });
 
         $('#contractForm').submit(function(e) {

@@ -16,7 +16,7 @@
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit">Search</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll">View All</button>
-                        <button type="button" href="#create_fundsource2" id="create_btn" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md">Create</button>
+                        <button type="button" id="create_btn" href="#create_fundsource2" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md">Create</button>
 
                         <!-- <button type="button" href="#create_fundsource" onclick="createFundSource()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md">Create</button> -->
                     </div>
@@ -111,7 +111,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="create_fundsource2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="create_fundsource2" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -120,36 +120,47 @@
                 <span aria-hidden="true">×</span>
                 </button>
             </div>
-            <div class="modal_body">
-            <form id="contractForm" method="POST" action="{{ route('fundsource_budget.save') }}">
-                <div class="modal-body for_clone">
-                    @csrf
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label >Fundsource:</label>
-                                <input type="text" class="form-control" id="saa" name="saa[]" placeholder="SAA" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group" style="display: flex; flex-direction: column;">
-                                <label for="allocated_funds">Allocated Fund</label>
-                                <div style="display: flex; align-items: center;">
-                                    <input type="text" class="form-control" id="allocated_funds" name="allocated_funds[]" onkeyup="validateAmount(this)" placeholder="Allocated Fund" required>
-                                    <button type="button" class="form-control btn-info add_saa" style="width: 5px; margin-left: 5px; color:white; background-color:#355E3B">+</button>
+            <div class="modal-body-body">
+                <form id="contractForm" method="POST" action="{{ route('fundsource_budget.save') }}">
+                    <div class="body_body">
+                        <div class="for_clone" style="padding:10px;">
+                            @csrf
+                            <div class="rows">
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label >Fundsource:</label>
+                                            <input type="text" class="form-control" id="saa" name="saa[]" placeholder="SAA" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group" style="display: flex; flex-direction: column;">
+                                            <label for="allocated_funds">Allocated Fund</label>
+                                            <div style="display: flex; align-items: center;">
+                                                <input type="text" class="form-control" id="allocated_funds" name="allocated_funds[]" onkeyup="validateAmount(this)" placeholder="Allocated Fund" required>
+                                                <button type="button" class="form-control btn-info add_saa" style="width: 5px; margin-left: 5px; color:white; background-color:#355E3B">+</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label >Admin Cost:</label>
+                                            <input type="number" class="form-control" id="admin_cost" name="admin_cost[]" placeholder="Administrative Cost" required>
+                                        </div>
+                                    </div>
+                                <div>
                             </div>
                         </div>
-
                     </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="breakdowns_close" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save</button>
-                </div>
-            </form>
-
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="breakdowns_close" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -178,22 +189,28 @@
 
     <script>
          
-
+        var close = 0;
         $('#create_btn').on('click', function(){});
 
          $(document).ready(function () {
-            
+
+            $('#create_fundsource2').on('hidden.bs.modal', function () {
+                $(this).find('form')[0].reset(); 
+                $('.for_clone .rows:not(:first)').remove();
+            });
+
             $(".for_clone").on("click", ".add_saa", function () {
-                var clonedDiv = $(".for_clone .row:first").clone(true);
+                var clonedDiv = $(".for_clone:first .rows:last").clone(true);
                 $(clonedDiv).find('#saa').val('');
                 $(clonedDiv).find('#allocated_funds').val('');
+                $(clonedDiv).find('#admin_cost').val('');
                 $(clonedDiv).find(".add_saa").text("-");
                 $(clonedDiv).find(".add_saa").removeClass("add_saa").addClass("remove_saa");
-                $(".for_clone").append(clonedDiv);
+                $(".for_clone:first .rows:last").append(clonedDiv);
             });
 
             $(".for_clone").on("click", ".remove_saa", function () {
-                $(this).closest(".row").remove();
+                $(this).closest(".rows").remove();
             });
         
         });
@@ -333,7 +350,7 @@
                         $('.modal_body').html(result);
                     }
                 });
-            }, 200);
+            }, 0);
         }//createBreakdowns
         function transferFunds(info_id){
             console.log('ahsdsd');

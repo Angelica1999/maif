@@ -7,10 +7,8 @@
         <table class="table table-list table-hover table-striped" id="track_details">
             <thead>
                 <tr style="text-align:center;">
-                    <th>FirstName</th>
-                    <th>MiddleName</th>
-                    <th>LastName</th>
-                    <th>Date of Birth</th>
+                    <th>Name</th>
+                    <th>Birthdate</th>
                     <th>Region</th>
                     <th>Province</th>
                     <th>Municipality</th>
@@ -23,9 +21,7 @@
             @if(isset($patient_list))
                 @foreach($patient_list as $patient)
                     <tbody id="patients_body" style="text-align:center">
-                        <td>{{$patient->fname}}</td>
-                        <td>{{$patient->mname}}</td>
-                        <td>{{$patient->lname}}</td>
+                        <td>{{$patient->lname .', '.$patient->fname.' '.$patient->mname}}</td>
                         <td><?php echo date('F j, Y', strtotime($patient->dob))?></td>
                         <td>{{$patient->region}}</td>
                         <td>{{$patient->province->description}}</td>
@@ -34,7 +30,7 @@
                         <td>{{number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',')}}</td>
                         <td>{{number_format($patient->actual_amount, 2, '.', ',')}}</td>
                         <td>
-                            <button data-patientId="{{$patient->id}}" data-amount="{{$patient->actual_amount}}" type="button" class= "btn-warning remove-button">-</button>
+                            <button data-patientId="{{$patient->id}}" data-amount="{{$patient->actual_amount}}" type="button" class= "btn-danger remove-button">-</button>
                         </td>
                     </tbody>
                 @endforeach
@@ -48,7 +44,7 @@
     </div>
 </form>
 
-<div class="modal fade" id="group_confirm" tabindex="1" role="dialog">
+<!-- <div class="modal fade" id="group_confirm" tabindex="1" role="dialog">
     <div class="modal-dialog modal-sm" style="background-color: #17c964; color:white">
         <div class="modal-content">
             <div class="modal-header" style="background-color: #17c964;" >
@@ -66,7 +62,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 <script>
     $(document).ready(function () {
@@ -76,16 +72,18 @@
             var amount = $(this).data("amount");
             var total = parseFloat($('.amount_total').val().replace(/,/g, ''));
             var result = total - amount;
-            $('#group_confirm').modal('show');
-            $('#confirmButton').on('click', function(){
-                console.log('button clicked 2');
-                $.get("{{ url('patient/').'/' }}"+patient_id, function(result) {
-                   console.log('rs', result);
-                });
-                $('#group_confirm').modal('hide');
+            var answer = confirm('Are you sure you wanted to remove this patient from this group?');
+            if(answer){
+                $.get("{{ url('patient/').'/' }}"+patient_id, function(result) {});
                 to_remove.remove();
                 $('.amount_total').val(formatNumberWithCommas(result));
-            });
+            }else{
+                console.log("false");
+            }
+            // $('#group_confirm').modal('show');
+            // $('#confirmButton').on('click', function(){
+            //     console.log('button clicked 2');
+            // });
         });
     });
     function formatNumberWithCommas(number) {

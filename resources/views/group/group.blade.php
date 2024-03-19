@@ -100,7 +100,6 @@
         location.reload();
     });
     function viewPatients(group_id){
-        console.log('patients', group_id);
         $('.modal_body').html(loading);        
         var url = "{{ url('/group/patients/list').'/' }}" + group_id;
         setTimeout(function(){
@@ -111,7 +110,7 @@
                     $('.modal_body').html(result);
                 }
             });
-        },500);
+        },0);
     }
     function addPatient(group_id, facility_id, proponent_id){
         console.log('patients', facility_id);
