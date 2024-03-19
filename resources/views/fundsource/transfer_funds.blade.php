@@ -18,12 +18,18 @@
               <div class="form-group">
                 <label>Facility:</label>
                 <?php 
-                  if(is_string($from_info->facility_id)){
-                    $facility = Facility::whereIn('id',array_map('intval', json_decode($from_info->facility_id)))->pluck('name')->toArray();
-                    $facility = implode(', ', $facility);
-                  }else{
-                    $facility = Facility::where('id', $from_info->facility_id)->value('name');
-                  }
+                    if (is_string($from_info->facility_id)) {
+                        $facilityIds = json_decode($from_info->facility_id);
+                        if (is_array($facilityIds)) {
+                            $facilityIds = array_map('intval', $facilityIds);
+                            $facilities = Facility::whereIn('id', $facilityIds)->pluck('name')->toArray();
+                            $facility = implode(', ', $facilities);
+                        } else {
+                            $facility = Facility::where('id', $from_info->facility_id)->value('name');
+                        }
+                    } else {
+                        $facility = Facility::where('id', $from_info->facility_id)->value('name');
+                    }
                 ?>
                 <input type="facility" class="form-control" value="{{$facility}}" readonly >
               </div>
@@ -49,15 +55,22 @@
               <select  style="height:48px" class="form-control break_fac" name="to_info" required>
                     <option value="">Please select facility</option>
                     @foreach($to_info as $info)
-                      <?php
-                          if(is_string($info->facility_id)){
-                            $facility = Facility::whereIn('id',array_map('intval', json_decode($info->facility_id)))->pluck('name')->toArray();
-                            $facility = implode(', ', $facility);
-                          }else{
-                            $facility = Facility::where('id', $info->facility_id)->value('name');
-                          }
-                       ?>
-                      <option value="{{$info->id}}">{{$info->proponent->proponent.' - '.$info->fundsource->saa.' - '.$facility}}</option>
+                        <?php
+
+                            if (is_string($info->facility_id)) {
+                              $facilityIds = json_decode($info->facility_id);
+                              if (is_array($facilityIds)) {
+                                  $facilityIds = array_map('intval', $facilityIds);
+                                  $facilities = Facility::whereIn('id', $facilityIds)->pluck('name')->toArray();
+                                  $facility = implode(', ', $facilities);
+                              } else {
+                                  $facility = Facility::where('id', $info->facility_id)->value('name');
+                              }
+                            } else {
+                              $facility = Facility::where('id', $info->facility_id)->value('name');
+                            }
+                        ?>
+                        <option value="{{$info->id}}">{{$info->proponent->proponent.' - '.$info->fundsource->saa.' - '.$facility}}</option>
                     @endforeach
                 </select>
               </div>

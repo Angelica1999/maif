@@ -54,39 +54,6 @@
     </div>
 </div>
 <!--end budget--> 
-<div class="modal fade" id="track_details2" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Tracking Details</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="table-container">
-                <table class="table table-list table-hover table-striped" id="track_details2">
-                    <thead>
-                        <tr style="text-align:center;">
-                            <th>FundSource</th>
-                            <th>Proponent</th>
-                            <th>Beginning Balance</th>
-                            <th>Tax</th>
-                            <th>Utilize Amount</th>
-                            <th>Route No</th>
-                            <th>Created By</th>
-                            <th>Utilized On</th>
-                            <!-- <th>Remarks</th> -->
-                            <th>Obligated</th>
-                            <th>Paid</th>
-                        </tr>
-                    </thead>
-                    <tbody id="track_body">
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
 <!--end maif-->
 <div class="modal fade" id="obligate" role="dialog" style="overflow-y:scroll;">
     <div class="modal-dialog modal-lg" role="document" style="width:900px">
