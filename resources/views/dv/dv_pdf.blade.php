@@ -43,7 +43,7 @@
                 <div>
                 <table >
                     <tr>
-                    <td width="23%" style="text-align: center; border-right:none"><img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/doh-logo.png'))) }}" width="60%" ></td>
+                    <td width="23%" style="text-align: center; border-right:none"><img src="{{realpath(__DIR__ . '/../../..').'/public/images/doh-logo.png'}}" width="60%"></td>
                     <td width="54%" style="border-left:none; border-right:none; ">
                       <div class="header" style="margin-top: 15px">
                         <span style="margin-top: 10px">Republic of the Philippines</span> <br>
@@ -109,22 +109,6 @@
                     
                   </tr>
                 </table>
-                <?php 
-                        $saa_source = [$fund_source[0]->saa, !Empty($fund_source[1]->saa)?$fund_source[1]->saa : '',  !Empty($fund_source[2]->saa)?$fund_source[2]->saa : ''];
-                        $saa_amount = array_values(array_filter([$dv->amount1, !Empty($dv->amount2)?$dv->amount2 : 0,  !Empty($dv->amount3)?$dv->amount3: 0], function($value){ return $value !== 0 && $value!== null;}));
-                        $index=0;
-                        $total_overall = (float)str_replace(',', '', $dv->amount1) + (!Empty($dv->amount2)?(float)str_replace(',', '', $dv->amount2) : 0) 
-                        + (!Empty($dv->amount3)?(float)str_replace(',', '', $dv->amount3): 0);
-                        if($dv->deduction1>3){
-                          $total = $total_overall/1.12;
-                        }else{
-                          $total = $total_overall;
-                        }
-                    
-                        $vat = $total*$dv->deduction1/100;
-                        $ewt = $total*$dv->deduction2/100;
-                        $subsidy = $total_overall - (float)str_replace(',','',$dv->accumulated);
-                        ?>
                 <table width=100%>
                   <tr class="header">
                     <td height=2.3% width =50%> Particulars</td>
@@ -141,24 +125,24 @@
                         in the amount of:</p>
                         
                         @foreach($fund_source as $index=> $fund_saa)
-                        <div style="width: 100%;">
-                          <span class="saa" style="float: left;"><?php echo $saa_source[$index]; ?></span>
-                          <span class="amount" style="float: right;"><?php echo number_format(floatval(str_replace(',','',$saa_amount[$index])), 2, '.', ','); ?></span>
-                          <div style="clear: both;"></div>
-                        </div>
+                          <div style="width: 100%;">
+                              <span class="saa" style="float: left;">{{$saa_source[$index]}}</span>
+                              <span class="amount" style="float: right;">{{ number_format(floatval(str_replace(',','',$saa_amount[$index])), 2, '.', ',') }}</span>
+                              <div style="clear: both;"></div>
+                          </div>
                         @endforeach
                         <br>
                         
                         <div style="width: 100%;">   
-                          <span class="saa" style="margin-left:10px;"> {{number_format($dv->deduction1).'%'.' '.'VAT'}}</span>
+                          <span class="saa" style="margin-left:10px;">{{ floor($dv->deduction1) . '%' . ' ' . 'VAT' }}</span>
                           <span style="margin-left:50px;"><?php echo number_format($total, 2, '.', ',')?></span>
-                          <span style="float: right;"><?php echo number_format($vat, 2, '.', ',')?></span>
+                          <span style="float: right;"><?php echo number_format(str_replace(',','',$dv->deduction_amount1), 2, '.', ',')?></span>
                           <div style="clear: both;"></div>
                         </div>
                         <div style="width: 100%;">   
-                          <span class="saa" style="margin-left:10px;"> {{number_format($dv->deduction2).'%'.' '.'EWT'}}</span>
+                          <span class="saa" style="margin-left:10px;"> {{floor($dv->deduction2).'%'.' '.'EWT'}}</span>
                           <span style="margin-left:50px;"><?php echo number_format($total, 2, '.', ',')?></span>
-                          <span style="float: right;"><?php echo number_format($ewt, 2, '.', ',')?></span>
+                          <span style="float: right;"><?php echo number_format(str_replace(',','',$dv->deduction_amount2), 2, '.', ',')?></span>
                           <div style="clear: both;"></div>
                         </div>
                         <br><br>
@@ -172,16 +156,12 @@
                     <td style="width:14%; border-left: 0 " >
                     <div class= "header">
                       <br><br><br><br>
-                      <span style="text-align:center;"><?php echo number_format($total_overall, 2, '.', ',')?></span>
+                      <span style="text-align:center;"><?php echo number_format(str_replace(',','',$dv->total_amount), 2, '.', ',')?></span>
                       <br><br><br><br>
-                      <?php
-                        $vatFormatted = number_format($vat, 2, '.', '');
-                        $ewtFormatted = number_format($ewt, 2, '.', '');
-                        $result = number_format($vatFormatted + $ewtFormatted, 2, '.', ',');
-                      ?>
-                      <span style="text-align:center;"><?php echo $result; ?></span><br><br>
+                  
+                      <span style="text-align:center;">{{$result}}</span><br><br>
                       <span style="text-align:center;">_________________</span><br>
-                      <span style="text-align:center;"><?php echo number_format($total_overall -  (str_replace(',','',$result)), 2, '.', ',')?></span>
+                      <span style="text-align:center;">{{ number_format((str_replace(',','',$dv->total_amount)) -  (str_replace(',','',$result)), 2, '.', ',') }}</span>
                     </div> 
                   </td>
                   </tr>
@@ -239,14 +219,16 @@
                       <span>10104040</span> 
                     </td>
                     <td style=" border-left: 0 ; text-align:right; vertical-align:top" >
-                     <span><?php echo number_format($subsidy, 2, '.', ',') ?></span><br>
+                     <span>
+                      {{ number_format((double) str_replace(',', '', $dv->total_amount) - (!empty($dv->accumulated) ? (double) str_replace(',', '', $dv->accumulated) : 0), 2, '.', ',') }}
+                    </span><br>
                      <span>{{!Empty($dv->accumulated)?number_format(str_replace(',','',$dv->accumulated), 2, '.', ','):''}}</span>
 
                     </td>
                     
                     <td style=" border-left: 0 ; text-align:right; vertical-align:top" >
-                    <br><br><span><?php echo $result; ?></span><br>
-                      <span><?php echo number_format($total_overall -  (str_replace(',','',$result)), 2, '.', ',')?></span>
+                    <br><br><span>{{ $result }}</span><br>
+                      <span>{{ number_format((str_replace(',','',$dv->total_amount)) -  (str_replace(',','',$result)), 2, '.', ',')}}</span>
                     </td>
                   </tr>
                 </table>
@@ -343,34 +325,15 @@
                       <td colspan="4" width =31% style="vertical-align:top">Official Receipt No. & Date/Other Documents</td>
                       <td width =19% style="vertical-align:top; border-top:none"></td>
                   </tr>
-                </table>
-
-
-                <!-- <table width=100%>
-                  <tr>
-                      <td height=2.5% width =10%>Check/ADA No.:</td>
-                      <td width =25%></td>
-                      <td width =15% style="vertical-align:top">Date:</td>
-                      <td width =31% style="vertical-align:top">Bank Name & Account Number:</td>
-                      <td width =19% style="vertical-align:top">JEV No.</td>
-                  </tr>
-                  <tr>
-                      <td height=2.5%>Signature:</td>
-                      <td></td>
-                      <td style="vertical-align:top">Date:</td>
-                      <td style="vertical-align:top">Printed Name:</td>
-                      <td style="vertical-align:top">Date</td>
-                  </tr>
-                </table> -->
-                
+                </table>     
                 </div>
           </table>
-          <div style="position:absolute; left: 50%; transform: translateX(-50%); margin-top:15px;" class="modal_footer">
+         <div style="position:absolute; left: 50%; transform: translateX(-50%); margin-top:15px;" class="modal_footer">
             {!! DNS1D::getBarcodeHTML($dv->route_no, 'C39E', 1, 28) !!}
             <div style="text-align: center;">
                 <font class="route_no">{{ $dv->route_no }}</font>
             </div>
-        </div>        
+        </div>     
         </div>
         @endif
     </body>

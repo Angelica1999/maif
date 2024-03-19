@@ -20,7 +20,6 @@ use Illuminate\Support\Facades\Image;
 use Illuminate\Support\Str;
 use PDF;
 
-
 class PrintController extends Controller
 {
     public function __construct() {
@@ -189,6 +188,7 @@ class PrintController extends Controller
     }
 
     public function dvPDF(Request $request, $dvId) {
+
         $dv = Dv::find($dvId);
         $facility = Facility::find($dv->facility_id);
         $saa = explode(',', $dv->fundsource_id);
@@ -201,10 +201,34 @@ class PrintController extends Controller
         if(!$dv){
             return redirect()->route('Home.index')->with('error', 'Patient not found.');
         }
+
+        $saa_source = [$fund_source[0]->saa, !Empty($fund_source[1]->saa)?$fund_source[1]->saa : '',  
+                        !Empty($fund_source[2]->saa)?$fund_source[2]->saa : ''];
+        $saa_amount = array_values(array_filter([$dv->amount1, !Empty($dv->amount2)?$dv->amount2 : 0,  
+                        !Empty($dv->amount3)?$dv->amount3: 0], function($value){ return $value !== 0 && $value!== null;}));
+
+        $total_overall = (float)str_replace(',', '', $dv->total_amount);
+        if($dv->deduction1>3){
+            $total = $total_overall/1.12;
+        }else{
+            $total = $total_overall;
+        }
+
+        $vatFormatted = number_format(str_replace(',','',$dv->deduction_amount1), 2, '.', '');
+        $ewtFormatted = number_format(str_replace(',','',$dv->deduction_amount2), 2, '.', '');
+        $result = number_format($vatFormatted + $ewtFormatted, 2, '.', ',');
+
+        $imageData = base64_encode(file_get_contents(public_path('images/doh-logo.png')));
+        
         $data = [
             'dv'=> $dv,
             'facility' => $facility,
-            'fund_source' => $fund_source
+            'fund_source' => $fund_source,
+            'imageData' =>  $imageData,
+            'total' => $total,
+            'saa_source' => $saa_source,
+            'saa_amount' => $saa_amount,
+            'result' => $result
         ];
     
         $pdf = PDF::loadView('dv.dv_pdf', $data);

@@ -17,7 +17,6 @@
                         <button class="btn btn-sm btn-info" type="submit">Search</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll">View All</button>
                         <button type="button" id="create_btn" href="#create_fundsource2" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md">Create</button>
-
                         <!-- <button type="button" href="#create_fundsource" onclick="createFundSource()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md">Create</button> -->
                     </div>
                 </div>
@@ -39,7 +38,7 @@
 
                                 @foreach($fund->proponents as $proponent)
                                     <!-- <div class="card-body"> -->
-                                    <p class="card-description">{{ $proponent->proponent }}</p>
+                                    <b><p class="">{{ $proponent->proponent }}</p></b>
                                     <ul class="list-arrow mt-3">
                                         @foreach($proponent->proponentInfo as $proponentInfo)
 
