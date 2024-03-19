@@ -86,10 +86,13 @@ class FundSourceController extends Controller
             $fundsource =  Fundsource::where('id', $fundsource_id)->first();
             
             if($fundsource){
+
                 $fundsource->saa = $request->input('saa');
                 $fundsource->alocated_funds = str_replace(',','',  $request->input('allocated_funds'));
+                $fundsource->cost_value = $request->input('admin_cost');
+
                 if((double)str_replace(',','',  $request->input('allocated_funds')) >= 1000000){
-                    $admin_cost = (double)str_replace(',','',  $request->input('allocated_funds')) * .01;
+                    $admin_cost = (double)str_replace(',','',  $request->input('allocated_funds')) * ($request->input('admin_cost')/100);
                     $fundsource->admin_cost = $admin_cost;
                     $fundsource->remaining_balance = (double)str_replace(',','',  $request->input('allocated_funds')) -  $admin_cost;
                 }else{

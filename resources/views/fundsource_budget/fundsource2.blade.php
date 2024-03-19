@@ -136,7 +136,14 @@
                                 </div>
                             </div>
                         </div>
-                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fname">Admin Cost:</label>
+                                    <input type="number" class="form-control admin_cost" id="admin_cost" name="admin_cost" required>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -168,7 +175,7 @@
                     $('.saa').val(result.saa);
                     var formattedAmount = result.alocated_funds.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                     $('.allocated_funds').val(formattedAmount);
-                    console.log('result', result);
+                    $('.admin_cost').val(result.cost_value);
                 }
             });
         }
