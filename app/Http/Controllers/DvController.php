@@ -31,13 +31,15 @@ class DvController extends Controller
 
         // $dv_update = Dv::whereNotNull('dv_no')->with(['fundsource','facility', 'user'])->get();
         $dv= Dv::whereNull('dv_no')->orWhere('dv_no', '')->get();
-        
+
         foreach($dv as $d){
             $master = TrackingMaster::where('route_no', $d->route_no)->first();
             $dv_here = Dv::where('route_no',  $d->route_no)->first();
-            if($master->dv_no !== null){
-                $dv_here->dv_no = $master->dv_no;
-                $dv_here->save();
+            if($master){
+                if($master->dv_no !== null){
+                    $dv_here->dv_no = $master->dv_no;
+                    $dv_here->save();
+                }
             }
         }
 
@@ -498,16 +500,16 @@ class DvController extends Controller
             $dv->ors_no = $request->ors_no;
             $dv->obligated = 1;
             $dv->save();
-            $response = Http::withoutVerifying()->get('https://mis.cvchd7.com/dts/document/ors_no/' . $dv->ors_no . '/' . $dv->route_no . '/' .Auth::user()->userid);
-            if($response){
-                if($response == '0'){
-                     return redirect()->route('fundsource_budget.pendingDv', ['type' => 'pending'])->with('', true);
-                }
-            }else{
-                return redirect()->route('fundsource_budget.pendingDv', ['type' => 'pending'])->with('', true);
-            }
+            // $response = Http::withoutVerifying()->get('https://mis.cvchd7.com/dts/document/ors_no/' . $dv->ors_no . '/' . $dv->route_no . '/' .Auth::user()->userid);
+            // if($response){
+            //     if($response == '0'){
+            //          return redirect()->route('fundsource_budget.pendingDv', ['type' => 'pending'])->with('', true);
+            //     }
+            // }else{
+            //     return redirect()->route('fundsource_budget.pendingDv', ['type' => 'pending'])->with('', true);
+            // }
         }
-        // return redirect()->route('fundsource_budget.pendingDv', ['type' => 'pending'])->with('', true);
+        return redirect()->route('fundsource_budget.pendingDv', ['type' => 'pending'])->with('', true);
 
     }
 

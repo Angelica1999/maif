@@ -46,6 +46,7 @@ class FundSourceController2 extends Controller{
 
         $funds = $request->input('allocated_funds');
         $saas = $request->input('saa');
+        $cost_value = $request->input('admin_cost');
         foreach($funds as $index => $fund){
             $saa_ex = Fundsource::where('saa', $saas[$index])->first();
           // return $fund ; 
@@ -55,9 +56,10 @@ class FundSourceController2 extends Controller{
                 $fundsource = new Fundsource();
                 $fundsource->saa = $saas[$index];
                 $fundsource->alocated_funds = str_replace(',','',$fund);
+                $fundsource->cost_value = $cost_value[$index];
 
                 if((double)str_replace(',','',$fund) >= 1000000){
-                    $admin_cost = (double) str_replace(',','',$fund) * 0.01;
+                    $admin_cost = (double) str_replace(',','',$fund) * ($cost_value[$index]/100);
                     $fundsource->admin_cost = $admin_cost;
                     $fundsource->remaining_balance = (double)str_replace(',','',$fund) - $admin_cost ;
                 }else{

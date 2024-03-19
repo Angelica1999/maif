@@ -1,4 +1,5 @@
-<div class="row1">
+<!-- previous code -->
+<!-- <div class="row1">
     <div class="col-md-6">
         <div class="form-group">
             <label>Facility</label>
@@ -21,4 +22,4 @@
 
 <script>
     $("#"+"{{ $uniqueCode }}").select2();
-</script>
+</script> -->
