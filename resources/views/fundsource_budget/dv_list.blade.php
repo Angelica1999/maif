@@ -46,9 +46,9 @@
                                 </td>
                                 <td> 
                                     @if($type == 'pending')
-                                        <a href="#obligate"  onclick="obligateDv('{{$dvs->route_no}}','{{ $dvs->dv_no}}', 'obligate')" style="background-color:teal;color:white;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">{{ $dvs->route_no }}</a>
+                                        <a href="#obligate"  onclick="obligateDv('{{$dvs->route_no}}', 'obligate')" style="background-color:teal;color:white;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">{{ $dvs->route_no }}</a>
                                     @else
-                                        <a href="#obligate"  onclick="obligateDv('{{$dvs->route_no}}','{{ $dvs->dv_no}}', 'view')" style="background-color:teal;color:white;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">{{ $dvs->route_no }}</a>
+                                        <a href="#obligate"  onclick="obligateDv('{{$dvs->route_no}}', 'view')" style="background-color:teal;color:white;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">{{ $dvs->route_no }}</a>
                                     @endif
                                 </td> 
                                 <td>
@@ -138,11 +138,11 @@
         }, 100);
     }
 
-    function obligateDv(route_no, dv_no, type){
-    console.log('dv', type);
+    function obligateDv(route_no, type){
+    console.log('dvdsads', type);
         $('.modal_body').html(loading);
         $('.modal-title').html("Obligate Disbursement Voucher");
-        var url = "{{ url('dv').'/' }}"+route_no + '/'+dv_no +'/' + type;
+        var url = "{{ url('dv').'/' }}"+route_no +'/' + type;
         setTimeout(function(){
             $.ajax({
                 url: url,

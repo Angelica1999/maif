@@ -540,7 +540,7 @@ class DvController extends Controller
                 ]);
             }
         }
-        // return redirect()->back()->with('pay_dv', true);
+        return redirect()->back()->with('pay_dv', true);
 
     }
 

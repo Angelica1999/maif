@@ -9,6 +9,7 @@ use App\Models\Proponent;
 use App\Models\ProponentInfo;
 use App\Models\Utilization;
 use App\Models\Transfer;
+use App\Models\Admin_Cost;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -45,18 +46,34 @@ class FundSourceController extends Controller
             $request->keyword = '';
         }
         else if($request->keyword) {
-            // $fundsources = $fundsources->where('saa', 'LIKE', "%$request->keyword%");
-            $fundsources = $fundsources->where('saa', 'LIKE', "%$request->keyword%")
-            ->orWhereHas('proponents', function ($query) use ($request) {
-                $query->whereHas('proponentInfo', function ($subquery) use ($request) {
-                    $subquery->where('proponent', 'LIKE', "%$request->keyword%");
+            
+            $check = $fundsources->where('saa', 'LIKE', "%$request->keyword%")->get();
+            if($check->isEmpty()){
+                //search through proponent but display only the proponent searched even if there are multiple proponent within the fundsource
+                $fundsources = Fundsource::with([
+                    'proponents' => function ($query) use ($request) {
+                        $query->whereHas('proponentInfo', function ($subquery) use ($request) {
+                            $subquery->where('proponent', 'LIKE', "%$request->keyword%");
+                        });
+                    },
+                    'encoded_by' => function ($query) {
+                        $query->select('userid', 'fname');
+                    }
+                ])
+                ->orWhereHas('proponents', function ($query) use ($request) {
+                    $query->whereHas('proponentInfo', function ($subquery) use ($request) {
+                        $subquery->where('proponent', 'LIKE', "%$request->keyword%");
+                    });
                 });
-            });
+            }else{
+                //search through fundsource
+                $fundsources = $fundsources->where('saa', 'LIKE', "%$request->keyword%");
+            }
         } 
         $fundsources = $fundsources
                         ->orderBy('id','desc')
                         ->paginate(15);
-                        
+
         $user = DB::connection('dohdtr')->table('users')->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
                 ->where('users.userid', '=', Auth::user()->userid)
                 ->select('users.section')
@@ -590,6 +607,57 @@ class FundSourceController extends Controller
             }
         ])->get();
         return $result;
+    }
+
+    public function adminCost(Request $req){
+
+        $fundsources = Fundsource::with('encoded_by','cost_usage');
+
+        if($req->viewAll){
+            $req->keyword = '';
+         }else if($req->keyword){
+             $fundsources->where('saa', 'LIKE', "%$req->keyword%");
+         }
+        return view('admin_cost', [
+            'fundsources' => $fundsources->orderBy('id', 'desc')->paginate(50),
+            'keyword' => $req->keyword
+        ]);
+
+    }
+
+    public function costBalance($fundsource_id){
+
+        $usage = Admin_Cost::where('fundsource_id', $fundsource_id)->orderBy('id', 'desc')->first();
+        if($usage){
+            return number_format($usage->balance, 2,'.',',');
+        }else{
+
+            $fund = Fundsource::where('id', $fundsource_id)->first();
+            return number_format($fund->admin_cost, 2,'.',',');
+        }
+
+    }
+
+    public function addUsage(Request $req){
+        $usage = new Admin_Cost();
+
+        $not_new = Admin_Cost::where('fundsource_id', $req->input('saa'))->orderBy('id', 'desc')->first();
+        if($not_new){
+            $cost = $not_new->balance;
+        }else{
+            $new = Fundsource::where('id', $req->input('saa'))->first();
+            $cost = $new->admin_cost;
+        }
+        $usage->admin_cost = $cost;
+        $usage->fundsource_id = $req->input('saa');
+        $usage->deductions = str_replace(',','',$req->input('deductions'));
+        $usage->event = $req->input('event');
+        $usage->balance = str_replace(',','', $cost) - str_replace(',','', $req->input('deductions'));
+        $usage->remarks = $req->input('remarks');
+        $usage->created_by = Auth::user()->userid;
+        $usage->save();
+        
+        return redirect()->back()->with('add_deductions', true);
     }
 
 }

@@ -212,7 +212,12 @@
               msg: 'Successfully update dv2!'
            });
         @endif
-
+        @if(session('add_deductions'))
+           <?php session()->forget('add_deductions'); ?>
+           Lobibox.notify('success', {
+              msg: 'Successfully added a usage in administrative cost!'
+           });
+        @endif
     </script>
     @yield('js')
 </body>

@@ -50,9 +50,9 @@
                             </td>
                             <td> 
                                 @if($type == 'pending')
-                                    <a href="#obligate"  onclick="payDv('{{$dvs->route_no}}','{{ $dvs->dv_no}}', 'obligate')" style="background-color:teal;color:white;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">{{ $dvs->route_no }}</a>
+                                    <a href="#obligate"  onclick="payDv('{{$dvs->route_no}}', 'obligate')" style="background-color:teal;color:white;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">{{ $dvs->route_no }}</a>
                                 @else
-                                    <a href="#obligate"  onclick="payDv('{{$dvs->route_no}}','{{ $dvs->dv_no}}', 'view')" style="background-color:teal;color:white;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">{{ $dvs->route_no }}</a>
+                                    <a href="#obligate"  onclick="payDv('{{$dvs->route_no}}', 'view')" style="background-color:teal;color:white;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">{{ $dvs->route_no }}</a>
                                 @endif
                             </td> 
                             <td>{{ $dvs->facility->name }}</td> 
@@ -169,11 +169,11 @@
             }, 100);
         }
 
-        function payDv(route_no, dv_no, type){
+        function payDv(route_no, type){
             console.log('dv', type);
             $('.modal_body').html(loading);
             $('.modal-title').html(" Disbursement Voucher");
-            var url = "{{ url('dv').'/' }}"+route_no + '/'+dv_no +'/' + type;
+            var url = "{{ url('dv').'/' }}"+route_no +'/' + type;
             setTimeout(function(){
                 $.ajax({
                     url: url,
