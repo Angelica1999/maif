@@ -35,7 +35,7 @@ class FacilityController extends Controller
              $result->where('name', 'LIKE', "%$request->keyword%");
          }
 
-         $results = $result->paginate(10);
+         $results = $result->paginate(50);
 
         return view('facility.facility',[
             'results' => $results,

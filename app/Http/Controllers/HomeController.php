@@ -64,15 +64,15 @@ class HomeController extends Controller
         }
         //sort table header
         if($request->key == 'fname'){
-        $patients = $patients->orderBy('fname', 'asc')->paginate(10);
+        $patients = $patients->orderBy('fname', 'asc')->paginate(50);
         }else if($request->key == 'mname'){
-        $patients = $patients->orderBy('mname', 'asc')->paginate(10);
+        $patients = $patients->orderBy('mname', 'asc')->paginate(50);
         }else if($request->key == 'lname'){
-        $patients = $patients->orderBy('lname', 'asc')->paginate(10);
+        $patients = $patients->orderBy('lname', 'asc')->paginate(50);
         }else if($request->key == 'region'){
-        $patients = $patients->orderBy('region', 'asc')->paginate(10);
+        $patients = $patients->orderBy('region', 'asc')->paginate(50);
         }else if($request->key == 'province'){
-        $patients = $patients->orderBy('province_id', 'asc')->paginate(10);
+        $patients = $patients->orderBy('province_id', 'asc')->paginate(50);
         }else if($request->key == 'municipality'){
         $patients = $patients
                     ->orderBy(
@@ -80,7 +80,7 @@ class HomeController extends Controller
                             ->table('muncity')
                             ->select('description')
                             ->whereColumn('muncity.id', 'patients.muncity_id')
-                    )->paginate(10);
+                    )->paginate(50);
         }else if($request->key == 'barangay'){
         $patients = $patients
                     ->orderBy(
@@ -88,9 +88,9 @@ class HomeController extends Controller
                             ->table('barangay')
                             ->select('description')
                             ->whereColumn('barangay.id', 'patients.barangay_id')
-                    )->paginate(10);
+                    )->paginate(50);
         }else{
-        $patients = $patients->orderBy('id', 'desc')->paginate(10);
+        $patients = $patients->orderBy('id', 'desc')->paginate(50);
         }
         
         return view('home', [
@@ -403,7 +403,7 @@ class HomeController extends Controller
         )
         ->withCount('patient')
         ->orderBy('id', 'desc')
-        ->paginate(15); 
+        ->paginate(50); 
         
         if($request->viewAll){
             $request->keyword ='';

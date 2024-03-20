@@ -119,7 +119,7 @@ class FundSourceController2 extends Controller{
         }
         $id = $result->pluck('created_by')->unique();
         $name = User::whereIn('userid', $id)->get()->keyBy('userid'); 
-        $results = $result->paginate(5);
+        $results = $result->paginate(50);
         return view('cashier.pending_dv', [
           'disbursement' => $results,
           'name'=> $name,
@@ -142,7 +142,7 @@ class FundSourceController2 extends Controller{
       }
       $id = $result->pluck('created_by')->unique();
       $name = User::whereIn('userid', $id)->get()->keyBy('userid'); 
-      $results = $result->paginate(5);
+      $results = $result->paginate(50);
       return view('cashier.paid_dv', [
         'disbursement' => $results,
         'name'=> $name,
