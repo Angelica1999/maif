@@ -132,7 +132,7 @@
                             </td>
                             <td>
                                 @if($dvs->obligated !== null && $dvs->paid !== null)
-                                    proccessed
+                                    processed
                                 @elseif($dvs->obligated == null && $dvs->paid == null)
                                     pending
                                 @elseif($dvs->obligated !== null && $dvs->paid == null)
