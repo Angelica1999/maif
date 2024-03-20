@@ -35,4 +35,8 @@ class Fundsource extends Model
     {
         return $this->hasMany(ProponentInfo::class);
     }
+
+    public function cost_usage() {   
+        return $this->hasMany(Admin_Cost::class, 'fundsource_id', 'id');
+    }
 }

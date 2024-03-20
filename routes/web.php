@@ -20,7 +20,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('/facility', [App\Http\Controllers\FacilityController::class, 'index'])->name('facility');
+Route::get('/facility/list', [App\Http\Controllers\FacilityController::class, 'index'])->name('facility');
 Route::get('facility/edit/{main_id}', [App\Http\Controllers\FacilityController::class, 'facilityEdit'])->name('facility.edit');
 Route::post('facility/update', [App\Http\Controllers\FacilityController::class, 'facilityUpdate'])->name('facility.update');
 Route::get('facility/vatEwt', [App\Http\Controllers\FacilityController::class, 'getVatEwt']);
@@ -133,7 +133,7 @@ Route::get('pro_div/get', [App\Http\Controllers\FundSourceController::class, 'pr
 Route::match(['post', 'get'],'fundsource/{type}/{fundsource_id}', [App\Http\Controllers\FundSourceController::class, 'getFundsource'])->name('update.fundsource');
 
 Route::match(['get', 'post'],'dv/obligate', [App\Http\Controllers\DvController::class, 'obligate'])->name('dv.obligate');
-Route::get('dv/{route_no}/{dv_no}/{type}', [App\Http\Controllers\FundSourceController2::class, 'dv_display'])->name('display.dv');
+Route::get('dv/{route_no}/{type}', [App\Http\Controllers\FundSourceController2::class, 'dv_display'])->name('display.dv');
 
 Route::get('/cashier/{type}', [App\Http\Controllers\FundSourceController2::class, 'cashierPending'])->name('cashier');
 Route::get('/cashier/paid', [App\Http\Controllers\FundSourceController2::class, 'cashierPaid'])->name('cashier.paid');
@@ -145,6 +145,9 @@ Route::post('/document/release', [App\Http\Controllers\DvController::class, 'add
 Route::get('/sample', [App\Http\Controllers\FundSourceController2::class, 'sample'])->name('sample');
 
 Route::match(['get', 'post'],'proponentInfo/{infoId}', [App\Http\Controllers\FundSourceController::class, 'removeInfo'])->name('remove.proInfo');
+Route::get('/admin_cost', [App\Http\Controllers\FundSourceController::class, 'adminCost'])->name('admin_cost');
+Route::get('/admin_cost/balance/{fundsource_id}', [App\Http\Controllers\FundSourceController::class, 'costBalance'])->name('admin_cost.balance');
+Route::match(['get', 'post'],'admin_cost/usage', [App\Http\Controllers\FundSourceController::class, 'addUsage'])->name('admin_cost.usage');
 
 
 

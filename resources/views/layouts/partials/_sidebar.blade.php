@@ -67,7 +67,7 @@
 
         <ul class="nav flex-column" style=" margin-bottom: 0;">
             <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="{{ route('fundsource') }}">
                 <i class="typcn typcn-th-list menu-icon"></i>
                     <span class="menu-title">Fundsource</span>
                     &nbsp;&nbsp;<i class="typcn typcn-arrow-sorted-down menu-icon"></i>
@@ -83,6 +83,12 @@
                       <a class="nav-link" href="{{ route('fundsource_budget') }}">
                         <i class="typcn typcn-document menu-icon"></i>
                         <span class="menu-title">BUDGET</span>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{ route('admin_cost') }}">
+                        <i class="typcn typcn-document-delete menu-icon"></i>
+                        <span class="menu-title">ADMIN COST</span>
                       </a>
                     </li>
                 </ul>

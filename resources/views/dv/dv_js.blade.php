@@ -63,11 +63,11 @@
         });
     @endif
 
-    function obligateDv(route_no, dv_no, type){
+    function obligateDv(route_no, type){
     console.log('dv', type);
         $('.modal_body').html(loading);
         $('.modal-title').html("Disbursement Voucher");
-        var url = "{{ url('dv').'/' }}"+route_no + '/'+dv_no +'/' + type;
+        var url = "{{ url('dv').'/' }}"+route_no +'/' + type;
         setTimeout(function(){
             $.ajax({
                 url: url,

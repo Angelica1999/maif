@@ -149,7 +149,7 @@ class FundSourceController2 extends Controller{
       ]);
     }
     
-    public function dv_display($route_no,$dv_no, $type){
+    public function dv_display($route_no, $type){
 
       $section = DB::connection('dohdtr')
                     ->table('users')
@@ -161,9 +161,9 @@ class FundSourceController2 extends Controller{
       
       if($dv){
         if($type == 'obligate'){
-          $dv->dv_no = $dv_no;
-          $dv->save();
-          Utilization::where('div_id', $route_no)->update(['dv_no' => $dv_no]);
+          // $dv->dv_no = $dv_no;
+          // $dv->save();
+          // Utilization::where('div_id', $route_no)->update(['dv_no' => $dv_no]);
         }
         
         $all= array_map('intval', json_decode($dv->fundsource_id));
