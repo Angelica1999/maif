@@ -35,7 +35,7 @@ class Dv2Controller extends Controller
             $dv2_list = $dv2_list->where('route_no', $request->keyword);
         }
         
-        $dv2_list = $dv2_list->paginate(15);
+        $dv2_list = $dv2_list->paginate(50);
         
         return view('dv2.dv2',[
                 'dv2_list' => $dv2_list,
