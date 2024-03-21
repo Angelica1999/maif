@@ -85,10 +85,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel"></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-                </button>
+                <h5 class="text-success modal-title" id="exampleModalLabel"></h5>
             </div>
             <div class="modal_body">
             <input type="hidden" id="main_id" name="main_id" value="">
@@ -111,10 +108,8 @@
 
     function updateFacility(clickedElement) {
         var main_id = $(clickedElement).data('main-id');
-        var name = $(clickedElement).data('name');  // Use jQuery to access data attributes
-
-        document.querySelector(".modal-title").textContent = name;
-
+        var name = $(clickedElement).data('name');  
+        $('.modal-title').html('<i style="font-size:30px" class="typcn typcn-home menu-icon"></i> '+name);
         $('.modal_body').html(loading);
 
         var url = "{{ route('facility.edit', ':main_id') }}"; // Use a placeholder for main_id

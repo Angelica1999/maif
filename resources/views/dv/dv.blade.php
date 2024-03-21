@@ -209,7 +209,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <b><h5 class="modal-title" name ="route_no" id="exampleModalLabel">Create Disbursement V2</h5></b>
+                <b><h5 class="text-success modal-dv2" name ="route_no" id="exampleModalLabel">Create Disbursement V2</h5></b>
             </div>
             <div class="modal_body">
             </div>

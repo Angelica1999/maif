@@ -73,7 +73,7 @@
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title" id="exampleModalLabel"><b><i class="typcn typcn-location menu-icon"></i>Tracking Details</b></h4>
+        <h4 class="text-success modal-title" id="exampleModalLabel"><b><i class="typcn typcn-location menu-icon"></i>Tracking Details</b></h4>
       </div>
       <div class="modal-body">
         <!-- Embed iframe with dynamic src -->
@@ -205,7 +205,7 @@
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content"> 
             <form action="{{route('document.release')}}" method="POST">
-                <div class="modal-body">
+                <div class="modal-body_release" style="padding:10px">
                     <h4 class="text-success"><i style = "font-size:30px"class="typcn typcn-location-arrow menu-icon"></i> Select Destination</h4><hr />
                     @csrf
                     <input type="hidden" name="route_no" id="route_no">
