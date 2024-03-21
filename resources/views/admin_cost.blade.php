@@ -23,7 +23,7 @@
                 <table class="table table-list table-hover table-striped">
                     <thead>
                         <tr>
-                            <th style="width:150px;">SAA NO.</th>
+                            <th>SAA NO.</th>
                             <th>SAA AMOUNT (Admin Cost)</th>
                             <th>DEDUCTIONS</th>
                             <th>EVENT/ACTIVITY</th>
@@ -188,7 +188,7 @@
             var input = $('#deductions').val().replace(/,/g, "");
             var rem_bal = $('#rem_bal').val().replace(/,/g, "");
             if(input > rem_bal){
-                alert('Inputted deductions is greated than the balance!')
+                alert('Inputted deductions must be numbers and lesser than or equal to balance!')
                 $('#deductions').val('')
             }else{
                 $('#bal').val(parseFloat(rem_bal-input).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}));
