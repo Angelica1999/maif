@@ -846,7 +846,7 @@
         console.log('sadsd', route_no);
         
         $('.modal_body').html(loading);
-        $('.modal-title').html("DV route: "+ route_no);    
+        $('.modal-dv2').html('<i style="font-size:30px" class="typcn typcn-document menu-icon"></i> '+route_no);
         
         var url = "{{ url('/dv2').'/' }}" + route_no;
         setTimeout(function(){

@@ -171,10 +171,8 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Create Patient</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-                </button>
+                <h4 class="text-success" id="title"><i style = "font-size:30px"class="typcn typcn-user-add-outline menu-icon"></i> Create Patient</h4><hr />
+                @csrf
             </div>
             <div class="modal_body">
             </div>
@@ -404,7 +402,7 @@
 
     function editPatient(id) {
         $('.modal_body').html(loading);
-        $('.modal-title').html("Edit Patient");
+        $('#title').html('<i style="font-size:30px" class="typcn typcn-user-outline menu-icon"></i> Update Patient');
         var url = "{{ url('patient/edit').'/' }}"+id;
         // setTimeout(function(){
             $.ajax({
