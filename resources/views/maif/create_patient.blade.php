@@ -215,10 +215,10 @@
 
     function parseNumberWithCommas(value) {
         if(typeof value === 'string'){
-        return parseFloat(value.replace(/,/g, '')) || 0;
-       } else{
-        return parseFloat(value) || 0;
-       }
+            return parseFloat(value.replace(/,/g, '')) || 0;
+        } else{
+            return parseFloat(value) || 0;
+        }
     }
 
     function check(){
@@ -251,12 +251,7 @@
                 }, 1000); // Change the time interval as needed
             }
         });
-        $('#remaining_balance').on('click', function() {
-            console.log('sfsdf');
-        });
-
-
-
+     
     // $('#province_id').change(function() {
             
             //     $('#muncity_id').prop('disabled', true);
