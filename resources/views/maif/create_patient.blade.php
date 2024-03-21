@@ -130,9 +130,9 @@
             </div>
         </div>
 
-        <hr>
+        <!-- <hr>
         <strong>Fund Source</strong>
-        <hr>
+        <hr> -->
         <div class="row">
             <!-- <div class="col-md-6">
                 <div class="form-group">
