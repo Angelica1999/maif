@@ -182,7 +182,7 @@
             <?php $patientCount = session('patient_exist'); ?>
             <?php session()->forget('patient_exist'); ?>
             Lobibox.notify('success', {
-               msg: 'This is the {{ $patientCount}} time this patient has been added!'
+               msg: 'Successfully added a patient! This patient has been added {{ $patientCount}} time(s).'
             });
          @endif
          @if(session('pay_dv'))
