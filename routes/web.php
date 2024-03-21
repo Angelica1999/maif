@@ -149,6 +149,9 @@ Route::get('/admin_cost', [App\Http\Controllers\FundSourceController::class, 'ad
 Route::get('/admin_cost/balance/{fundsource_id}', [App\Http\Controllers\FundSourceController::class, 'costBalance'])->name('admin_cost.balance');
 Route::match(['get', 'post'],'admin_cost/usage', [App\Http\Controllers\FundSourceController::class, 'addUsage'])->name('admin_cost.usage');
 
+Route::match(['get', 'post'],'/file', [App\Http\Controllers\FundSourceController::class, 'fileUpload'])->name('file');
+Route::post('/fundsource/files', [App\Http\Controllers\FundSourceController::class, 'uploadFiles'])->name('upload.files');
+
 
 
 

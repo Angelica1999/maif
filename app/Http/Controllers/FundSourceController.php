@@ -660,4 +660,19 @@ class FundSourceController extends Controller
         return redirect()->back()->with('add_deductions', true);
     }
 
+    public function fileUpload(){
+        return view('fundsource.upload_file');
+    }
+
+    public function uploadFiles(Request $req){
+        $req->validate([
+            'files.*' => 'required|file|mimes:jpeg,png,jpg,pdf|max:2408',
+        ]);
+        foreach($req->file('files') as $upload){
+            $filename = $upload->getClientOriginalName();
+            $upload->storeAs('uploads',$filename);
+        }
+        return redirect()->back()->with('upload_files', true);
+    }
+
 }
