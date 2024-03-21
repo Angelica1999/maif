@@ -171,6 +171,12 @@
             <span class="menu-title">Facility</span>
           </a>
         </li>
+        <!-- <li class="nav-item">
+          <a class="nav-link" href="{{ route('file') }}">
+            <i class="typcn typcn-flow-switch menu-icon"></i>
+            <span class="menu-title">Sample Upload</span>
+          </a>
+        </li> -->
     @endif
 
     @if(Auth::user()->userid == 1027 || Auth::user()->userid == 2660)

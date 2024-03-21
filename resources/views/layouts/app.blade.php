@@ -218,6 +218,12 @@
               msg: 'Successfully added a usage in administrative cost!'
            });
         @endif
+        @if(session('upload_files'))
+           <?php session()->forget('upload_files'); ?>
+           Lobibox.notify('success', {
+              msg: 'File uploaded successfully!'
+           });
+        @endif
     </script>
     @yield('js')
 </body>

@@ -9,6 +9,7 @@ use App\Models\AddFacilityInfo;
 use App\Models\Dv2;
 use App\Models\Facility;
 use App\Models\Fundsource;
+use App\Models\Proponent;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PdfEmail;
 use Illuminate\Support\Facades\DB;
@@ -64,6 +65,8 @@ class PrintController extends Controller
     public function sendPatientPdf($patientId) {
 
         $patient = Patients::where('id', $patientId)->with('facility')->first();
+        $proponent = Proponent::where('id', $patient->proponent_id)->first();
+        $name_file = $patient->lname .', '. $patient->fname . ' - ' . $proponent->proponent;
         if(!$patient){
             return redirect()->route('Home.index')->with('error', 'Patient not found.');
         }else{
@@ -85,7 +88,7 @@ class PrintController extends Controller
                 $pdf->save($pdfFilePath);
     
                 try {
-                    $this->sendMail($recipientEmail,$pdfFilePath,$cc_mails);
+                    $this->sendMail($recipientEmail,$pdfFilePath,$cc_mails, $name_file);
                     session()->flash('email_sent', true);
 
                 } catch (Exception $e) {
@@ -107,6 +110,8 @@ class PrintController extends Controller
             $patients = Patients::whereIn('id', $ids)->with('facility')->get();
             if($patients){
                 foreach($patients as $patient){
+                    $proponent = Proponent::where('id', $patient->proponent_id)->first();
+                    $name_file = $patient->lname .', '. $patient->fname . ' - ' . $proponent->proponent;
                     $facility = AddFacilityInfo::where('facility_id', $patient->facility_id)->first();
                     if($facility->official_mail !== null || $facility->official_mail !== "" || $facility->official_mail !== "none"){
                         $data = [
@@ -125,7 +130,7 @@ class PrintController extends Controller
                         $pdf->save($pdfFilePath);
             
                         try {
-                            $this->sendMail($recipientEmail,$pdfFilePath,$cc_mails);
+                            $this->sendMail($recipientEmail,$pdfFilePath,$cc_mails,$name_file);
                             session()->flash('email_sent', true);
     
                         } catch (Exception $e) {
@@ -140,7 +145,7 @@ class PrintController extends Controller
         
     }
 
-    private function sendMail($recipientEmail, $pdfFilePath, $cc_mails){
+    private function sendMail($recipientEmail, $pdfFilePath, $cc_mails, $name_file){
         try{
             $email_doh = 'maipp@ro7.doh.gov.ph';
             $email_password = 'betvdmvyribwcyba';
@@ -179,7 +184,7 @@ class PrintController extends Controller
                     </div>
                 </body></html>
                 ';
-            $mail->addAttachment($pdfFilePath, "guarantee_letter.pdf");
+            $mail->addAttachment($pdfFilePath, $name_file.".pdf"); 
             $mail->send();
             unlink($pdfFilePath);
         }catch (Exception $e) {
