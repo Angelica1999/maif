@@ -10,6 +10,7 @@ use App\Models\ProponentInfo;
 use App\Models\Utilization;
 use App\Models\Transfer;
 use App\Models\Admin_Cost;
+use App\Models\Fundsource_Files;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -255,6 +256,14 @@ class FundSourceController extends Controller
         $breakdowns = $request->input('breakdowns');
         $fund_id = $request->input('fundsource_id');
         $get_fundsource = Fundsource::where('id', $fund_id)->first();
+        //trapping
+        $check_pro = Proponent::where('fundsource_id', $fund_id)->get();
+        foreach($check_pro as $pro_c){
+            $check_info = ProponentInfo::where('proponent_id', $pro_c->proponent_id)->where('fundsource_id', $pro_c->fundsource_id)->first();
+            if(!$check_info){
+                $pro_c->delete();
+            }
+        }
         
         if($breakdowns){
             foreach($breakdowns as $breakdown){
@@ -323,6 +332,8 @@ class FundSourceController extends Controller
                 }
             }
         }
+
+
         // return redirect()->back()->with('breakdowns_created', true);
     }
 
@@ -660,8 +671,19 @@ class FundSourceController extends Controller
         return redirect()->back()->with('add_deductions', true);
     }
 
-    public function fileUpload(){
-        return view('fundsource.upload_file');
+    public function fileUpload(Request $req){
+        $files = Fundsource_Files::orderBy('id', 'desc');
+        if($req->viewAll) {
+            $req->keyword = '';
+        }
+        else if($req->keyword) {
+            $files = $files->where('saa_no', 'LIKE', "%$req->keyword%");
+        }
+        $files = $files->paginate(50);
+        return view('fundsource.upload_file',[
+            'files'=>$files,
+            'keyword'=>$req->keyword
+            ]);
     }
 
     public function uploadFiles(Request $req){
@@ -670,9 +692,18 @@ class FundSourceController extends Controller
         ]);
         foreach($req->file('files') as $upload){
             $filename = $upload->getClientOriginalName();
-            $upload->storeAs('uploads',$filename);
+            $path = $upload->storeAs('uploads',$filename);
+            $ffiles = new Fundsource_Files();
+            $ffiles->saa_no = pathinfo($filename, PATHINFO_FILENAME);
+            $ffiles->path = $path;
+            $ffiles->uploaded_by = Auth::user()->userid;
+            $ffiles->save();
         }
         return redirect()->back()->with('upload_files', true);
+    }
+
+    public function removeImage($id){
+        Fundsource_Files::where('id', $id)->delete();
     }
 
 }

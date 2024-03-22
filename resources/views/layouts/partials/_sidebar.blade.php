@@ -91,6 +91,12 @@
                         <span class="menu-title">ADMIN COST</span>
                       </a>
                     </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{ route('file') }}">
+                        <img src="public\images\icons8_upload_16.png">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <span class="menu-title">FILE UPLOAD</span>
+                      </a>
+                    </li>
                 </ul>
             </li>
         </ul>
@@ -171,12 +177,6 @@
             <span class="menu-title">Facility</span>
           </a>
         </li>
-        <!-- <li class="nav-item">
-          <a class="nav-link" href="{{ route('file') }}">
-            <i class="typcn typcn-flow-switch menu-icon"></i>
-            <span class="menu-title">Sample Upload</span>
-          </a>
-        </li> -->
     @endif
 
     @if(Auth::user()->userid == 1027 || Auth::user()->userid == 2660)

@@ -3,6 +3,16 @@
 
 <script>
 
+    function displayImage(path) {
+        console.log('click', path);
+        if(path == null || path == ''){
+            alert('No Image Found!')
+        }else{
+            $('#fundsource_files').modal('show');
+            $('#sample_modal').html('<img src="{{ url('storage/app/') }}/' + path + '" alt="Image" class="img-fluid mb-2" style="width: 100%;">');
+        }
+    }
+
     function getHistory(route_no){
         console.log('route', route_no);
         $('.modal-body').html(loading);
@@ -432,17 +442,19 @@
             $('#saa3').append($('<option>', {value: '',text: 'Select SAA'}));
 
             $.each(data_result, function(index, optionData){
-                console.log('df', optionData);
+                var rem_balance = parseFloat(optionData.remaining_balance).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+                
                 if(optionData.facility !== null){
                     console.log('facility', optionData.facility.id);
                     if(optionData.facility.id == facility_id){
-                        text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent;
+                        text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + rem_balance;
                     }else{
-                        text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + optionData.facility.name;
+                        text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + optionData.facility.name + ' - ' + rem_balance;
                     }
                 }else{
-                    text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent;
+                    text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + rem_balance;
                 }
+                
                 $('#saa1').append($('<option>', {
                         value: optionData.fundsource_id,
                         text: text_display,
