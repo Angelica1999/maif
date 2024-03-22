@@ -151,6 +151,8 @@ Route::match(['get', 'post'],'admin_cost/usage', [App\Http\Controllers\FundSourc
 
 Route::match(['get', 'post'],'/file', [App\Http\Controllers\FundSourceController::class, 'fileUpload'])->name('file');
 Route::post('/fundsource/files', [App\Http\Controllers\FundSourceController::class, 'uploadFiles'])->name('upload.files');
+Route::match(['get', 'post'],'/fundsources/remove/{id}', [App\Http\Controllers\FundSourceController::class, 'removeImage'])->name('image.remove');
+
 
 
 

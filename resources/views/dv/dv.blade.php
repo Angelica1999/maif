@@ -1,5 +1,7 @@
 <?php
     use App\Models\TrackingDetails;
+    use App\Models\Fundsource;
+    use App\Models\Fundsource_Files;
 ?>
 @extends('layouts.app')
 @section('content')
@@ -11,10 +13,10 @@
                 <div class="input-group float-right w-50" style="min-width: 600px;">
                     <input type="text" class="form-control" name="keyword" placeholder="Route No" value="{{$keyword}}">
                     <div class="input-group-append">
-                        <button class="btn btn-sm btn-info" type="submit">Search</button>
-                        <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll">View All</button>
+                        <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
+                        <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
                         @if(Auth::user()->userid != 1027 || Auth::user()->userid == 2660)
-                            <button type="button" href="#create_dv" onclick="createDv()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md">Create</button>
+                            <button type="button" href="#create_dv" onclick="createDv()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
                             <button type="button" id="release_btn" data-target="#releaseTo" style="display:none; background:teal; color:white" onclick="putRoutes($(this))" data-target="#releaseTo" data-backdrop="static" data-toggle="modal" class="btn btn-md">Release All</button>
                             <input type="hidden" class="all_route" id="all_route" name="all_route">
                         @else
@@ -111,9 +113,9 @@
                                                 ->first()
                                                 ->id;
                                     ?>
-                                    <button data-toggle="modal" data-target="#releaseTo" data-id="{{ $doc_id }}" data-route_no="{{ $dvs->route_no }}" onclick="putRoute($(this))" style="width:87px;" type="button" class="btn btn-info btn-xs">Release To</button>
+                                    <button data-toggle="modal" data-target="#releaseTo" data-id="{{ $doc_id }}" data-route_no="{{ $dvs->route_no }}" onclick="putRoute($(this))" style="width:88px;" type="button" class="btn btn-info btn-xs">Release To</button>
                                 @else
-                                    <a href="#obligate"  onclick="obligateDv('{{$dvs->route_no}}', 'add_dvno')" style="background-color:teal;color:white; width:85px;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">{{ $dvs->route_no }}</a>
+                                    <a href="#obligate"  onclick="obligateDv('{{$dvs->route_no}}', 'add_dvno')" style="background-color:teal;color:white; width:83px;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">{{ $dvs->route_no }}</a>
                                 @endif
                             </td> 
                             <td>
@@ -143,13 +145,14 @@
                             <td>{{ $dvs->facility->name }}</td> 
                             <td>
                                 @if($dvs->fundsource_id)
-                                    @php
-                                        $all= array_map('intval', json_decode($dvs->fundsource_id));
-                                        foreach($all as $fundsourceId) {
-                                            echo \App\Models\Fundsource::where('id',$fundsourceId)->value('saa');
-                                            echo '<br>';
-                                            }
-                                    @endphp
+                                    <?php $all= array_map('intval', json_decode($dvs->fundsource_id)); ?>
+                                        @foreach($all as $fundsourceId) 
+                                            <?php $saa = Fundsource::where('id', $fundsourceId)->value('saa');
+                                                $path = Fundsource_Files::where('saa_no', $saa)->value('path');
+                                            ?>
+                                            <a data-toggle="modal" onclick="displayImage('{{ $path }}')">{{$saa}}</a>
+                                            <br>
+                                        @endforeach
                                 @endif
                             </td> 
                             <td>{{date('F j, Y', strtotime($dvs->date))}}</td>
@@ -212,6 +215,16 @@
                 <b><h5 class="text-success modal-dv2" name ="route_no" id="exampleModalLabel">Create Disbursement V2</h5></b>
             </div>
             <div class="modal_body">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="fundsource_files" tabindex="-1" role="dialog" aria-hidden="true" style="background: transparent; border: none;">
+    <div class="modal-dialog" role="document" style="background: transparent; border: none;">
+        <div class="modal-content" style="background: transparent; border: none;">
+            <div class="modal_body" style="background: transparent; border: none;">
+                <div id="sample_modal" style="background: transparent; border: none;">
+                </div>
             </div>
         </div>
     </div>

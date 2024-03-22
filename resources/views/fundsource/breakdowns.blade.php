@@ -33,7 +33,6 @@
 
         @if($fundsource[0]->proponents->count() > 0)
             @foreach($fundsource[0]->proponents as $index => $pro)
-
                 <div class="clone">
                     <div class="card" style="border:none;">
                         <div class="row">
@@ -41,7 +40,7 @@
                                 <b><label>Proponent:</label></b>
                                 <div class="form-group">
                                     <!-- <input type="text" class="form-control proponent" name="proponent[]" value="{{$pro->proponent}}"> -->
-                                    <select class="form-control proponent" id="{{$pro->proponent . $index}}" name="proponent[]" onchange="proponentCode($(this))">
+                                    <select class="form-control proponent" id="{{$pro->id . $index}}" name="proponent[]" onchange="proponentCode($(this))">
                                         <option value="">Select/Input Proponent</option>
                                         @foreach($proponents as $proponent)
                                             <option value="{{ $proponent->proponent }}" {{ ($proponent->proponent == $pro->proponent) ? 'selected' : '' }} data-proponent-code="{{ $proponent->proponent_code }}">
@@ -50,7 +49,7 @@
                                         @endforeach
                                         <script>
                                             $(document).ready(function () {
-                                                $("#"+"{{ $pro->proponent . $index }}").select2({
+                                                $("#"+"{{ $pro->id . $index }}").select2({
                                                     tags: true,
                                                 });
                                             });
