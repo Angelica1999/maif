@@ -14,9 +14,9 @@
                 <div class="input-group float-right w-50" style="min-width: 600px;">
                     <input type="text" class="form-control" name="keyword" placeholder="SAA, PROPONENT" value="{{ $keyword }}">
                     <div class="input-group-append">
-                        <button class="btn btn-sm btn-info" type="submit">Search</button>
-                        <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll">View All</button>
-                        <button type="button" id="create_btn" href="#create_fundsource2" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md">Create</button>
+                        <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
+                        <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
+                        <button type="button" id="create_btn" href="#create_fundsource2" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
                         <!-- <button type="button" href="#create_fundsource" onclick="createFundSource()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md">Create</button> -->
                     </div>
                 </div>
@@ -28,58 +28,60 @@
             @if(isset($fundsources) && $fundsources->count() >0)
             <div class="row">
                 @foreach($fundsources as $fund)
-                    <div class="col-md-4 mt-2 grid-margin grid-margin-md-0 stretch-card">
-                        <div class="card">
-                            <div class="card-body">
-                                <div style="display: flex; justify-content: space-between;">
-                                    <h4 class="card-title" style="text-align: left; margin: 0;">{{ $fund->saa }}</h4>
-                                    <button class="btn btn-sm update_saa" style="cursor: pointer; text-align: right;color:white; background-color:#417524" data-proponent-id="" data-backdrop="static" data-toggle="modal" onclick="createBreakdowns({{ $fund->id }})" href="#create_fundsource">Create Breakdowns</button>
+                        <div class="col-md-4 mt-2 grid-margin grid-margin-md-0 stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <h4 class="card-title" style="text-align: left; margin: 0;">{{ $fund->saa }}</h4>
+                                        <button class="btn btn-sm update_saa" style="cursor: pointer; text-align: right;color:white; background-color:#417524" data-proponent-id="" data-backdrop="static" data-toggle="modal" onclick="createBreakdowns({{ $fund->id }})" href="#create_fundsource">Create Breakdowns</button>
+                                    </div>
+
+                                    @foreach($fund->proponents as $proponent)
+                                        @if(count($proponent->proponentInfo)>0)
+                                            <!-- <div class="card-body"> -->
+                                            <b><p class="">{{ $proponent->proponent }}</p></b>
+                                            <ul class="list-arrow mt-3">
+                                                @foreach($proponent->proponentInfo as $proponentInfo)
+
+                                                    @if( $proponentInfo->facility !== null)
+                                                        <li><b>{{ $proponentInfo->facility->name }}</b></li>
+                                                    @else
+                                                        <?php 
+                                                            $facilityIds = json_decode($proponentInfo->facility_id);
+                                                        ?>
+                                                        <li>
+                                                            @foreach($facilityIds as $facilityId)
+                                                                @php
+                                                                    $facility = $facilities->where('id', $facilityId)->first();
+                                                                @endphp
+                                                                @if($facility)
+                                                                    <b>{{ $facility->name }}</b><br>
+                                                                @endif
+                                                            @endforeach
+                                                        </li>
+
+                                                    @endif
+
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <span class="ml-3">Allocated Funds &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->alocated_funds)), 2, '.', ',') }}</strong></span>
+                                                            <button style="width:120px" id="track" data-backdrop="static" data-proponentInfo-id="{{ $proponentInfo->id }}" data-toggle="modal" href="#track_details2" onclick="track_details2(event)" class='btn btn-sm btn-outline-info track_details2'>Track</button>
+                                                        </div>
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <span class="ml-3">Administrative Cost : <strong class="text-info">{{ $proponentInfo->admin_cost}}</strong></span>
+                                                            <button style="width:120px" id="transfer_funds" data-backdrop="static" data-toggle="modal" href="#transfer_fundsource" onclick="transferFunds({{ $proponentInfo->id }})" class='btn btn-sm btn-outline-success ml-2 transfer_funds'>Transfer Funds</button>
+                                                        </div>
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <span class="ml-3">Remaining Balance &nbsp;: <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->remaining_balance)), 2, '.', ',') }}</strong></span>
+                                                        </div>
+                                                        <div class="d-flex justify-content-end mt-2"></div>
+                                                @endforeach
+                                            </ul>
+                                            <!-- <div> -->
+                                        @endif
+                                    @endforeach
                                 </div>
-
-                                @foreach($fund->proponents as $proponent)
-                                    <!-- <div class="card-body"> -->
-                                    <b><p class="">{{ $proponent->proponent }}</p></b>
-                                    <ul class="list-arrow mt-3">
-                                        @foreach($proponent->proponentInfo as $proponentInfo)
-
-                                            @if( $proponentInfo->facility !== null)
-                                                <li><b>{{ $proponentInfo->facility->name }}</b></li>
-                                            @else
-                                                <?php 
-                                                    $facilityIds = json_decode($proponentInfo->facility_id);
-                                                ?>
-                                                <li>
-                                                    @foreach($facilityIds as $facilityId)
-                                                        @php
-                                                            $facility = $facilities->where('id', $facilityId)->first();
-                                                        @endphp
-                                                        @if($facility)
-                                                            <b>{{ $facility->name }}</b><br>
-                                                        @endif
-                                                    @endforeach
-                                                </li>
-
-                                            @endif
-
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <span class="ml-3">Allocated Funds &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->alocated_funds)), 2, '.', ',') }}</strong></span>
-                                                    <button style="width:120px" id="track" data-backdrop="static" data-proponentInfo-id="{{ $proponentInfo->id }}" data-toggle="modal" href="#track_details2" onclick="track_details2(event)" class='btn btn-sm btn-outline-info track_details2'>Track</button>
-                                                </div>
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <span class="ml-3">Administrative Cost : <strong class="text-info">{{ $proponentInfo->admin_cost}}</strong></span>
-                                                    <button style="width:120px" id="transfer_funds" data-backdrop="static" data-toggle="modal" href="#transfer_fundsource" onclick="transferFunds({{ $proponentInfo->id }})" class='btn btn-sm btn-outline-success ml-2 transfer_funds'>Transfer Funds</button>
-                                                </div>
-                                                <div class="d-flex justify-content-between align-items-center">
-                                                    <span class="ml-3">Remaining Balance &nbsp;: <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->remaining_balance)), 2, '.', ',') }}</strong></span>
-                                                </div>
-                                                <div class="d-flex justify-content-end mt-2"></div>
-                                        @endforeach
-                                    </ul>
-                                    <!-- <div> -->
-                                @endforeach
                             </div>
                         </div>
-                    </div>
                 @endforeach
             </div>
             @else
