@@ -340,9 +340,9 @@
             <div style="text-align: center;">
                 @foreach($fund_source as $index => $fund_saa)
                   @if($fund_saa->image)
-                    <img src="{{ url('storage/app/' . $fund_saa->image->path) }}" alt="Image" class="img-fluid mb-2" style="width: 100%;">
-                    {{$fund_saa->saa}}
-                    <br>
+                      <span >{{$fund_saa->saa}}</span>
+                      <img src="{{ url('storage/app/' . $fund_saa->image->path) }}"  style="width: 700px; height:500px">
+                      <br>   
                   @else
                     No image for {{$fund_saa->saa}}
                   @endif

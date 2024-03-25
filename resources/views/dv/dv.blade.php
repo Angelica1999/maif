@@ -222,7 +222,7 @@
 <div class="modal fade" id="fundsource_files" tabindex="-1" role="dialog" aria-hidden="true" style="background: transparent; border: none;">
     <div class="modal-dialog" role="document" style="background: transparent; border: none;">
         <div class="modal-content" style="background: transparent; border: none;">
-            <div class="modal_body" style="background: transparent; border: none;">
+            <div class="modal_body_files" style="background: transparent; border: none;">
                 <div id="sample_modal" style="background: transparent; border: none;">
                 </div>
             </div>
