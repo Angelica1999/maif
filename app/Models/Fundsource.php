@@ -39,4 +39,8 @@ class Fundsource extends Model
     public function cost_usage() {   
         return $this->hasMany(Admin_Cost::class, 'fundsource_id', 'id');
     }
+
+    public function image() {       
+        return $this->belongsTo(Fundsource_Files::class, 'saa','saa_no');
+    }
 }

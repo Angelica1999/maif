@@ -333,7 +333,23 @@
             <div style="text-align: center;">
                 <font class="route_no">{{ $dv->route_no }}</font>
             </div>
-        </div>     
+        </div>  
+        <div style="page-break-before: always;"></div>
+        <!--next page -->
+        <div style="position:absolute; left: 50%; transform: translateX(-50%); margin-top:15px;" class="modal_footer">
+            <div style="text-align: center;">
+                @foreach($fund_source as $index => $fund_saa)
+                  @if($fund_saa->image)
+                    <img src="{{ url('storage/app/' . $fund_saa->image->path) }}" alt="Image" class="img-fluid mb-2" style="width: 100%;">
+                    {{$fund_saa->saa}}
+                    <br>
+                  @else
+                    No image for {{$fund_saa->saa}}
+                  @endif
+                @endforeach
+            </div>
+        </div>
+
         </div>
         @endif
     </body>
