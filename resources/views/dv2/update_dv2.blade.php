@@ -74,7 +74,7 @@
                                                         @endforeach
                                                     </select> 
                                                 @else
-                                                    <input class="form-control mx-auto d-block text-center" name="g_lname2[]" value="{{($dv->lname2 == 0)?'':htmlspecialchars($dv->lname_2)}}" placeholder="LastName" style="width:80%; height:35px; margin-top:5px">
+                                                    <input class="form-control mx-auto d-block text-center" name="g_lname2[]" value="{{($dv->lname2 == 0)?'':htmlspecialchars($dv->lname2)}}" style="width:80%; height:35px; margin-top:5px">
                                                 @endif
                                                 <!-- <select name="g_lname1[]"  onchange="" style="width:80%; height:30px" class="js-example-basic-single1" required>
                                                     <option value="">-Lastname-</option>
