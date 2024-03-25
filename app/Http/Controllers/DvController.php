@@ -31,7 +31,6 @@ class DvController extends Controller
 
         // $dv_update = Dv::whereNotNull('dv_no')->with(['fundsource','facility', 'user'])->get();
         $dv= Dv::whereNull('dv_no')->orWhere('dv_no', '')->get();
-
         foreach($dv as $d){
             $master = TrackingMaster::where('route_no', $d->route_no)->first();
             $dv_here = Dv::where('route_no',  $d->route_no)->first();
@@ -53,13 +52,13 @@ class DvController extends Controller
             $request->keyword = '';
         }
         
-        $results = Dv::with(['fundsource', 'facility', 'user', 'master'])
+        $results = Dv::with(['fundsource', 'facility', 'user', 'master', 'dv2'])
                     ->when($request->keyword, function ($query) use ($request) {
                         $query->where('route_no', 'LIKE', "%$request->keyword%");
                     })
                 ->orderby('id', 'desc')
                 ->paginate(50);
-        
+
         if(Auth::user()->userid == 1027 || Auth::user()->userid == 2660){
             return view('dv.acc_dv', [
                 'disbursement' => $results,

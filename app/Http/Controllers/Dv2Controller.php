@@ -67,7 +67,7 @@ class Dv2Controller extends Controller
         $dv2_exist = Dv2::where('route_no', $route_no)->first();
         
         if($dv2_exist){
-
+            $dv_amount = Dv::where('route_no', $route_no)->value('total_amount');
             $dv2 = Dv2::where('route_no', $route_no)
                         ->leftJoin('patients as p1', 'dv2.lname', '=', 'p1.id')
                         ->leftJoin('patients as p2', 'dv2.lname2', '=', 'p2.id')
@@ -76,7 +76,12 @@ class Dv2Controller extends Controller
             $total = Dv2::where('route_no', $route_no)
                         ->select(DB::raw('SUM(REPLACE(amount, ",", "")) as totalAmount'))
                         ->first()->totalAmount;   
-            return view('dv2.update_dv2', ['dv2'=> $dv2,'total' => $total]);
+            return view('dv2.update_dv2', [
+                'dv2'=> $dv2,
+                'dv_amount' => $dv_amount,
+                'total' => $total
+            ]);
+
         }else{
             $dv_1 = Dv::where('route_no', $route_no)->first();
             $groupIdArray = explode(',', $dv_1->group_id);
