@@ -202,7 +202,7 @@ class PrintController extends Controller
         foreach($saa as $id){
             $all []= $id;
         }
-        $fund_source = Fundsource::whereIn('id', $all)->get();
+        $fund_source = Fundsource::whereIn('id', $all)->with('image')->get();
         if(!$dv){
             return redirect()->route('Home.index')->with('error', 'Patient not found.');
         }
@@ -224,7 +224,6 @@ class PrintController extends Controller
         $result = number_format($vatFormatted + $ewtFormatted, 2, '.', ',');
 
         $imageData = base64_encode(file_get_contents(public_path('images/doh-logo.png')));
-        
         $data = [
             'dv'=> $dv,
             'facility' => $facility,
