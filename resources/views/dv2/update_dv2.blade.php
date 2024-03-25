@@ -86,7 +86,7 @@
                                                 </select> -->
                                             </div>
                                             <div style="overflow: hidden; text-overflow: ellipsis; height: 100%; box-sizing: border-box;">
-                                                <input class="form-control mx-auto d-block text-center amount_total" id="amount[]" name="amount[]" oninput="calculateSum(this.value)" value="{{$dv->amount}}" style="width:80%; height:30px; margin-top:5px" >
+                                                <input class="form-control mx-auto d-block text-center amount_total" id="amount[]" name="amount[]" oninput="calculateSum(this.value)" onkeyup="validateAmount(this)" value="{{number_format(str_replace(',','',$dv->amount),2,'.',',')}}" style="width:80%; height:30px; margin-top:5px" >
                                             </div>
                                         </div>
                                     </div>
@@ -94,7 +94,6 @@
                                         $(document).ready(function() {
                                             $('.js-example-basic-single1').select2();
                                             $('.js-example-basic-single2').select2();
-
                                         });
                                     </script>
                                         @endforeach
@@ -121,6 +120,8 @@
                             </div>
                             <br>
                             <input class=" text-center total_cal" style="width:40%; height:35px; margin-left:210px" value="PHP {{number_format($total,2, '.', ',')}}" readonly>
+                            <br>
+                            <i><p class="text-danger text-center inform_user"></p></i>
                         </div>
                     </div>
                 </div>
@@ -191,6 +192,14 @@
         var sum = amountArray.reduce(function(total, current) {
             return total + current;
         }, 0);
+
+        if(sum> {{str_replace(',', '',$dv_amount)}}){
+            $('.btn-primary').attr('disabled', 'disabled');
+            $('.inform_user').text('Calculated Amount is greater than Dv1 total amount!')
+        }else{
+            $('.btn-primary').removeAttr('disabled');
+            $('.inform_user').text('')
+        }
 
         $('.total_cal').val('PHP ' + formatNumberWithCommas(sum));
     }

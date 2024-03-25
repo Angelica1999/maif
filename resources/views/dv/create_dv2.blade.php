@@ -76,6 +76,8 @@
 
                          
                             <input class=" text-center total_cal" style="width:40%; height:35px; margin-left:210px" value="PHP {{number_format($total,2, '.', ',')}}" readonly>
+                            <br>
+                            <i><p class="text-danger text-center inform_user"></p></i>
                             <input type="hidden" id="route_no" name="route_no" value="{{$dv->route_no}}">
                             </div>
                         </div>
@@ -89,7 +91,7 @@
     </div>
     <div class="modal-footer">
         <button style = "background-color:lightgray"  class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> Close</button>
-        <button type="submit" class="btn btn-primary">Create Dv2</button>
+        <button type="submit" class="btn btn-primary" id ="create_btn">Create Dv2</button>
     </div>
 </form>
 
@@ -140,7 +142,13 @@
             return total + current;
         }, 0);
 
-        console.log('summ',sum);
+        if(sum> {{str_replace(',', '',$dv->total_amount)}}){
+            $('.btn-primary').attr('disabled', 'disabled');
+            $('.inform_user').text('Calculated Amount is greater than Dv1 total amount!')
+        }else{
+            $('.btn-primary').removeAttr('disabled');
+            $('.inform_user').text('')
+        }
         $('.total_cal').val('PHP ' + formatNumberWithCommas(sum));
     }
 </script>

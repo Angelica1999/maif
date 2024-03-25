@@ -855,11 +855,11 @@
 
     function createDv2() {
         var route_no = event.target.getAttribute('data-routeId');
-        console.log('sadsd', route_no);
-        
+        var amount = event.target.getAttribute('data-amount');
+
         $('.modal_body').html(loading);
-        $('.modal-dv2').html('<i style="font-size:30px" class="typcn typcn-document menu-icon"></i> '+route_no);
-        
+        $('.modal-dv2').html('<i style="font-size:30px" class="typcn typcn-document menu-icon"></i> ' + route_no + ' - Total Amount: ' + amount);
+        console.log('route', route_no);
         var url = "{{ url('/dv2').'/' }}" + route_no;
         setTimeout(function(){
             $.ajax({

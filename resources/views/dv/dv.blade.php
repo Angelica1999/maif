@@ -95,7 +95,11 @@
                             <td>                 
                                 <button type="button" class="btn btn-xs col-sm-12" style="background-color:#165A54;color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$dvs->route_no}}" id="track_load" onclick="openModal()">Track</button>
                                 @if(Auth::user()->userid != 1027 || Auth::user()->userid == 2660)
-                                    <button type="button" class="btn btn-xs btn-success col-sm-12 create-dv2-btn" data-toggle="modal" href="#create_dv2" data-routeId="{{$dvs->route_no}}" onclick="createDv2()">Create DV2</button>
+                                    @if(count($dvs->dv2) > 0)
+                                        <button type="button" class="btn btn-xs btn-success col-sm-12 create-dv2-btn" data-toggle="modal" href="#create_dv2" data-amount="{{$dvs->total_amount}}" data-routeId="{{$dvs->route_no}}" onclick="createDv2()">Update DV2</button>
+                                    @else
+                                        <button type="button" class="btn btn-xs btn-success col-sm-12 create-dv2-btn" data-toggle="modal" href="#create_dv2" data-amount="{{$dvs->total_amount}}" data-routeId="{{$dvs->route_no}}" onclick="createDv2()">Create DV2</button>
+                                    @endif
                                 @endif
                             </td>
                             <td> 
@@ -113,7 +117,7 @@
                                                 ->first()
                                                 ->id;
                                     ?>
-                                    <button data-toggle="modal" data-target="#releaseTo" data-id="{{ $doc_id }}" data-route_no="{{ $dvs->route_no }}" onclick="putRoute($(this))" style="width:88px;" type="button" class="btn btn-info btn-xs">Release To</button>
+                                    <button data-toggle="modal" data-target="#releaseTo" data-id="{{ $doc_id }}" data-route_no="{{ $dvs->route_no }}" onclick="putRoute($(this))" style="background-color:green;color:white; width:85px;" type="button" class="btn btn-xs">Release To</button>
                                 @else
                                     <a href="#obligate"  onclick="obligateDv('{{$dvs->route_no}}', 'add_dvno')" style="background-color:teal;color:white; width:83px;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">{{ $dvs->route_no }}</a>
                                 @endif

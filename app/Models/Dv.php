@@ -58,4 +58,7 @@ class Dv extends Model
     public function release(){
         return $this->belongsTo(Tracking_Releasev2::class, 'route_no','route_no');
     }
+    public function dv2(){
+        return $this->hasMany(Dv2::class, 'route_no', 'route_no');
+    }
 }
