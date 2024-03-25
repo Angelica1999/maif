@@ -693,6 +693,27 @@ class FundSourceController extends Controller
         foreach($req->file('files') as $upload){
             $filename = $upload->getClientOriginalName();
             $path = $upload->storeAs('uploads',$filename);
+            $imagePath = storage_path('app/' . $path);
+
+            $exif = exif_read_data($imagePath);
+            $orientation = isset($exif['Orientation']) ? $exif['Orientation'] : null;
+            $img = imagecreatefromstring(file_get_contents($imagePath));
+
+            switch ($orientation) {
+                case 3:
+                    $img = imagerotate($img, 180, 0);
+                    break;
+                case 6:
+                    $img = imagerotate($img, -90, 0);
+                    break;
+                case 8:
+                    $img = imagerotate($img, 90, 0);
+                    break;
+            }
+
+            imagejpeg($img, $imagePath);
+            imagedestroy($img);
+
             $ffiles = new Fundsource_Files();
             $ffiles->saa_no = pathinfo($filename, PATHINFO_FILENAME);
             $ffiles->path = $path;
