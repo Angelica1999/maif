@@ -124,7 +124,16 @@
                             per billing statement dated {{date('F Y', strtotime($dv->month_year_from))}} {{!Empty($dv->month_year_to)?date('F Y', strtotime($dv->month_year_to)):''}}
                             in the amount of:</p>
                             
+                            <?php $not_empty = 0; ?>
+
                             @foreach($fund_source as $index=> $fund_saa)
+                              <?php 
+                                  if($fund_saa->image !== null){
+                                    $not_empty = $not_empty + 1;
+                                  }else{
+                                    $not_empty = $not_empty + 0;
+                                  }
+                               ?>
                               <div style="width: 100%;">
                                   <span class="saa" style="float: left;">{{$saa_source[$index]}}</span>
                                   <span class="amount" style="float: right;">{{ number_format(floatval(str_replace(',','',$saa_amount[$index])), 2, '.', ',') }}</span>
@@ -332,7 +341,9 @@
                       <font class="route_no">{{ $dv->route_no }}</font>
                   </div>
               </div>  
-              <div style="page-break-before: always;"></div>
+              @if($not_empty > 0)
+                  <div style="page-break-before: always;"></div>
+              @endif
               <!--next page -->
               <div style="position:absolute; left: 50%; transform: translateX(-50%); margin-top:15px;" class="modal_footer">
                   <div style="text-align: center;">
@@ -342,8 +353,6 @@
                             <img src="{{ url('storage/app/' . $fund_saa->image->path) }}"  style="width: 700px; height:500px">
                             <br>
                             <br>   
-                        @else
-                          No image for {{$fund_saa->saa}}
                         @endif
                       @endforeach
                   </div>
