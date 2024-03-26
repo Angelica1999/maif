@@ -129,13 +129,15 @@
             });
         });
     });
+
     function openModal() {
-        var routeNoo = event.target.getAttribute('data-routeId');  
+        var routeNoo = event.target.getAttribute('data-routeId'); 
+        var src = "https://mis.cvchd7.com/dts/document/trackMaif/" + routeNoo;
+        // $('.modal-body').html(loading);
         setTimeout(function() {
-            var src = "https://mis.cvchd7.com/dts/document/trackMaif/" + routeNoo;
             $("#trackIframe").attr("src", src);
             $("#iframeModal").css("display", "block");
-        }, 100);
+        }, 150);
     }
     
     $(document).ready(function(){
@@ -842,15 +844,13 @@
         $('.modal_body').html(loading);
         $('.modal-title').html("Create Disbursement Voucher");
         var url = "{{ route('dv.create') }}";
-        setTimeout(function(){
-            $.ajax({
-                url: url,
-                type: 'GET',
-                success: function(result) {
-                    $('.modal_body').html(result);
-                }
-            });
-        },500);
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(result) {
+                $('.modal_body').html(result);
+            }
+        });
     }
 
     function createDv2() {
@@ -907,188 +907,189 @@
                 removeNullOptions();
 
                 $.get("{{ url('/getDv').'/' }}" + dvId, function (result) {
-                $('.modal_body').html(first_res);
-                var printButton = $('<a>', {
-                    href: "{{ route('dv.pdf', '') }}/" + dvId,
-                    target: '_blank',
-                    type: 'button',
-                    class: 'btn btn-success btn-sm',
-                    text: 'Generate PDF'
-                });
 
-                $('#dv_footer').append(printButton);
-                    $('#dv').val(dvId);
-                    $('#dv_no').val(result.dv.dv_no);
-                    if(result.dv.obligated == 1){
-                        $('.btn-primary').hide();
-                    }else{
-                        $('.btn-primary').text('Update');
-                    }
-                    $('#accumulated').prop('disabled', false).show();
-                    $('#accumulated').val(result.dv.accumulated);
-                    var totalAmount = parseNumberWithCommas(result.dv.total_amount);
-                    var accumulated = parseNumberWithCommas(result.dv.accumulated);
+                    $('.modal_body').html(first_res);
+                    var printButton = $('<a>', {
+                        href: "{{ route('dv.pdf', '') }}/" + dvId,
+                        target: '_blank',
+                        type: 'button',
+                        class: 'btn btn-success btn-sm',
+                        text: 'Generate PDF'
+                    });
 
-                    var roundedResult = Math.round((totalAmount - accumulated) * 100) / 100; // Round to 2 decimal places
-                    console.log('round', roundedResult);
-
-                    $('#totalDebit').text(formatNumberWithCommas(roundedResult.toFixed(2), 2, '.', ','));
-
-
-                    var facility = result.dv.facility_id;
-                    update = 0;
-                    $('#facilityDropdown').val(facility).trigger('change');
-                    $('#for_facility_id').val(facility);
-                    onchangeSaa($('#saa1'), result.proponentInfo[0].id, result.proponentInfo[0].pro_group);
-                    console.log('chakii',result.dv.facility.name);        
-                    counter = 0;
-                    var vat=1;
-                    if(result.dv.deduction1>3){
-                        vat = 1.12;
-                    }
-                    if(result.proponentInfo[0] !== null || result.proponentInfo[0] !== undefined){
-                        $('#saa1_infoId').val(result.proponentInfo[0].id);
-                        setTimeout(function() {
-                            $('#saa1 option').each(function () {
-                                var value =  $(this).val();
-                                var group = $(this).attr('dataprogroup');
-                                var proponent = $(this).attr('dataproponent');
-                                var facility = $(this).attr('datafacility');
-                                var info_id = $(this).attr('dataproponentInfo_id');
-
-                                if( info_id == result.proponentInfo[0].id){
-                                    $(this).prop('selected',true);
-                                    $('#saa1').trigger('change');
-                                }
-                            });
-
-                        }, 2000);
-                        $('#inputValue1').val(result.dv.amount1).prop('disabled', false).show();
-                        $('#vat').val(result.dv.deduction1);
-                        $('#ewt').val(result.dv.deduction2);
-                        $('#vatValue1').val((parseFloat(result.dv.amount1.replace(/,/g,''))/vat * result.dv.deduction1/100).toFixed(2));
-                        $('#ewttValue1').val((parseFloat(result.dv.amount1.replace(/,/g,''))/vat * result.dv.deduction2/100).toFixed(2));
-                        $('#save_amount1').val(parseFloat(result.dv.amount1.replace(/,/g,'')));
-                        $('#save_saa1').val(result.proponentInfo[0].id);
-                        var oki = parseFloat(result.dv.amount1) * result.dv.deduction1;
-                        saaCounter = 1;
-                    } if(result.proponentInfo[1] !== null && result.proponentInfo[1] !== undefined){
-                        toggleSAADropdowns($('#saa1'), result.proponentInfo[0].id, result.proponentInfo[0].pro_group);
-                        if(result.dv.amount2 !== null){
-                            $('#saa2_infoId').val(result.proponentInfo[1].id);
-                            $('#RemoveSAAButton').prop('disabled', false).show();
-                            $('#saa2').prop('disabled', false).show();
-                            setTimeout(function() {
-                                $('#saa2 option').each(function () {
-                                    var value =  $(this).val();
-                                    var group = $(this).attr('dataprogroup');
-                                    var proponent = $(this).attr('dataproponent');
-                                    var facility = $(this).attr('datafacility');
-                                    var info_id = $(this).attr('dataproponentInfo_id');
-
-                                    if(info_id == result.proponentInfo[1].id){
-                                        $(this).prop('selected',true);
-                                        $('#saa2').trigger('change');
-                                    }
-                                });
-                            }, 2000);
-                            
-                            $('#inputValue2').val(result.dv.amount2).prop('disabled', false).show();
-                            // $('#saa2').val(result.fund_source[1].id);
-                            $('#vatValue2').val((parseFloat(result.dv.amount2.replace(/,/g,''))/vat * result.dv.deduction1/100).toFixed(2)).show();
-                            $('#ewtValue2').val((parseFloat(result.dv.amount2.replace(/,/g,''))/vat * result.dv.deduction2/100).toFixed(2)).show();
-                            $('#save_amount2').val(parseFloat(result.dv.amount2.replace(/,/g,'')));
-                            $('#save_saa2').val(result.proponentInfo[1].id);
-                            saaCounter = 2;
+                    $('#dv_footer').append(printButton);
+                        $('#dv').val(dvId);
+                        $('#dv_no').val(result.dv.dv_no);
+                        if(result.dv.obligated == 1){
+                            $('.btn-primary').hide();
                         }else{
-                            $('#RemoveSAAButton1').prop('disabled', false).show();
-                            $('#saa2').prop('disabled', false).show();
-                            $('#saa2_infoId').val(result.proponentInfo[2].id);
-                            setTimeout(function() {
-                                $('#saa2 option').each(function () {
-                                    var value =  $(this).val();
-                                    var group = $(this).attr('dataprogroup');
-                                    var proponent = $(this).attr('dataproponent');
-                                    var facility = $(this).attr('datafacility');
-                                    var info_id = $(this).attr('dataproponentInfo_id');
-
-                                    if(info_id == result.proponentInfo[2].id){
-                                        $(this).prop('selected',true);
-                                        $('#saa2').trigger('change');
-                                    }
-                                });
-                            }, 2000);
-                            $('#inputValue2').val(result.dv.amount3).prop('disabled', false).show();
-                            $('#vatValue2').val((parseFloat(result.dv.amount3.replace(/,/g,''))/vat * result.dv.deduction1/100).toFixed(2)).show();
-                            $('#ewtValue2').val((parseFloat(result.dv.amount3.replace(/,/g,''))/vat * result.dv.deduction2/100).toFixed(2)).show();
-                            $('#save_amount2').val(parseFloat(result.dv.amount3.replace(/,/g,'')));
-                            $('#save_saa2').val(result.proponentInfo[2].id);
+                            $('.btn-primary').text('Update');
                         }
-                        
-                    } if(result.proponentInfo[2] !== null && result.proponentInfo[2] !== undefined){
-                        $('#saa3_infoId').val(result.proponentInfo[2].id);
-                        toggleSAADropdowns($('#saa1'), result.proponentInfo[0].id, result.proponentInfo[0].pro_group);
-                        $('#saa3').prop('disabled', false).show();
-                        $('#inputValue3').val(result.dv.amount3).prop('disabled', false).show();
-                        setTimeout(function() {
-                                $('#saa3 option').each(function () {
+                        $('#accumulated').prop('disabled', false).show();
+                        $('#accumulated').val(result.dv.accumulated);
+                        var totalAmount = parseNumberWithCommas(result.dv.total_amount);
+                        var accumulated = parseNumberWithCommas(result.dv.accumulated);
+
+                        var roundedResult = Math.round((totalAmount - accumulated) * 100) / 100; // Round to 2 decimal places
+                        console.log('round', roundedResult);
+
+                        $('#totalDebit').text(formatNumberWithCommas(roundedResult.toFixed(2), 2, '.', ','));
+
+
+                        var facility = result.dv.facility_id;
+                        update = 0;
+                        $('#facilityDropdown').val(facility).trigger('change');
+                        $('#for_facility_id').val(facility);
+                        onchangeSaa($('#saa1'), result.proponentInfo[0].id, result.proponentInfo[0].pro_group);
+                        console.log('chakii',result.dv.facility.name);        
+                        counter = 0;
+                        var vat=1;
+                        if(result.dv.deduction1>3){
+                            vat = 1.12;
+                        }
+                        if(result.proponentInfo[0] !== null || result.proponentInfo[0] !== undefined){
+                            $('#saa1_infoId').val(result.proponentInfo[0].id);
+                            setTimeout(function() {
+                                $('#saa1 option').each(function () {
                                     var value =  $(this).val();
                                     var group = $(this).attr('dataprogroup');
                                     var proponent = $(this).attr('dataproponent');
                                     var facility = $(this).attr('datafacility');
                                     var info_id = $(this).attr('dataproponentInfo_id');
 
-                                    if(info_id == result.proponentInfo[2].id){
+                                    if( info_id == result.proponentInfo[0].id){
                                         $(this).prop('selected',true);
-                                        $('#saa3').trigger('change');
+                                        $('#saa1').trigger('change');
                                     }
                                 });
+
                             }, 2000);
-                        $('#vatValue3').val((parseFloat(result.dv.amount3.replace(/,/g,''))/vat * result.dv.deduction1/100).toFixed(2)).show();
-                        $('#ewtValue3').val((parseFloat(result.dv.amount3.replace(/,/g,''))/vat * result.dv.deduction2/100).toFixed(2)).show();
-                        $('#save_amount3').val(parseFloat(result.dv.amount3.replace(/,/g,'')));
-                        $('#save_saa3').val(result.proponentInfo[2].id);
-                        $('#RemoveSAAButton1').prop('disabled', false).show();
-                    }
-                    console.log('saa2saa2', document.getElementById('saa2').value);
+                            $('#inputValue1').val(result.dv.amount1).prop('disabled', false).show();
+                            $('#vat').val(result.dv.deduction1);
+                            $('#ewt').val(result.dv.deduction2);
+                            $('#vatValue1').val((parseFloat(result.dv.amount1.replace(/,/g,''))/vat * result.dv.deduction1/100).toFixed(2));
+                            $('#ewttValue1').val((parseFloat(result.dv.amount1.replace(/,/g,''))/vat * result.dv.deduction2/100).toFixed(2));
+                            $('#save_amount1').val(parseFloat(result.dv.amount1.replace(/,/g,'')));
+                            $('#save_saa1').val(result.proponentInfo[0].id);
+                            var oki = parseFloat(result.dv.amount1) * result.dv.deduction1;
+                            saaCounter = 1;
+                        } if(result.proponentInfo[1] !== null && result.proponentInfo[1] !== undefined){
+                            toggleSAADropdowns($('#saa1'), result.proponentInfo[0].id, result.proponentInfo[0].pro_group);
+                            if(result.dv.amount2 !== null){
+                                $('#saa2_infoId').val(result.proponentInfo[1].id);
+                                $('#RemoveSAAButton').prop('disabled', false).show();
+                                $('#saa2').prop('disabled', false).show();
+                                setTimeout(function() {
+                                    $('#saa2 option').each(function () {
+                                        var value =  $(this).val();
+                                        var group = $(this).attr('dataprogroup');
+                                        var proponent = $(this).attr('dataproponent');
+                                        var facility = $(this).attr('datafacility');
+                                        var info_id = $(this).attr('dataproponentInfo_id');
 
-                    $('#control_no').val(result.dv.control_no);
-                    $('#forVat_left').val((parseFloat(result.dv.total_amount.replace(/,/g,''))/vat).toFixed(2));
-                    $('#forEwt_left').val((parseFloat(result.dv.total_amount.replace(/,/g,''))/vat).toFixed(2));
-                    $('.total').text(result.dv.total_amount);
-                    $('#totalInput').val(result.dv.total_amount);
-                    $('.totalDeduction').text(result.dv.total_deduction_amount);
-                    console.log('deduction',result.dv.total_deduction_amount );
-                    $('#totalDeduction').val(result.dv.total_deduction_amount);
-                    $('.overallTotal').text(result.dv.overall_total_amount);
-                    $('#overallTotal').val(result.dv.overall_total_amount);
-                    $('#inputDeduction1').val((parseFloat($('#vatValue3').val() ||0) + parseFloat($('#vatValue2').val() || 0) + parseFloat($('#vatValue1').val()||0)).toFixed(2));
-                    $('#inputDeduction2').val((parseFloat($('#ewtValue3').val() ||0) + parseFloat($('#ewtValue2').val()||0) + parseFloat($('#ewttValue1').val()||0)).toFixed(2));
-                    var parts = result.dv.date.split("T")[0].split("-");
-                    var formattedDate = parts[0] + "-" + parts[1] + "-" + parts[2];
-                    $('#dateField').val(formattedDate);
-                    
-                    var from = new Date(result.dv.month_year_from);
-                    var from_date = `${from.getFullYear()}-${(from.getMonth() + 1).toString().padStart(2, '0')}`;
-                    $('#billingMonth1').val(from_date);
-                    if(result.dv.month_year_to !== null){
-                        var to = new Date(result.dv.month_year_to);
-                        var to_date = `${to.getFullYear()}-${(to.getMonth() + 1).toString().padStart(2, '0')}`;
-                        $('#billingMonth2').val(to_date);
-                    }
+                                        if(info_id == result.proponentInfo[1].id){
+                                            $(this).prop('selected',true);
+                                            $('#saa2').trigger('change');
+                                        }
+                                    });
+                                }, 2000);
+                                
+                                $('#inputValue2').val(result.dv.amount2).prop('disabled', false).show();
+                                // $('#saa2').val(result.fund_source[1].id);
+                                $('#vatValue2').val((parseFloat(result.dv.amount2.replace(/,/g,''))/vat * result.dv.deduction1/100).toFixed(2)).show();
+                                $('#ewtValue2').val((parseFloat(result.dv.amount2.replace(/,/g,''))/vat * result.dv.deduction2/100).toFixed(2)).show();
+                                $('#save_amount2').val(parseFloat(result.dv.amount2.replace(/,/g,'')));
+                                $('#save_saa2').val(result.proponentInfo[1].id);
+                                saaCounter = 2;
+                            }else{
+                                $('#RemoveSAAButton1').prop('disabled', false).show();
+                                $('#saa2').prop('disabled', false).show();
+                                $('#saa2_infoId').val(result.proponentInfo[2].id);
+                                setTimeout(function() {
+                                    $('#saa2 option').each(function () {
+                                        var value =  $(this).val();
+                                        var group = $(this).attr('dataprogroup');
+                                        var proponent = $(this).attr('dataproponent');
+                                        var facility = $(this).attr('datafacility');
+                                        var info_id = $(this).attr('dataproponentInfo_id');
 
-                    $('#DeductForCridet').text(result.dv.total_deduction_amount);
-                    $('#OverTotalCredit').text(result.dv.overall_total_amount);
-                    
-                var dropdown = document.getElementById('saa2');
-                removeNullOptions();
-                dropdown.addEventListener('change', function(){
-                removeNullOptions();
+                                        if(info_id == result.proponentInfo[2].id){
+                                            $(this).prop('selected',true);
+                                            $('#saa2').trigger('change');
+                                        }
+                                    });
+                                }, 2000);
+                                $('#inputValue2').val(result.dv.amount3).prop('disabled', false).show();
+                                $('#vatValue2').val((parseFloat(result.dv.amount3.replace(/,/g,''))/vat * result.dv.deduction1/100).toFixed(2)).show();
+                                $('#ewtValue2').val((parseFloat(result.dv.amount3.replace(/,/g,''))/vat * result.dv.deduction2/100).toFixed(2)).show();
+                                $('#save_amount2').val(parseFloat(result.dv.amount3.replace(/,/g,'')));
+                                $('#save_saa2').val(result.proponentInfo[2].id);
+                            }
+                            
+                        } if(result.proponentInfo[2] !== null && result.proponentInfo[2] !== undefined){
+                            $('#saa3_infoId').val(result.proponentInfo[2].id);
+                            toggleSAADropdowns($('#saa1'), result.proponentInfo[0].id, result.proponentInfo[0].pro_group);
+                            $('#saa3').prop('disabled', false).show();
+                            $('#inputValue3').val(result.dv.amount3).prop('disabled', false).show();
+                            setTimeout(function() {
+                                    $('#saa3 option').each(function () {
+                                        var value =  $(this).val();
+                                        var group = $(this).attr('dataprogroup');
+                                        var proponent = $(this).attr('dataproponent');
+                                        var facility = $(this).attr('datafacility');
+                                        var info_id = $(this).attr('dataproponentInfo_id');
 
-                });
-                setTimeout(function() {
-                           fundAmount();
-                        }, 2000);
+                                        if(info_id == result.proponentInfo[2].id){
+                                            $(this).prop('selected',true);
+                                            $('#saa3').trigger('change');
+                                        }
+                                    });
+                                }, 2000);
+                            $('#vatValue3').val((parseFloat(result.dv.amount3.replace(/,/g,''))/vat * result.dv.deduction1/100).toFixed(2)).show();
+                            $('#ewtValue3').val((parseFloat(result.dv.amount3.replace(/,/g,''))/vat * result.dv.deduction2/100).toFixed(2)).show();
+                            $('#save_amount3').val(parseFloat(result.dv.amount3.replace(/,/g,'')));
+                            $('#save_saa3').val(result.proponentInfo[2].id);
+                            $('#RemoveSAAButton1').prop('disabled', false).show();
+                        }
+                        console.log('saa2saa2', document.getElementById('saa2').value);
+
+                        $('#control_no').val(result.dv.control_no);
+                        $('#forVat_left').val((parseFloat(result.dv.total_amount.replace(/,/g,''))/vat).toFixed(2));
+                        $('#forEwt_left').val((parseFloat(result.dv.total_amount.replace(/,/g,''))/vat).toFixed(2));
+                        $('.total').text(result.dv.total_amount);
+                        $('#totalInput').val(result.dv.total_amount);
+                        $('.totalDeduction').text(result.dv.total_deduction_amount);
+                        console.log('deduction',result.dv.total_deduction_amount );
+                        $('#totalDeduction').val(result.dv.total_deduction_amount);
+                        $('.overallTotal').text(result.dv.overall_total_amount);
+                        $('#overallTotal').val(result.dv.overall_total_amount);
+                        $('#inputDeduction1').val((parseFloat($('#vatValue3').val() ||0) + parseFloat($('#vatValue2').val() || 0) + parseFloat($('#vatValue1').val()||0)).toFixed(2));
+                        $('#inputDeduction2').val((parseFloat($('#ewtValue3').val() ||0) + parseFloat($('#ewtValue2').val()||0) + parseFloat($('#ewttValue1').val()||0)).toFixed(2));
+                        var parts = result.dv.date.split("T")[0].split("-");
+                        var formattedDate = parts[0] + "-" + parts[1] + "-" + parts[2];
+                        $('#dateField').val(formattedDate);
+                        
+                        var from = new Date(result.dv.month_year_from);
+                        var from_date = `${from.getFullYear()}-${(from.getMonth() + 1).toString().padStart(2, '0')}`;
+                        $('#billingMonth1').val(from_date);
+                        if(result.dv.month_year_to !== null){
+                            var to = new Date(result.dv.month_year_to);
+                            var to_date = `${to.getFullYear()}-${(to.getMonth() + 1).toString().padStart(2, '0')}`;
+                            $('#billingMonth2').val(to_date);
+                        }
+
+                        $('#DeductForCridet').text(result.dv.total_deduction_amount);
+                        $('#OverTotalCredit').text(result.dv.overall_total_amount);
+                        
+                    var dropdown = document.getElementById('saa2');
+                    removeNullOptions();
+                    dropdown.addEventListener('change', function(){
+                    removeNullOptions();
+
+                    });
+                    setTimeout(function() {
+                        fundAmount();
+                    }, 2000);
                 }); 
             }
         });

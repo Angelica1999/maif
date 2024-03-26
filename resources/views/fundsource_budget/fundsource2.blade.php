@@ -219,7 +219,7 @@
                 success: function(result) {
                     $('#t_body').empty(); 
                     $('.tracking_footer').empty();
-
+                    console.log('proponent', result);
                     if(result.length > 0){
                         result.forEach(function(item) {
                             var saa = item.fund_sourcedata && item.fund_sourcedata.saa !== null ? item.fund_sourcedata.saa : '-';
@@ -248,7 +248,7 @@
                             }
                             var beg_balance = item.budget_bbalance.replace(',', '');
                             var utilize = (item.budget_utilize !== null)?number_format(parseFloat(item.budget_utilize.replace(/,/g, '')), 2, '.', ','):'';
-                            console.log("balance", item.dv_no);
+                            console.log("balance", item.div_id);
                             var route = item.div_id.toString();
                             var new_row = '<tr style="text-align:center">' +
                                 '<td>' + saa + '</td>' +
@@ -257,7 +257,7 @@
                                 '<td>' + number_format(parseFloat(beg_balance.replace(',', '')), 2, '.', ',') + '</td>' +
                                 '<td>' +(item.div_id != 0 ?'<a class="modal-link" href="#i_frame" data-routeId="'+route+'" onclick="openModal(this)">' + utilize + '</a>' :utilize) +'</td>' +
                                 // '<td>' + (item.div_id != 0 ? '<a href="{{ route("dv", ["keyword" => ""]) }}' + encodeURIComponent(route) + '">' + route + '</a>' : '') + '</td>' +
-                                '<td>' +(item.div_id != 0 ?'<a class="modal-link" href="#obligate" data-backdrop="static" data-toggle="modal" data-dvNo="'+item.dv_no+'" data-routeId="'+route+'" onclick="getDv(this)">' + item.dv_no + '</a>' :'') +'</td>' +
+                                '<td>' +(item.div_id != 0 ?'<a class="modal-link" href="#obligate" data-backdrop="static" data-toggle="modal" data-dvNo="'+item.dv_no+'" data-routeId="'+route+'" onclick="getDv(this)">' + item.div_id + '</a>' :'') +'</td>' +
                                 '<td>' + item.user_budget.lname +', '+item.user_budget.fname+ '</td>' +
                                 '<td>' + formattedDate+'<br>'+ formattedTime + '</td>' +
                                 '<td>' + stat + '</td>' +

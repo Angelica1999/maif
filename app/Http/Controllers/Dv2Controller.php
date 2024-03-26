@@ -32,7 +32,12 @@ class Dv2Controller extends Controller
         if ($request->viewAll) {
             $request->keyword = "";
         } elseif ($request->keyword) {
-            $dv2_list = $dv2_list->where('route_no', $request->keyword);
+            $formatted = number_format($request->keyword,0,'.',',');
+            // return $formatted;
+            $dv2_list = $dv2_list->where('route_no','LIKE', "%$request->keyword%")
+                            ->orWhere('ref_no', 'LIKE', "%$request->keyword%")
+                            ->orWhere('amount', 'LIKE', "%$formatted%");
+                                       
         }
         
         $dv2_list = $dv2_list->paginate(50);

@@ -1,13 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
-
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
             <form method="GET" action="{{ route('dv2') }}">
                 <div class="input-group float-right w-50" style="min-width: 600px;">
-                    <input type="text" class="form-control" name="keyword" placeholder="Route No" value="{{$keyword}}">
+                    <input type="text" class="form-control" name="keyword" placeholder="Route/Control No, Amount" value="{{$keyword}}">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
@@ -19,9 +18,9 @@
                 MAIF-IPP
             </p>
             @if(isset($dv2_list) && $dv2_list->count() > 0)
-                <div class="table-responsive">
+                <div class="table-responsive" style="border:1px solid gray">
                     <table class="table table-striped">
-                    <thead>
+                    <thead style="background-color: #669900; color:white">
                         <tr>
                             <th>
                                 Option
@@ -40,13 +39,13 @@
                     <tbody>
                         @foreach($dv2_list as $dv2)
                             <tr>
-                                <td>
+                                <td class="td">
                                     <a href="{{ route('dv2.pdf', ['route_no' => $dv2->route_no]) }}" target="_blank" type="button" class="btn btn-info btn-xs">Print</a>
                                     <a href="{{ route('dv2.image', ['route_no' => $dv2->route_no]) }}" target="_blank" type="button" class="btn btn-success btn-xs">Image</a>
                                 </td> 
-                                <td>{{ $dv2->route_no }}</td>   
-                                <td>{{$dv2->facility }}</td>
-                                <td>{{$dv2->user->lname.', '. $dv2->user->fname}}</td>
+                                <td class="td">{{ $dv2->route_no }}</td>   
+                                <td class="td">{{$dv2->facility }}</td>
+                                <td class="td">{{$dv2->user->lname.', '. $dv2->user->fname}}</td>
                             </tr>
                         @endforeach
                     </tbody>

@@ -18,9 +18,9 @@
                 MAIF-IPP
             </p>
             @if(isset($results) && $results->count() > 0)
-            <div class="table-responsive">
+            <div class="table-responsive" style="border:1px solid gray">
                 <table class="table table-striped">
-                <thead>
+                <thead style="background-color: #669900; color:white">
                     <tr>
                         <th style="width:20px;"></th>
                         <th style="width:150px;">Name</th>
@@ -40,7 +40,7 @@
                 <tbody>
                     @foreach($results as $facility)
                         <tr>
-                            <td>
+                            <td class="td">
                                 <a href="{{ route('facility.edit', ['main_id' => $facility->id]) }}" 
                                     data-target="#update_facility" 
                                     type="button" 
@@ -51,18 +51,18 @@
                                     data-main-id="{{ $facility->id }}"
                                     data-name="{{$facility->name}}">Update</a>
                             </td>
-                            <td>{{ $facility->name }}</td>
-                            <td>{{ $facility->address }}</td>
-                            <td>{{ $facility->AddFacilityInfo->social_worker ?? '' }}</td>
+                            <td class="td">{{ $facility->name }}</td>
+                            <td class="td">{{ $facility->address }}</td>
+                            <td class="td">{{ $facility->AddFacilityInfo->social_worker ?? '' }}</td>
                             <!-- <td>{{ $facility->AddFacilityInfo->social_worker_email ?? '' }}</td> -->
                             <!-- <td>{{ $facility->AddFacilityInfo->social_worker_contact ?? '' }}</td> -->
-                            <td>{{ $facility->AddFacilityInfo->finance_officer ?? '' }}</td>
+                            <td class="td">{{ $facility->AddFacilityInfo->finance_officer ?? '' }}</td>
                             <!-- <td>{{ $facility->AddFacilityInfo->finance_officer_email ?? '' }}</td> -->
                             <!-- <td>{{ $facility->AddFacilityInfo->finance_officer_contact ?? '' }}</td> -->
-                            <td>{{ $facility->AddFacilityInfo->official_mail ?? '' }}</td>
-                            <td>{{ $facility->AddFacilityInfo->cc ?? '' }}</td>
-                            <td>{{ $facility->AddFacilityInfo->vat ?? '' }}</td>
-                            <td>{{ $facility->AddFacilityInfo->Ewt ?? '' }}</td>
+                            <td class="td">{{ $facility->AddFacilityInfo->official_mail ?? '' }}</td>
+                            <td class="td">{{ $facility->AddFacilityInfo->cc ?? '' }}</td>
+                            <td class="td">{{ $facility->AddFacilityInfo->vat ?? '' }}</td>
+                            <td class="td">{{ $facility->AddFacilityInfo->Ewt ?? '' }}</td>
                         </tr>
                     @endforeach
                 </tbody>

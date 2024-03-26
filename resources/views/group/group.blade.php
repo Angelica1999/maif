@@ -19,9 +19,9 @@
                 MAIF-IPP
             </p>
             @if(isset($groups) && $groups->count() > 0)
-            <div class="table-responsive">
+            <div class="table-responsive" style="border:1px solid black">
                 <table class="table table-striped">
-                <thead>
+                <thead style="background-color: #669900; color:white">
                     <tr>
                         <th></th>
                         <th>Number of Patient(s)</th>
