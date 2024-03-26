@@ -8,12 +8,11 @@
         z-index: 1000;
         display: none; 
     }
-
     .loading-spinner {
         width: 100%; 
         height: 100%; 
     }
-  </style>
+</style>
 @extends('layouts.app')
 @section('content')
 
@@ -55,9 +54,9 @@
                 </div>
             </form>
             @if(count($patients) > 0)
-            <div class="table-responsive">
+            <div class="table-responsive" style="border: 1px solid gray">
                 <table class="table table-striped">
-                <thead>
+                <thead style="background-color: #669900; color:white">
                     <tr>
                         <th></th>
                         <th style="text-align:center">
@@ -74,16 +73,16 @@
                         <th style="min-width:100px">Actual Amount</th>
                         <th>
                             <!-- <span class="fa fa-plus" style="cursor:pointer;" onclick="">Firstname</span> -->
-                            <a style="color:black;"  href="{{route('home', ['key' => 'fname'])}}" >Firstname</a>
+                            <a style="color:white;"  href="{{route('home', ['key' => 'fname'])}}" >Firstname</a>
                         </th>
-                        <th><a style="color:black;"  href="{{route('home', ['key' => 'mname'])}}" >Middlename</a></th>
-                        <th><a style="color:black;"  href="{{route('home', ['key' => 'lname'])}}" >Lastname</a></th>
+                        <th><a style="color:white;"  href="{{route('home', ['key' => 'mname'])}}" >Middlename</a></th>
+                        <th><a style="color:white;"  href="{{route('home', ['key' => 'lname'])}}" >Lastname</a></th>
                         <!-- <th style="min-width:120px">DOB</th> -->
                         {{-- <th>Facility</th> --}}
-                        <th style="min-width:90px;"><a style="color:black;"  href="{{route('home', ['key' => 'region'])}}" >Region</a></th>
-                        <th><a style="color:black;"  href="{{route('home', ['key' => 'province'])}}" >Province</a></th>
-                        <th><a style="color:black;"  href="{{route('home', ['key' => 'municipality'])}}" >Municipality</a></th>
-                        <th><a style="color:black;"  href="{{route('home', ['key' => 'barangay'])}}" >Barangay</a></th>
+                        <th style="min-width:90px;"><a style="color:white;"  href="{{route('home', ['key' => 'region'])}}" >Region</a></th>
+                        <th><a style="color:white;"  href="{{route('home', ['key' => 'province'])}}" >Province</a></th>
+                        <th><a style="color:white;"  href="{{route('home', ['key' => 'municipality'])}}" >Municipality</a></th>
+                        <th><a style="color:white;"  href="{{route('home', ['key' => 'barangay'])}}" >Barangay</a></th>
                         <th style="min-width:180px">Guaranteed Amount</th>
                         <th style="min-width:180px">Created By</th>
                     </tr>
@@ -91,16 +90,16 @@
                 <tbody>
                     @foreach($patients as $index=> $patient)
                         <tr>
-                            <td>
+                            <td class="td">
                                 <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}" style="background-color:teal;color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
                                 <a href="{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}" type="button" style="width:50px;" class="btn btn-success btn-xs" id="send_btn">Send</a>
                             </td> 
-                            <td style="text-align:center" class="group-email" data-patient-id="{{ $patient->id }}" >
+                            <td style="text-align:center;" class="group-email" data-patient-id="{{ $patient->id }}" >
                                 <input class="sent_mails[] " id="mail_ids[]" name="mail_ids[]" type="hidden">
                                 <input type="checkbox" style="width: 60px; height: 20px;" name="mailCheckbox[]" id="mailCheckboxId_{{ $index }}" 
                                     class="group-mailCheckBox" >
                             </td>
-                            <td style="text-align:center" class="group-amount" data-patient-id="{{ $patient->id }}" data-proponent-id="{{$patient->proponent_id}}" 
+                            <td style="text-align:center;" class="group-amount" data-patient-id="{{ $patient->id }}" data-proponent-id="{{$patient->proponent_id}}" 
                                 data-amount="{{$patient->actual_amount}}" data-facility-id="{{$patient->facility_id}}" >
                                 @if($patient->group_id == null)
                                 <input type="checkbox" style="width: 60px; height: 20px;" name="someCheckbox[]" id="someCheckboxId_{{ $index }}" 
@@ -112,13 +111,13 @@
                             <td class="editable-amount" data-actual-amount="{{!Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}" data-patient-id="{{ $patient->id }}" data-guaranteed-amount="{{str_replace(',', '', $patient->guaranteed_amount)}}">
                                 <a href="#" class="number_editable"  title="Actual Amount" id="{{ $patient->id }}">{{!Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}</a>
                             </td>
-                            <td>
+                            <td class="td">
                                 <a href="#create_patient"   onclick="editPatient('{{ $patient->id }}')" data-backdrop="static" data-toggle="modal">
                                     {{ $patient->fname }}
                                 </a>
                             </td>   
-                            <td>{{ $patient->mname }}</td>
-                            <td>{{ $patient->lname }}</td>
+                            <td class="td">{{ $patient->mname }}</td>
+                            <td class="td">{{ $patient->lname }}</td>
                             {{-- <td>
                                 @if(isset($patient->facility->description))
                                     {{ $patient->facility->description }}
@@ -126,30 +125,30 @@
                                     {{ $patient->other_facility }}
                                 @endif
                             </td> --}}
-                            <td>{{ $patient->region }}</td>
-                            <td>
+                            <td class="td">{{ $patient->region }}</td>
+                            <td class="td">
                                 @if(isset($patient->province->description))
                                     {{ $patient->province->description }}
                                 @else
                                     {{ $patient->other_province }}
                                 @endif
                             </td>
-                            <td>
+                            <td class="td">
                                 @if(isset($patient->muncity->description))
                                     {{ $patient->muncity->description }}
                                 @else
                                     {{ $patient->other_muncity }}
                                 @endif
                             </td>
-                            <td>
+                            <td class="td">
                                 @if(isset($patient->barangay->description))
                                     {{ $patient->barangay->description }}
                                 @else
                                     {{ $patient->other_barangay }}
                                 @endif
                             </td>
-                            <td>{{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }}</td>
-                            <td>{{ $patient->encoded_by->lname .', '. $patient->encoded_by->fname }}</td>
+                            <td class="td">{{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }}</td>
+                            <td class="td">{{ $patient->encoded_by->lname .', '. $patient->encoded_by->fname }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -404,15 +403,13 @@
         $('.modal_body').html(loading);
         $('#title').html('<i style="font-size:30px" class="typcn typcn-user-outline menu-icon"></i> Update Patient');
         var url = "{{ url('patient/edit').'/' }}"+id;
-        // setTimeout(function(){
-            $.ajax({
-                url: url,
-                type: 'GET',
-                success: function(result) {
-                    $('.modal_body').html(result);
-                }
-            });
-        // },500);
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(result) {
+                $('.modal_body').html(result);
+            }
+        });
     }
 
     function othersRegion(data) {

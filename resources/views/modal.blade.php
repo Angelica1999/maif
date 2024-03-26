@@ -22,7 +22,7 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Tracking Details</h5>
+                <h4 class="text-success modal-title" id="exampleModalLabel"><b><i class="typcn typcn-location menu-icon"></i>Tracking Details</b></h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">×</span>
                 </button>
@@ -90,10 +90,7 @@
     <div class="modal-dialog modal-lg " role="document" style="max-width:1000px">
         <div class="modal-content">
             <div class="modal-header" >
-                <h4 class="modal-title" id="exampleModalLabel" >Disbursement Tracking Details</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-                </button>
+                <h4 class="text-success modal-title" id="exampleModalLabel"><b><i class="typcn typcn-location menu-icon"></i>Tracking Details</b></h4>
             </div>
             <div class="modal-body">
                 <iframe id="track_iframe" width="100%" height="400" frameborder="0"></iframe>

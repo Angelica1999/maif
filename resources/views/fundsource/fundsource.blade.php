@@ -164,8 +164,8 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Transfer Fund Source</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <h4 class="text-success"><i style = "font-size:30px"class="typcn typcn-location-arrow menu-icon"></i>Transfer Fund Source</h4><hr />
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"> 
                 <span aria-hidden="true">×</span>
                 </button>
             </div>

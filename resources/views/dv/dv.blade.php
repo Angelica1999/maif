@@ -3,6 +3,7 @@
     use App\Models\Fundsource;
     use App\Models\Fundsource_Files;
 ?>
+
 @extends('layouts.app')
 @section('content')
 <div class="col-lg-12 grid-margin stretch-card">
@@ -11,7 +12,7 @@
            
             <form method="GET" action="">
                 <div class="input-group float-right w-50" style="min-width: 600px;">
-                    <input type="text" class="form-control" name="keyword" placeholder="Route No" value="{{$keyword}}">
+                    <input type="text" class="form-control" name="keyword" placeholder="Route No, Facility" value="{{$keyword}}">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
@@ -59,12 +60,13 @@
                 </ul>
             @endif -->
             @if(isset($disbursement) && $disbursement->count() > 0)
-            <div class="table-responsive ">
+            <div class="table-responsive" style="border:1px solid gray">
                 <table class="table table-striped" style="width:100%">
-                <thead>
+                <thead style="background-color: #669900; color:white">
+                <!-- style="background-color: #669900; color:white" -->
                     <tr>
-                        <th style="min-width: 150px;"></th>
-                        <th style="min-width: 120px;">Route No</th>
+                        <th></th>
+                        <th>Route No</th>
                         <th>Modified</th>
                         <th>Status</th>
                         <th style="text-align:center">
@@ -79,14 +81,14 @@
                         </th>
                         <th>Remarks</th>
                         <th>Payee</th>
-                        <th  style="min-width: 120px;">Saa Number</th>
-                        <th style="min-width: 140px;">Prepared Date</th>
-                        <th style="min-width: 150px;">Exclusive Month</th>
+                        <th>Saa Number</th>
+                        <th>Date</th>
+                        <th>Month</th>
                         <th>Amount</th>
                         <th>Total</th>
-                        <th style="min-width: 150px;">Deduction</th>
-                        <th style="min-width: 130px;">Total</th> 
-                        <th style="min-width: 120px;">Created By</th>
+                        <!-- <th style="min-width: 150px;">Deduction</th> -->
+                        <!-- <th style="min-width: 130px;">Total</th>  -->
+                        <th>Created By</th>
                     </tr>
                 </thead>
                 <tbody class="table_body">
@@ -102,7 +104,7 @@
                                     @endif
                                 @endif
                             </td>
-                            <td> 
+                            <td > 
                                 <a  data-dvId="{{$dvs->id}}" href="#create_dv" onclick="updateDv()" style="background-color:teal;color:white;" type="button" class="btn btn-xs" data-backdrop="static" data-toggle="modal">
                                 @if(Auth::user()->userid != 1027 || Auth::user()->userid == 2660)
                                     @if($dvs->facility)
@@ -117,7 +119,7 @@
                                                 ->first()
                                                 ->id;
                                     ?>
-                                    <button data-toggle="modal" data-target="#releaseTo" data-id="{{ $doc_id }}" data-route_no="{{ $dvs->route_no }}" onclick="putRoute($(this))" style="background-color:green;color:white; width:85px;" type="button" class="btn btn-xs">Release To</button>
+                                    <button data-toggle="modal" data-target="#releaseTo" data-id="{{ $doc_id }}" data-route_no="{{ $dvs->route_no }}" onclick="putRoute($(this))" style="background-color:#1E90FF;color:white; width:85px;" type="button" class="btn btn-xs">Release To</button>
                                 @else
                                     <a href="#obligate"  onclick="obligateDv('{{$dvs->route_no}}', 'add_dvno')" style="background-color:teal;color:white; width:83px;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">{{ $dvs->route_no }}</a>
                                 @endif
@@ -125,18 +127,17 @@
                             <td>
                                 <a href="#dv_history" onclick="getHistory('{{$dvs->route_no}}')" style="background-color:teal;color:white; width:85px;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">Edit History</a>
                             </td>
-                            <td>
+                            <td class="td">
                                 @if($routed > 1)
                                     Forwarded
                                 @endif
-
                             </td>
 
-                            <td style="text-align:center" class="group-release" data-route_no="{{ $dvs->route_no }}" data-id="{{ $doc_id }}" >
+                            <td style="text-align:center;" class="group-release" data-route_no="{{ $dvs->route_no }}" data-id="{{ $doc_id }}" >
                                 <input type="checkbox" style="width: 60px; height: 20px;" name="release_dv[]" id="releaseDvId_{{ $index }}" 
                                     class="group-releaseDv" >
                             </td>
-                            <td>
+                            <td class="td">
                                 @if($dvs->obligated !== null && $dvs->paid !== null)
                                     processed
                                 @elseif($dvs->obligated == null && $dvs->paid == null)
@@ -146,8 +147,8 @@
                                 @endif
                                
                             </td> 
-                            <td>{{ $dvs->facility->name }}</td> 
-                            <td>
+                            <td class="td">{{ $dvs->facility->name }}</td> 
+                            <td class="td">
                                 @if($dvs->fundsource_id)
                                     <?php $all= array_map('intval', json_decode($dvs->fundsource_id)); ?>
                                         @foreach($all as $fundsourceId) 
@@ -159,27 +160,27 @@
                                         @endforeach
                                 @endif
                             </td> 
-                            <td>{{date('F j, Y', strtotime($dvs->date))}}</td>
-                            <td> @if($dvs->month_year_to !== null)
+                            <td class="td">{{date('F j, Y', strtotime($dvs->date))}}</td>
+                            <td class="td"> @if($dvs->month_year_to !== null)
                                     {{date('F j, Y', strtotime($dvs->month_year_from)).' - '.date('F j, Y', strtotime($dvs->month_year_to))}}
                                     @else
                                     {{date('F j, Y', strtotime($dvs->month_year_from))}}
                                     @endif
                             </td>
-                            <td>
+                            <td class="td">
                                 {{$dvs->amount1}} <br>
                                 {{$dvs->amount2}} <br>
                                 {{$dvs->amount3}}
                             </td>
                            
-                            <td>{{$dvs->total_amount}}</td>
-                            <td>
+                            <td class="td">{{$dvs->total_amount}}</td>
+                            <!-- <td class="td">
                                 VAT &nbsp;- {{floor($dvs->deduction1)}}% = {{$dvs->deduction_amount1}}
                                 <br>
                                 EWT - {{floor($dvs->deduction2)}}% = {{$dvs->deduction_amount2}}
                             </td>
-                            <td>{{$dvs->overall_total_amount}}</td>
-                            <td>{{ $dvs->user->lname .', '. $dvs->user->fname }}</td>
+                            <td class="td">{{$dvs->overall_total_amount}}</td> -->
+                            <td class="td">{{ $dvs->user->lname .', '. $dvs->user->fname }}</td>
                         </tr>
                     @endforeach
                 </tbody>

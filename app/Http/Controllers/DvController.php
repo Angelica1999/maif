@@ -52,12 +52,29 @@ class DvController extends Controller
             $request->keyword = '';
         }
         
+        // $results = Dv::with(['fundsource', 'facility', 'user', 'master', 'dv2'])
+        //             ->when($request->keyword, function ($query) use ($request) {
+        //                 $query->where('route_no', 'LIKE', "%$request->keyword%");
+        //             })
+        //         ->orderby('id', 'desc')
+        //         ->paginate(50);
+       
+    
         $results = Dv::with(['fundsource', 'facility', 'user', 'master', 'dv2'])
-                    ->when($request->keyword, function ($query) use ($request) {
-                        $query->where('route_no', 'LIKE', "%$request->keyword%");
-                    })
-                ->orderby('id', 'desc')
-                ->paginate(50);
+                        ->when($request->keyword, function ($query) use ($request) {
+                            $keyword = "%{$request->keyword}%";
+
+                            $query->where('route_no', 'LIKE', $keyword)
+                                ->orWhere(function ($query) use ($keyword) {
+                                    $query->whereExists(function ($query) use ($keyword) {
+                                        $query->from(\DB::connection('cloud_mysql')->getDatabaseName() . '.facility')
+                                                ->whereColumn('facility.id', 'dv.facility_id')
+                                                ->where('facility.name', 'LIKE', $keyword);
+                                    });
+                                });
+                        })
+                        ->orderBy('id', 'desc')
+                        ->paginate(50);
 
         if(Auth::user()->userid == 1027 || Auth::user()->userid == 2660){
             return view('dv.acc_dv', [
@@ -215,10 +232,6 @@ class DvController extends Controller
     {
         $user = Auth::user();
         $dvs = Dv::get();
-         
-        // $facilityId = ProponentInfo::where('facility_id','=', $request->facilityId)->get();
-        // $facilityIds = ProponentInfo::pluck('facility_id')->toArray();
-        // $facilities = Facility::whereIn('id', $facilityIds)->get();
 
         $fundsources = Fundsource::              
                         with([
@@ -236,7 +249,6 @@ class DvController extends Controller
                                 );
                             }
                         ])->get();
-            // return  $facilities;
 
         $VatFacility = AddFacilityInfo::Select('id','vat')->distinct()->get();
         $ewtFacility = AddFacilityInfo::Select('id','Ewt')->distinct()->get();
@@ -249,7 +261,6 @@ class DvController extends Controller
             'facilities' => Facility::get(),
             'VatFacility' => $VatFacility,
             'ewtFacility' => $ewtFacility
-            // 'facilityId' => $facilityId
         ]);
     }
 

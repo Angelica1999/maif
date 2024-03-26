@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+
 <div class="container-fluid col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
@@ -19,9 +20,9 @@
             </p>
             @if(count($fundsources) > 0)
             <div class="clearfix"></div>
-            <div class="table-responsive">
+            <div class="table-responsive" style="border:1px solid gray">
                 <table class="table table-list table-hover table-striped">
-                    <thead>
+                    <thead style="background-color: #669900; color:white">
                         <tr>
                             <th>SAA NO.</th>
                             <th>SAA AMOUNT (Admin Cost)</th>
@@ -38,26 +39,26 @@
                             @if(count($fundsource->cost_usage)>0)
                                 @foreach($fundsource->cost_usage as $cost)
                                     <tr>
-                                        <td>{{ $fundsource->saa }}</td>
-                                        <td>{{ number_format($cost->admin_cost, 2, '.', ',') }}</td>
-                                        <td>{{ number_format($cost->deductions, 2, '.', ',') }}</td>
-                                        <td>{{ $cost->event }}</td>
-                                        <td>{{ number_format($cost->balance, 2, '.', ',') }}</td>
-                                        <td>{{  date ('F j, Y', strtotime($cost->created_at)) }}</td>
-                                        <td>{{ $cost->remarks }}</td>
-                                        <td>{{ $fundsource->encoded_by->lname . ', '. $fundsource->encoded_by->fname}}</td>
+                                        <td class="td">{{ $fundsource->saa }}</td>
+                                        <td class="td">{{ number_format($cost->admin_cost, 2, '.', ',') }}</td>
+                                        <td class="td">{{ number_format($cost->deductions, 2, '.', ',') }}</td>
+                                        <td class="td">{{ $cost->event }}</td>
+                                        <td class="td">{{ number_format($cost->balance, 2, '.', ',') }}</td>
+                                        <td class="td">{{  date ('F j, Y', strtotime($cost->created_at)) }}</td>
+                                        <td class="td">{{ $cost->remarks }}</td>
+                                        <td class="td">{{ $fundsource->encoded_by->lname . ', '. $fundsource->encoded_by->fname}}</td>
                                     </tr>
                                 @endforeach
                             @else
                                 <tr>
-                                    <td>{{ $fundsource->saa }}</td>
-                                    <td>{{ number_format($fundsource->admin_cost, 2, '.', ',') }}</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td>{{  date ('F j, Y', strtotime($fundsource->created_at)) }}</td>
-                                    <td></td>
-                                    <td>{{ $fundsource->encoded_by->lname . ', '. $fundsource->encoded_by->fname}}</td>
+                                    <td class="td">{{ $fundsource->saa }}</td>
+                                    <td class="td">{{ number_format($fundsource->admin_cost, 2, '.', ',') }}</td>
+                                    <td class="td"></td>
+                                    <td class="td"></td>
+                                    <td class="td"></td>
+                                    <td class="td">{{  date ('F j, Y', strtotime($fundsource->created_at)) }}</td>
+                                    <td class="td"></td>
+                                    <td class="td">{{ $fundsource->encoded_by->lname . ', '. $fundsource->encoded_by->fname}}</td>
                                 </tr>
                             @endif
                         @endforeach
