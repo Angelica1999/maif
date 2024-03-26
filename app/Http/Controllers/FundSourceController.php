@@ -687,6 +687,7 @@ class FundSourceController extends Controller
     }
 
     public function uploadFiles(Request $req){
+        
         $req->validate([
             'files.*' => 'required|file|mimes:jpeg,png,jpg,pdf|max:2408',
         ]);

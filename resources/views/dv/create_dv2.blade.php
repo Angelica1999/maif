@@ -144,10 +144,13 @@
 
         if(sum> {{str_replace(',', '',$dv->total_amount)}}){
             $('.btn-primary').attr('disabled', 'disabled');
-            $('.inform_user').text('Calculated Amount is greater than Dv1 total amount!')
+            $('.inform_user').text('Calculated Amount is greater than Dv1 total amount!');
+        }else if(sum != {{str_replace(',', '',$dv->total_amount)}}){
+            $('.btn-primary').attr('disabled', 'disabled');
+            $('.inform_user').text('Calculated Amount is not equal to Dv1 total amount!');
         }else{
             $('.btn-primary').removeAttr('disabled');
-            $('.inform_user').text('')
+            $('.inform_user').text('');
         }
         $('.total_cal').val('PHP ' + formatNumberWithCommas(sum));
     }

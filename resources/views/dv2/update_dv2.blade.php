@@ -196,6 +196,9 @@
         if(sum> {{str_replace(',', '',$dv_amount)}}){
             $('.btn-primary').attr('disabled', 'disabled');
             $('.inform_user').text('Calculated Amount is greater than Dv1 total amount!')
+        }else if(sum != {{str_replace(',', '',$dv_amount)}}){
+            $('.btn-primary').attr('disabled', 'disabled');
+            $('.inform_user').text('Calculated Amount is not equal to Dv1 total amount!');
         }else{
             $('.btn-primary').removeAttr('disabled');
             $('.inform_user').text('')
