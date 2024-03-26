@@ -54,9 +54,9 @@
                 </div>
             </form>
             @if(count($patients) > 0)
-            <div class="table-responsive" style="border: 1px solid gray">
+            <div class="table-responsive">
                 <table class="table table-striped">
-                <thead style="background-color: #669900; color:white">
+                <thead>
                     <tr>
                         <th></th>
                         <th style="text-align:center">

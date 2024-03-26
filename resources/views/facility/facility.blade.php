@@ -18,9 +18,9 @@
                 MAIF-IPP
             </p>
             @if(isset($results) && $results->count() > 0)
-            <div class="table-responsive" style="border:1px solid gray">
+            <div class="table-responsive">
                 <table class="table table-striped">
-                <thead style="background-color: #669900; color:white">
+                <thead>
                     <tr>
                         <th style="width:20px;"></th>
                         <th style="width:150px;">Name</th>

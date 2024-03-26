@@ -6,7 +6,7 @@
         <div class="card-body">
             <form method="GET" action="{{ route('dv2') }}">
                 <div class="input-group float-right w-50" style="min-width: 600px;">
-                    <input type="text" class="form-control" name="keyword" placeholder="Route/Control No, Amount" value="{{$keyword}}">
+                    <input type="text" class="form-control" name="keyword" placeholder="Route/Control No, Amount(Format: 0,000)" value="{{$keyword}}">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
@@ -18,9 +18,9 @@
                 MAIF-IPP
             </p>
             @if(isset($dv2_list) && $dv2_list->count() > 0)
-                <div class="table-responsive" style="border:1px solid gray">
+                <div class="table-responsive">
                     <table class="table table-striped">
-                    <thead style="background-color: #669900; color:white">
+                    <thead>
                         <tr>
                             <th>
                                 Option

@@ -20,12 +20,12 @@
             </p>
             @if(count($fundsources) > 0)
             <div class="clearfix"></div>
-            <div class="table-responsive" style="border:1px solid gray">
+            <div class="table-responsive">
                 <table class="table table-list table-hover table-striped">
-                    <thead style="background-color: #669900; color:white">
+                    <thead>
                         <tr>
                             <th>SAA NO.</th>
-                            <th>SAA AMOUNT (Admin Cost)</th>
+                            <th style="min-width:240px;">SAA AMOUNT (Admin Cost)</th>
                             <th>DEDUCTIONS</th>
                             <th>EVENT/ACTIVITY</th>
                             <th>BALANCE</th>
