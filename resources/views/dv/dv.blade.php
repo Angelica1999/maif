@@ -60,10 +60,9 @@
                 </ul>
             @endif -->
             @if(isset($disbursement) && $disbursement->count() > 0)
-            <div class="table-responsive" style="border:1px solid gray">
+            <div class="table-responsive">
                 <table class="table table-striped" style="width:100%">
-                <thead style="background-color: #669900; color:white">
-                <!-- style="background-color: #669900; color:white" -->
+                <thead>
                     <tr>
                         <th></th>
                         <th>Route No</th>

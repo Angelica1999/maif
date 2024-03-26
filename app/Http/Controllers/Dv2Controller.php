@@ -32,11 +32,10 @@ class Dv2Controller extends Controller
         if ($request->viewAll) {
             $request->keyword = "";
         } elseif ($request->keyword) {
-            $formatted = number_format($request->keyword,0,'.',',');
-            // return $formatted;
+            
             $dv2_list = $dv2_list->where('route_no','LIKE', "%$request->keyword%")
                             ->orWhere('ref_no', 'LIKE', "%$request->keyword%")
-                            ->orWhere('amount', 'LIKE', "%$formatted%");
+                            ->orWhere('amount', 'LIKE', "%$request->keyword%");
                                        
         }
         
