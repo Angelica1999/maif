@@ -192,6 +192,7 @@
         var sum = amountArray.reduce(function(total, current) {
             return total + current;
         }, 0);
+        sum = parseFloat(sum.toFixed(2));
 
         if(sum> {{str_replace(',', '',$dv_amount)}}){
             $('.btn-primary').attr('disabled', 'disabled');

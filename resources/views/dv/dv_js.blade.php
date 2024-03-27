@@ -1,7 +1,26 @@
 @section('js')
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
+<script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.4/js/dataTables.bootstrap4.min.js"></script>
 
 <script>
+
+    $(document).ready(function() {
+        
+        var table = $('#dv_table').DataTable({
+            paging: true,
+            pageLength: 50  
+        });
+
+        $('#search-input').on('keyup', function() {
+            table.search(this.value).draw();
+        });
+        
+        $('#dv_table_length').hide();
+        $('#dv_table_filter').hide();
+        $('#dv_table_paginate').css('float', 'right');
+
+    });
 
     function displayImage(path) {
         console.log('click', path);
