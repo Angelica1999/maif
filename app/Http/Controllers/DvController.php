@@ -52,29 +52,13 @@ class DvController extends Controller
             $request->keyword = '';
         }
         
-        // $results = Dv::with(['fundsource', 'facility', 'user', 'master', 'dv2'])
-        //             ->when($request->keyword, function ($query) use ($request) {
-        //                 $query->where('route_no', 'LIKE', "%$request->keyword%");
-        //             })
-        //         ->orderby('id', 'desc')
-        //         ->paginate(50);
-       
-    
         $results = Dv::with(['fundsource', 'facility', 'user', 'master', 'dv2'])
-                        ->when($request->keyword, function ($query) use ($request) {
-                            $keyword = "%{$request->keyword}%";
-
-                            $query->where('route_no', 'LIKE', $keyword)
-                                ->orWhere(function ($query) use ($keyword) {
-                                    $query->whereExists(function ($query) use ($keyword) {
-                                        $query->from(\DB::connection('cloud_mysql')->getDatabaseName() . '.facility')
-                                                ->whereColumn('facility.id', 'dv.facility_id')
-                                                ->where('facility.name', 'LIKE', $keyword);
-                                    });
-                                });
-                        })
-                        ->orderBy('id', 'desc')
-                        ->paginate(50);
+                    ->when($request->keyword, function ($query) use ($request) {
+                        $query->where('route_no', 'LIKE', "%$request->keyword%");
+                    })
+                ->orderby('id', 'desc')
+                ->get();
+                // ->paginate(50);
 
         if(Auth::user()->userid == 1027 || Auth::user()->userid == 2660){
             return view('dv.acc_dv', [
