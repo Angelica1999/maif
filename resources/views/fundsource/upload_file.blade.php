@@ -10,9 +10,9 @@
                 <div class="input-group float-right w-50" style="min-width: 600px;">
                     <input type="text" class="form-control" name="keyword" placeholder="SAA NO." value="{{$keyword}}">
                     <div class="input-group-append">
-                        <button class="btn btn-sm btn-info" type="submit"><img src="public\images\icons8_search_16.png">Search</button> 
-                        <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="public\images\icons8_eye_16.png">&nbsp;View All</button>
-                        <button type="button" href="#upload_files" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="public\images\icons8_upload_16.png">&nbsp;Upload</button> 
+                        <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
+                        <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">&nbsp;View All</button>
+                        <button type="button" href="#upload_files" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_upload_16.png">&nbsp;Upload</button> 
                     </div>
                 </div>
             </form>
@@ -31,7 +31,7 @@
                                 </div>
                                 <div class="text-center">
                                     <a href="#sample" data-toggle="modal" onclick="image('{{ $file->path }}')">{{ $file->saa_no }}</a>
-                                    <img src="public\images\icons8_delete_16.png" onclick="deleteImage({{$file->id}})">
+                                    <img src="\maif\public\images\icons8_delete_16.png" onclick="deleteImage({{$file->id}})">
                                 </div>
                             </div>
                         </div>
@@ -79,7 +79,7 @@
                 </div>
                 <div class="modal-footer">
                     <button style = "background-color:lightgray"  class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> Close</button>
-                    <button type="submit" class="btn btn-success btn-submit" onclick=""><img src="public\images\icons8_upload_16.png">&nbsp;Submit</button>
+                    <button type="submit" class="btn btn-success btn-submit" onclick=""><img src="\maif\public\images\icons8_upload_16.png">&nbsp;Submit</button>
                 </div>
             </form>
         </div>

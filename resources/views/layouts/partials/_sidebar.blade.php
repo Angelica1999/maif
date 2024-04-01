@@ -93,7 +93,7 @@
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" href="{{ route('file') }}">
-                        <img src="public\images\icons8_upload_16.png">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <img src="\maif\public\images\icons8_upload_16.png">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         <span class="menu-title">FILE UPLOAD</span>
                       </a>
                     </li>
