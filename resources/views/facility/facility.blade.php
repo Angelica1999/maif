@@ -22,19 +22,19 @@
                 <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th style="width:20px;"></th>
-                        <th style="width:150px;">Name</th>
-                        <th style="width:250px;">Address</th>
-                        <th style="width:150px;">Social Worker</th>
+                        <th></th>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <!-- <th style="width:150px;">Social Worker</th> -->
                         <!-- <th style="width:250px;">Social Worker Email</th> -->
                         <!-- <th style="width:200px;">Social Worker Contact</th> -->
-                        <th style="width:150px;">Finance Officer</th>
-                        <th style="width:150px;">Official Email</th>
-                        <th style="width:150px;">Additional Email(s)</th>
+                        <!-- <th style="width:150px;">Finance Officer</th> -->
+                        <th>Official Email</th>
+                        <th>Additional Email(s)</th>
                         <!-- <th style="width:200px;">Finance Officer Email</th> -->
                         <!-- <th style="width:200px;">Finance Officer Contact</th> -->
-                        <th style="width:10px;">Vat</th>
-                        <th style="width:10px;">Ewt</th>
+                        <th>Vat</th>
+                        <th>Ewt</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -53,10 +53,10 @@
                             </td>
                             <td class="td">{{ $facility->name }}</td>
                             <td class="td">{{ $facility->address }}</td>
-                            <td class="td">{{ $facility->AddFacilityInfo->social_worker ?? '' }}</td>
+                            <!-- <td class="td">{{ $facility->AddFacilityInfo->social_worker ?? '' }}</td> -->
                             <!-- <td>{{ $facility->AddFacilityInfo->social_worker_email ?? '' }}</td> -->
                             <!-- <td>{{ $facility->AddFacilityInfo->social_worker_contact ?? '' }}</td> -->
-                            <td class="td">{{ $facility->AddFacilityInfo->finance_officer ?? '' }}</td>
+                            <!-- <td class="td">{{ $facility->AddFacilityInfo->finance_officer ?? '' }}</td> -->
                             <!-- <td>{{ $facility->AddFacilityInfo->finance_officer_email ?? '' }}</td> -->
                             <!-- <td>{{ $facility->AddFacilityInfo->finance_officer_contact ?? '' }}</td> -->
                             <td class="td">{{ $facility->AddFacilityInfo->official_mail ?? '' }}</td>
@@ -93,7 +93,6 @@
     </div>
 </div>
 
-<!-- @include('modal') -->
 @endsection
 @section('js')
     <script>
