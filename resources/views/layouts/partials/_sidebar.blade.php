@@ -228,6 +228,12 @@
                 </ul>
             </li>
         </ul>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('dv2') }}">
+                <i class="typcn typcn-document menu-icon"></i>
+                <span class="menu-title">Disbursement V2</span>
+            </a>
+        </li>
     @endif
     <!-- @if(Auth::user()->userid == 1027)
       <li class="nav-item">

@@ -41,6 +41,8 @@
                                             <!-- <div class="card-body"> -->
                                             <b><p class="">{{ $proponent->proponent }}</p></b>
                                             <ul class="list-arrow mt-3">
+                                            <!-- {{count($proponent->proponentInfo)}} -->
+
                                                 @foreach($proponent->proponentInfo as $proponentInfo)
 
                                                     @if( $proponentInfo->facility !== null)
