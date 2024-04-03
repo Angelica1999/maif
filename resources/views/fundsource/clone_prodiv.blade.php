@@ -5,7 +5,7 @@
             <b><label>Proponent:</label></b>
             <div class="form-group">
                 <!-- <input type="text" class="form-control proponent" name="proponent[]" placeholder="Proponent"> -->
-                <select class="form-control proponent" id="{{ $uniqueCode . '1' }}" name="proponent[]" onchange="proponentCode($(this))">
+                <select class="form-control proponent" id="{{ $uniqueCode . '1' }}" name="proponent[]" onchange="proponentCode($(this))" required>
                     <option value="">Select/Input Proponent</option>
                     @foreach($proponents as $proponent)
                         <option value="{{ $proponent->proponent }}" data-proponent-code="{{ $proponent->proponent_code }}">
@@ -18,7 +18,7 @@
         <div class="col-md-7">
             <b><label>Proponent Code:</label></b>
             <div class="form-group" style="display: flex; align-items: center;">
-                <input type="text" class="form-control proponent_code" name="proponent_code[]" placeholder="Proponent Code" style="flex: 1; width:1000px;">
+                <input type="text" class="form-control proponent_code" name="proponent_code[]" placeholder="Proponent Code" style="flex: 1; width:1000px;" required>
                 <button type="button" class="form-control remove_pro-btn" style="width: 10px; margin-left: 5px; color:white; background-color:#00688B">-</button>
             </div>
         </div>
@@ -30,7 +30,7 @@
             <label>Facility:</label>
                 <div class="form-group">
                     <div class="facility_select">
-                        <select class="form-control break_fac" id="{{ $uniqueCode }}" name="facility_id[]" multiple>
+                        <select class="form-control break_fac" id="{{ $uniqueCode }}" name="facility_id[]" multiple required>
                             <option value="">Please select facility</option>
                             @foreach($facilities as $facility)
                                 <option value="{{ $facility->id }}">{{ $facility->name }}</option>
@@ -44,7 +44,7 @@
                 <div class="form-group">
                     <div class="form-group" style="display: flex; align-items: center;">
                         <input type="hidden" class="info_id" value="0">
-                        <input type="text" class="form-control alocated_funds" id="alocated_funds[]" name="alocated_funds[]" oninput="calculateFunds(this)" onkeyup="validateAmount(this)" placeholder="Allocated Fund" style="flex: 1; width:160px;">
+                        <input type="text" class="form-control alocated_funds" id="alocated_funds[]" name="alocated_funds[]" oninput="calculateFunds(this)" onkeyup="validateAmount(this)" placeholder="Allocated Fund" style="flex: 1; width:160px;" required>
                         <button type="button" class="form-control btn-info clone_facility-btn" style="width: 5px; margin-left: 5px; color:white; background-color:#355E3B">+</button>
                     </div>
                 </div>

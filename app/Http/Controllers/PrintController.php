@@ -198,11 +198,11 @@ class PrintController extends Controller
         $facility = Facility::find($dv->facility_id);
         $saa = explode(',', $dv->fundsource_id);
         $saa = str_replace(['[', ']', '"'],'',$saa);
-        $all = [];
+        $fund_source = [];
         foreach($saa as $id){
-            $all []= $id;
+            $fund_source []= Fundsource::where('id', $id)->with('image')->first();
         }
-        $fund_source = Fundsource::whereIn('id', $all)->with('image')->get();
+        // return $fund_source;
         if(!$dv){
             return redirect()->route('Home.index')->with('error', 'Patient not found.');
         }

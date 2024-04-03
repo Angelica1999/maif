@@ -134,7 +134,12 @@ class DvController extends Controller
         foreach($routes as $index => $route_no){
 
             // return $route;
-            $user = Auth::user();
+            $user = DB::connection('dohdtr')
+                        ->table('users')
+                        ->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
+                        ->where('users.userid', '=', Auth::user()->userid)
+                        ->first();
+                        
             $release_to_datein = date('Y-m-d H:i:s');
 
             if($req->op != 0) {
