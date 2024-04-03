@@ -136,14 +136,22 @@
                               <br>
                               
                               <div style="width: 100%;">   
-                                <span class="saa" style="margin-left:10px;">{{ floor($dv->deduction1) . '%' . ' ' . 'VAT' }}</span>
+                                @if(floor($dv->deduction1) == 3)
+                                  <span class="saa" style="margin-left:10px;">{{ floor($dv->deduction1) . '%' . ' ' . 'Percentage Tax' }}</span>
+                                @else
+                                  <span class="saa" style="margin-left:10px;">{{ floor($dv->deduction1) . '%' . ' ' . 'VAT' }}</span>
+                                @endif
                                 <span style="margin-left:50px;"><?php echo number_format($total, 2, '.', ',')?></span>
                                 <span style="float: right;"><?php echo number_format(str_replace(',','',$dv->deduction_amount1), 2, '.', ',')?></span>
                                 <div style="clear: both;"></div>
                               </div>
                               <div style="width: 100%;">   
                                 <span class="saa" style="margin-left:10px;"> {{floor($dv->deduction2).'%'.' '.'EWT'}}</span>
-                                <span style="margin-left:50px;"><?php echo number_format($total, 2, '.', ',')?></span>
+                                @if(floor($dv->deduction1) == 3)
+                                  <span style="margin-left:105px;"><?php echo number_format($total, 2, '.', ',')?></span>
+                                @else
+                                  <span style="margin-left:48px;"><?php echo number_format($total, 2, '.', ',')?></span>
+                                @endif
                                 <span style="float: right;"><?php echo number_format(str_replace(',','',$dv->deduction_amount2), 2, '.', ',')?></span>
                                 <div style="clear: both;"></div>
                               </div>
