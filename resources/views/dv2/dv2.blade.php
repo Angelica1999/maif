@@ -42,7 +42,9 @@
                                 <td class="td">
                                     <a href="{{ route('dv2.pdf', ['route_no' => $dv2->route_no]) }}" target="_blank" type="button" class="btn btn-info btn-xs">Print</a>
                                     <a href="{{ route('dv2.image', ['route_no' => $dv2->route_no]) }}" target="_blank" type="button" class="btn btn-success btn-xs">Image</a>
-                                    <a href="{{ route('dv2.remove', ['route_no' => $dv2->route_no]) }}" type="button" class="btn btn-danger btn-xs">Delete</a>
+                                    @if($section == 105 || $section == 80)
+                                        <a href="{{ route('dv2.remove', ['route_no' => $dv2->route_no]) }}" type="button" class="btn btn-danger btn-xs">Delete</a>
+                                    @endif
                                 </td> 
                                 <td class="td">{{ $dv2->route_no }}</td>   
                                 <td class="td">{{$dv2->facility }}</td>

@@ -9,7 +9,7 @@
            
             <form method="GET" action="">
                 <div class="input-group float-right w-50" style="min-width: 600px;">
-                    <input type="text" class="form-control" name="keyword" placeholder="Route No" value="{{$keyword}}">
+                    <input type="text" class="form-control" name="keyword" placeholder="Search..." value="{{$keyword}}" id="search-input">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit">Search</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll">View All</button>
@@ -23,7 +23,7 @@
             
             @if(isset($disbursement) && $disbursement->count() > 0)
             <div class="table-responsive ">
-                <table class="table table-striped" style="width:100%">
+                <table class="table table-striped" style="width:100%" id="dv_table">
                 <thead>
                     <tr>
                         <th style="min-width: 150px;"></th>
@@ -109,9 +109,6 @@
                     <strong>No disbursement voucher found!</strong>
                 </div>
             @endif
-            <div class="pl-5 pr-5 mt-5">
-                  {!! $disbursement->appends(request()->query())->links('pagination::bootstrap-5') !!}
-            </div>
         </div>
     </div>
 </div>
