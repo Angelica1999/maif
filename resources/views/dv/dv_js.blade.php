@@ -1115,14 +1115,14 @@
                     removeNullOptions();
 
                     });
-                    setTimeout(function() {
-                        fundAmount();
-                    }, 2000);
+                 
                 }); 
             }
         });
         }, 0);
-
+        setTimeout(function() {
+            fundAmount();
+        }, 2000);
     }
         
 
