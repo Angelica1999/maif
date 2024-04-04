@@ -167,4 +167,10 @@ class Dv2Controller extends Controller
         }
         return redirect()->route('dv2')->with('create_dv2', true);
     }
+
+    public function removeDv2($route_no){
+        Dv2::where('route_no', $route_no)->delete();
+        return redirect()->route('dv2')->with('dv2_remove', true);
+
+    }
 }

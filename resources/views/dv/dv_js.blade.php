@@ -926,6 +926,7 @@
                 removeNullOptions();
 
                 $.get("{{ url('/getDv').'/' }}" + dvId, function (result) {
+                    console.log('res', result);
 
                     $('.modal_body').html(first_res);
                     var printButton = $('<a>', {
@@ -935,14 +936,22 @@
                         class: 'btn btn-success btn-sm',
                         text: 'Generate PDF'
                     });
+                    var deleteButton = $('<a>', {
+                        href: "{{ route('remove.dv', '') }}/" + result.dv.route_no,
+                        type: 'button',
+                        class: 'btn btn-danger btn-sm',
+                        text: 'Delete'
+                    });
 
-                    $('#dv_footer').append(printButton);
+                        $('#dv_footer').append(printButton);
+
                         $('#dv').val(dvId);
                         $('#dv_no').val(result.dv.dv_no);
                         if(result.dv.obligated == 1){
                             $('.btn-primary').hide();
                         }else{
                             $('.btn-primary').text('Update');
+                            $('#dv_footer').append(deleteButton);
                         }
                         $('#accumulated').prop('disabled', false).show();
                         $('#accumulated').val(result.dv.accumulated);

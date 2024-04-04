@@ -224,6 +224,18 @@
               msg: 'File uploaded successfully!'
            });
         @endif
+        @if(session('dv2_remove'))
+           <?php session()->forget('dv2_remove'); ?>
+           Lobibox.notify('error', {
+              msg: 'Disbursement voucher version 2 successfully removed!'
+           });
+        @endif
+        @if(session('dv_remove'))
+           <?php session()->forget('dv_remove'); ?>
+           Lobibox.notify('error', {
+              msg: 'Successfully removed Disbursement Voucher!'
+           });
+        @endif
     </script>
     @yield('js')
 </body>

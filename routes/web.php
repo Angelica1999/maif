@@ -152,6 +152,8 @@ Route::match(['get', 'post'],'admin_cost/usage', [App\Http\Controllers\FundSourc
 Route::match(['get', 'post'],'/file', [App\Http\Controllers\FundSourceController::class, 'fileUpload'])->name('file');
 Route::post('/fundsource/files', [App\Http\Controllers\FundSourceController::class, 'uploadFiles'])->name('upload.files');
 Route::match(['get', 'post'],'/fundsources/remove/{id}', [App\Http\Controllers\FundSourceController::class, 'removeImage'])->name('image.remove');
+Route::match(['get', 'post'],'/dv2/remove/{route_no}', [App\Http\Controllers\Dv2Controller::class, 'removeDv2'])->name('dv2.remove');
+Route::match(['get', 'post'],'/dv1/remove/{route_no}', [App\Http\Controllers\DvController::class, 'removeDv'])->name('remove.dv');
 
 
 

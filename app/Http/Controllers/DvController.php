@@ -14,6 +14,7 @@ use App\Models\Utilization;
 use App\Models\Proponent;
 use App\Models\ProponentInfo;
 use App\Models\Dv;
+use App\Models\Dv2;
 use App\Models\AddFacilityInfo;
 use App\Models\Group;
 use App\Models\Section;
@@ -629,10 +630,32 @@ class DvController extends Controller
         $allocatedFunds = ProponentInfo::select('alocated_funds','fundsource_id', 'id', 'remaining_balance', 'proponent_id', 'facility_id')->get();
         return response()->json(['allocated_funds' => $allocatedFunds]);
     }
+
     public function dvHistory($route_no){
         return view('dv.dv_md_history', [
             'utilizations' => Utilization::with('fundSourcedata', 'proponentdata', 'user')->where('div_id', $route_no)->get()
         ]);
+    }
+
+    public function removeDv($route_no){
+        $dv = Dv::where('route_no', $route_no)->first();
+        $amount_list = 
+        $int_list = array_map('intval', json_decode($dv->info_id));
+        $string_list = implode(',', $int_list);
+        $info_list = ProponentInfo::whereIn('id', $int_list)->orderByRaw("FIELD(id, $string_list)")->get();
+        $amount_list = array_values(array_filter([$dv->amount1, !Empty($dv->amount2)?$dv->amount2 : 0,  
+                        !Empty($dv->amount3)?$dv->amount3: 0], function($value){ return $value !== 0 && $value!== null;}));
+        foreach($info_list as $index => $info){
+            $rem = (double) str_replace(',','',$info->remaining_balance) + (double) str_replace(',','', $amount_list[$index]);
+            $info->remaining_balance = $rem;
+            $info->save();
+        }
+
+        $dv->delete();
+        Utilization::where('div_id',$route_no)->delete();
+        Dv2::where('route_no',$route_no)->delete();
+
+        return redirect()->back()->with('dv_remove', true);
     }
 
     
