@@ -155,6 +155,8 @@ Route::match(['get', 'post'],'/fundsources/remove/{id}', [App\Http\Controllers\F
 Route::match(['get', 'post'],'/dv2/remove/{route_no}', [App\Http\Controllers\Dv2Controller::class, 'removeDv2'])->name('dv2.remove');
 Route::match(['get', 'post'],'/dv1/remove/{route_no}', [App\Http\Controllers\DvController::class, 'removeDv'])->name('remove.dv');
 
+Route::get('/proponent/list', [App\Http\Controllers\FundSourceController::class, 'proponent'])->name('proponent');
+
 
 
 
