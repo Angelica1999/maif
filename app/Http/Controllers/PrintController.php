@@ -89,6 +89,8 @@ class PrintController extends Controller
     
                 try {
                     $this->sendMail($recipientEmail,$pdfFilePath,$cc_mails, $name_file);
+                    $patient->remarks = 1;
+                    $patient->save();
                     session()->flash('email_sent', true);
 
                 } catch (Exception $e) {
@@ -131,6 +133,8 @@ class PrintController extends Controller
             
                         try {
                             $this->sendMail($recipientEmail,$pdfFilePath,$cc_mails,$name_file);
+                            $patient->remarks = 1;
+                            $patient->save();
                             session()->flash('email_sent', true);
     
                         } catch (Exception $e) {
