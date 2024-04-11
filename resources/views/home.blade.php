@@ -69,6 +69,7 @@
                                 </button>
                             </div>
                         </th>
+                        <th style="min-width:10px;">Remarks</th>
                         <th style="min-width:10px;">Group</th>
                         <th style="min-width:100px">Actual Amount</th>
                         <th>
@@ -98,6 +99,11 @@
                                 <input class="sent_mails[] " id="mail_ids[]" name="mail_ids[]" type="hidden">
                                 <input type="checkbox" style="width: 60px; height: 20px;" name="mailCheckbox[]" id="mailCheckboxId_{{ $index }}" 
                                     class="group-mailCheckBox" >
+                            </td>
+                            <td style="text-align:center">
+                                @if($patient->remarks == 1)
+                                    <i class="typcn typcn-tick menu-icon">
+                                @endif
                             </td>
                             <td style="text-align:center;" class="group-amount" data-patient-id="{{ $patient->id }}" data-proponent-id="{{$patient->proponent_id}}" 
                                 data-amount="{{$patient->actual_amount}}" data-facility-id="{{$patient->facility_id}}" >
