@@ -142,8 +142,8 @@
                 console.log('res', result);
 
                 $('.filter-section').append($('<option>', {
-                        value: optionData.id,
-                        text: optionData.description
+                    value: optionData.id,
+                    text: optionData.description
                 }));  
             });
         });
@@ -484,7 +484,6 @@
                         dataprogroup: optionData.proponent.pro_group,
                         dataproponent: optionData.proponent.id
                 }));
-                
                 $('#saa2').append($('<option>', {
                             value: optionData.fundsource_id,
                             text: text_display,

@@ -154,6 +154,9 @@ Route::post('/fundsource/files', [App\Http\Controllers\FundSourceController::cla
 Route::match(['get', 'post'],'/fundsources/remove/{id}', [App\Http\Controllers\FundSourceController::class, 'removeImage'])->name('image.remove');
 Route::match(['get', 'post'],'/dv2/remove/{route_no}', [App\Http\Controllers\Dv2Controller::class, 'removeDv2'])->name('dv2.remove');
 Route::match(['get', 'post'],'/dv1/remove/{route_no}', [App\Http\Controllers\DvController::class, 'removeDv'])->name('remove.dv');
+Route::get('/fundsource/{fundsource_id}',[App\Http\Controllers\FundSourceController::class, 'fetchFundsource'])->name('fundsource.get');
+Route::get('/transfer/proponentInfo/{fundsource_id}/{proponent_id}',[App\Http\Controllers\FundSourceController::class, 'fetchInfo'])->name('info.get');
+Route::get('/transfer/facility/{facility_id}',[App\Http\Controllers\FundSourceController::class, 'fetchFacility'])->name('facility.get');
 
 
 
