@@ -89,7 +89,6 @@
     $(document).ready(function() {
         @if($facility->cc !== null && $facility->cc !== "")
             displayCC();
-            // console.log('check', {{$facility->cc}});
         @endif
         $('.cc').on('click', function(){
             displayCC();
