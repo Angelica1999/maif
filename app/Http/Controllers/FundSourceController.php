@@ -409,79 +409,145 @@ class FundSourceController extends Controller
                 ->whereIn('proponent_id', $all_pro)
                 ->get();
         }
+        $fundsources = Fundsource::get();
         return view('fundsource.transfer_funds', [
             'from_info' => $from_info,
-            'to_info' => $to_info
+            'to_info' => $to_info,
+            'fundsources' => $fundsources,
+            'facilities' => Facility::get()
         ]);
     }
 
     public function saveTransferFunds(Request $request){
         // return $request->input('to_saa');
-
+        $identifier = $request->input('fac');
         $from_id = $request->input('from_info');
         $to_id = $request->input('to_info');
 
-        if($from_id != null && $to_id != null){
-            $from = ProponentInfo::where('id', $from_id)->first();
-            $to = ProponentInfo::where('id', $to_id)->first();
+        $from = ProponentInfo::where('id', $from_id)->first();
 
-            $transfer = new Transfer();
-            $transfer->from_proponent = $from->proponent_id;
-            $transfer->from_saa = $from->fundsource_id;
-            $transfer->from_facility = $from->facility_id;
-            $transfer->from_amount = $request->input('to_amount');
-            $transfer->to_proponent = $to->proponent_id;
-            $transfer->to_saa = $to->fundsource_id;
-            $transfer->to_facility = $to->facility_id;
-            $transfer->to_amount = $request->input('to_amount');
-            $transfer->status = 0;
-            $transfer->transfer_by = Auth::user()->userid;
-            $transfer->save();    
-            
-            if($from){
-            
-                $from_utilize = new Utilization();
-                $from_utilize->fundsource_id = $from->fundsource_id;
-                $from_utilize->proponentinfo_id = $from->id;
-                $from_utilize->proponent_id = $from->proponent_id;
-                $from_utilize->div_id = 0;
-                $from_utilize->utilize_amount = $request->input('to_amount');
-                $from_utilize->beginning_balance = $from->remaining_balance;
-                $from_utilize->created_by= Auth::user()->userid;
-                $from_utilize->facility_id = $from->facility_id;
-                $from_utilize->status = 2;
-                $from_utilize->transfer_id = $transfer->id;
-                $from_utilize->save();
-    
-                $from->alocated_funds = str_replace(',', '',$from->alocated_funds) - str_replace(',', '',$request->input('to_amount'));
-                $from->remaining_balance = str_replace(',', '',$from->remaining_balance) - str_replace(',', '',$request->input('to_amount'));
-                $from->save();
+        if($identifier == "new_fac"){
+            $fund = Fundsource::where('id', $request->input('to_saa'))->first();
+            $proponent = Proponent::where('id', $request->input('to_proponent'))->first();
+            $pro_exists = Proponent::where('fundsource_id', $request->input('to_saa'))->first();
+            if($pro_exists == null || $pro_exists == ""){
+                $new_pro = new Proponent();
+                $new_pro->fundsource_id = $request->input('to_saa');
+                $new_pro->proponent = $proponent->proponent;
+                $new_pro->proponent_code = $proponent->proponent_code;
+                $new_pro->created_by = Auth::user()->userid;
+                $new_pro->pro_group = $proponent->id;
+                $new_pro->save();
+
+                $proponent_id = $new_pro->id;
+            }else{
+                $proponent_id = $pro_exists->id;
 
             }
-            
-            if($to){
+            $to = new ProponentInfo();
+            $to->alocated_funds = $request->input('to_amount');
+            $to->remaining_balance = $request->input('to_amount');
+            $to->proponent_id = $proponent_id;
+            $to->fundsource_id = $request->input('to_saa');
+            $to->facility_id = $request->input('to_info');
+            $to->remaining_balance = $request->input('to_amount');
+            $to->admin_cost = "";
+            // if($fund->cost_value == 0){
+            //     $to->admin_cost = 0;
+            //     $to->remaining_balance = $request->input('to_amount');
+            // }else{
+            //     $to->admin_cost = (double) str_replace(',','', $request->input('to_amount')) * $fund->cost_value / 100;
+            //     $to->remaining_balance = (double) str_replace(',','', $request->input('to_amount')) - ((double) str_replace(',','', $request->input('to_amount')) * $fund->cost_value / 100);
+            // }
+            $to->created_by = Auth::user()->userid;
+            $to->save();
 
-                $to_utilize = new Utilization();
-                $to_utilize->fundsource_id = $to->fundsource_id;
-                $to_utilize->proponentinfo_id = $to->id;
-                $to_utilize->proponent_id = $to->proponent_id;
-                $to_utilize->div_id = 0;
-                $to_utilize->utilize_amount = $request->input('to_amount');
-                $to_utilize->beginning_balance = $to->remaining_balance;
-                $to_utilize->created_by= Auth::user()->userid;
-                $to_utilize->facility_id = $to->facility_id;
-                $to_utilize->status = 3;
-                $to_utilize->transfer_id = $transfer->id;
-                $to_utilize->save();
-    
-                $to->alocated_funds = str_replace(',', '',$to->alocated_funds) + str_replace(',', '',$request->input('to_amount')); 
-                $to->remaining_balance = str_replace(',', '',$to->remaining_balance) + str_replace(',', '',$request->input('to_amount')); 
-                $to->save();
+        }else{
+
+            if($from_id != null && $to_id != null){
+                $to = ProponentInfo::where('id', $to_id)->first();
             }
-
-            session()->flash('fund_transfer', true);
-            return redirect()->back();
         }
+
+        $transfer = new Transfer();
+        $transfer->from_proponent = $from->proponent_id;
+        $transfer->from_saa = $from->fundsource_id;
+        $transfer->from_facility = $from->facility_id;
+        $transfer->from_amount = $request->input('to_amount');
+        $transfer->to_proponent = $to->proponent_id;
+        $transfer->to_saa = $to->fundsource_id;
+        $transfer->to_facility = $to->facility_id;
+        $transfer->to_amount = $request->input('to_amount');
+
+        $transfer->from_beginning_balance = $from->remaining_balance;
+        $from_balance = (double) str_replace(',', '', $from->remaining_balance) - (double) str_replace(',', '', $request->input('to_amount'));
+        $transfer->from_balance_after = $from_balance;
+
+        $transfer->to_beginning_balance = $to->remaining_balance;
+        $to_balance = (double) str_replace(',', '', $to->remaining_balance) + (double) str_replace(',', '', $request->input('to_amount'));
+        $transfer->to_balance_after = $to_balance;
+
+        $transfer->remarks = $request->input('transfer_remarks');
+        $transfer->status = 0;
+        $transfer->transfer_by = Auth::user()->userid;
+        $transfer->save();    
+
+        if($from){
+                
+            $from_utilize = new Utilization();
+            $from_utilize->fundsource_id = $from->fundsource_id;
+            $from_utilize->proponentinfo_id = $from->id;
+            $from_utilize->proponent_id = $from->proponent_id;
+            $from_utilize->div_id = 0;
+            $from_utilize->utilize_amount = $request->input('to_amount');
+            $from_utilize->beginning_balance = $from->remaining_balance;
+            $from_utilize->created_by= Auth::user()->userid;
+            $from_utilize->facility_id = $from->facility_id;
+            $from_utilize->status = 2;
+            $from_utilize->transfer_id = $transfer->id;
+            $from_utilize->save();
+
+            $from->alocated_funds = str_replace(',', '',$from->alocated_funds) - str_replace(',', '',$request->input('to_amount'));
+            $from->remaining_balance = str_replace(',', '',$from->remaining_balance) - str_replace(',', '',$request->input('to_amount'));
+            $from->save();
+
+            $fundsource = Fundsource ::where('id', $from->fundsource_id)->first();
+            // $fundsource->admin_cost = ($fundsource->cost_value == 0)?0:(double) str_replace(',','',$fundsource->remaining_balance) 
+            //     - str_replace(',', '',$request->input('to_amount')) * $fundsource->cost_value / 100;
+            $fundsource->alocated_funds = (double) str_replace(',','',$fundsource->alocated_funds) - str_replace(',', '',$request->input('to_amount'));
+            $fundsource->remaining_balance = (double) str_replace(',','',$fundsource->remaining_balance) - str_replace(',', '',$request->input('to_amount'));
+            $fundsource->save();
+        }
+        
+        if($to){
+
+            $to_utilize = new Utilization();
+            $to_utilize->fundsource_id = $to->fundsource_id;
+            $to_utilize->proponentinfo_id = $to->id;
+            $to_utilize->proponent_id = $to->proponent_id;
+            $to_utilize->div_id = 0;
+            $to_utilize->utilize_amount = $request->input('to_amount');
+            $to_utilize->beginning_balance = $to->remaining_balance;
+            $to_utilize->created_by= Auth::user()->userid;
+            $to_utilize->facility_id = $to->facility_id;
+            $to_utilize->status = 3;
+            $to_utilize->transfer_id = $transfer->id;
+            $to_utilize->save();
+
+            $to->alocated_funds = str_replace(',', '',$to->alocated_funds) + str_replace(',', '',$request->input('to_amount')); 
+            $to->remaining_balance = str_replace(',', '',$to->remaining_balance) + str_replace(',', '',$request->input('to_amount')); 
+            $to->save();
+
+            $to_fundsource = Fundsource ::where('id', $to->fundsource_id)->first();
+            // $to_fundsource->admin_cost = ($to_fundsource->cost_value == 0)?0:(double) str_replace(',','',$to_fundsource->remaining_balance) 
+            //     - str_replace(',', '',$request->input('to_amount'))* $to_fundsource->cost_value / 100;
+            $to_fundsource->alocated_funds = (double) str_replace(',','',$to_fundsource->alocated_funds) + str_replace(',', '',$request->input('to_amount'));
+            $to_fundsource->remaining_balance = (double) str_replace(',','',$to_fundsource->remaining_balance) + str_replace(',', '',$request->input('to_amount'));
+            $to_fundsource->save();
+        }
+        session()->flash('fund_transfer', true);
+        return redirect()->back();
+        
     }
 
     public function facilityProponentGet($facility_id) {
@@ -728,4 +794,29 @@ class FundSourceController extends Controller
         Fundsource_Files::where('id', $id)->delete();
     }
 
+    public function fetchFundsource($fundsource_id){
+        if($fundsource_id == "all"){
+
+            $proponents = Proponent::all()->groupBy('pro_group');
+            $firstEntries = $proponents->map(function ($group) {
+                return $group->first();
+            });
+            return $firstEntries;
+
+        }else{
+            return Proponent::where('fundsource_id', $fundsource_id)->get();
+        }
+    }
+    
+    public function fetchInfo($fundsource_id,$proponent_id){
+        return ProponentInfo::where('fundsource_id', $fundsource_id)->where('proponent_id', $proponent_id)->get();
+    }
+
+    public function fetchFacility($facility_id){
+        if($facility_id == "others"){
+            return Facility::get();
+        }else{
+            return Facility::where('id', $facility_id)->first();
+        }
+    }
 }

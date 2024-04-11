@@ -173,7 +173,7 @@
                                 <div style="display: flex; align-items: center;">
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                     <select name="fundsource_id" id="saa1" style="width:150px;" class="js-example-basic-single1" onchange="generateGroup()"required disabled>
-                                        <option value="" data-facilities="">- Select SAA -</option> 
+                                        <option value="" data-facilities="" style="background-color:green">- Select SAA -</option> 
                                     </select> 
                                     <div class="custom-dropdown" style="margin-left: 8px;">
                                         <input type="text" name="amount1" id="inputValue1" style="width:120px; height: 42px;" onkeyup="validateAmount(this)" oninput="fundAmount(1)" class="ft15" disabled required autocomplete="off">
