@@ -73,16 +73,16 @@
                         <th style="min-width:100px">Actual Amount</th>
                         <th>
                             <!-- <span class="fa fa-plus" style="cursor:pointer;" onclick="">Firstname</span> -->
-                            <a style="color:white;"  href="{{route('home', ['key' => 'fname'])}}" >Firstname</a>
+                            <a style="color:black;"  href="{{route('home', ['key' => 'fname'])}}" >Firstname</a>
                         </th>
-                        <th><a style="color:white;"  href="{{route('home', ['key' => 'mname'])}}" >Middlename</a></th>
-                        <th><a style="color:white;"  href="{{route('home', ['key' => 'lname'])}}" >Lastname</a></th>
+                        <th><a style="color:black;"  href="{{route('home', ['key' => 'mname'])}}" >Middlename</a></th>
+                        <th><a style="color:black;"  href="{{route('home', ['key' => 'lname'])}}" >Lastname</a></th>
                         <!-- <th style="min-width:120px">DOB</th> -->
                         {{-- <th>Facility</th> --}}
-                        <th style="min-width:90px;"><a style="color:white;"  href="{{route('home', ['key' => 'region'])}}" >Region</a></th>
-                        <th><a style="color:white;"  href="{{route('home', ['key' => 'province'])}}" >Province</a></th>
-                        <th><a style="color:white;"  href="{{route('home', ['key' => 'municipality'])}}" >Municipality</a></th>
-                        <th><a style="color:white;"  href="{{route('home', ['key' => 'barangay'])}}" >Barangay</a></th>
+                        <th style="min-width:90px;"><a style="color:black;"  href="{{route('home', ['key' => 'region'])}}" >Region</a></th>
+                        <th><a style="color:black;"  href="{{route('home', ['key' => 'province'])}}" >Province</a></th>
+                        <th><a style="color:black;"  href="{{route('home', ['key' => 'municipality'])}}" >Municipality</a></th>
+                        <th><a style="color:black;"  href="{{route('home', ['key' => 'barangay'])}}" >Barangay</a></th>
                         <th style="min-width:180px">Guaranteed Amount</th>
                         <th style="min-width:180px">Created By</th>
                     </tr>
