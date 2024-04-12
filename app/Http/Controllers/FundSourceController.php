@@ -859,4 +859,45 @@ class FundSourceController extends Controller
             return Facility::where('id', $facility_id)->first();
         }
     }
+
+    public function proponentList(Request $req){
+        $proponents = Proponent::select( DB::raw('MAX(id) as id'), DB::raw('MAX(proponent) as proponent'), 
+                        DB::raw('MAX(proponent_code) as proponent_code'))
+                        ->groupBy('proponent_code')
+                        ->orderBy('id', 'desc');   
+        return view('proponents.proponents', [
+            'proponents' => $proponents->paginate(50),
+            'keyword' => $req->keyword
+        ]);
+    }
+
+    public function generateExcel(){
+        $proponents = Proponent::select( DB::raw('MAX(id) as id'), DB::raw('MAX(proponent) as proponent'), 
+                        DB::raw('MAX(proponent_code) as proponent_code'))
+                        ->groupBy('proponent_code')
+                        ->orderBy('id', 'desc')
+                        ->get();
+        $title = "List of Proponent";
+        $filename = $title.'.xls';
+        header("Content-Type: application/xls");
+        header("Content-Disposition: attachment; filename=$filename");
+        header("Pragma: no-cache");
+        header("Expires: 0");
+        $table_body = "<tr>
+                <th>Proponent</th>
+                <th>Proponent Code</th>
+            </tr>";
+            // return $utilization;
+        foreach($proponents as $row){
+            $table_body .= "<tr>
+                <td style='vertical-align:top;'>$row->proponent</td>
+                <td style='vertical-align:top;'>$row->proponent_code</td>
+            </tr>";
+        }
+        $display =
+            '<h1>'.$title.'</h1>'.
+            '<table cellspacing="1" cellpadding="5" border="1">'.$table_body.'</table>';
+
+        return $display;
+    }
 }

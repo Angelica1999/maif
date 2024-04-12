@@ -160,7 +160,9 @@ Route::get('/fundsource/{fundsource_id}',[App\Http\Controllers\FundSourceControl
 Route::get('/transfer/proponentInfo/{fundsource_id}/{proponent_id}',[App\Http\Controllers\FundSourceController::class, 'fetchInfo'])->name('info.get');
 Route::get('/transfer/facility/{facility_id}',[App\Http\Controllers\FundSourceController::class, 'fetchFacility'])->name('facility.get');
 
-Route::get('/proponent/list', [App\Http\Controllers\FundSourceController::class, 'proponent'])->name('proponent');
+Route::get('/proponents', [App\Http\Controllers\FundSourceController::class, 'proponentList'])->name('proponents');
+Route::match(['get', 'post'],'proponent/update', [App\Http\Controllers\FundSourceController::class, 'updateProponent'])->name('proponent.update');
+Route::match(['get', 'post'],'/proponents/excel/', [App\Http\Controllers\FundSourceController::class, 'generateExcel'])->name('proponent.excel');
 
 
 

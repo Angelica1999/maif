@@ -97,12 +97,12 @@
                         <span class="menu-title">FILE UPLOAD</span>
                       </a>
                     </li>
-                    <!-- <li class="nav-item">
-                      <a class="nav-link" href="{{ route('proponent') }}">
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{ route('proponents') }}">
                         <i class="typcn typcn-user-add-outline menu-icon"></i>
                         <span class="menu-title">PROPONENTS</span>
                       </a>
-                    </li> -->
+                    </li>
                 </ul>
             </li>
         </ul>
