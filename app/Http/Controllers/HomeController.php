@@ -566,7 +566,14 @@ class HomeController extends Controller
 
         $patient->save();
         return redirect()->back();
-   }  
+   }
+
+   public function removePatient($id){
+        if($id){
+            Patients::where('id', $id)->delete();
+        }
+        return redirect()->back()->with('remove_patient', true);
+   }
 
     // public function facilityGet(Request $request) {
     //     return Facility::where('province',$request->province_id)->where('hospital_type','private')->get();

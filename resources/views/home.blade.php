@@ -71,7 +71,7 @@
                         </th>
                         <th style="min-width:10px;">Remarks</th>
                         <th style="min-width:10px;">Group</th>
-                        <th style="min-width:100px">Actual Amount</th>
+                        <th style="min-width:150px">Actual Amount</th>
                         <th>
                             <!-- <span class="fa fa-plus" style="cursor:pointer;" onclick="">Firstname</span> -->
                             <a style="color:black;"  href="{{route('home', ['key' => 'fname'])}}" >Firstname</a>
@@ -172,7 +172,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="create_patient" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="opacity:1">
+<div class="modal fade" id="create_patient" tabindex="-1" role="dialog" aria-hidden="true" style="opacity:1">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -454,7 +454,11 @@
                 "                                        <option value=\"\">please select barangay</option>\n" +
                 "                                    </select>");
 
-            $(".select2").select2({ width: '100%' });
+            // $(".select2").select2({ width: '100%' });
+            $("#muncity_id").select2();
+            $("#barangay_id").select2();
+            $("#province_id").select2();
+
         }
 
         if(data.val() == "Region 7"){

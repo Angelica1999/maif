@@ -21,14 +21,14 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">First Name</label>
-                    <input type="text" class="form-control" id="fname" name="fname" placeholder="First Name" required>
+                    <input type="text" class="form-control" id="fname" name="fname" oninput="this.value = this.value.toUpperCase()" placeholder="First Name" required>
                 </div>
             </div>
 
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="lname">Last Name</label>
-                    <input type="text" class="form-control" id="lname" name="lname" placeholder="Last Name" required>
+                    <input type="text" class="form-control" id="lname" name="lname" placeholder="Last Name" oninput="this.value = this.value.toUpperCase()" required>
                 </div>
             </div>
         </div>
@@ -37,7 +37,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Middle Name</label>
-                    <input type="text" class="form-control" id="mname" name="mname" placeholder="Middle Name">
+                    <input type="text" class="form-control" id="mname" name="mname" oninput="this.value = this.value.toUpperCase()" placeholder="Middle Name">
                 </div>
             </div>
 
@@ -61,9 +61,9 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Region</label>
-                    <select class="js-example-basic-single w-100 select2" onchange="othersRegion($(this));" name="region" required>
+                    <select class="js-example-basic-single w-100 select2" onchange="othersRegion($(this));" name="region">
                         <option value="">Please select region</option>
-                        <option value="Region 7" selected>Region 7</option>
+                        <option value="Region 7">Region 7</option>
                         <option value="NCR">NCR</option>
                         <option value="CAR">CAR</option>
                         <option value="Region 1">Region 1</option>
@@ -87,7 +87,7 @@
                 <div class="form-group">
                     <label for="lname">Province</label>
                     <div id="province_body">
-                        <select class="js-example-basic-single w-100 select2" id="province_id" name="province_id" onchange="onchangeProvince($(this))" required>
+                        <select class="js-example-basic-single w-100 select2" id="province_id" name="province_id" onchange="onchangeProvince($(this))">
                             <option value="">Please select province</option>
                             @foreach($provinces as $prov)
                                 <option value="{{ $prov->id }}">{{ $prov->description }}</option>
@@ -104,7 +104,7 @@
                 <div class="form-group">
                     <label for="lname">Municipality</label>
                     <div id="muncity_body">
-                        <select class="js-example-basic-single w-100 select2" id="muncity_id" name="muncity_id" onchange="onchangeMuncity($(this))" required disabled>
+                        <select class="js-example-basic-single w-100 select2" id="muncity_id" name="muncity_id" onchange="onchangeMuncity($(this))" disabled>
                         </select>
                     </div>
                 </div>
@@ -114,7 +114,7 @@
                 <div class="form-group">
                     <label for="lname">Barangay</label>
                     <div id="barangay_body">
-                        <select class="js-example-basic-single w-100 select2" id="barangay_id" name="barangay_id" required disabled>
+                        <select class="js-example-basic-single w-100 select2" id="barangay_id" name="barangay_id" disabled>
                         </select>
                     </div>
                 </div>

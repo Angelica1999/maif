@@ -236,6 +236,12 @@
               msg: 'Successfully removed Disbursement Voucher!'
            });
         @endif
+        @if(session('remove_patient'))
+           <?php session()->forget('dv_remove'); ?>
+           Lobibox.notify('error', {
+              msg: 'Successfully removed the patient!'
+           });
+        @endif
     </script>
     @yield('js')
 </body>

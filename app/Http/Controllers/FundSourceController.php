@@ -66,6 +66,46 @@ class FundSourceController extends Controller
                         $subquery->where('proponent', 'LIKE', "%$request->keyword%");
                     });
                 });
+
+                if($fundsources->get()->isEmpty()){
+                    $f_list = Facility::where('name', 'LIKE', "%$request->keyword%")->pluck('id')->toArray();
+
+                    $fundsources = Fundsource::with([
+                        'proponents' => function ($query) use ($f_list) {
+                            $query->whereHas('proponentInfo', function ($query) use ($f_list) {
+                                $query->where(function ($query) use ($f_list) {
+                                    foreach ($f_list as $id) {
+                                        $jsonArray = json_encode([$id]);
+                                        $query->orWhereRaw("JSON_CONTAINS(facility_id, ?)", [$jsonArray]);
+                                    }
+                                });
+                            })->with(['proponentInfo' => function ($query) use ($f_list) {
+                                $query->where(function ($query) use ($f_list) {
+                                    foreach ($f_list as $id) {
+                                        $jsonArray = json_encode([$id]);
+                                        $query->orWhereRaw("JSON_CONTAINS(facility_id, ?)", [$jsonArray]);
+                                    }
+                                });
+                            }]);
+                        },
+                        'encoded_by' => function ($query) {
+                            $query->select(
+                                'userid',
+                                'fname'
+                            );
+                        }
+                    ])
+                    ->orWhereHas('proponents.proponentInfo', function ($query) use ($f_list) {
+                        $query->where(function ($query) use ($f_list) {
+                            foreach ($f_list as $id) {
+                                $jsonArray = json_encode([$id]);
+                                $query->orWhereRaw("JSON_CONTAINS(facility_id, ?)", [$jsonArray]);
+                            }
+                        });
+                    });
+                    
+                    
+                }
             }else{
                 //search through fundsource
                 $fundsources = $fundsources->where('saa', 'LIKE', "%$request->keyword%");

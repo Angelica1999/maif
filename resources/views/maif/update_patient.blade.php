@@ -53,7 +53,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Region</label>
-                    <select class="form-control" onchange="othersRegion($(this));" name="region" required>
+                    <select class="form-control js-example-basic-single w-100" onchange="othersRegion($(this));" name="region">
                         <option value="">Please select region</option>
                         <option value="Region 7" @if($patient->region == 'Region 7') selected @endif>Region 7</option>
                         <option value="NCR" @if($patient->region == 'NCR') selected @endif>NCR</option>
@@ -97,7 +97,7 @@
                 <div class="form-group">
                     <label for="lname">Municipality</label>
                     <div id="muncity_body">
-                        <select class="js-example-basic-single w-100" id="muncity_id" name="muncity_id" onchange="onchangeMuncity($(this))" required disabled>
+                        <select class="js-example-basic-single w-100" id="muncity_id" name="muncity_id" onchange="onchangeMuncity($(this))" disabled>
                             @foreach($municipal as $municipals)   
                                 <option value="{{ $municipals->id }}" {{$municipals->id == $patient->muncity_id? 'selected' : ''}}>{{ $municipals->description }}</option>
                             @endforeach   
@@ -110,7 +110,7 @@
                 <div class="form-group">
                     <label for="lname">Barangay</label>
                     <div id="barangay_body">
-                        <select class="js-example-basic-single w-100" id="barangay_id" name="barangay_id"  required disabled>
+                        <select class="js-example-basic-single w-100" id="barangay_id" name="barangay_id" disabled>
                            @foreach($barangay as $barangays)
                            <option value="{{ $barangays->id }}" {{$barangays->id == $patient->barangay_id? 'selected' : ''}}>{{ $barangays->description }}</option>
                             @endforeach
@@ -204,19 +204,24 @@
 
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="submit" class="btn btn-primary updatebtn">Update Patient</button>
+        <button type="submit" class="btn btn-primary updatebtn">Update</button>
+        @if($patient->group_id == null || $patient->group_id == "")
+            <a href="{{ route('patient.remove', ['id' => $patient->id]) }}" type="button" class="btn btn-danger">Remove</a>
+        @endif
     </div>
 </form>
 
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 <script>
      $(document).ready(function() {
+
         $('.updatebtn').on('click', function(){
             $('#muncity_id').prop('disabled', false);
             $('#barangay_id').prop('disabled', false);
             $('#proponent_id').prop('disabled', false);
         });
         if (patientRegion !== "Region 7"){
+            console.log('chaki');
             var patientProvinceDescription = "{{ $patient->other_province }}"; 
             var patientMuncity = "{{ $patient->other_muncity }}";
             var patientBarangay = "{{$patient->other_barangay}}";
