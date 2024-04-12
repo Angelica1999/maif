@@ -39,5 +39,9 @@ class Patients extends Model
     public function fundSource() {       
         return $this->belongsTo(Fundsource::class, 'fundsource_id','id');
     }
+
+    public function proponentData() {       
+        return $this->belongsTo(Proponent::class, 'proponent_id','id');
+    }
     
 }

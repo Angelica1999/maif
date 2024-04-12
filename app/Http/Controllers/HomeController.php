@@ -55,6 +55,9 @@ class HomeController extends Controller
             },
             'facility' => function ($query) {
                 $query->select('id','name');
+            },
+            'proponentData' => function ($query) {
+                $query->select('id','proponent');
             }
         ]);
         //for search
