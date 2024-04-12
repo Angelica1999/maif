@@ -153,7 +153,7 @@
                                     {{ $patient->other_barangay }}
                                 @endif
                             </td>
-                            <td class="td">{{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }}</td>
+                            <td class="td">{{ number_format((float) str_replace(',', '', $patient->guaranteed_amount), 2, '.', ',') }}</td>
                             <td class="td">{{ $patient->encoded_by->lname .', '. $patient->encoded_by->fname }}</td>
                         </tr>
                     @endforeach
@@ -422,13 +422,13 @@
         if(data.val() != "Region 7"){
             {{-- var patientProvinceDescription = "{{ $patients->other_province }}"--}}
             // $("#facility_body").html("<input type='text' class='form-control' name='other_facility' required>");
-            $("#province_body").html("<input type='text' class='form-control' value='' name='other_province' required>");
+            $("#province_body").html("<input type='text' class='form-control' value='' name='other_province'>");
             
-            $("#muncity_body").html("<input type='text' class='form-control' name='other_muncity' required>");
-            $("#barangay_body").html("<input type='text' class='form-control' name='other_barangay' required>");
+            $("#muncity_body").html("<input type='text' class='form-control' name='other_muncity'>");
+            $("#barangay_body").html("<input type='text' class='form-control' name='other_barangay'>");
         }else {
 
-            $("#province_body").html("<select class=\"js-example-basic-single w-100 select2\" id=\"province_id\"  name=\"province_id\" onchange=\"onchangeProvince($(this))\" required>\n" +
+            $("#province_body").html("<select class=\"js-example-basic-single w-100 select2\" id=\"province_id\"  name=\"province_id\" onchange=\"onchangeProvince($(this))\">\n" +
                 "\n" + "</select>");
 
             $('#province_id').empty();
@@ -446,11 +446,11 @@
             //     "                                        <option value=\"\">Please select municipality</option>\n" +
             //     "                                    </select>");
 
-            $("#muncity_body").html("<select class=\"form-control select2\" id=\"muncity_id\" name=\"muncity_id\" onchange=\"onchangeMuncity($(this))\" required disabled>\n" +
+            $("#muncity_body").html("<select class=\"form-control select2\" id=\"muncity_id\" name=\"muncity_id\" onchange=\"onchangeMuncity($(this))\" disabled>\n" +
                 "                                        <option value=\"\">Please select municipality</option>\n" +
                 "                                    </select>");
 
-            $("#barangay_body").html("<select class=\"form-control select2\" id=\"barangay_id\" name=\"barangay_id\" required disabled>\n" +
+            $("#barangay_body").html("<select class=\"form-control select2\" id=\"barangay_id\" name=\"barangay_id\" disabled>\n" +
                 "                                        <option value=\"\">please select barangay</option>\n" +
                 "                                    </select>");
 
