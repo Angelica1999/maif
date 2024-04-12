@@ -80,7 +80,7 @@
                 <div class="form-group">
                     <label for="lname">Province</label>
                     <div id="province_body">
-                        <select class="form-control" id="province_id" name="province_id" onchange="onchangeProvince($(this))" required>
+                        <select class="form-control" id="province_id" name="province_id" onchange="onchangeProvince($(this))">
                             <option value="">Please select province</option>
                             @foreach($provinces as $prov)
                                 <option value="{{ $prov->id }}" @if($prov->id == $patient->province_id) selected @endif>{{ $prov->description }}</option>
