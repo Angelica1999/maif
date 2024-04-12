@@ -69,22 +69,28 @@ class FundSourceController extends Controller
 
                 if($fundsources->get()->isEmpty()){
                     $f_list = Facility::where('name', 'LIKE', "%$request->keyword%")->pluck('id')->toArray();
-
+                    $f_list = [1];
                     $fundsources = Fundsource::with([
                         'proponents' => function ($query) use ($f_list) {
                             $query->whereHas('proponentInfo', function ($query) use ($f_list) {
                                 $query->where(function ($query) use ($f_list) {
-                                    foreach ($f_list as $id) {
-                                        $jsonArray = json_encode([$id]);
-                                        $query->orWhereRaw("JSON_CONTAINS(facility_id, ?)", [$jsonArray]);
-                                    }
+                                    $query->whereIn('facility_id', $f_list)
+                                          ->orWhere(function ($query) use ($f_list) {
+                                              foreach ($f_list as $value) {
+                                                  $stringValue = (string) $value; // Convert $value to string
+                                                  $query->orWhereJsonContains('facility_id', $stringValue);
+                                              }
+                                          });
                                 });
                             })->with(['proponentInfo' => function ($query) use ($f_list) {
                                 $query->where(function ($query) use ($f_list) {
-                                    foreach ($f_list as $id) {
-                                        $jsonArray = json_encode([$id]);
-                                        $query->orWhereRaw("JSON_CONTAINS(facility_id, ?)", [$jsonArray]);
-                                    }
+                                    $query->whereIn('facility_id', $f_list)
+                                          ->orWhere(function ($query) use ($f_list) {
+                                              foreach ($f_list as $value) {
+                                                  $stringValue = (string) $value; // Convert $value to string
+                                                  $query->orWhereJsonContains('facility_id', $stringValue);
+                                              }
+                                          });
                                 });
                             }]);
                         },
@@ -97,14 +103,15 @@ class FundSourceController extends Controller
                     ])
                     ->orWhereHas('proponents.proponentInfo', function ($query) use ($f_list) {
                         $query->where(function ($query) use ($f_list) {
-                            foreach ($f_list as $id) {
-                                $jsonArray = json_encode([$id]);
-                                $query->orWhereRaw("JSON_CONTAINS(facility_id, ?)", [$jsonArray]);
-                            }
+                            $query->whereIn('facility_id', $f_list)
+                                  ->orWhere(function ($query) use ($f_list) {
+                                      foreach ($f_list as $value) {
+                                          $stringValue = (string) $value; // Convert $value to string
+                                          $query->orWhereJsonContains('facility_id', $stringValue);
+                                      }
+                                  });
                         });
                     });
-                    
-                    
                 }
             }else{
                 //search through fundsource

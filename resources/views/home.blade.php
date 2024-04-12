@@ -84,6 +84,7 @@
                         <th><a style="color:black;"  href="{{route('home', ['key' => 'mname'])}}" >Middlename</a></th>
                         <th><a style="color:black;"  href="{{route('home', ['key' => 'lname'])}}" >Lastname</a></th>
                         <th>Facility</th>
+                        <th>Proponent</th>
                         <!-- <th style="min-width:120px">DOB</th> -->
                         {{-- <th>Facility</th> --}}
                         <th style="min-width:90px;"><a style="color:black;"  href="{{route('home', ['key' => 'region'])}}" >Region</a></th>
@@ -131,6 +132,7 @@
                             <td class="td">{{ $patient->mname }}</td>
                             <td class="td">{{ $patient->lname }}</td>
                             <td class="td">{{ $patient->facility->name }}</td>
+                            <td class="td">{{ $patient->proponentData->proponent }}</td>
                             {{-- <td>
                                 @if(isset($patient->facility->description))
                                     {{ $patient->facility->description }}
