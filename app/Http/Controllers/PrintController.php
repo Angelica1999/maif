@@ -95,7 +95,6 @@ class PrintController extends Controller
 
                 } catch (Exception $e) {
                     session()->flash('email_unsent', true);
-                    $chaki[] = $recipientEmail;
                 }
             
             }
@@ -107,7 +106,8 @@ class PrintController extends Controller
     public function sendMultiple(Request $request){
         $ids = $request->input('send_mails');
         $ids = array_map('intval', explode(',', $ids[0]));
-        $chaki = [];
+        set_time_limit(0);  
+
         if($ids !== null || $ids !== ''){
             $patients = Patients::whereIn('id', $ids)->with('facility')->get();
             if($patients){
@@ -139,7 +139,6 @@ class PrintController extends Controller
     
                         } catch (Exception $e) {
                             session()->flash('email_unsent', true);
-                            $chaki[] = $recipientEmail;
                         }
                     }
                 }
