@@ -132,7 +132,7 @@
                             <td class="td">{{ $patient->mname }}</td>
                             <td class="td">{{ $patient->lname }}</td>
                             <td class="td">{{ $patient->facility->name }}</td>
-                            <td class="td">{{ $patient->proponentData->proponent }}</td>
+                            <td class="td">{{ $patient->proponentData ? $patient->proponentData->proponent : 'N/A' }}</td>
                             {{-- <td>
                                 @if(isset($patient->facility->description))
                                     {{ $patient->facility->description }}

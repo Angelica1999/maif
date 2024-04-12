@@ -98,6 +98,8 @@ class HomeController extends Controller
         }else{
             $patients = $patients->orderBy('id', 'desc')->get();
         }
+        // return $patients;
+        // return Proponent::where('id', 348)->first();
         return view('home', [
             'patients' => $patients,
             'keyword' => $request->keyword,
@@ -504,28 +506,27 @@ class HomeController extends Controller
     }
 
     public function editPatient(Request $request) {
-        $patient = Patients::where('id',$request->patient_id)
-                            ->with(
-                                [
-                                    'muncity' => function ($query) {
-                                        $query->select(
-                                            'id',
-                                            'description'
-                                        );
-                                    },
-                                    'barangay' => function ($query) {
-                                        $query->select(
-                                            'id',
-                                            'description'
-                                        );
-                                    },
-                                    'fundsource',
-                                ])->orderBy('updated_at', 'desc')
-                                ->first();
+        $patient =  Patients::where('id',$request->patient_id)
+                        ->with(
+                            [
+                                'muncity' => function ($query) {
+                                    $query->select(
+                                        'id',
+                                        'description'
+                                    );
+                                },
+                                'barangay' => function ($query) {
+                                    $query->select(
+                                        'id',
+                                        'description'
+                                    );
+                                },
+                                'fundsource',
+                            ])->orderBy('updated_at', 'desc')
+                        ->first();
 
         $municipal = Muncity::select('id', 'description')->get();
         $barangay = Barangay::select('id', 'description')->get();
-
         return view('maif.update_patient',[
             'provinces' => Province::get(),
             'fundsources' => Fundsource::get(),
