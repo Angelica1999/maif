@@ -34,7 +34,7 @@
                                 <div class="card-body">
                                     <div style ="">
                                         <a href="#updateProponent" data-toggle="modal" type="button" class="btn btn-sm" onclick="putData()">
-                                            <h4 class="card-title text-info" style="text-align:left;">{{ $proponent->proponent }}</h4>
+                                            <h4 class="card-title" style="text-align:left;">{{ $proponent->proponent }}</h4>
                                         </a>
                                         <ul class="list-arrow">
                                           <li style="margin-left:25px;"><b>{{$proponent->proponent_code}}</b></li>
@@ -96,11 +96,8 @@
 @section('js')
     <script>
         function putData(){
-          var dataString = '{!! addslashes(json_encode($proponents)) !!}';
-var data = JSON.parse(dataString.replace(/&quot;/g, '"').replace(/\\&quot;/g, '\\\\\\"'));
-var specificProponent = data.find(item => item.id === 1);
-console.log('data', specificProponent);
-        
+            var data = '{!! json_encode($proponents) !!}';
+            console.log('data', data);
         }
         
     </script>

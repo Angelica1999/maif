@@ -17,7 +17,6 @@ class Patients extends Model
     }
 
     public function facility() {
-                                                  //patients     //facility             
         return $this->belongsTo(Facility::class, 'facility_id','id');
     }
 

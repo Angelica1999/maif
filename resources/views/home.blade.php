@@ -12,6 +12,11 @@
         width: 100%; 
         height: 100%; 
     }
+
+    #patient_table_length,
+    #patient_table_filter {
+        display: none;
+    }
 </style>
 @extends('layouts.app')
 @section('content')
@@ -22,7 +27,7 @@
             <form method="GET" action="{{ route('home') }}">
                 <div class="input-group float-right w-50" style="min-width: 500px;">
                 <input type="hidden" class="form-control" name="key">
-                    <input type="text" class="form-control" name="keyword" placeholder="Patient name" value="{{ $keyword }}" aria-label="Recipient's username">
+                    <input type="text" class="form-control" name="keyword" id="search_patient" placeholder="Patient name" value="{{ $keyword }}" aria-label="Recipient's username">
                         <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
@@ -55,7 +60,7 @@
             </form>
             @if(count($patients) > 0)
             <div class="table-responsive">
-                <table class="table table-striped">
+                <table class="table table-striped" id="patient_table">
                 <thead>
                     <tr>
                         <th></th>
@@ -78,6 +83,7 @@
                         </th>
                         <th><a style="color:black;"  href="{{route('home', ['key' => 'mname'])}}" >Middlename</a></th>
                         <th><a style="color:black;"  href="{{route('home', ['key' => 'lname'])}}" >Lastname</a></th>
+                        <th>Facility</th>
                         <!-- <th style="min-width:120px">DOB</th> -->
                         {{-- <th>Facility</th> --}}
                         <th style="min-width:90px;"><a style="color:black;"  href="{{route('home', ['key' => 'region'])}}" >Region</a></th>
@@ -124,6 +130,7 @@
                             </td>   
                             <td class="td">{{ $patient->mname }}</td>
                             <td class="td">{{ $patient->lname }}</td>
+                            <td class="td">{{ $patient->facility->name }}</td>
                             {{-- <td>
                                 @if(isset($patient->facility->description))
                                     {{ $patient->facility->description }}
@@ -166,9 +173,6 @@
                     <strong>No patient found!</strong>
                 </div>
             @endif
-            <div class="pl-5 pr-5 mt-5">
-                {!! $patients->appends(request()->query())->links('pagination::bootstrap-5') !!}
-            </div>
         </div>
     </div>
 </div>
@@ -190,6 +194,8 @@
 @endsection
 @section('js')
 <script src="{{ asset('admin/vendors/x-editable/bootstrap-editable.min.js?v=1') }}"></script>
+<script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.4/js/dataTables.bootstrap4.min.js"></script>
 
 @include('maif.editable_js')
 
@@ -217,7 +223,20 @@
     }
 
     $(document).ready(function () {
+        //search
+        var table = $('#patient_table').DataTable({
+            paging: true,
+            pageLength: 50  
+        });
 
+        $('#search_patient').on('keyup', function() {
+            table.search(this.value).draw();
+        });
+        
+        $('#patient_table_length').hide();
+        $('#patient_table_filter').hide();
+        $('#patient_table_paginate').css('float', 'right');
+        //editable_amount
         $.fn.editable.defaults.mode = 'popup';
 
         $(".number_editable").editable({
