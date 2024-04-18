@@ -31,5 +31,8 @@ class Utilization extends Model
     public function user_budget() {   
         return $this->belongsTo(User::class, 'obligated_by','userid');
     }
+    public function transfer() {   
+        return $this->belongsTo(Transfer::class, 'transfer_id','id');
+    }
 
 }

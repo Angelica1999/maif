@@ -473,6 +473,7 @@ class HomeController extends Controller
 
         $patients = $request->input('group_patients');
         $patientsArray = explode(',', $patients);
+        return $patientsArray;
         $group = new Group();
         $group->facility_id = $request->input('group_facility');
         $group->proponent_id = $request->input('group_proponent');

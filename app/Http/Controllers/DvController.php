@@ -72,7 +72,9 @@ class DvController extends Controller
             return view('dv.dv', [
                 'disbursement' => $results,
                 'keyword' => $request->keyword ?: '',
-                'user' => Auth::user()->userid
+                'user' => Auth::user()->userid,
+                'proponents' => Proponent::get(),
+                'proponentInfo' => ProponentInfo::get()
             ]);
         }
     }

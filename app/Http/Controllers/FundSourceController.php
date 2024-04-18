@@ -9,6 +9,7 @@ use App\Models\Proponent;
 use App\Models\ProponentInfo;
 use App\Models\Utilization;
 use App\Models\Transfer;
+use App\Models\Patients;
 use App\Models\Admin_Cost;
 use App\Models\Fundsource_Files;
 
@@ -278,8 +279,9 @@ class FundSourceController extends Controller
         $randomBytes = random_bytes(16); 
         $proponents = Proponent::select( DB::raw('MAX(id) as id'), DB::raw('MAX(proponent) as proponent'),
                             DB::raw('MAX(proponent_code) as proponent_code'))
-                        ->groupBy('proponent_code')
+                        ->groupBy('proponent')
                         ->get(); 
+                        // return $proponents;
 
         return view('fundsource.breakdowns', [
             'fundsource' => $fundsource,
@@ -307,6 +309,10 @@ class FundSourceController extends Controller
         foreach($check_pro as $pro_c){
             $check_info = ProponentInfo::where('proponent_id', $pro_c->proponent_id)->where('fundsource_id', $pro_c->fundsource_id)->first();
             if(!$check_info){
+                $patients = Patients::where('proponent_id', $pro_c->proponent_id)->get();
+                if($patients){
+
+                }
                 $pro_c->delete();
             }
         }
@@ -608,8 +614,8 @@ class FundSourceController extends Controller
                     ->orWhereIn('proponent_info.facility_id', [$facility_id, '702'])
                     ->pluck('proponent_id')->toArray();
 
-        $proponents = Proponent::select( DB::raw('MAX(proponent) as proponent'), DB::raw('MAX(pro_group) as id'))
-            ->groupBy('pro_group') ->whereIn('id', $ids)
+        $proponents = Proponent::select( DB::raw('MAX(proponent) as proponent'), DB::raw('MAX(id) as id'))
+            ->groupBy('proponent_code') ->whereIn('id', $ids)
             ->get();
         return $proponents;
     }
@@ -627,8 +633,10 @@ class FundSourceController extends Controller
 
     public function forPatientCode($proponent_id, $facility_id) {
         $user = Auth::user();
-        $proponent= Proponent::where('pro_group', $proponent_id)->first();
-        $proponent_ids= Proponent::where('pro_group', $proponent_id)->pluck('id')->toArray();
+        $proponent= Proponent::where('id', $proponent_id)->first();
+        //newly added
+        $proponent_ids= Proponent::where('proponent', $proponent->proponent)->pluck('id')->toArray();
+        // $proponent_ids= Proponent::where('pro_group', $proponent->pro_group)->pluck('id')->toArray();
         // return $proponent_ids;
         $facility = Facility::find($facility_id);
         $patient_code = $proponent->proponent_code.'-'.$this->getAcronym($facility->name).date('YmdHi').$user->id;

@@ -12,11 +12,13 @@
         <div class="card-body">
             <form method="GET" action="{{ route('fundsource') }}">
                 <div class="input-group float-right w-50" style="min-width: 600px;">
-                    <input type="text" class="form-control" name="keyword" placeholder="SAA, PROPONENT" value="{{ $keyword }}">
+                    <input type="text" class="form-control" name="keyword" placeholder="SAA, PROPONENT, FACILITY" value="{{ $keyword }}">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
-                        <button type="button" id="create_btn" href="#create_fundsource2" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
+                        @if($user->section != 6)
+                            <button type="button" id="create_btn" href="#create_fundsource2" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
+                        @endif
                         <!-- <button type="button" href="#create_fundsource" onclick="createFundSource()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md">Create</button> -->
                     </div>
                 </div>
@@ -33,12 +35,15 @@
                                 <div class="card-body">
                                     <div style="display: flex; justify-content: space-between;">
                                         <h4 class="card-title" style="text-align: left; margin: 0;">{{ $fund->saa }}</h4>
-                                        <button class="btn btn-sm update_saa" style="cursor: pointer; text-align: right;color:white; background-color:#417524" data-proponent-id="" data-backdrop="static" data-toggle="modal" onclick="createBreakdowns({{ $fund->id }})" href="#create_fundsource">Create Breakdowns</button>
+                                        @if($user->section != 6)
+                                            <button class="btn btn-sm update_saa" style="cursor: pointer; text-align: right;color:white; background-color:#417524" data-proponent-id="" data-backdrop="static" data-toggle="modal" onclick="createBreakdowns({{ $fund->id }})" href="#create_fundsource">Create Breakdowns</button>                                      
+                                        @endif
                                     </div>
 
                                     @foreach($fund->proponents as $proponent)
                                         @if(count($proponent->proponentInfo)>0)
                                             <!-- <div class="card-body"> -->
+                                            <br>
                                             <b><p class="">{{ $proponent->proponent }}</p></b>
                                             <ul class="list-arrow mt-3">
                                             <!-- {{count($proponent->proponentInfo)}} -->
@@ -70,7 +75,9 @@
                                                         </div>
                                                         <div class="d-flex justify-content-between align-items-center">
                                                             <span class="ml-3">Administrative Cost : <strong class="text-info">{{ $proponentInfo->admin_cost}}</strong></span>
-                                                            <button style="width:120px" id="transfer_funds" data-backdrop="static" data-toggle="modal" href="#transfer_fundsource" onclick="transferFunds({{ $proponentInfo->id }})" class='btn btn-sm btn-outline-success ml-2 transfer_funds'>Transfer Funds</button>
+                                                            @if($user->section != 6)
+                                                                <button style="width:120px" id="transfer_funds" data-backdrop="static" data-toggle="modal" href="#transfer_fundsource" onclick="transferFunds({{ $proponentInfo->id }})" class='btn btn-sm btn-outline-success ml-2 transfer_funds'>Transfer Funds</button>
+                                                            @endif
                                                         </div>
                                                         <div class="d-flex justify-content-between align-items-center">
                                                             <span class="ml-3">Remaining Balance &nbsp;: <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->remaining_balance)), 2, '.', ',') }}</strong></span>
@@ -138,6 +145,7 @@
                             <!-- <th>Remarks</th> -->
                             <th>Obligated</th>
                             <th>Paid</th>
+                            <th>Remarks</th>
                         </tr>
                     </thead>
                     <tbody id="track_body">
@@ -286,7 +294,7 @@
             
             success: function(result) {
                 $('#track_body').empty(); 
-    
+                console.log('data', result.transfer);
                 if(result.length > 0){
                     result.forEach(function(item) {
                         var saa = item.fund_sourcedata && item.fund_sourcedata.saa !== null ? item.fund_sourcedata.saa : '-';
@@ -305,14 +313,15 @@
                         });
                         var stat='';
                         if(item.status == 0){
-                            stat = 'Processed';
+                            stat = 'DV';
                         }else if(item.status == 2){
-                            stat = 'Transfered/Deducted';
+                            stat = 'Transfered/Deducted: ' + (item.transfer && item.transfer.remarks !== null ? item.transfer.remarks : '');
                         }else if(item.status == 3){
-                            stat = 'Transfered/Added';
-                        }else if(item.status == 1){
-                            stat = 'Modified';
+                            stat = 'Transfered/Added: ' + (item.transfer && item.transfer.remarks !== null ? item.transfer.remarks : '');
                         }
+                        // else if(item.status == 1){
+                        //     stat = 'Modified';
+                        // }
                         var beg_balance = item.beginning_balance.replace(',', '');
                         var discount = (item.discount !== null)?number_format(parseFloat(item.discount.replace(/,/g, '')), 2, '.', ','):'';
                         var utilize = (item.utilize_amount !== null)?number_format(parseFloat(item.utilize_amount.replace(/,/g, '')), 2, '.', ','):'';
@@ -327,9 +336,9 @@
                             '<td>' + (item.div_id != 0 ? '<a href="{{ route("dv", ["keyword" => ""]) }}' + encodeURIComponent(route) + '">' + route + '</a>' : '') + '</td>' +
                             '<td>' + user + '</td>' +
                             '<td>' + formattedDate+'<br>'+ formattedTime + '</td>' +
-                            // '<td>' + stat + '</td>' +
                             '<td>' + (item.obligated == 1 ? '<i class="typcn typcn-tick menu-icon"></i>' : '') + '</td>' +
-                            '<td>' + (item.paid == 1 ? '<i class="typcn typcn-tick menu-icon"></i>' : '') + '</td>';
+                            '<td>' + (item.paid == 1 ? '<i class="typcn typcn-tick menu-icon"></i>' : '') + '</td>' +
+                            '<td>' + stat + '</td>' ;
                             '</tr>';
                         $('#track_body').append(new_row);
                         i= i+1;

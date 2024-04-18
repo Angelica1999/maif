@@ -40,6 +40,7 @@
                         <tr>
                             <th style="min-width: 100px;"></th>
                             <th>Route No</th>
+                            <th></th>
                             <th>Modified</th>
                             <th style="min-width: 50px;">Status</th>
                             <th style="text-align:center">
@@ -55,6 +56,7 @@
                             <th>Remarks</th>
                             <th>Payee</th>
                             <th>Saa No.</th>
+                            <th>Proponent</th>
                             <th>Date</th>
                             <th>Month</th>
                             <th>Amount</th>
@@ -97,6 +99,9 @@
                                         <a href="#obligate"  onclick="obligateDv('{{$dvs->route_no}}', 'add_dvno')" style="background-color:teal;color:white; width:83px;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">{{ $dvs->route_no }}</a>
                                     @endif
                                 </td> 
+                                <td> 
+                                    <a href="{{ route('dv.pdf', ['dvId' => $dvs->id]) }}" style="background-color:green;color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
+                                </td>
                                 <td>
                                     <a href="#dv_history" onclick="getHistory('{{$dvs->route_no}}')" style="background-color:teal;color:white; width:80px;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">Edit History</a>
                                 </td>
@@ -133,6 +138,38 @@
                                             @endforeach
                                     @endif
                                 </td> 
+                                <td>
+                                    <?php
+                                        $intArray = array_map('intval', json_decode($dvs->proponent_id));
+                                        if (!empty($intArray)) {
+                                            $pro_name = $proponents->where('id', $intArray[0])->value('proponent');
+                                            if($pro_name){
+                                                echo $pro_name;
+                                            }else{
+                                                $ids = array_map('intval', json_decode($dvs->info_id));
+                                                if($ids){
+                                                    $id = $proponentInfo->where('id', $ids[0])->value('proponent_id');
+                                                    echo $proponents->where('id', $id)->value('proponent');
+                                                }
+                                            }
+                                        } else {
+                                            $ids = array_map('intval', json_decode($dvs->info_id));
+                                            if($ids){
+                                                $id = $proponentInfo->where('id', $ids[0])->value('proponent_id');
+                                                echo "1";
+                                                echo $proponents->where('id', $id)->value('proponent');
+                                            }
+
+                                        }
+                                        // $name = "";
+                                        // foreach($intArray as $id){
+                                        //     $pro = $proponents->where('id')->value('proponent');
+                                        //     $name = $name .'<br>'.$pro;
+                                        // }
+                                        // echo $name;
+                                        // echo $proponents->where('id', $intArray[0])->value('proponent');
+                                    ?>
+                                </td>
                                 <td class="td">{{date('F j, Y', strtotime($dvs->date))}}</td>
                                 <td class="td"> @if($dvs->month_year_to !== null)
                                         {{date('F Y', strtotime($dvs->month_year_from)).' - '.date('F Y', strtotime($dvs->month_year_to))}}

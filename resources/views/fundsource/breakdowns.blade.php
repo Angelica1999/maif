@@ -60,7 +60,7 @@
                             <div class="col-md-7">
                                 <b><label>Proponent Code:</label></b>
                                 <div class="form-group" style="display: flex; align-items: center;">
-                                    <input type="text" class="form-control proponent_code" name="proponent_code[]" value="{{$pro->proponent_code}}" style="flex: 1; width:1000px;" required>
+                                    <input type="text" class="form-control proponent_code" name="proponent_code[]" value="{{$pro->proponent_code}}" style="flex: 1; width:1000px;" oninput="checkCode($(this),this.value)" required>
                                     <!-- @if($index == 0) -->
                                         <button type="button" class="form-control clone_pro-btn" style="width: 10px; margin-left: 5px; color:white; background-color:#00688B">+</button>
                                     <!-- @else
@@ -184,7 +184,7 @@
                         <div class="col-md-7">
                             <b><label>Proponent Code:</label></b>
                             <div class="form-group" style="display: flex; align-items: center;">
-                                <input type="text" class="form-control proponent_code" name="proponent_code[]" placeholder="Proponent Code" style="flex: 1; width:1000px;" required>
+                                <input type="text" class="form-control proponent_code" name="proponent_code[]" placeholder="Proponent Code" style="flex: 1; width:1000px;" oninput="checkCode($(this),this.value)" required>
                                 <button type="button" class="form-control clone_pro-btn" style="width: 10px; margin-left: 5px; color:white; background-color:#00688B">+</button>
                             </div>
                         </div>
@@ -241,6 +241,22 @@
         });
     });
 
+    function checkCode(element, value) {
+        setTimeout(() => { 
+            var proponents_list = @json($proponents);
+            var hasMatchingProponent = proponents_list.some(function(item) {
+                return item.proponent_code === value;
+            });
+            if (hasMatchingProponent) {
+                alert('Sorry! This code has been used by another proponent already.');
+                var proponentCodeInput = element.closest('.row').find('.proponent_code');
+                proponentCodeInput.val('');
+            }
+            console.log('Data:', hasMatchingProponent);
+        }, 500);
+    }
+
+
     function proponentCode(selectElement) {
 
         var selectedValue = selectElement.val();
@@ -249,7 +265,9 @@
         if (proponentCode != "" || proponentCode != undefined ) {
             var proponentCodeInput = selectElement.closest('.row').find('.proponent_code');
             proponentCodeInput.val(proponentCode);
+            proponentCodeInput.prop('disabled', true);
         }
+        proponentCodeInput.prop('disabled', false);
     }
 
     function remove(infoId){
@@ -276,6 +294,8 @@
                     sum+=funds;
                 })
                 console.log('sum', sum);
+                console.log('sum', getData());
+
                 if(sum>{{str_replace(',','',$fundsource[0]->alocated_funds)}}){
                     alert('Exceed allocated funds!');
                     inputElement.value = '';
@@ -310,15 +330,13 @@
                             fundsource_id:{{$fundsource[0]->id}}
 
                         };
-
+                        console.log('check', cloneData);
                         formData.push(cloneData);
                     }
                     
                 });
             });
-            console.log('num', num);
-            console.log('nu', nu);
-            // console.log('Collected Data:', formData);
+            console.log('Collected Data:', formData);
 
             formData = formData.filter(function (data, index, array) {
                 return (
@@ -365,8 +383,6 @@
                 formData.splice(count+click);
             }
             formData.splice(formData.length - remove_click);
-
-            console.log('Collected Datasdsad:', formData);
             return formData;
     }
 
