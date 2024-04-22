@@ -309,11 +309,15 @@ class FundSourceController extends Controller
         foreach($check_pro as $pro_c){
             $check_info = ProponentInfo::where('proponent_id', $pro_c->proponent_id)->where('fundsource_id', $pro_c->fundsource_id)->first();
             if(!$check_info){
-                $patients = Patients::where('proponent_id', $pro_c->proponent_id)->get();
-                if($patients){
-
-                }
-                $pro_c->delete();
+                // $patients = Patients::where('proponent_id', $pro_c->proponent_id)->get();
+                // $name = Proponent::where('id', $patients->proponent_id)->value('proponent');
+                // $pro_c->delete();
+                // if($patients){
+                //     $new_pro = Proponent::where('proponent', $name)->first();
+                //     if($new_pro){
+                //         $patients->update(['proponent_id' => $new_pro->id]);
+                //     }
+                // }
             }
         }
         

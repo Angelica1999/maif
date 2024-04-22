@@ -293,8 +293,6 @@
                     var funds = parseFloat(item.alocated_funds.replace(/,/g, ''));
                     sum+=funds;
                 })
-                console.log('sum', sum);
-                console.log('sum', getData());
 
                 if(sum>{{str_replace(',','',$fundsource[0]->alocated_funds)}}){
                     alert('Exceed allocated funds!');
@@ -330,13 +328,11 @@
                             fundsource_id:{{$fundsource[0]->id}}
 
                         };
-                        console.log('check', cloneData);
                         formData.push(cloneData);
                     }
                     
                 });
             });
-            console.log('Collected Data:', formData);
 
             formData = formData.filter(function (data, index, array) {
                 return (
@@ -391,7 +387,6 @@
         $('#breakdown_select').select2();
         $('.clone').on('click', '.clone_pro-btn', function () {
             click = 1 + click;
-            console.log('here');
             $('.loading-container').show();
             var $this = $(this); 
 
@@ -421,7 +416,6 @@
 
 
         $(document).on('click', '.clone .remove_pro-btn', function () {
-            console.log('remove fac');
             remove_click = 1 + remove_click;
 
             $(this).closest('.clone').remove();
@@ -437,7 +431,6 @@
         $('#contractForm').submit(function(e) {
             $('.loading-container').show();
 
-            console.log('contract');
             e.preventDefault();
             console.log('Collected Data:', getData());
 
@@ -471,8 +464,6 @@
                     window.location.href = '{{ route("fundsource") }}';
                 },
                 error: function (error) {
-                    console.error('Error:', error);
-
                     if (error.status) {
                         console.error('Status Code:', error.status);
                     }

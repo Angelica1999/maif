@@ -311,6 +311,11 @@
             });
 
         });
+        fundAmount();
+    }
+
+    function callfundAmount(){
+        fundAmount();
     }
 
     function onchangeSaa(data, proponentId, pro_group) {
@@ -566,7 +571,7 @@
             $('#pro_id1').val($('#saa1').find(':selected').attr('dataproponent'));
             $('#pro_id2').val($('#saa2').find(':selected').attr('dataproponent'));
             $('#pro_id3').val($('#saa3').find(':selected').attr('dataproponent'));
-
+            console.log('chakibells',  $('#saa1_infoId').val());
 
             if(facility_id !== null && facility_id !== undefined && facility_id !== ''){
                 // $.get("{{ url('/getallocated').'/' }}" +facility_id, function(result) {
@@ -1116,7 +1121,7 @@
                     });
                     setTimeout(function() {
                         fundAmount();
-                    }, 2000);
+                    }, 3000);
                 }); 
             }
         });

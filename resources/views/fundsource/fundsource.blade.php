@@ -340,7 +340,10 @@
                             '<td>' + (item.paid == 1 ? '<i class="typcn typcn-tick menu-icon"></i>' : '') + '</td>' +
                             '<td>' + stat + '</td>' ;
                             '</tr>';
-                        $('#track_body').append(new_row);
+                            console.log('check', item.status);
+                        if(item.status == 0){
+                            $('#track_body').append(new_row);
+                        }
                         i= i+1;
                     });
                 

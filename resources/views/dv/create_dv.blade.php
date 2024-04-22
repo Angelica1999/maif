@@ -172,7 +172,7 @@
                                 in the amount of:</p><br>
                                 <div style="display: flex; align-items: center;">
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    <select name="fundsource_id" id="saa1" style="width:150px;" class="js-example-basic-single1" onchange="generateGroup()"required disabled>
+                                    <select name="fundsource_id" id="saa1" style="width:150px;" class="js-example-basic-single1" onchange="generateGroup()" required disabled>
                                         <option value="" data-facilities="" style="background-color:green">- Select SAA -</option> 
                                     </select> 
                                     <div class="custom-dropdown" style="margin-left: 8px;">
@@ -186,7 +186,7 @@
                                 </div>
                                 <div style="display: flex; align-items: center;"> 
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    <select  name="fundsource_id_2"  id="saa2" style="width:150px; display: none;"></select> 
+                                    <select  name="fundsource_id_2"  id="saa2" onchange="callfundAmount()" style="width:150px; display: none;"></select> 
                                     <div class="custom-dropdown" style="margin-left: 8px;">
                                         <input type="text" name="amount2" id="inputValue2"  style="width:120px; height: 42px; display: none;" oninput="fundAmount(2)" onkeyup="validateAmount(this)" class="ft15" disabled required autocomplete="off">
                                         <div class="dropdown-content" id="dropdownContent2">
@@ -198,7 +198,7 @@
                                 </div>
                                 <div style="display: flex; align-items: center;">  
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    <select name="fundsource_id_3"  id="saa3" style="width:150px; display: none"></select>
+                                    <select name="fundsource_id_3"  id="saa3" onchange="callfundAmount()"  style="width:150px; display: none"></select>
                                     <div class="custom-dropdown" style="margin-left: 8px;">
                                         <input type="text" name="amount3" id="inputValue3"  style="width:120px; height: 42px; font-size: 8pt; display:none" oninput="fundAmount(3)" onkeyup="validateAmount(this)"class="ft15"  disabled required autocomplete="off">                        
                                         <div class="dropdown-content" id="dropdownContent3">
