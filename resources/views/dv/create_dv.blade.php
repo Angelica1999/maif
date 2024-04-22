@@ -62,6 +62,10 @@
     .hide {
         display: none;
     }
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: green;
+        color: white;
+    }
    
 </style>
 
