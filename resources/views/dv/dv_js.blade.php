@@ -191,6 +191,15 @@
             document.getElementById('RemoveSAAButton').style.display = 'inline-block'; // hide RemoveSAAButton
             document.getElementById('showSAAButton').style.display = 'inline-block';
             saaCounter++;
+            $('#saa2').select2({
+                width: '100%',
+                templateResult: function (data) {
+                    if ($(data.element).data('color') === 'red') {
+                        return $('<span style="color: red;">' + data.text + '</span>');
+                    }
+                    return data.text;
+                }
+            });
         } else if (saaCounter === 2) {
             remove = 2;
             $('#saa3').select2();
@@ -200,6 +209,15 @@
             document.getElementById('ewtValue3').style.display = 'inline-block';
             document.getElementById('RemoveSAAButton1').style.display = 'inline-block'; // hide RemoveSAAButton
             document.getElementById('showSAAButton').style.display = 'none'; // hiding showSAAButton
+            $('#saa3').select2({
+                width: '100%',
+                templateResult: function (data) {
+                    if ($(data.element).data('color') === 'red') {
+                        return $('<span style="color: red;">' + data.text + '</span>');
+                    }
+                    return data.text;
+                }
+            });
         }
         console.log('checkval',$('#dv').val());
 
@@ -480,6 +498,15 @@
                 }else{
                     text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + rem_balance;
                 }
+
+                var color = '';
+                if(rem_balance == '0' || rem_balance == '0.00'){
+                    color = 'red';
+                    console.log('red');
+                }else{
+                    color = 'normal';
+                    console.log('normal');
+                }
                 
                 $('#saa1').append($('<option>', {
                         value: optionData.fundsource_id,
@@ -487,8 +514,20 @@
                         dataval: optionData.remaining_balance,
                         dataproponentInfo_id: optionData.id,
                         dataprogroup: optionData.proponent.pro_group,
-                        dataproponent: optionData.proponent.id
+                        dataproponent: optionData.proponent.id,
+                        'data-color': color
                 }));
+
+                $('#saa1').select2({
+                    width: '100%',
+                    templateResult: function (data) {
+                        if ($(data.element).data('color') === 'red') {
+                            return $('<span style="color: red;">' + data.text + '</span>');
+                        }
+                        return data.text;
+                    }
+                });
+
                 $('#saa2').append($('<option>', {
                             value: optionData.fundsource_id,
                             text: text_display,
