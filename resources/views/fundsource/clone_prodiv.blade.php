@@ -18,7 +18,7 @@
         <div class="col-md-7">
             <b><label>Proponent Code:</label></b>
             <div class="form-group" style="display: flex; align-items: center;">
-                <input type="text" class="form-control proponent_code" name="proponent_code[]" placeholder="Proponent Code" style="flex: 1; width:1000px;" required>
+                <input type="text" class="form-control proponent_code" name="proponent_code[]" placeholder="Proponent Code" style="flex: 1; width:1000px;" oninput="checkCode($(this),this.value)" required>
                 <button type="button" class="form-control remove_pro-btn" style="width: 10px; margin-left: 5px; color:white; background-color:#00688B">-</button>
             </div>
         </div>

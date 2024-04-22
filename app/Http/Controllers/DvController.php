@@ -72,7 +72,9 @@ class DvController extends Controller
             return view('dv.dv', [
                 'disbursement' => $results,
                 'keyword' => $request->keyword ?: '',
-                'user' => Auth::user()->userid
+                'user' => Auth::user()->userid,
+                'proponents' => Proponent::get(),
+                'proponentInfo' => ProponentInfo::get()
             ]);
         }
     }
@@ -287,9 +289,10 @@ class DvController extends Controller
 
             $amount = [$dv->amount1, !empty($dv->amount2)?$dv->amount2: 0 , !empty($dv->amount3)?$dv->amount3: 0];
             $index = 0;
+            $infos = array_map('intval', json_decode($dv->info_id));
 
-            foreach($saa as $index=>$id){
-                $p_if = ProponentInfo::where('id', $info[$index])->first();
+            foreach($infos as $index=>$id){
+                $p_if = ProponentInfo::where('id', $id)->first();
 
                 if($dv->deduction1 >= 3){
                     $total =((double)str_replace(',', '',$amount[$index]) / 1.12);
@@ -414,6 +417,7 @@ class DvController extends Controller
                     $utilize->discount = $discount[$index];
                     $utilize->utilize_amount = $utilize_amount[$index];
                     $utilize->created_by = Auth::user()->userid;
+                    $utilize->save();
 
                     if($proponent_info && $proponent_info != null){
                         $cleanedValue = str_replace(',', '', $proponent_info->remaining_balance);
@@ -421,8 +425,6 @@ class DvController extends Controller
                     }else{
                         return "contact system administrator" ;
                     }
-                
-                    $utilize->save();
                     $proponent_info->save();
                 }
             }

@@ -14,7 +14,7 @@ class UtilizationController extends Controller{
     public function tracking($info_id){
         
         $utilization = Utilization::where('proponentinfo_id', $info_id)
-                            ->with(['user', 'proponentdata', 'fundSourcedata'])
+                            ->with(['user', 'proponentdata', 'fundSourcedata', 'transfer'])
                             ->get()
                             ->groupBy('div_id')
                             ->map(function ($group) {

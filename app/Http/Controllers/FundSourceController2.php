@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Utilization;
 use App\Models\Proponent;
+use App\Models\ProponentInfo;
 use App\Models\Fundsource;
 use App\Models\User;
 use App\Models\Dv;
@@ -98,7 +99,9 @@ class FundSourceController2 extends Controller{
           'disbursement' => $results,
           'name'=> $name,
           'type' => $type,
-          'keyword' => $request->keyword
+          'keyword' => $request->keyword,
+          'proponents' => Proponent::get(),
+          'proponentInfo' => ProponentInfo::get()
         ]);
     }
 
@@ -124,7 +127,9 @@ class FundSourceController2 extends Controller{
           'disbursement' => $results,
           'name'=> $name,
           'type' => $type,
-          'keyword' => $request->keyword
+          'keyword' => $request->keyword,
+          'proponents' => Proponent::get(),
+          'proponentInfo' => ProponentInfo::get()
         ]);
     }
 

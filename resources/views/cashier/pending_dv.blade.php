@@ -26,6 +26,7 @@
                         <th style="min-width: 120px;">Route No</th>
                         <th>Payee</th>
                         <th  style="min-width: 120px;">Saa Number</th>
+                        <th>Proponent</th>
                         <th style="min-width: 140px;">Prepared Date</th>
                         <th style="min-width: 150px;">Exclusive Month</th>
                         <th>Amount1</th>
@@ -71,6 +72,38 @@
                                     @endphp
                                     {{ implode(', ', $saaValues) }}
                                 @endif
+                            </td>
+                            <td>
+                                <?php
+                                    $intArray = array_map('intval', json_decode($dvs->proponent_id));
+                                    if (!empty($intArray)) {
+                                        $pro_name = $proponents->where('id', $intArray[0])->value('proponent');
+                                        if($pro_name){
+                                            echo $pro_name;
+                                        }else{
+                                            $ids = array_map('intval', json_decode($dvs->info_id));
+                                            if($ids){
+                                                $id = $proponentInfo->where('id', $ids[0])->value('proponent_id');
+                                                echo $proponents->where('id', $id)->value('proponent');
+                                            }
+                                        }
+                                    } else {
+                                        $ids = array_map('intval', json_decode($dvs->info_id));
+                                        if($ids){
+                                            $id = $proponentInfo->where('id', $ids[0])->value('proponent_id');
+                                            echo "1";
+                                            echo $proponents->where('id', $id)->value('proponent');
+                                        }
+
+                                    }
+                                    // $name = "";
+                                    // foreach($intArray as $id){
+                                    //     $pro = $proponents->where('id')->value('proponent');
+                                    //     $name = $name .'<br>'.$pro;
+                                    // }
+                                    // echo $name;
+                                    // echo $proponents->where('id', $intArray[0])->value('proponent');
+                                ?>
                             </td> 
                             <td>{{date('F j, Y', strtotime($dvs->date))}}</td>
                             <td> @if($dvs->month_year_to !== null)

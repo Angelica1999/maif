@@ -43,7 +43,8 @@
             <form method="POST" action="{{ route('sent.mails') }}" class="send_mailform">
                 @csrf
                 <div style="display: flex; justify-content: flex-end;">
-                    <button class="btn-sm send_mails" name="send_mails[]" style="display:none;background-color: green; color: white; height:45px">Send Mails</button>
+                    <button class="btn-sm send_mails" name="send_mails[]" style="display:none;background-color: green; color: white; height:45px" onclick ="check()">Send Mails</button>
+                    <input type="hidden" class="form-control idss" name="idss" id="idss" >
                 </div>
             </form>
             <form method="POST" action="{{ route('save.group') }}">
@@ -105,7 +106,7 @@
                             <td style="text-align:center;" class="group-email" data-patient-id="{{ $patient->id }}" >
                                 <input class="sent_mails[] " id="mail_ids[]" name="mail_ids[]" type="hidden">
                                 <input type="checkbox" style="width: 60px; height: 20px;" name="mailCheckbox[]" id="mailCheckboxId_{{ $index }}" 
-                                    class="group-mailCheckBox" >
+                                    class="group-mailCheckBox" onclick="itemChecked($(this))">
                             </td>
                             <td style="text-align:center">
                                 @if($patient->remarks == 1)
@@ -116,7 +117,7 @@
                                 data-amount="{{$patient->actual_amount}}" data-facility-id="{{$patient->facility_id}}" >
                                 @if($patient->group_id == null)
                                 <input type="checkbox" style="width: 60px; height: 20px;" name="someCheckbox[]" id="someCheckboxId_{{ $index }}" 
-                                    class="group-checkbox">
+                                    class="group-checkbox" onclick="groupItem($(this))">
                                 @else
                                     w/group
                                 @endif
@@ -219,26 +220,54 @@
     }
     function amountError(){
         Lobibox.alert('error',{
-        size: 'mini',
-        msg: "There is no actual amount! Fill it"
-    });
+            size: 'mini',
+            msg: "There is no actual amount! Fill it"
+        });
+    }
+    var all_ids = [];
+    var id_list = [];
+    
+    function itemChecked(element){
+        var parentTd = $(element).closest('td');   
+        var patientId = parentTd.attr('data-patient-id');
+        if(id_list.includes(patientId)){
+            console.log("Patient ID already exists in the array.");
+            id_list = id_list.filter(id => id !== patientId);
+            console.log("Id_list:", id_list);
+        } else {
+            console.log("Patient ID does not exist in the array.");
+            id_list.push(patientId);
+            console.log("Added Patient ID to the array:", id_list);
+        }
+        $('.send_mails').val(id_list);
+    }
+    function groupItem(el){
+        var parentTd = $(element).closest('td');   
+        var patientId = parentTd.attr('data-patient-id');
     }
 
     $(document).ready(function () {
-        //search
+    function initializeDataTable() {
         var table = $('#patient_table').DataTable({
             paging: true,
-            pageLength: 50  
+            pageLength: 50,
+            drawCallback: function() {
+                initializeEditable();
+                initializeGroupFunctions();
+                initializeMailboxes();
+            }
         });
 
         $('#search_patient').on('keyup', function() {
             table.search(this.value).draw();
         });
-        
+
         $('#patient_table_length').hide();
         $('#patient_table_filter').hide();
         $('#patient_table_paginate').css('float', 'right');
-        //editable_amount
+    }
+
+    function initializeEditable() {
         $.fn.editable.defaults.mode = 'popup';
 
         $(".number_editable").editable({
@@ -246,18 +275,17 @@
             name: 'actual_amount',
             title: $(this).data("title"),
             emptytext: 'empty',
-
             success: function(response, newValue) {
                 var cell = $(this).closest('.editable-amount');
                 var patientId = cell.data('patient-id');
                 var guaranteed_amount = cell.data('guaranteed-amount');
                 var actual_amount = cell.data('actual-amount');
-                var url = "{{ url('update/amount').'/' }}" + patientId +'/'+ newValue;
+                var url = "{{ url('update/amount').'/' }}" + patientId + '/' + newValue;
                 var json = {
                     "_token" : "<?php echo csrf_token(); ?>",
                     "value" : newValue
                 };
-            
+
                 if(newValue == ''){
                     Lobibox.alert('error',{
                         size: 'mini',
@@ -265,23 +293,21 @@
                     }); 
                     newValue = 0;
                     location.reload();
-                    // window.location.href = '{{ route("home") }}';
                     return;  
                 }
                 var c_amount = newValue.replace(/,/g,'');
 
-                if(c_amount>guaranteed_amount){
+                if(c_amount > guaranteed_amount){
                     $(this).html(newValue);
                     Lobibox.alert('error',{
                         size: 'mini',
                         msg: "Inputted actual amount if greater than guaranteed amount!"
                     }); 
                     location.reload();
-                    // window.location.href = '{{ route("home") }}';
                     return;           
                 }
 
-                $.post(url,json,function(result){
+                $.post(url, json, function(result){
                     Lobibox.notify('success', {
                         title: "",
                         msg: "Successfully update actual amount!",
@@ -291,14 +317,16 @@
                     location.reload();
                 });
             }
-        });    
+        });
+    }
 
+    function initializeGroupFunctions() {
         function setNull(){
             $('.group-btn').hide();
             $('.totalAmountLabel').hide();
             $('.group_amountT').val('').hide();
         }
-        
+
         $('.group-checkbox').change(function () {
             if ($(this).prop('checked')) {
                 var selectedProponentId = $(this).closest('.group-amount').data('proponent-id');
@@ -311,7 +339,6 @@
                     if (proponentId !== selectedProponentId || facilityId !== selectedFacilityId) {
                         $(this).prop('disabled', true);
                         $(this).prop('checked', false);
-                        
                     } else {
                         $(this).prop('disabled', false);
                     }
@@ -361,9 +388,10 @@
             if(checkedCheckboxes.length == '0'){
                 setNull();
             }
-
         });
-        //for mailboxes
+    }
+
+    function initializeMailboxes() {
         $('.group-mailCheckBox').change(function () {
             $('.send_mails').show();
             if ($(this).prop('checked')) {
@@ -377,25 +405,215 @@
             
             checkedMailBoxes.each(function () {
                 var patient = $(this).closest('.group-email').data('patient-id');
-                ids.push(patient)
+                ids.push(patient);
+                all_ids.push(patient);
             });
             if(ids.length ==  0){
                 $('.send_mails').hide();
             }
-            $('.send_mails').val(ids);
-
+            // $('.send_mails').val(ids);
         });
+
         //select_all
         $('.select_all').on('click', function(){
             $('.group-mailCheckBox').prop('checked', true);
             $('.group-mailCheckBox').trigger('change');
         });
+
         //unselect_all
         $('.unselect_all').on('click', function(){
             $('.group-mailCheckBox').prop('checked', false);
             $('.group-mailCheckBox').trigger('change');
         });
+    }
+
+    // Initialize on document ready
+    initializeDataTable();
+
+    // Reinitialize on DataTable draw
+    $('#patient_table').on('draw.dt', function() {
+        initializeEditable();
+        initializeGroupFunctions();
+        initializeMailboxes();
     });
+});
+
+
+    function check(){
+        console.log('ids_sent', all_ids);
+    }
+
+    // $(document).ready(function () {
+    //     //search
+    //     var table = $('#patient_table').DataTable({
+    //         paging: true,
+    //         pageLength: 50  
+    //     });
+
+    //     $('#search_patient').on('keyup', function() {
+    //         table.search(this.value).draw();
+    //     });
+        
+    //     $('#patient_table_length').hide();
+    //     $('#patient_table_filter').hide();
+    //     $('#patient_table_paginate').css('float', 'right');
+    //     //editable_amount
+    //     $.fn.editable.defaults.mode = 'popup';
+
+    //     $(".number_editable").editable({
+    //         type : 'number',
+    //         name: 'actual_amount',
+    //         title: $(this).data("title"),
+    //         emptytext: 'empty',
+
+    //         success: function(response, newValue) {
+    //             var cell = $(this).closest('.editable-amount');
+    //             var patientId = cell.data('patient-id');
+    //             var guaranteed_amount = cell.data('guaranteed-amount');
+    //             var actual_amount = cell.data('actual-amount');
+    //             var url = "{{ url('update/amount').'/' }}" + patientId +'/'+ newValue;
+    //             var json = {
+    //                 "_token" : "<?php echo csrf_token(); ?>",
+    //                 "value" : newValue
+    //             };
+            
+    //             if(newValue == ''){
+    //                 Lobibox.alert('error',{
+    //                     size: 'mini',
+    //                     msg: "Actual amount accepts number only!"
+    //                 }); 
+    //                 newValue = 0;
+    //                 location.reload();
+    //                 // window.location.href = '{{ route("home") }}';
+    //                 return;  
+    //             }
+    //             var c_amount = newValue.replace(/,/g,'');
+
+    //             if(c_amount>guaranteed_amount){
+    //                 $(this).html(newValue);
+    //                 Lobibox.alert('error',{
+    //                     size: 'mini',
+    //                     msg: "Inputted actual amount if greater than guaranteed amount!"
+    //                 }); 
+    //                 location.reload();
+    //                 // window.location.href = '{{ route("home") }}';
+    //                 return;           
+    //             }
+
+    //             $.post(url,json,function(result){
+    //                 Lobibox.notify('success', {
+    //                     title: "",
+    //                     msg: "Successfully update actual amount!",
+    //                     size: 'mini',
+    //                     rounded: true
+    //                 });
+    //                 location.reload();
+    //             });
+    //         }
+    //     });    
+
+    //     function setNull(){
+    //         $('.group-btn').hide();
+    //         $('.totalAmountLabel').hide();
+    //         $('.group_amountT').val('').hide();
+    //     }
+        
+    //     $('.group-checkbox').change(function () {
+    //         if ($(this).prop('checked')) {
+    //             var selectedProponentId = $(this).closest('.group-amount').data('proponent-id');
+    //             var selectedFacilityId = $(this).closest('.group-amount').data('facility-id');
+
+    //             $('.group-checkbox').not(this).each(function () {
+    //                 var proponentId = $(this).closest('.group-amount').data('proponent-id');
+    //                 var facilityId = $(this).closest('.group-amount').data('facility-id');
+
+    //                 if (proponentId !== selectedProponentId || facilityId !== selectedFacilityId) {
+    //                     $(this).prop('disabled', true);
+    //                     $(this).prop('checked', false);
+                        
+    //                 } else {
+    //                     $(this).prop('disabled', false);
+    //                 }
+    //             });
+    //         } else {
+    //             $('.group-checkbox').prop('disabled', false);
+    //         }
+    //         var checkedCheckboxes = $('.group-checkbox:checked');
+    //         var totalAmount = 0;
+    //         var patientId = [];
+    //         var proponentId = 0;
+    //         var facilityId = 0;
+
+    //         checkedCheckboxes.each(function () {
+    //             var amount = $(this).closest('.group-amount').data('amount');
+    //             if(amount == null || amount == '' || amount == undefined){
+    //                 amountError();
+    //                 setNull();
+    //                 totalAmount = 0;
+    //                 $('.group-checkbox').prop('checked', false);
+    //             }else{
+    //                 var currentProponent = $(this).closest('.group-amount').data('proponent-id');
+    //                 var currentFacility = $(this).closest('.group-amount').data('facility-id');
+    //                 var patient = $(this).closest('.group-amount').data('patient-id');
+
+    //                 if (facilityId == 0 || currentFacility == facilityId || proponentId == 0 || currentProponent == proponentId) {
+    //                     facilityId = currentFacility;
+    //                     proponentId = currentProponent;
+    //                     totalAmount += parseFloat(amount);
+    //                     patientId.push(patient);
+    //                 } else {
+    //                     error();
+    //                     $('.group-checkbox').prop('checked', false);
+    //                 }
+    //             }
+    //         });
+    //         if(totalAmount > 0){
+    //             totalAmount = totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    //             $('.group_amountT').val(totalAmount).show();
+    //             $('.group_facility').val(facilityId);
+    //             $('.group_proponent').val(proponentId);
+    //             $('.group_patients').val(patientId.join(','));
+    //             $('.group-btn').show();
+    //             $('.totalAmountLabel').show();
+    //         }
+
+    //         if(checkedCheckboxes.length == '0'){
+    //             setNull();
+    //         }
+
+    //     });
+    //     //for mailboxes
+    //     $('.group-mailCheckBox').change(function () {
+    //         $('.send_mails').show();
+    //         if ($(this).prop('checked')) {
+    //             $('.group-checkbox').prop('disabled', true);
+    //         } else {
+    //             $('.group-checkbox').prop('disabled', false);
+    //         }
+    //         var checkedMailBoxes = $('.group-mailCheckBox:checked');
+            
+    //         var ids = [];
+            
+    //         checkedMailBoxes.each(function () {
+    //             var patient = $(this).closest('.group-email').data('patient-id');
+    //             ids.push(patient)
+    //         });
+    //         if(ids.length ==  0){
+    //             $('.send_mails').hide();
+    //         }
+    //         $('.send_mails').val(ids);
+    //     });
+    //     //select_all
+    //     $('.select_all').on('click', function(){
+    //         $('.group-mailCheckBox').prop('checked', true);
+    //         $('.group-mailCheckBox').trigger('change');
+    //     });
+    //     //unselect_all
+    //     $('.unselect_all').on('click', function(){
+    //         $('.group-mailCheckBox').prop('checked', false);
+    //         $('.group-mailCheckBox').trigger('change');
+    //     });
+    // });
 
     function validateAmount(element) {
         if (event.keyCode === 32) {
