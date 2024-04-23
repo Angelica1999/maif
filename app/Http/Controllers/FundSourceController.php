@@ -348,10 +348,7 @@ class FundSourceController extends Controller
                 if( $breakdown['info_id'] !== "0" && $breakdown['info_id'] !== "undefined" ){
                     
                     $info = ProponentInfo::where('id',  $breakdown['info_id'])->first();
-                    $compare = (double) str_replace(',','',$info->remaining_balance) + (double) str_replace(',','',$info->admin_cost);
-
-                    if(str_replace(',','', $info->alocated_funds) == $compare ){
-                        $info->facility_id = json_encode($breakdown['facility_id']);
+                    $info->facility_id = json_encode($breakdown['facility_id']);
                         $info->proponent_id = $proponentId;
                         $info->alocated_funds = $breakdown['alocated_funds'];
                         if((double)str_replace(',','',$get_fundsource->alocated_funds) >= 1000000){
@@ -363,13 +360,7 @@ class FundSourceController extends Controller
                         }
                            
                         $info->created_by = Auth::user()->userid;
-                        $info->save();
-                    }else{
-                        $info->facility_id = json_encode($breakdown['facility_id']);
-                        $info->proponent_id = $proponentId;
-                        $info->created_by = Auth::user()->userid;
-                        $info->save();
-                    }
+                        $info->save();                    
                 }else{
                     $p_info = new ProponentInfo();
                     $p_info->fundsource_id = $breakdown['fundsource_id'];

@@ -293,7 +293,7 @@
                     var funds = parseFloat(item.alocated_funds.replace(/,/g, ''));
                     sum+=funds;
                 })
-
+                console.log('data', getData());
                 if(sum>{{str_replace(',','',$fundsource[0]->alocated_funds)}}){
                     alert('Exceed allocated funds!');
                     inputElement.value = '';
@@ -462,6 +462,7 @@
                     $('#create_fundsource').modal('hide');
                     $('.loading-container').css('display', 'none');
                     window.location.href = '{{ route("fundsource") }}';
+                    console.log('sadsd', response);
                 },
                 error: function (error) {
                     if (error.status) {
