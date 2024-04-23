@@ -26,7 +26,8 @@
 <form id="contractForm" method="POST" action="{{ route('fundsource.save_breakdowns') }}">
     
     <div class="modal-body">
-        <h4>{{$fundsource[0]->saa}} : PhP {{number_format($fundsource[0]->alocated_funds, 2, '.', ',')}}</h4>
+        <h4>{{$fundsource[0]->saa}} : Php {{number_format($fundsource[0]->alocated_funds, 2, '.', ',')}}</h4>
+        <h4 class="breakdown_total">Total Breakdowns : PhP {{number_format($sum, 2, '.', ',')}}</h4>
         @csrf
         <br>
         <br>
@@ -256,7 +257,6 @@
         }, 500);
     }
 
-
     function proponentCode(selectElement) {
 
         var selectedValue = selectElement.val();
@@ -276,15 +276,6 @@
         });
     }
 
-    $('.btn-secondary').on('click', function(){
-
-        // $('.modal_body').empty();
-    });
-
-    // $('#close_b').on('click', function(){ 
-    //         location.reload();
-    //     });
-
     function calculateFunds(inputElement){
         clearTimeout(timer);
         timer = setTimeout(() => {
@@ -293,10 +284,24 @@
                     var funds = parseFloat(item.alocated_funds.replace(/,/g, ''));
                     sum+=funds;
                 })
-                console.log('data', getData());
+                $('.breakdown_total').text('Total Breakdowns: Php '+sum.toLocaleString('en-US', {maximumFractionDigits: 2}));
                 if(sum>{{str_replace(',','',$fundsource[0]->alocated_funds)}}){
                     alert('Exceed allocated funds!');
                     inputElement.value = '';
+                }
+
+                var info_id = $('.info_id').val();
+                if( info_id != 0 || info_id != null || info_id != undefined){
+                    var jsonData = @json($util);
+                    var filteredData = jsonData.filter(item => item.proponentinfo_id == info_id);
+                    var totalUtilizeAmount = filteredData.reduce((sum, item) => {
+                        var amount = parseFloat(item.utilize_amount.replace(/,/g, ''));
+                        return sum + amount;
+                    }, 0);
+                    var input = inputElement.value.replace(/,/g, '');
+                    if(totalUtilizeAmount > input){
+                        alert('Allocated amount for this facility is lesser than total utilized amount int DV');
+                    }
                 }
         }, 1000);
     }
@@ -382,6 +387,15 @@
             return formData;
     }
 
+    function display(){
+        var sum =0;
+        getData().forEach(item=>{
+            var funds = parseFloat(item.alocated_funds.replace(/,/g, ''));
+            sum+=funds;
+        })
+        $('.breakdown_total').text('Total Breakdowns: Php '+sum.toLocaleString('en-US', {maximumFractionDigits: 2}));
+    }
+
     $(document).ready(function() {
 
         $('#breakdown_select').select2();
@@ -417,15 +431,16 @@
 
         $(document).on('click', '.clone .remove_pro-btn', function () {
             remove_click = 1 + remove_click;
-
+            display();
             $(this).closest('.clone').remove();
             $(this).closest('.clone hr').remove();
+          
         });
 
         $(document).on('click', '.clone .remove_fac-clone', function () {
             $(this).closest('.row').remove();
             remove_click = 1 + remove_click;
-
+            display();
         });
 
         $('#contractForm').submit(function(e) {
