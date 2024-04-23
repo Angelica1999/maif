@@ -282,13 +282,18 @@ class FundSourceController extends Controller
                         ->groupBy('proponent')
                         ->get(); 
                         // return $proponents;
-
+        $proponent_info  =   ProponentInfo::where('fundsource_id', $fundsourceId)->get();             
+        $sum = $proponent_info->sum(function ($info) {
+                    return (float) str_replace(',', '', $info->alocated_funds);
+                });
         return view('fundsource.breakdowns', [
             'fundsource' => $fundsource,
-            'pro_count' => ProponentInfo::where('fundsource_id', $fundsourceId)->count(),
+            'pro_count' => $proponent_info->count(),
             'facilities' => Facility::get(),
             'proponents' => $proponents,
-            'uniqueCode' => bin2hex($randomBytes)
+            'uniqueCode' => bin2hex($randomBytes),
+            'sum' => $sum,
+            'util' => Utilization::where('fundsource_id', $fundsourceId)->where('status', 0)->get()
         ]);
 
     }
@@ -348,7 +353,9 @@ class FundSourceController extends Controller
                 if( $breakdown['info_id'] !== "0" && $breakdown['info_id'] !== "undefined" ){
                     
                     $info = ProponentInfo::where('id',  $breakdown['info_id'])->first();
-                    $info->facility_id = json_encode($breakdown['facility_id']);
+
+                    if(str_replace(',','',$breakdown['alocated_funds']) != str_replace(',','',$info->alocated_funds)){
+                        $info->facility_id = json_encode($breakdown['facility_id']);
                         $info->proponent_id = $proponentId;
                         $info->alocated_funds = $breakdown['alocated_funds'];
                         if((double)str_replace(',','',$get_fundsource->alocated_funds) >= 1000000){
@@ -358,27 +365,36 @@ class FundSourceController extends Controller
                             $info->admin_cost = 0;
                             $info->remaining_balance = $breakdown['alocated_funds'];
                         }
-                           
+                            
                         $info->created_by = Auth::user()->userid;
                         $info->save();
-                    $utilization = Utilization::where('proponentinfo_id', $info->id)->where('status', '!=', 1)->get();
-                    $new_beginning = number_format((double)str_replace(',','',$info->remaining_balance), 2, '.', ',');
+                        $utilization = Utilization::where('proponentinfo_id', $info->id)->where('status', '!=', 1)->get();
+                        $new_beginning = number_format((double)str_replace(',','',$info->remaining_balance), 2, '.', ',');
 
-                    if($utilization){
-                        foreach($utilization as $u){
-                            if($u->status == 3){
-                                $u->beginning_balance = $new_beginning;
-                                $u->save();
-                                $new_beginning = number_format((double)str_replace(',','',$u->beginning_balance) + (double)str_replace(',','',$u->utilize_amount),2,'.',',');
-                            }else{
-                                $u->beginning_balance = $new_beginning;
-                                $u->save();
-                                $new_beginning = number_format((double)str_replace(',','',$u->beginning_balance) - (double)str_replace(',','',$u->utilize_amount),2,'.',',');
+                        if($utilization){
+                            foreach($utilization as $u){
+                                if($u->status == 3){
+                                    $u->beginning_balance = $new_beginning;
+                                    $u->save();
+                                    $new_beginning = number_format((double)str_replace(',','',$u->beginning_balance) + (double)str_replace(',','',$u->utilize_amount),2,'.',',');
+                                    $info->alocated_funds = number_format((double)str_replace(',','',$info->alocated_funds) + (double)str_replace(',','',$u->utilize_amount),2,'.',',');
+                                    $saa_am = (double)str_replace(',','',$get_fundsource->alocated_funds) + (double)str_replace(',','',$u->utilize_amount);
+                                    $get_fundsource->alocated_funds = $saa_am;
+                                    $get_fundsource->remaining_balance = $saa_am;
+                                    $get_fundsource->save();
+                                }else{
+                                    if($u->status == 2){
+                                        $info->alocated_funds = number_format((double)str_replace(',','',$info->alocated_funds) - (double)str_replace(',','',$u->utilize_amount),2,'.',',');
+                                    }
+                                    $u->beginning_balance = $new_beginning;
+                                    $u->save();
+                                    $new_beginning = number_format((double)str_replace(',','',$u->beginning_balance) - (double)str_replace(',','',$u->utilize_amount),2,'.',',');
+                                }
+                                
                             }
-                            
+                            $info->remaining_balance = $new_beginning;
+                            $info->save();
                         }
-                        $info->remaining_balance = $new_beginning;
-                        $info->save();
                     }
                 }else{
                     $p_info = new ProponentInfo();
