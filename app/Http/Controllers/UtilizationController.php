@@ -15,12 +15,12 @@ class UtilizationController extends Controller{
         
         $utilization = Utilization::where('proponentinfo_id', $info_id)
                             ->with(['user', 'proponentdata', 'fundSourcedata', 'transfer'])
-                            ->get()
-                            ->groupBy('div_id')
-                            ->map(function ($group) {
-                                return $group->sortByDesc('created_at')->first();
-                            })
-                            ->values();    
+                            ->get();
+                            // ->groupBy('div_id')
+                            // ->map(function ($group) {
+                            //     return $group->sortByDesc('created_at')->first();
+                            // })
+                            // ->values();    
         return response()->json($utilization);
     }
    

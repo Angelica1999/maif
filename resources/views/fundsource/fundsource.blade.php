@@ -298,7 +298,7 @@
             
             success: function(result) {
                 $('#track_body').empty(); 
-                console.log('data', result.transfer);
+                console.log('data', result);
                 if(result.length > 0){
                     result.forEach(function(item) {
                         var saa = item.fund_sourcedata && item.fund_sourcedata.saa !== null ? item.fund_sourcedata.saa : '-';
@@ -345,7 +345,7 @@
                             '<td>' + stat + '</td>' ;
                             '</tr>';
                             console.log('check', item.status);
-                        if(item.status == 0){
+                        if(item.status != 1){
                             $('#track_body').append(new_row);
                         }
                         i= i+1;

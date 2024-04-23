@@ -685,11 +685,11 @@
             //     "                                        <option value=\"\">Please select municipality</option>\n" +
             //     "                                    </select>");
 
-            $("#muncity_body").html("<select class=\"form-control select2\" id=\"muncity_id\" name=\"muncity_id\" onchange=\"onchangeMuncity($(this))\" disabled>\n" +
+            $("#muncity_body").html("<select class=\"form-control select2\" id=\"muncity_id\" name=\"muncity_id\" onchange=\"onchangeMuncity($(this))\">\n" +
                 "                                        <option value=\"\">Please select municipality</option>\n" +
                 "                                    </select>");
 
-            $("#barangay_body").html("<select class=\"form-control select2\" id=\"barangay_id\" name=\"barangay_id\" disabled>\n" +
+            $("#barangay_body").html("<select class=\"form-control select2\" id=\"barangay_id\" name=\"barangay_id\">\n" +
                 "                                        <option value=\"\">please select barangay</option>\n" +
                 "                                    </select>");
 
@@ -702,36 +702,36 @@
 
         if(data.val() == "Region 7"){
             $('#province_id').change(function() {
-            $('#muncity_id').prop('disabled', true);
-            $('#barangay_id').prop('disabled', true);
+            // $('#muncity_id').prop('disabled', true);
+            // $('#barangay_id').prop('disabled', true);
 
             // $('#muncity_id').html('<option value="">Please Select a Muncity</option>')
 
-            setTimeout(function() {
-                $('#muncity_id').prop('disabled', false)
-            }, 1000);
+            // setTimeout(function() {
+            //     $('#muncity_id').prop('disabled', false)
+            // }, 1000);
         });
 
         $('#muncity_id').change(function() {
-            $('#barangay_id').prop('disabled', true);
+            // $('#barangay_id').prop('disabled', true);
 
-            // $('#barangay_id').html('<option value="">Please Select a barangay</option>')
+            // // $('#barangay_id').html('<option value="">Please Select a barangay</option>')
 
-            setTimeout(function() {
-                $('#barangay_id').prop('disabled', false)
-            }, 1000);
+            // setTimeout(function() {
+            //     $('#barangay_id').prop('disabled', false)
+            // }, 1000);
         });
         }
 
    } 
 
     function onchangeProvince(data) {
-        
+        $('#muncity_id').empty();
+        $('#barangay_id').empty();
+
         if(data.val()) {
             $.get("{{ url('muncity/get').'/' }}"+data.val(), function(result) {
-                $('#muncity_id').html('');
-                $('#barangay_id').html('');
-
+            
                 $('#muncity_id').append($('<option>', {
                     value: "",
                     text: "Please select a municipality"
@@ -743,7 +743,6 @@
                         text: optionData.description
                     }));
                 });
-                $('#muncity_id').prop('disabled', false);
             });
         }
     }
