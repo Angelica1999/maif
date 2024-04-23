@@ -360,7 +360,26 @@ class FundSourceController extends Controller
                         }
                            
                         $info->created_by = Auth::user()->userid;
-                        $info->save();                    
+                        $info->save();
+                    $utilization = Utilization::where('proponentinfo_id', $info->id)->where('status', '!=', 1)->get();
+                    $new_beginning = number_format((double)str_replace(',','',$info->remaining_balance), 2, '.', ',');
+
+                    if($utilization){
+                        foreach($utilization as $u){
+                            if($u->status == 3){
+                                $u->beginning_balance = $new_beginning;
+                                $u->save();
+                                $new_beginning = number_format((double)str_replace(',','',$u->beginning_balance) + (double)str_replace(',','',$u->utilize_amount),2,'.',',');
+                            }else{
+                                $u->beginning_balance = $new_beginning;
+                                $u->save();
+                                $new_beginning = number_format((double)str_replace(',','',$u->beginning_balance) - (double)str_replace(',','',$u->utilize_amount),2,'.',',');
+                            }
+                            
+                        }
+                        $info->remaining_balance = $new_beginning;
+                        $info->save();
+                    }
                 }else{
                     $p_info = new ProponentInfo();
                     $p_info->fundsource_id = $breakdown['fundsource_id'];

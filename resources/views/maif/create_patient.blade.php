@@ -104,7 +104,8 @@
                 <div class="form-group">
                     <label for="lname">Municipality</label>
                     <div id="muncity_body">
-                        <select class="js-example-basic-single w-100 select2" id="muncity_id" name="muncity_id" onchange="onchangeMuncity($(this))" disabled>
+                        <select class="js-example-basic-single w-100 select2" id="muncity_id" name="muncity_id" onchange="onchangeMuncity($(this))">
+                            <option value="">Please select Municipality</option>
                         </select>
                     </div>
                 </div>
@@ -114,7 +115,8 @@
                 <div class="form-group">
                     <label for="lname">Barangay</label>
                     <div id="barangay_body">
-                        <select class="js-example-basic-single w-100 select2" id="barangay_id" name="barangay_id" disabled>
+                        <select class="js-example-basic-single w-100 select2" id="barangay_id" name="barangay_id">
+                            <option value="">Please select Barangay</option>
                         </select>
                     </div>
                 </div>
@@ -149,7 +151,7 @@
                 <div class="form-group">
                     <label for="fname">Facility</label>
                     <select class="js-example-basic-single w-100 select2" id="facility_id" name="facility_id" onchange="onchangeForProponent($(this))" required>
-                        <option value="">Select Faciltiy</option>
+                        <option value="">Select Facility</option>
                         @foreach($facilities as $facility)
                             <option value="{{ $facility->id }}">{{ $facility->name }}</option>
                         @endforeach
