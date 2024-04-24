@@ -212,7 +212,6 @@
             <div class="modal_body">
                 <form id="contractForm" method="POST" action="{{ route('patient.create.save') }}">
                     <input type="hidden" name="created_by" value="{{ $user->userid }}">
-                    <input type="hidden" name="patient_id" id ="patient_id">
                     <div class="modal-body">
                         @csrf
                         <div class="row">
@@ -649,8 +648,8 @@
 
     function editPatient(id) {
         edit_c = 1;
-        $('#patient_id').val(id);
-        var editRoute = "{{ route('patient.update') }}";
+        var editRoute = `{{ route('patient.update', ['id' => ':id']) }}`;
+        editRoute = editRoute.replace(':id', id);
         $('#contractForm').attr('action', editRoute);
         $('#create_pat_btn').text('Update Patient');
         var proponents = @json($proponents);
