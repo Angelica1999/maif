@@ -569,8 +569,9 @@ class HomeController extends Controller
         ]);
     }
  
-   public function updatePatient(Request $request){
-        $patient_id = $request->input('patient_id');
+   public function updatePatient($id, Request $request){
+        // $patient_id = $request->input('patient_id');
+        $patient_id = $id;
         $patient = Patients::where('id', $patient_id)->first();
 
         if(!$patient){
