@@ -370,6 +370,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="submit" id="create_pat_btn" class="btn btn-primary">Create Patient</button>
+                        <a type="button" class="btn btn-danger" style="display:none; color:white">Remove</a>
                     </div>
                 </form>
             </div>
@@ -390,6 +391,10 @@
 @include('maif.editable_js')
 
 <script>
+
+    $('.btn-secondary').on('click', function(e) {
+        $('#contractForm')[0].reset();
+    });
 
     $('.send_mailform').on('click', function(e) {
         $('.loading-container').show();
@@ -663,14 +668,7 @@
             if(patient.group_id == null || patient.group_id == null){
                 var removeRoute = `{{ route('patient.remove', ['id' => ':id']) }}`;
                 removeRoute = removeRoute.replace(':id', id);
-
-                var removeBtn = $('<a>', {
-                    href: removeRoute,
-                    type: 'button',
-                    class: 'btn btn-danger',
-                    text: 'Remove'
-                });
-                $('.modal-footer').append(removeBtn);
+                $('.btn.btn-danger').attr('href', removeRoute).css('display', 'inline-block').text('Remove');
             }
 
             $('#fname').val(patient.fname);
