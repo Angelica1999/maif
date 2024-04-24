@@ -192,7 +192,6 @@
             document.getElementById('showSAAButton').style.display = 'inline-block';
             saaCounter++;
             $('#saa2').select2({
-                width: '100%',
                 templateResult: function (data) {
                     if ($(data.element).data('color') === 'red') {
                         return $('<span style="color: red;">' + data.text + '</span>');
@@ -210,7 +209,6 @@
             document.getElementById('RemoveSAAButton1').style.display = 'inline-block'; // hide RemoveSAAButton
             document.getElementById('showSAAButton').style.display = 'none'; // hiding showSAAButton
             $('#saa3').select2({
-                width: '100%',
                 templateResult: function (data) {
                     if ($(data.element).data('color') === 'red') {
                         return $('<span style="color: red;">' + data.text + '</span>');
@@ -519,7 +517,6 @@
                 }));
 
                 $('#saa1').select2({
-                    width: '100%',
                     templateResult: function (data) {
                         if ($(data.element).data('color') === 'red') {
                             return $('<span style="color: red;">' + data.text + '</span>');

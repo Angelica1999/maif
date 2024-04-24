@@ -305,6 +305,22 @@ class DvController extends Controller
                 $index = $index + 1;
                 $p_if->save();
             }
+            $utilization = Utilization::where('div_id', $dv->route_no)->get();
+            $util = $utilization->sortByDesc('id')->first();
+            $get_util = $util->where('id', '>', $util->id)->get();
+            $bal =  $util->beginning_balance;
+            if($get_util){
+                foreach($get_util as $u){
+                    if($u->status == 0){
+                        $u->beginning_balance = $bal;
+                        $bal = number_format( (double)str_replace(',','',$u->beginning_balance) - (double)str_replace(',','',$u->utilize_amount) , 2,'.', ',');
+                    }else{
+                        $u->beginning_balance = $bal;
+                        $bal = $u->beginning_balance;
+                    }
+                    $u->save();
+                }
+            }
         }else{
 
             $dv = new Dv();
