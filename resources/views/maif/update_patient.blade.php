@@ -202,7 +202,7 @@
         </div>
     </div>
 
-    <div class="modal-footer">
+    <div class="modal-footer" id="footer_pat">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <button type="submit" class="btn btn-primary updatebtn">Update</button>
         @if($patient->group_id == null || $patient->group_id == "")
@@ -214,6 +214,7 @@
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 <script>
      $(document).ready(function() {
+
 
         $('.updatebtn').on('click', function(){
             $('#muncity_id').prop('disabled', false);

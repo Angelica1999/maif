@@ -660,6 +660,19 @@
         $('#title').html('<i style="font-size:30px" class="typcn typcn-user-outline menu-icon"></i> Update Patient');
         console.log('chaki', patient);
         if(patient){
+            if(patient.group_id == null || patient.group_id == null){
+                var removeRoute = `{{ route('patient.remove', ['id' => ':id']) }}`;
+                removeRoute = removeRoute.replace(':id', id);
+
+                var removeBtn = $('<a>', {
+                    href: removeRoute,
+                    type: 'button',
+                    class: 'btn btn-danger',
+                    text: 'Remove'
+                });
+                $('.modal-footer').append(removeBtn);
+            }
+
             $('#fname').val(patient.fname);
             $('#lname').val(patient.lname);
             $('#mname').val(patient.mname);
