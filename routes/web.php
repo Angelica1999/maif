@@ -31,12 +31,11 @@ Route::get('fetch_dv/update/{dv_id}', [App\Http\Controllers\DvController::class,
 Route::post('/dv/update/save', [App\Http\Controllers\DvController::class, 'saveUpdateDV'])->name('dv.update.save');
 Route::get('/dv/update/save', [App\Http\Controllers\DvController::class, 'saveUpdateDV'])->name('dv.update.save');
 
-
-Route::get('/patient/create', [App\Http\Controllers\HomeController::class, 'createPatient'])->name('patient.create');
 Route::post('/patient/create/save', [App\Http\Controllers\HomeController::class, 'createPatientSave'])->name('patient.create.save');
 Route::get('/patient/edit/{patient_id}', [App\Http\Controllers\HomeController::class, 'editPatient'])->name('patient.edit');
 Route::post('/patient/update', [App\Http\Controllers\HomeController::class, 'updatePatient'])->name('patient.update');
 Route::get('/patient/remove/{id}', [App\Http\Controllers\HomeController::class, 'removePatient'])->name('patient.remove');
+Route::get('/patient/{id}', [App\Http\Controllers\HomeController::class, 'fetchPatient'])->name('patient.fetch');
 
 Route::get('/patient/pdf', [App\Http\Controllers\PrintController::class, 'patientPdf'])->name('patient.pdf');
 Route::get('patient/pdf/{patientid}', [App\Http\Controllers\PrintController::class, 'patientPdf'])->name('patient.pdf');

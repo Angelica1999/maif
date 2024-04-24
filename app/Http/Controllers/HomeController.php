@@ -98,12 +98,18 @@ class HomeController extends Controller
         }else{
             $patients = $patients->orderBy('id', 'desc')->get();
         }
-        // return $patients;
-        // return Proponent::where('id', 348)->first();
+
         return view('home', [
             'patients' => $patients,
             'keyword' => $request->keyword,
-            'provinces' => Province::get()
+            'provinces' => Province::get(),
+            'municipalities' => Muncity::get(),
+            'barangays' => Barangay::get(),
+            'fundsources' => Fundsource::get(),
+            'facilities' => Facility::get(),
+            'user' => Auth::user(),
+            'all_pat' => Patients::get(),
+            'proponents' => Proponent::get()
         ]);
      }
 
@@ -383,15 +389,6 @@ class HomeController extends Controller
             // session()->flash('actual_amount', true);
         }
     }
-
-    public function createPatient() {
-        return view('maif.create_patient',[
-            'provinces' => Province::get(),
-            'fundsources' => Fundsource::get(),
-            'facilities' => Facility::get(),
-            'user' => Auth::user()
-        ]);
-    }
     
     public function group(Request $request){ 
         $groups = Group::with('proponent', 'facility', 'user', 'patient')
@@ -506,6 +503,39 @@ class HomeController extends Controller
         return redirect()->back();
     }
 
+    public function fetchPatient($id){
+        $patient =  Patients::where('id',$id)
+                        ->with(
+                            [
+                                'muncity' => function ($query) {
+                                    $query->select(
+                                        'id',
+                                        'description'
+                                    );
+                                },
+                                'barangay' => function ($query) {
+                                    $query->select(
+                                        'id',
+                                        'description'
+                                    );
+                                },
+                                'fundsource',
+                            ])->orderBy('updated_at', 'desc')
+                        ->first();
+
+        $municipal = Muncity::select('id', 'description')->get();
+        $barangay = Barangay::select('id', 'description')->get();
+        return [
+            // 'provinces' => Province::get(),
+            // 'fundsources' => Fundsource::get(),
+            // 'proponents' => Proponent::get(),
+            // 'facility' => Facility::get(),
+            'patient' => $patient
+            // 'municipal' => $municipal,
+            // 'barangay' => $barangay,
+        ];        
+    }
+
     public function editPatient(Request $request) {
         $patient =  Patients::where('id',$request->patient_id)
                         ->with(
@@ -540,7 +570,6 @@ class HomeController extends Controller
     }
  
    public function updatePatient(Request $request){
-
         $patient_id = $request->input('patient_id');
         $patient = Patients::where('id', $patient_id)->first();
 
@@ -560,6 +589,7 @@ class HomeController extends Controller
             $patient->other_muncity = $request->input('other_muncity');
             $patient->other_barangay = $request->input('other_barangay');
         }
+        
         $patient->province_id = $request->input('province_id');
         $patient->muncity_id  = $request->input('muncity_id');
         $patient->barangay_id = $request->input('barangay_id');

@@ -17,6 +17,28 @@
     #patient_table_filter {
         display: none;
     }
+    #patient-code-container {
+        position: relative;
+    }
+    #loading-image {
+        position: absolute;
+        margin-right: 50px;
+        top: -8%;
+        left: 50%; /* Adjust the position as needed */
+        transform: translateY(-50%, -50%);
+        width: 60px;
+        height: 60px;
+    }
+    #province_id + .select2-container {
+        width: 220px !important;
+    }
+    #muncity_id + .select2-container {
+        width: 220px !important;
+    }
+    #barangay_id + .select2-container {
+        width: 220px !important;
+    }
+
 </style>
 @extends('layouts.app')
 @section('content')
@@ -31,7 +53,8 @@
                         <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
-                        <button type="button" href="#create_patient" onclick="createPatient()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
+                        <button type="button" href="#create_patient" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
+
                     </div>
                 </div>
             <!-- </form> -->
@@ -43,7 +66,7 @@
             <form method="POST" action="{{ route('sent.mails') }}" class="send_mailform">
                 @csrf
                 <div style="display: flex; justify-content: flex-end;">
-                    <button class="btn-sm send_mails" name="send_mails[]" style="display:none;background-color: green; color: white; height:45px" onclick ="check()">Send Mails</button>
+                    <button class="btn-sm send_mails" name="send_mails[]" style="display:none;background-color: green; color: white; height:45px">Send Mails</button>
                     <input type="hidden" class="form-control idss" name="idss" id="idss" >
                 </div>
             </form>
@@ -187,15 +210,179 @@
                 @csrf
             </div>
             <div class="modal_body">
+                <form id="contractForm" method="POST" action="{{ route('patient.create.save') }}">
+                    <input type="hidden" name="created_by" value="{{ $user->userid }}">
+                    <input type="hidden" name="patient_id" id ="patient_id">
+                    <div class="modal-body">
+                        @csrf
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fname">First Name</label>
+                                    <input type="text" class="form-control" style="width:220px;" id="fname" name="fname" oninput="this.value = this.value.toUpperCase()" placeholder="First Name" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="lname">Last Name</label>
+                                    <input type="text" class="form-control" style="width:220px;" id="lname" name="lname" placeholder="Last Name" oninput="this.value = this.value.toUpperCase()" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fname">Middle Name</label>
+                                    <input type="text" class="form-control" style="width:220px;" id="mname" name="mname" oninput="this.value = this.value.toUpperCase()" placeholder="Middle Name">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="lname">Date of Birth</label>
+                                    <input type="date" class="form-control" style="width:220px;" id="dob" name="dob" placeholder="Date of Birth">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fname">Region</label>
+                                    <select class="js-example-basic-single select2" style="width:220px;" id="region" onchange="othersRegion($(this));" name="region">
+                                        <option value="">Please select region</option>
+                                        <option value="Region 7">Region 7</option>
+                                        <option value="NCR">NCR</option>
+                                        <option value="CAR">CAR</option>
+                                        <option value="Region 1">Region 1</option>
+                                        <option value="Region 2">Region 2</option>
+                                        <option value="Region 3">Region 3</option>
+                                        <option value="Region 4">Region 4</option>
+                                        <option value="Region 5">Region 5</option>
+                                        <option value="Region 6">Region 6</option>
+                                        <option value="Region 8">Region 8</option>
+                                        <option value="Region 9">Region 9</option>
+                                        <option value="Region 10">Region 10</option>
+                                        <option value="Region 11">Region 11</option>
+                                        <option value="Region 12">Region 12</option>
+                                        <option value="Region 13">Region 13</option>
+                                        <option value="BARMM">BARMM</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="lname">Province</label>
+                                    <div id="province_body">
+                                        <select class="js-example-basic-single select2" style="width:220px;" id="province_id" name="province_id" onchange="onchangeProvince($(this))">
+                                            <option value="">Please select province</option>
+                                            @foreach($provinces as $prov)
+                                                <option value="{{ $prov->id }}">{{ $prov->description }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="lname">Municipality</label>
+                                    <div id="muncity_body">
+                                        <select class="js-example-basic-single select2" style="width:220px;" id="muncity_id" name="muncity_id" onchange="onchangeMuncity($(this))">
+                                            <option value="">Please select Municipality</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="lname">Barangay</label>
+                                    <div id="barangay_body">
+                                        <select class="js-example-basic-single select2" style="width:220px;" id="barangay_id" name="barangay_id">
+                                            <option value="">Please select Barangay</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fname">Date of Guarantee Letter</label>
+                                    <input type="date" class="form-control" style="width:220px;" id="date_guarantee_letter" name="date_guarantee_letter" placeholder="Date of Guarantee Letter" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fname">Facility</label>
+                                    <select class="js-example-basic-single facility_id1" style="width:220px;" id="facility_id" name="facility_id" onchange="onchangeForProponent($(this))" required>
+                                        <option value="">Please select Facility</option>
+                                        @foreach($facilities as $facility)
+                                            <option value="{{ $facility->id }}">{{ $facility->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div> 
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fname">Proponent</label>
+                                    <select class="js-example-basic-single proponent_id1" style="width:220px;" id="proponent_id" name="proponent_id" onchange="onchangeForPatientCode($(this))" required>
+                                        <option value="">Please select Proponent</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group" id="patient-code-container">
+                                    <input type="text" class="form-control loading-input" style="width:220px;" id="patient_code" name="patient_code" placeholder="Patient Code" readonly>
+                                    <img id="loading-image" src="{{ asset('images/loading.gif') }}" alt="Loading" style="display: none;">
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <strong>Transaction</strong>
+                        <hr>
+                      
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fname">Guaranteed Amount</label>
+                                    <input type="text" class="form-control" id="guaranteed_amount" style="width:220px;" oninput="check()" onkeyup= "validateAmount(this)" name="guaranteed_amount" placeholder="Guaranteed Amount" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6"  id="actl_amnt" style="display:none">
+                                <div class="form-group">
+                                    <label for="fname">Actual Amount</label>
+                                    <input type="number" step="any" class="form-control" id="actual_amount" name="actual_amount">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fname">Remaining Balance</label>
+                                    <input type="text" class="form-control" id="remaining_balance" style="width:220px;" name="remaining_balance" placeholder="Remaining Balance" readonly>
+                                </div>
+                                <div id="suggestions"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" id="create_pat_btn" class="btn btn-primary">Create Patient</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
+
 <div class="loading-container">
     <img src="public\images\loading.gif" alt="Loading..." class="loading-spinner">
 </div>
 @endsection
 @section('js')
+<script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 <script src="{{ asset('admin/vendors/x-editable/bootstrap-editable.min.js?v=1') }}"></script>
 <script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.4/js/dataTables.bootstrap4.min.js"></script>
@@ -247,373 +434,196 @@
     }
 
     $(document).ready(function () {
-    function initializeDataTable() {
-        var table = $('#patient_table').DataTable({
-            paging: true,
-            pageLength: 50,
-            drawCallback: function() {
-                initializeEditable();
-                initializeGroupFunctions();
-                initializeMailboxes();
-            }
-        });
-
-        $('#search_patient').on('keyup', function() {
-            table.search(this.value).draw();
-        });
-
-        $('#patient_table_length').hide();
-        $('#patient_table_filter').hide();
-        $('#patient_table_paginate').css('float', 'right');
-    }
-
-    function initializeEditable() {
-        $.fn.editable.defaults.mode = 'popup';
-
-        $(".number_editable").editable({
-            type : 'number',
-            name: 'actual_amount',
-            title: $(this).data("title"),
-            emptytext: 'empty',
-            success: function(response, newValue) {
-                var cell = $(this).closest('.editable-amount');
-                var patientId = cell.data('patient-id');
-                var guaranteed_amount = cell.data('guaranteed-amount');
-                var actual_amount = cell.data('actual-amount');
-                var url = "{{ url('update/amount').'/' }}" + patientId + '/' + newValue;
-                var json = {
-                    "_token" : "<?php echo csrf_token(); ?>",
-                    "value" : newValue
-                };
-
-                if(newValue == ''){
-                    Lobibox.alert('error',{
-                        size: 'mini',
-                        msg: "Actual amount accepts number only!"
-                    }); 
-                    newValue = 0;
-                    location.reload();
-                    return;  
+        function initializeDataTable() {
+            var table = $('#patient_table').DataTable({
+                paging: true,
+                pageLength: 50,
+                drawCallback: function() {
+                    initializeEditable();
+                    initializeGroupFunctions();
+                    initializeMailboxes();
                 }
-                var c_amount = newValue.replace(/,/g,'');
+            });
 
-                if(c_amount > guaranteed_amount){
-                    $(this).html(newValue);
-                    Lobibox.alert('error',{
-                        size: 'mini',
-                        msg: "Inputted actual amount if greater than guaranteed amount!"
-                    }); 
-                    location.reload();
-                    return;           
-                }
+            $('#search_patient').on('keyup', function() {
+                table.search(this.value).draw();
+            });
 
-                $.post(url, json, function(result){
-                    Lobibox.notify('success', {
-                        title: "",
-                        msg: "Successfully update actual amount!",
-                        size: 'mini',
-                        rounded: true
-                    });
-                    location.reload();
-                });
-            }
-        });
-    }
-
-    function initializeGroupFunctions() {
-        function setNull(){
-            $('.group-btn').hide();
-            $('.totalAmountLabel').hide();
-            $('.group_amountT').val('').hide();
+            $('#patient_table_length').hide();
+            $('#patient_table_filter').hide();
+            $('#patient_table_paginate').css('float', 'right');
         }
 
-        $('.group-checkbox').change(function () {
-            if ($(this).prop('checked')) {
-                var selectedProponentId = $(this).closest('.group-amount').data('proponent-id');
-                var selectedFacilityId = $(this).closest('.group-amount').data('facility-id');
+        function initializeEditable() {
+            $.fn.editable.defaults.mode = 'popup';
 
-                $('.group-checkbox').not(this).each(function () {
-                    var proponentId = $(this).closest('.group-amount').data('proponent-id');
-                    var facilityId = $(this).closest('.group-amount').data('facility-id');
+            $(".number_editable").editable({
+                type : 'number',
+                name: 'actual_amount',
+                title: $(this).data("title"),
+                emptytext: 'empty',
+                success: function(response, newValue) {
+                    var cell = $(this).closest('.editable-amount');
+                    var patientId = cell.data('patient-id');
+                    var guaranteed_amount = cell.data('guaranteed-amount');
+                    var actual_amount = cell.data('actual-amount');
+                    var url = "{{ url('update/amount').'/' }}" + patientId + '/' + newValue;
+                    var json = {
+                        "_token" : "<?php echo csrf_token(); ?>",
+                        "value" : newValue
+                    };
 
-                    if (proponentId !== selectedProponentId || facilityId !== selectedFacilityId) {
-                        $(this).prop('disabled', true);
-                        $(this).prop('checked', false);
-                    } else {
-                        $(this).prop('disabled', false);
+                    if(newValue == ''){
+                        Lobibox.alert('error',{
+                            size: 'mini',
+                            msg: "Actual amount accepts number only!"
+                        }); 
+                        newValue = 0;
+                        location.reload();
+                        return;  
                     }
-                });
-            } else {
-                $('.group-checkbox').prop('disabled', false);
-            }
-            var checkedCheckboxes = $('.group-checkbox:checked');
-            var totalAmount = 0;
-            var patientId = [];
-            var proponentId = 0;
-            var facilityId = 0;
+                    var c_amount = newValue.replace(/,/g,'');
 
-            checkedCheckboxes.each(function () {
-                var amount = $(this).closest('.group-amount').data('amount');
-                if(amount == null || amount == '' || amount == undefined){
-                    amountError();
-                    setNull();
-                    totalAmount = 0;
-                    $('.group-checkbox').prop('checked', false);
-                }else{
-                    var currentProponent = $(this).closest('.group-amount').data('proponent-id');
-                    var currentFacility = $(this).closest('.group-amount').data('facility-id');
-                    var patient = $(this).closest('.group-amount').data('patient-id');
-
-                    if (facilityId == 0 || currentFacility == facilityId || proponentId == 0 || currentProponent == proponentId) {
-                        facilityId = currentFacility;
-                        proponentId = currentProponent;
-                        totalAmount += parseFloat(amount);
-                        patientId.push(patient);
-                    } else {
-                        error();
-                        $('.group-checkbox').prop('checked', false);
+                    if(c_amount > guaranteed_amount){
+                        $(this).html(newValue);
+                        Lobibox.alert('error',{
+                            size: 'mini',
+                            msg: "Inputted actual amount if greater than guaranteed amount!"
+                        }); 
+                        location.reload();
+                        return;           
                     }
+
+                    $.post(url, json, function(result){
+                        Lobibox.notify('success', {
+                            title: "",
+                            msg: "Successfully update actual amount!",
+                            size: 'mini',
+                            rounded: true
+                        });
+                        location.reload();
+                    });
                 }
             });
-            if(totalAmount > 0){
-                totalAmount = totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                $('.group_amountT').val(totalAmount).show();
-                $('.group_facility').val(facilityId);
-                $('.group_proponent').val(proponentId);
-                $('.group_patients').val(patientId.join(','));
-                $('.group-btn').show();
-                $('.totalAmountLabel').show();
+        }
+
+        function initializeGroupFunctions() {
+            function setNull(){
+                $('.group-btn').hide();
+                $('.totalAmountLabel').hide();
+                $('.group_amountT').val('').hide();
             }
 
-            if(checkedCheckboxes.length == '0'){
-                setNull();
-            }
-        });
-    }
+            $('.group-checkbox').change(function () {
+                if ($(this).prop('checked')) {
+                    var selectedProponentId = $(this).closest('.group-amount').data('proponent-id');
+                    var selectedFacilityId = $(this).closest('.group-amount').data('facility-id');
 
-    function initializeMailboxes() {
-        $('.group-mailCheckBox').change(function () {
-            $('.send_mails').show();
-            if ($(this).prop('checked')) {
-                $('.group-checkbox').prop('disabled', true);
-            } else {
-                $('.group-checkbox').prop('disabled', false);
-            }
-            var checkedMailBoxes = $('.group-mailCheckBox:checked');
-            
-            var ids = [];
-            
-            checkedMailBoxes.each(function () {
-                var patient = $(this).closest('.group-email').data('patient-id');
-                ids.push(patient);
-                all_ids.push(patient);
+                    $('.group-checkbox').not(this).each(function () {
+                        var proponentId = $(this).closest('.group-amount').data('proponent-id');
+                        var facilityId = $(this).closest('.group-amount').data('facility-id');
+
+                        if (proponentId !== selectedProponentId || facilityId !== selectedFacilityId) {
+                            $(this).prop('disabled', true);
+                            $(this).prop('checked', false);
+                        } else {
+                            $(this).prop('disabled', false);
+                        }
+                    });
+                } else {
+                    $('.group-checkbox').prop('disabled', false);
+                }
+                var checkedCheckboxes = $('.group-checkbox:checked');
+                var totalAmount = 0;
+                var patientId = [];
+                var proponentId = 0;
+                var facilityId = 0;
+
+                checkedCheckboxes.each(function () {
+                    var amount = $(this).closest('.group-amount').data('amount');
+                    if(amount == null || amount == '' || amount == undefined){
+                        amountError();
+                        setNull();
+                        totalAmount = 0;
+                        $('.group-checkbox').prop('checked', false);
+                    }else{
+                        var currentProponent = $(this).closest('.group-amount').data('proponent-id');
+                        var currentFacility = $(this).closest('.group-amount').data('facility-id');
+                        var patient = $(this).closest('.group-amount').data('patient-id');
+
+                        if (facilityId == 0 || currentFacility == facilityId || proponentId == 0 || currentProponent == proponentId) {
+                            facilityId = currentFacility;
+                            proponentId = currentProponent;
+                            totalAmount += parseFloat(amount);
+                            patientId.push(patient);
+                        } else {
+                            error();
+                            $('.group-checkbox').prop('checked', false);
+                        }
+                    }
+                });
+                if(totalAmount > 0){
+                    totalAmount = totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    $('.group_amountT').val(totalAmount).show();
+                    $('.group_facility').val(facilityId);
+                    $('.group_proponent').val(proponentId);
+                    $('.group_patients').val(patientId.join(','));
+                    $('.group-btn').show();
+                    $('.totalAmountLabel').show();
+                }
+
+                if(checkedCheckboxes.length == '0'){
+                    setNull();
+                }
             });
-            if(ids.length ==  0){
-                $('.send_mails').hide();
-            }
-            // $('.send_mails').val(ids);
+        }
+
+        function initializeMailboxes() {
+            $('.group-mailCheckBox').change(function () {
+                $('.send_mails').show();
+                if ($(this).prop('checked')) {
+                    $('.group-checkbox').prop('disabled', true);
+                } else {
+                    $('.group-checkbox').prop('disabled', false);
+                }
+                var checkedMailBoxes = $('.group-mailCheckBox:checked');
+                
+                var ids = [];
+                
+                checkedMailBoxes.each(function () {
+                    var patient = $(this).closest('.group-email').data('patient-id');
+                    ids.push(patient);
+                    all_ids.push(patient);
+                });
+                if(ids.length ==  0){
+                    $('.send_mails').hide();
+                }
+                // $('.send_mails').val(ids);
+            });
+
+            //select_all
+            $('.select_all').on('click', function(){
+                $('.group-mailCheckBox').prop('checked', true);
+                $('.group-mailCheckBox').trigger('change');
+            });
+
+            //unselect_all
+            $('.unselect_all').on('click', function(){
+                $('.group-mailCheckBox').prop('checked', false);
+                $('.group-mailCheckBox').trigger('change');
+            });
+        }
+
+        // Initialize on document ready
+        initializeDataTable();
+
+        // Reinitialize on DataTable draw
+        $('#patient_table').on('draw.dt', function() {
+            initializeEditable();
+            initializeGroupFunctions();
+            initializeMailboxes();
         });
-
-        //select_all
-        $('.select_all').on('click', function(){
-            $('.group-mailCheckBox').prop('checked', true);
-            $('.group-mailCheckBox').trigger('change');
-        });
-
-        //unselect_all
-        $('.unselect_all').on('click', function(){
-            $('.group-mailCheckBox').prop('checked', false);
-            $('.group-mailCheckBox').trigger('change');
-        });
-    }
-
-    // Initialize on document ready
-    initializeDataTable();
-
-    // Reinitialize on DataTable draw
-    $('#patient_table').on('draw.dt', function() {
-        initializeEditable();
-        initializeGroupFunctions();
-        initializeMailboxes();
     });
-});
-
-
-    function check(){
-        console.log('ids_sent', all_ids);
-    }
-
-    // $(document).ready(function () {
-    //     //search
-    //     var table = $('#patient_table').DataTable({
-    //         paging: true,
-    //         pageLength: 50  
-    //     });
-
-    //     $('#search_patient').on('keyup', function() {
-    //         table.search(this.value).draw();
-    //     });
-        
-    //     $('#patient_table_length').hide();
-    //     $('#patient_table_filter').hide();
-    //     $('#patient_table_paginate').css('float', 'right');
-    //     //editable_amount
-    //     $.fn.editable.defaults.mode = 'popup';
-
-    //     $(".number_editable").editable({
-    //         type : 'number',
-    //         name: 'actual_amount',
-    //         title: $(this).data("title"),
-    //         emptytext: 'empty',
-
-    //         success: function(response, newValue) {
-    //             var cell = $(this).closest('.editable-amount');
-    //             var patientId = cell.data('patient-id');
-    //             var guaranteed_amount = cell.data('guaranteed-amount');
-    //             var actual_amount = cell.data('actual-amount');
-    //             var url = "{{ url('update/amount').'/' }}" + patientId +'/'+ newValue;
-    //             var json = {
-    //                 "_token" : "<?php echo csrf_token(); ?>",
-    //                 "value" : newValue
-    //             };
-            
-    //             if(newValue == ''){
-    //                 Lobibox.alert('error',{
-    //                     size: 'mini',
-    //                     msg: "Actual amount accepts number only!"
-    //                 }); 
-    //                 newValue = 0;
-    //                 location.reload();
-    //                 // window.location.href = '{{ route("home") }}';
-    //                 return;  
-    //             }
-    //             var c_amount = newValue.replace(/,/g,'');
-
-    //             if(c_amount>guaranteed_amount){
-    //                 $(this).html(newValue);
-    //                 Lobibox.alert('error',{
-    //                     size: 'mini',
-    //                     msg: "Inputted actual amount if greater than guaranteed amount!"
-    //                 }); 
-    //                 location.reload();
-    //                 // window.location.href = '{{ route("home") }}';
-    //                 return;           
-    //             }
-
-    //             $.post(url,json,function(result){
-    //                 Lobibox.notify('success', {
-    //                     title: "",
-    //                     msg: "Successfully update actual amount!",
-    //                     size: 'mini',
-    //                     rounded: true
-    //                 });
-    //                 location.reload();
-    //             });
-    //         }
-    //     });    
-
-    //     function setNull(){
-    //         $('.group-btn').hide();
-    //         $('.totalAmountLabel').hide();
-    //         $('.group_amountT').val('').hide();
-    //     }
-        
-    //     $('.group-checkbox').change(function () {
-    //         if ($(this).prop('checked')) {
-    //             var selectedProponentId = $(this).closest('.group-amount').data('proponent-id');
-    //             var selectedFacilityId = $(this).closest('.group-amount').data('facility-id');
-
-    //             $('.group-checkbox').not(this).each(function () {
-    //                 var proponentId = $(this).closest('.group-amount').data('proponent-id');
-    //                 var facilityId = $(this).closest('.group-amount').data('facility-id');
-
-    //                 if (proponentId !== selectedProponentId || facilityId !== selectedFacilityId) {
-    //                     $(this).prop('disabled', true);
-    //                     $(this).prop('checked', false);
-                        
-    //                 } else {
-    //                     $(this).prop('disabled', false);
-    //                 }
-    //             });
-    //         } else {
-    //             $('.group-checkbox').prop('disabled', false);
-    //         }
-    //         var checkedCheckboxes = $('.group-checkbox:checked');
-    //         var totalAmount = 0;
-    //         var patientId = [];
-    //         var proponentId = 0;
-    //         var facilityId = 0;
-
-    //         checkedCheckboxes.each(function () {
-    //             var amount = $(this).closest('.group-amount').data('amount');
-    //             if(amount == null || amount == '' || amount == undefined){
-    //                 amountError();
-    //                 setNull();
-    //                 totalAmount = 0;
-    //                 $('.group-checkbox').prop('checked', false);
-    //             }else{
-    //                 var currentProponent = $(this).closest('.group-amount').data('proponent-id');
-    //                 var currentFacility = $(this).closest('.group-amount').data('facility-id');
-    //                 var patient = $(this).closest('.group-amount').data('patient-id');
-
-    //                 if (facilityId == 0 || currentFacility == facilityId || proponentId == 0 || currentProponent == proponentId) {
-    //                     facilityId = currentFacility;
-    //                     proponentId = currentProponent;
-    //                     totalAmount += parseFloat(amount);
-    //                     patientId.push(patient);
-    //                 } else {
-    //                     error();
-    //                     $('.group-checkbox').prop('checked', false);
-    //                 }
-    //             }
-    //         });
-    //         if(totalAmount > 0){
-    //             totalAmount = totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    //             $('.group_amountT').val(totalAmount).show();
-    //             $('.group_facility').val(facilityId);
-    //             $('.group_proponent').val(proponentId);
-    //             $('.group_patients').val(patientId.join(','));
-    //             $('.group-btn').show();
-    //             $('.totalAmountLabel').show();
-    //         }
-
-    //         if(checkedCheckboxes.length == '0'){
-    //             setNull();
-    //         }
-
-    //     });
-    //     //for mailboxes
-    //     $('.group-mailCheckBox').change(function () {
-    //         $('.send_mails').show();
-    //         if ($(this).prop('checked')) {
-    //             $('.group-checkbox').prop('disabled', true);
-    //         } else {
-    //             $('.group-checkbox').prop('disabled', false);
-    //         }
-    //         var checkedMailBoxes = $('.group-mailCheckBox:checked');
-            
-    //         var ids = [];
-            
-    //         checkedMailBoxes.each(function () {
-    //             var patient = $(this).closest('.group-email').data('patient-id');
-    //             ids.push(patient)
-    //         });
-    //         if(ids.length ==  0){
-    //             $('.send_mails').hide();
-    //         }
-    //         $('.send_mails').val(ids);
-    //     });
-    //     //select_all
-    //     $('.select_all').on('click', function(){
-    //         $('.group-mailCheckBox').prop('checked', true);
-    //         $('.group-mailCheckBox').trigger('change');
-    //     });
-    //     //unselect_all
-    //     $('.unselect_all').on('click', function(){
-    //         $('.group-mailCheckBox').prop('checked', false);
-    //         $('.group-mailCheckBox').trigger('change');
-    //     });
-    // });
 
     function validateAmount(element) {
         if (event.keyCode === 32) {
@@ -630,49 +640,71 @@
         }
     }
 
-    function createPatient() {
-        $('.modal_body').html(loading);
-        var url = "{{ route('patient.create') }}";
-        // setTimeout(function(){
-            $.ajax({
-                url: url,
-                type: 'GET',
-                success: function(result) {
-                    $('.modal_body').html(result);
-                }
-            });
-        // },0);
-    }
+    var edit_c = 0;
 
     function editPatient(id) {
-        $('.modal_body').html(loading);
-        $('#title').html('<i style="font-size:30px" class="typcn typcn-user-outline menu-icon"></i> Update Patient');
-        var url = "{{ url('patient/edit').'/' }}"+id;
-        $.ajax({
-            url: url,
-            type: 'GET',
-            success: function(result) {
-                $('.modal_body').html(result);
-            }
+        edit_c = 1;
+        $('#patient_id').val(id);
+        var editRoute = "{{ route('patient.update') }}";
+        $('#contractForm').attr('action', editRoute);
+        $('#create_pat_btn').text('Update Patient');
+        var proponents = @json($proponents);
+        proponents.forEach(function(optionData) {
+            $('.proponent_id1').append($('<option>', {
+                value: optionData.id,
+                text: optionData.proponent
+            }));
         });
+        var all_patients = @json($all_pat);
+        var patient = all_patients.filter(item => item.id == id)[0];
+        $('#title').html('<i style="font-size:30px" class="typcn typcn-user-outline menu-icon"></i> Update Patient');
+        console.log('chaki', patient);
+        if(patient){
+            $('#fname').val(patient.fname);
+            $('#lname').val(patient.lname);
+            $('#mname').val(patient.mname);
+            $('#dob').val(patient.dob);
+            $('#region').select2().val(patient.region).trigger('change');
+            if(patient.region == "Region 7"){
+                $('#province_id').select2().val(patient.province_id).trigger('change');
+                $('#muncity_id').select2().val(patient.muncity_id).trigger('change');
+                $('#barangay_id').select2().val(patient.barangay_id).trigger('change');
+            }else{
+                console.log('herehere',patient.other_muncity );
+                $('#other_province').val(patient.other_province);
+                $('#other_muncity').val(patient.other_muncity);
+                $('#other_barangay').val(patient.other_barangay);
+            }
+            $('#date_guarantee_letter').val(patient.date_guarantee_letter);
+            $('#guaranteed_amount').val(patient.guaranteed_amount);
+            $('#actl_amnt').show();
+            $('#actual_amount').val(patient.actual_amount);
+            $('.proponent_id1').val(patient.proponent_id).trigger('change');
+            $('.facility_id1').val(patient.facility_id).trigger('change');
+            $('#patient_code').val(patient.patient_code);
+            $('#remaining_balance').val(patient.remaining_balance);
+        }
+        edit_c = 0;
+        
     }
 
     function othersRegion(data) {
         if(data.val() != "Region 7"){
             {{-- var patientProvinceDescription = "{{ $patients->other_province }}"--}}
             // $("#facility_body").html("<input type='text' class='form-control' name='other_facility' required>");
-            $("#province_body").html("<input type='text' class='form-control' value='' name='other_province'>");
+            $("#province_body").html("<input type='text' class='form-control' value='' id='other_province' name='other_province'>");
             
-            $("#muncity_body").html("<input type='text' class='form-control' name='other_muncity'>");
-            $("#barangay_body").html("<input type='text' class='form-control' name='other_barangay'>");
+            $("#muncity_body").html("<input type='text' class='form-control' id='other_muncity' name='other_muncity'>");
+            $("#barangay_body").html("<input type='text' class='form-control' id='other_barangay' name='other_barangay'>");
         }else {
 
             $("#province_body").html("<select class=\"js-example-basic-single w-100 select2\" id=\"province_id\"  name=\"province_id\" onchange=\"onchangeProvince($(this))\">\n" +
                 "\n" + "</select>");
 
-            $('#province_id').empty();
-            var $newOption = $("<option selected='form-control'></option>").val("").text('Please select province');
-            $('#province_id').append($newOption).trigger('change');
+            $('#province_id').append($('<option>', {
+                value: "",
+                text: "Please select a municipality"
+            }));
 
             jQuery.each(JSON.parse('<?php echo $provinces; ?>'), function(i,val){
                 $('#province_id').append($('<option>', {
@@ -694,33 +726,10 @@
                 "                                    </select>");
 
             // $(".select2").select2({ width: '100%' });
-            $("#muncity_id").select2();
-            $("#barangay_id").select2();
-            $("#province_id").select2();
+            $("#muncity_id").select2({ width: '220px' });
+            $("#barangay_id").select2({ width: '220px' });
+            $("#province_id").select2({ width: '220px' });
 
-        }
-
-        if(data.val() == "Region 7"){
-            $('#province_id').change(function() {
-            // $('#muncity_id').prop('disabled', true);
-            // $('#barangay_id').prop('disabled', true);
-
-            // $('#muncity_id').html('<option value="">Please Select a Muncity</option>')
-
-            // setTimeout(function() {
-            //     $('#muncity_id').prop('disabled', false)
-            // }, 1000);
-        });
-
-        $('#muncity_id').change(function() {
-            // $('#barangay_id').prop('disabled', true);
-
-            // // $('#barangay_id').html('<option value="">Please Select a barangay</option>')
-
-            // setTimeout(function() {
-            //     $('#barangay_id').prop('disabled', false)
-            // }, 1000);
-        });
         }
 
    } 
@@ -728,95 +737,111 @@
     function onchangeProvince(data) {
         $('#muncity_id').empty();
         $('#barangay_id').empty();
-
-        if(data.val()) {
-            $.get("{{ url('muncity/get').'/' }}"+data.val(), function(result) {
-            
-                $('#muncity_id').append($('<option>', {
-                    value: "",
-                    text: "Please select a municipality"
-                }));
-              
-                $.each(result, function(index, optionData) {
-                    $('#muncity_id').append($('<option>', {
-                        value: optionData.id,
-                        text: optionData.description
-                    }));
-                });
-            });
-        }
+        var municipalities = @json($municipalities);
+        var muncity = municipalities.filter(item => item.province_id == data.val());
+        $('#muncity_id').append($('<option>', {
+            value: "",
+            text: "Please select a municipality"
+        }));
+        $('#barangay_id').append($('<option>', {
+            value: "",
+            text: "Please select a barangay"
+        }));
+        muncity.forEach(function(optionData) {
+            $('#muncity_id').append($('<option>', {
+                value: optionData.id,
+                text: optionData.description
+            }));
+        });
     }
 
     function onchangeMuncity(data) {
         if(data.val()) {
-            $.get("{{ url('barangay/get').'/' }}"+data.val(), function(result) {
-                $('#barangay_id').html('');
+            $('#barangay_id').html('');
+            var barangays = @json($barangays);
+            var barangay = barangays.filter(item => item.muncity_id == data.val());
+            $('#barangay_id').append($('<option>', {
+                value: "",
+                text: "Please select a barangay"
+            }));
+            barangay.forEach(function(optionData) {
                 $('#barangay_id').append($('<option>', {
-                    value: "",
-                    text: "Please select Barangay"
+                    value: optionData.id,
+                    text: optionData.description
                 }));
-
-                $.each(result, function(index, optionData) {
-                    $('#barangay_id').append($('<option>', {
-                        value: optionData.id,
-                        text: optionData.description
-                    }));
-                });
-                
-                $('#barangay_id').prop('disabled', false);
-                $('#barangay_id').trigger('change');
             });
-        }else{// Reset and disable the Barangay select box
-            $('#barangay_id').prop('disabled', true);
-            $('#barangay_id').trigger('change');
         }
     }
     var facility_id = 0;
 
     function onchangeForProponent(data){
-        if(data.val()){
-        facility_id = data.val();
-        $.get("{{ url('facility/proponent').'/' }}"+data.val(), function(result) {
-                $('#proponent_id').html('');
-                $('#proponent_id').append($('<option>', {
-                    value: "",
-                    text: "Select Proponent"
-                }));
-                $.each(result, function(index, optionData) {
+        if(edit_c == 0){
+            if(data.val()){
+            facility_id = data.val();
+            $.get("{{ url('facility/proponent').'/' }}"+data.val(), function(result) {
+                    $('#proponent_id').html('');
                     $('#proponent_id').append($('<option>', {
-                        value: result[index].id,
-                        text: result[index].proponent
+                        value: "",
+                        text: "Select Proponent"
                     }));
+                    $.each(result, function(index, optionData) {
+                        $('#proponent_id').append($('<option>', {
+                            value: result[index].id,
+                            text: result[index].proponent
+                        }));
+                    });
+                    $('#proponent_id').prop('disabled', false); 
                 });
-                $('#proponent_id').prop('disabled', false); 
-            });
+            }
         }
     }
 
     function onchangeForPatientCode(data) {
-        if(data.val()) {
-            $.get("{{ url('patient/code').'/' }}"+data.val()+"/"+facility_id, function(result) {
-                $("#patient_code").val(result.patient_code);
-                const formattedBalance = new Intl.NumberFormat('en-US', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                }).format(result.balance);
+        if(edit_c == 0){
+            if(data.val()) {
+                $.get("{{ url('patient/code').'/' }}"+data.val()+"/"+facility_id, function(result) {
+                    $("#patient_code").val(result.patient_code);
+                    const formattedBalance = new Intl.NumberFormat('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }).format(result.balance);
 
-                $('#remaining_balance').val(formattedBalance);
-                var suggestions =[];
-                var res = result.proponent_info;
-                
-                $.each(res, function(index, optionData) {
-                    suggestions.push(res[index].fundsource.saa +' - '+res[index].remaining_balance);
-                });
-                var suggestionsDiv = $('#suggestions');
-                suggestionsDiv.empty();
+                    $('#remaining_balance').val(formattedBalance);
+                    var suggestions =[];
+                    var res = result.proponent_info;
+                    
+                    $.each(res, function(index, optionData) {
+                        suggestions.push(res[index].fundsource.saa +' - '+res[index].remaining_balance);
+                    });
+                    var suggestionsDiv = $('#suggestions');
+                    suggestionsDiv.empty();
 
-                suggestions.forEach(function(suggestion) {
-                    suggestionsDiv.append('<div>' + suggestion + '</div>');
+                    suggestions.forEach(function(suggestion) {
+                        suggestionsDiv.append('<div>' + suggestion + '</div>');
+                    });
+                    suggestionsDiv.show();
                 });
-                suggestionsDiv.show();
-            });
+            }
+        }
+    }
+
+    function parseNumberWithCommas(value) {
+        if(typeof value === 'string'){
+            return parseFloat(value.replace(/,/g, '')) || 0;
+        } else{
+            return parseFloat(value) || 0;
+        }
+    }
+
+    function check(){
+        var rem = parseNumberWithCommas($('#remaining_balance').val());
+        var g_amount = parseNumberWithCommas($('#guaranteed_amount').val());
+        if(g_amount>rem){
+            Lobibox.alert('error', {
+                size: 'mini',
+                msg: 'Inputted amount is greater than the remaning balance!'
+            })
+            $('#guaranteed_amount').val('');
         }
     }
 

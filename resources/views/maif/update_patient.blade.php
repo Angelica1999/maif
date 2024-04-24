@@ -97,7 +97,7 @@
                 <div class="form-group">
                     <label for="lname">Municipality</label>
                     <div id="muncity_body">
-                        <select class="js-example-basic-single w-100" id="muncity_id" name="muncity_id" onchange="onchangeMuncity($(this))" disabled>
+                        <select class="js-example-basic-single w-100" id="muncity_id" name="muncity_id" onchange="onchangeMuncity($(this))">
                             @foreach($municipal as $municipals)   
                                 <option value="{{ $municipals->id }}" {{$municipals->id == $patient->muncity_id? 'selected' : ''}}>{{ $municipals->description }}</option>
                             @endforeach   
@@ -110,7 +110,7 @@
                 <div class="form-group">
                     <label for="lname">Barangay</label>
                     <div id="barangay_body">
-                        <select class="js-example-basic-single w-100" id="barangay_id" name="barangay_id" disabled>
+                        <select class="js-example-basic-single w-100" id="barangay_id" name="barangay_id">
                            @foreach($barangay as $barangays)
                            <option value="{{ $barangays->id }}" {{$barangays->id == $patient->barangay_id? 'selected' : ''}}>{{ $barangays->description }}</option>
                             @endforeach
@@ -150,7 +150,7 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Proponent</label>
-                    <select class="js-example-basic-single w-100 select2" id="proponent_id" name="proponent_id"  onchange="onchangeForPatientCode($(this))" required disabled>
+                    <select class="js-example-basic-single w-100 select2" id="proponent_id" name="proponent_id"  onchange="onchangeForPatientCode($(this))" required>
                         @foreach($proponents as $proponent)
                           <option value="{{ $proponent->id }}" data-proponent-id="{{ $proponent->id}}" data-proponent-name="{{ $proponent->proponent}}" {{$patient->proponent_id == $proponent->id? 'selected' : ''}}>{{$proponent->proponent }}</option>
                         @endforeach
@@ -246,25 +246,25 @@
 
       $('#province_id').change(function() {
  
-        $('#muncity_id').prop('disabled', true);
-        $('#barangay_id').prop('disabled', true);
+        // $('#muncity_id').prop('disabled', true);
+        // $('#barangay_id').prop('disabled', true);
 
         $('#muncity_id').html('<option value="">Please Select a Municipality</option>')
 
-        setTimeout(function() {
-            $('#muncity_id').prop('disabled', false);
-        }, 1000);
+        // setTimeout(function() {
+        //     $('#muncity_id').prop('disabled', false);
+        // }, 1000);
 
       });
 
       $('#muncity_id').change(function() {
 
-         $('#barangay_id').prop('disabled', true);
+        //  $('#barangay_id').prop('disabled', true);
          $('#barangay_id').html('<option value="">Please Select Barangay</please>');
 
-         setTimeout(function() {
-            $('#barangay_id').prop('disabled', false)
-         }, 1000);
+        //  setTimeout(function() {
+        //     $('#barangay_id').prop('disabled', false)
+        //  }, 1000);
 
       });
 
