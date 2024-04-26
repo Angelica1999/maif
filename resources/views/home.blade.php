@@ -395,7 +395,7 @@
             </div>
             <div class="modal_body">
                 <div class="table-container">
-                    <table class="table table-bordered">
+                    <table class="table table-bordered" style="margin:5px; padding:5px;">
                         <thead>
                             <tr>
                             <th scope="col">Patient</th>
@@ -427,7 +427,7 @@
                 <div class="table-container" style="margin:5px; padding:10px">
                     <table class="table table-bordered">
                         <thead>
-                            <tr>
+                            <tr style="background-color:gray; color:white">
                                 <th scope="col">Patient</th>
                                 <th scope="col">Birthdate</th>
                                 <th scope="col">Address</th>
@@ -956,23 +956,25 @@
                     var barangay = optionData.barangay && optionData.barangay !== null ? optionData.barangay.description : '';
                     var muncity = optionData.muncity && optionData.muncity !== null ? optionData.muncity.description : '';
                     var province = optionData.province && optionData.province !== null ? optionData.province.description : '';
-                    var address = ((barangay !=  '') ? barangay + ', ' : '') +
-                                    ((muncity != '') ? muncity + ', ' : '') +
-                                    ((province != '') ? province + ', ' : '') +
-                                    ((optionData.region != '') ? optionData.region : '');
+                    var address = ((barangay != '') ? barangay + ', ' : ' ') +
+                                    ((muncity != '') ? muncity + ', ' : ' ') +
+                                    ((province != '') ? province + ', ' : ' ') +
+                                    ((optionData.region != '') ? optionData.region : ' ');
                 }else{
-                    address = ((optionData.other_barangay != '') ? optionData.other_barangay + ', ' : '') +
-                                ((optionData.other_muncity != '') ? optionData.other_muncity + ', ' : '') +
-                                ((optionData.other_province != '') ? optionData.other_province + ', ' : '') +
-                                ((optionData.region != '') ? optionData.region : '');
+                    address = ((optionData.other_barangay !== null) ? optionData.other_barangay + ', ' : ' ') +
+                                ((optionData.other_muncity !== null) ? optionData.other_muncity + ', ' : ' ') +
+                                ((optionData.other_province !== null) ? optionData.other_province + ', ' : ' ') +
+                                ((optionData.region !== null) ? optionData.region : ' ');
                 }
                 var modified = optionData.modified && optionData.modified !== null ? optionData.modified.lname + ', ' + optionData.modified.fname : '-';
-                var facility = optionData.facility && optionData.facility !== null ? optionData.facility.name + ', ' + optionData.facility.name : '-';
-                var proponent = optionData.proponent && optionData.proponent !== null ? optionData.proponent.proponent + ', ' + optionData.proponent.proponent : '-';
+                var facility = optionData.facility && optionData.facility !== null ? optionData.facility.name : '-';
+                
+                var proponent = optionData.proponent && optionData.proponent !== null ? optionData.proponent.proponent : '-';
                 var actual = (optionData.actual_amount !== null)?optionData.actual_amount:'-';
+                var dob = optionData.dob !== null ? formatDate(optionData.dob) : ' ';
                 var new_row = '<tr style="text-align:center">' +
                                 '<td>' + patient + '</td>' +
-                                '<td>' + formatDate(optionData.dob) + '</td>' +
+                                '<td>' + dob + '</td>' +
                                 '<td>' + address + '</td>' +
                                 '<td>' + formatDate(optionData.date_guarantee_letter) + '</td>' +
                                 '<td>' + facility + '</td>' +
