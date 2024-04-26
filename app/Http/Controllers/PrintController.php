@@ -5,6 +5,7 @@ use App\Models\Patients;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Dv;
+use App\Models\MailHistory;
 use App\Models\AddFacilityInfo;
 use App\Models\Dv2;
 use App\Models\Facility;
@@ -19,6 +20,7 @@ use PHPMailer\PHPMailer\SMTP;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Image;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 use PDF;
 
 class PrintController extends Controller
@@ -91,6 +93,11 @@ class PrintController extends Controller
                     $this->sendMail($recipientEmail,$pdfFilePath,$cc_mails, $name_file);
                     $patient->remarks = 1;
                     $patient->save();
+                    $history = new MailHistory();
+                    $history->patient_id = $patient->id;
+                    $history->sent_by = Auth::user()->userid;
+                    $history->modified_by = $patient->created_by;
+                    $history->save();
                     session()->flash('email_sent', true);
 
                 } catch (Exception $e) {
@@ -136,6 +143,11 @@ class PrintController extends Controller
                             $this->sendMail($recipientEmail,$pdfFilePath,$cc_mails,$name_file);
                             $patient->remarks = 1;
                             $patient->save();
+                            $history = new MailHistory();
+                            $history->patient_id = $patient->id;
+                            $history->sent_by = Auth::user()->userid;
+                            $history->modified_by = $patient->created_by;
+                            $history->save();
                             session()->flash('email_sent', true);
     
                         } catch (Exception $e) {
@@ -151,8 +163,10 @@ class PrintController extends Controller
 
     private function sendMail($recipientEmail, $pdfFilePath, $cc_mails, $name_file){
         try{
-            $email_doh = 'maipp@ro7.doh.gov.ph';
-            $email_password = 'betvdmvyribwcyba';
+            $email_doh = 'maangelica.cadayday@gmail.com';
+            $email_password = 'psmjmkclayexueyo';
+            // $email_doh = 'maipp@ro7.doh.gov.ph';
+            // $email_password = 'betvdmvyribwcyba';
             $mail = new PHPMailer(true);
             $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
             $mail->isSMTP();                                            //Send using SMTP
