@@ -15,6 +15,7 @@ return new class extends Migration
             //
             Schema::create('patient_logs', function (Blueprint $table) {
                 $table->id();
+                $table->integer('patient_id');
                 $table->string('fname')->nullable();
                 $table->string('lname')->nullable();
                 $table->string('mname')->nullable();
@@ -50,8 +51,7 @@ return new class extends Migration
     {
         Schema::table('patient_logs', function (Blueprint $table) {
             //
-            Schema::dropIfExists('patient_logs');
-
+            Schema::dropIfExists('mail_history');
         });
     }
 };
