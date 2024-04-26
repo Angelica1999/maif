@@ -484,7 +484,8 @@
             $('#saa3').append($('<option>', {value: '',text: 'Select SAA'}));
 
             $.each(data_result, function(index, optionData){
-                var rem_balance = parseFloat(optionData.remaining_balance).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+                var rem_balance = parseFloat(optionData.remaining_balance.replace(/,/g, '')).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+
                 
                 if(optionData.facility !== null){
                     console.log('facility', optionData.facility.id);

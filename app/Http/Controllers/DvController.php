@@ -280,8 +280,10 @@ class DvController extends Controller
         }
 
         if($dv) {
-
-            Utilization::where('div_id', $dv->route_no)->update(['status'=>1]);
+            $util_up = Utilization::where('div_id', $dv->route_no)->where('status', 0)->first();
+            $util_up->status = 1;
+            $util_up->save();
+            // Utilization::where('div_id', $dv->route_no)->update(['status'=>1]);
             $dv->modified_by = Auth::user()->userid;
             $dv->dv_no = $request->input('dv_no');
             $saa = explode(',', $dv->fundsource_id);
@@ -300,14 +302,15 @@ class DvController extends Controller
                     $total =((double)str_replace(',', '',$amount[$index]));
                 }
                 
-                $return = (double)$p_if -> remaining_balance + (double)str_replace(',', '',$amount[$index]);
+                $return = (double)str_replace(',','',$p_if -> remaining_balance) + (double)str_replace(',', '',$util_up->utilize_amount);
                 $p_if->remaining_balance = $return;
                 $index = $index + 1;
                 $p_if->save();
             }
             $utilization = Utilization::where('div_id', $dv->route_no)->get();
             $util = $utilization->sortByDesc('id')->first();
-            $get_util = $util->where('id', '>', $util->id)->get();
+            // $get_util = $util->where('id', '>', $util->id)->get();
+            $get_util = Utilization::where('id', '>',  $util->id)->where('proponentinfo_id', $util->proponentinfo_id)->get();
             $bal =  $util->beginning_balance;
             if($get_util){
                 foreach($get_util as $u){
@@ -318,6 +321,7 @@ class DvController extends Controller
                         $u->beginning_balance = $bal;
                         $bal = $u->beginning_balance;
                     }
+                    // return $u;
                     $u->save();
                 }
             }
@@ -433,8 +437,6 @@ class DvController extends Controller
                     $utilize->discount = $discount[$index];
                     $utilize->utilize_amount = $utilize_amount[$index];
                     $utilize->created_by = Auth::user()->userid;
-                    $utilize->save();
-
                     if($proponent_info && $proponent_info != null){
                         $cleanedValue = str_replace(',', '', $proponent_info->remaining_balance);
                         $proponent_info->remaining_balance = (float)$cleanedValue - (float)str_replace(',', '',$per_amount[$index]);
@@ -442,6 +444,7 @@ class DvController extends Controller
                         return "contact system administrator" ;
                     }
                     $proponent_info->save();
+                    $utilize->save();
                 }
             }
             return redirect()->back()->with('dv_create', true);
