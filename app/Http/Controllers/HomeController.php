@@ -17,6 +17,8 @@ use App\Models\Transfer;
 use App\Models\Dv;
 use App\Models\Utilization;
 use App\Models\TrackingDetails;
+use App\Models\PatientLogs;
+use App\Models\MailHistory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -109,7 +111,8 @@ class HomeController extends Controller
             'facilities' => Facility::get(),
             'user' => Auth::user(),
             'all_pat' => Patients::get(),
-            'proponents' => Proponent::get()
+            'proponents' => Proponent::get(),
+            'history' => MailHistory::with('patient', 'sent', 'modified')->get()
         ]);
      }
 
@@ -577,6 +580,10 @@ class HomeController extends Controller
         if(!$patient){
             return redirect()->back()->with('error', 'Patient not found');
         }
+        
+        $patientLogs = new PatientLogs();
+        $patientLogs->fill($patient->toArray());
+        $patientLogs->save();
 
         session()->flash('patient_update', true);
         $patient->fname = $request->input('fname');

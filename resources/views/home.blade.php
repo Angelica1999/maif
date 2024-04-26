@@ -88,6 +88,7 @@
                 <thead>
                     <tr>
                         <th></th>
+                        <th></th>
                         <th style="text-align:center">
                             <div style="display: flex; gap: 1px;">
                                 <button class="btn-info select_all" style="width: 25px; display: flex; justify-content: center; align-items: center;">
@@ -125,7 +126,10 @@
                             <td class="td">
                                 <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}" style="background-color:teal;color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
                                 <a href="{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}" type="button" style="width:50px;" class="btn btn-success btn-xs" id="send_btn">Send</a>
-                            </td> 
+                            </td>
+                            <td>
+                                <button type="button" href="#get_mail" data-backdrop="static" data-toggle="modal" class="btn btn-info btn-xs" onclick="populate({{$patient->id}})">Mail History</button>
+                            </td>
                             <td style="text-align:center;" class="group-email" data-patient-id="{{ $patient->id }}" >
                                 <input class="sent_mails[] " id="mail_ids[]" name="mail_ids[]" type="hidden">
                                 <input type="checkbox" style="width: 60px; height: 20px;" name="mailCheckbox[]" id="mailCheckboxId_{{ $index }}" 
@@ -202,6 +206,7 @@
         </div>
     </div>
 </div>
+
 <div class="modal fade" id="create_patient" tabindex="-1" role="dialog" aria-hidden="true" style="opacity:1">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -377,6 +382,36 @@
     </div>
 </div>
 
+<!--end-->
+<div class="modal fade" id="get_mail" tabindex="-1" role="dialog" aria-hidden="true" style="opacity:1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="text-success" id="title"><i class="typcn typcn-location menu-icon"></i>Mail History</h4><hr />
+                @csrf
+            </div>
+            <div class="modal_body">
+                <div class="table-container">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                            <th scope="col">Patient</th>
+                            <th scope="col">Modified By</th>
+                            <th scope="col">Sent By</th>
+                            <th scope="col">On</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mail_history"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button style = "background-color:lightgray"  class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="loading-container">
     <img src="public\images\loading.gif" alt="Loading..." class="loading-spinner">
 </div>
@@ -405,16 +440,18 @@
 
     function error(){
         Lobibox.alert('error',{
-        size: 'mini',
-        msg: "There is an impostor! Find it"
-    });
+            size: 'mini',
+            msg: "There is an impostor! Find it"
+        });
     }
+
     function amountError(){
         Lobibox.alert('error',{
             size: 'mini',
             msg: "There is no actual amount! Fill it"
         });
     }
+
     var all_ids = [];
     var id_list = [];
     
@@ -432,6 +469,7 @@
         }
         $('.send_mails').val(id_list);
     }
+
     function groupItem(el){
         var parentTd = $(element).closest('td');   
         var patientId = parentTd.attr('data-patient-id');
@@ -853,6 +891,43 @@
             })
             $('#guaranteed_amount').val('');
         }
+    }
+
+    function populate(id){
+        $('#mail_history').empty();
+        var history = @json($history);
+        history = history.filter(item => item.patient_id == id);
+        console.log('history', history);
+        if(history != ''){
+            history.forEach(function(optionData) {
+                var patient = optionData.patient && optionData.patient !== null ? optionData.patient.lname + ', ' + optionData.patient.fname : '-';
+                var sent = optionData.sent && optionData.sent !== null ? optionData.sent.lname + ', ' + optionData.sent.fname : '-';
+                var modified = optionData.modified && optionData.modified !== null ? optionData.modified.lname + ', ' + optionData.modified.fname : '-';
+                var date = new Date(optionData.created_at);
+                var formattedDate = date.toLocaleString('en-US', {
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+                var formattedTime = date.toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: 'numeric'
+                });
+                var new_row = '<tr style="text-align:center">' +
+                                '<td>' + patient + '</td>' +
+                                '<td>' + modified + '</td>' +
+                                '<td>' + sent + '</td>' +
+                                '<td>' + formattedDate+'<br>'+ formattedTime + '</td>';
+                                '</tr>';
+                $('#mail_history').append(new_row);
+            });
+        }else{
+            var new_row = '<tr>' +
+                '<td colspan ="11">' + "No Data Available" + '</td>' +
+                '</tr>';
+            $('#mail_history').append(new_row);       
+        }
+        
     }
 
     // $('#remaining_balance').on('click', function() {
