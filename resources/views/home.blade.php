@@ -100,9 +100,9 @@
                             </div>
                         </th>
                         <th style="min-width:10px;">Remarks</th>
-                        <th style="min-width:10px;">Group</th>
+                        <th style="min-width:10px; text-align:center;">Group</th>
                         <th style="min-width:150px">Actual Amount</th>
-                        <th style="min-width:150px">GL Date</th>
+                        <th style="min-width:120px; text-align:center;">Date</th>
                         <th>
                             <!-- <span class="fa fa-plus" style="cursor:pointer;" onclick="">Firstname</span> -->
                             <a style="color:black;"  href="{{route('home', ['key' => 'fname'])}}" >Firstname</a>
@@ -124,12 +124,13 @@
                 <tbody>
                     @foreach($patients as $index=> $patient)
                         <tr>
+                            <td>
+                                <button type="button" href="#patient_history" data-backdrop="static" style="width:90px;height:27px;background-color:#006BC4; color:white;" data-toggle="modal" class="" onclick="populateHistory({{$patient->id}})"><small>Edit History</small></button>
+                                <button type="button" href="#get_mail" data-backdrop="static" data-toggle="modal" class="" style="width:90px;height:27px;background-color:#005C6F; color:white;" onclick="populate({{$patient->id}})"><small>Mail History</small></button>
+                            </td>
                             <td class="td">
                                 <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}" style="background-color:teal;color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
                                 <a href="{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}" type="button" style="width:50px;" class="btn btn-success btn-xs" id="send_btn">Send</a>
-                            </td>
-                            <td>
-                                <button type="button" href="#get_mail" data-backdrop="static" data-toggle="modal" class="btn btn-info btn-xs" onclick="populate({{$patient->id}})">Mail History</button>
                             </td>
                             <td style="text-align:center;" class="group-email" data-patient-id="{{ $patient->id }}" >
                                 <input class="sent_mails[] " id="mail_ids[]" name="mail_ids[]" type="hidden">
@@ -404,6 +405,43 @@
                             </tr>
                         </thead>
                         <tbody id="mail_history"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button style = "background-color:lightgray"  class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end-->
+<div class="modal fade" id="patient_history" tabindex="-1" role="dialog" aria-hidden="true" style="opacity:2">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header" style="vertical-align:middle">
+                <br>
+                <h4 class="text-success" id="title"><i class="typcn typcn-location menu-icon"></i>Patient History</h4><hr/>
+                @csrf
+            </div>
+            <div class="modal_body">
+                <div class="table-container" style="margin:5px; padding:10px">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th scope="col">Patient</th>
+                                <th scope="col">Birthdate</th>
+                                <th scope="col">Address</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Facility</th>
+                                <th scope="col">Proponent</th>
+                                <th scope="col">Code</th>
+                                <th scope="col">Guaranteed</th>
+                                <th scope="col">Actual</th>
+                                <th scope="col">Modified By</th>
+                                <th scope="col">On</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gl_history"></tbody>
                     </table>
                 </div>
             </div>
@@ -892,6 +930,66 @@
                 msg: 'Inputted amount is greater than the remaning balance!'
             })
             $('#guaranteed_amount').val('');
+        }
+    }
+
+    function formatDate(item){
+        var date = new Date(item);
+        var formattedDate = date.toLocaleString('en-US', {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric'
+        });
+        return formattedDate;
+    }
+    
+    function populateHistory(id){
+        $('#gl_history').empty();
+        var logs = @json($logs);
+        logs = logs.filter(item => item.patient_id == id);
+        console.log('history', logs);
+        if(logs != ''){
+            logs.forEach(function(optionData) {
+                var patient = optionData.lname + ', ' + optionData.fname;
+                console.log('check', optionData);
+                if(optionData.region == "Region 7"){
+                    var barangay = optionData.barangay && optionData.barangay !== null ? optionData.barangay.description : '';
+                    var muncity = optionData.muncity && optionData.muncity !== null ? optionData.muncity.description : '';
+                    var province = optionData.province && optionData.province !== null ? optionData.province.description : '';
+                    var address = ((barangay !=  '') ? barangay + ', ' : '') +
+                                    ((muncity != '') ? muncity + ', ' : '') +
+                                    ((province != '') ? province + ', ' : '') +
+                                    ((optionData.region != '') ? optionData.region : '');
+                }else{
+                    address = ((optionData.other_barangay != '') ? optionData.other_barangay + ', ' : '') +
+                                ((optionData.other_muncity != '') ? optionData.other_muncity + ', ' : '') +
+                                ((optionData.other_province != '') ? optionData.other_province + ', ' : '') +
+                                ((optionData.region != '') ? optionData.region : '');
+                }
+                var modified = optionData.modified && optionData.modified !== null ? optionData.modified.lname + ', ' + optionData.modified.fname : '-';
+                var facility = optionData.facility && optionData.facility !== null ? optionData.facility.name + ', ' + optionData.facility.name : '-';
+                var proponent = optionData.proponent && optionData.proponent !== null ? optionData.proponent.proponent + ', ' + optionData.proponent.proponent : '-';
+                var actual = (optionData.actual_amount !== null)?optionData.actual_amount:'-';
+                var new_row = '<tr style="text-align:center">' +
+                                '<td>' + patient + '</td>' +
+                                '<td>' + formatDate(optionData.dob) + '</td>' +
+                                '<td>' + address + '</td>' +
+                                '<td>' + formatDate(optionData.date_guarantee_letter) + '</td>' +
+                                '<td>' + facility + '</td>' +
+                                '<td>' + proponent + '</td>' +
+                                '<td>' + optionData.patient_code + '</td>' +
+                                '<td>' + optionData.guaranteed_amount + '</td>' +
+                                '<td>' + actual + '</td>' +
+                                '<td>' + modified + '</td>' +
+                                '<td>' + formatDate(optionData.created_at) + '</td>';
+                                '</tr>';
+                $('#gl_history').append(new_row);
+            });
+        }else{
+            var new_row = '<tr>' +
+                '<td colspan ="11">' + "No Data Available" + '</td>' +
+                '</tr>';
+            $('#gl_history').append(new_row);       
         }
     }
 

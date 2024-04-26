@@ -112,7 +112,9 @@ class HomeController extends Controller
             'user' => Auth::user(),
             'all_pat' => Patients::get(),
             'proponents' => Proponent::get(),
-            'history' => MailHistory::with('patient', 'sent', 'modified')->get()
+            'history' => MailHistory::with('patient', 'sent', 'modified')->get(),
+            'logs' => PatientLogs::with('modified', 'facility', 'province', 'muncity', 'barangay', 'proponent')->get()
+
         ]);
      }
 
@@ -582,7 +584,9 @@ class HomeController extends Controller
         }
         
         $patientLogs = new PatientLogs();
+        $patientLogs->patient_id = $patient->id;
         $patientLogs->fill($patient->toArray());
+        unset($patientLogs->id);
         $patientLogs->save();
 
         session()->flash('patient_update', true);
