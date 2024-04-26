@@ -34,7 +34,11 @@
                             <div class="card">
                                 <div class="card-body">
                                     <div style="display: flex; justify-content: space-between;">
-                                        <h4 class="card-title" style="text-align: left; margin: 0;">{{ $fund->saa }}</h4>
+                                        @if($fund->remaining_balance == 0)
+                                            <h4 class="card-title" style="text-align: left; margin: 0; color:red">{{ $fund->saa }}</h4>
+                                        @else
+                                            <h4 class="card-title" style="text-align: left; margin: 0;">{{ $fund->saa }}</h4>
+                                        @endif
                                         @if($user->section != 6)
                                             <button class="btn btn-sm update_saa" style="cursor: pointer; text-align: right;color:white; background-color:#417524" data-proponent-id="" data-backdrop="static" data-toggle="modal" onclick="createBreakdowns({{ $fund->id }})" href="#create_fundsource">Create Breakdowns</button>                                      
                                         @endif
