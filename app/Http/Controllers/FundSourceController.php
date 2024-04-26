@@ -300,7 +300,10 @@ class FundSourceController extends Controller
 
     public function removeInfo($infoId){
         if($infoId){
-            ProponentInfo::where('id', $infoId)->delete();
+            $util = Utilization::where('proponentinfo_id', $info_id)->get();
+            if(!$util){
+                ProponentInfo::where('id', $infoId)->delete();
+            }
         }
     }
     

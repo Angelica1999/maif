@@ -149,7 +149,7 @@
                             <!-- <th>Remarks</th> -->
                             <th>Obligated</th>
                             <th>Paid</th>
-                            <th>Remarks</th>
+                            <th style="max-width:300px; overflow:hidden; display:inline-block; word-wrap:break-word;">Remarks</th>
                         </tr>
                     </thead>
                     <tbody id="track_body">
