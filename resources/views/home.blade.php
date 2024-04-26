@@ -102,6 +102,7 @@
                         <th style="min-width:10px;">Remarks</th>
                         <th style="min-width:10px;">Group</th>
                         <th style="min-width:150px">Actual Amount</th>
+                        <th style="min-width:150px">GL Date</th>
                         <th>
                             <!-- <span class="fa fa-plus" style="cursor:pointer;" onclick="">Firstname</span> -->
                             <a style="color:black;"  href="{{route('home', ['key' => 'fname'])}}" >Firstname</a>
@@ -152,6 +153,7 @@
                             <td class="editable-amount" data-actual-amount="{{!Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}" data-patient-id="{{ $patient->id }}" data-guaranteed-amount="{{str_replace(',', '', $patient->guaranteed_amount)}}">
                                 <a href="#" class="number_editable"  title="Actual Amount" id="{{ $patient->id }}">{{!Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}</a>
                             </td>
+                            <td>{{date('F j, Y', strtotime($patient->date_guarantee_letter))}}</td>
                             <td class="td">
                                 <a href="#create_patient"   onclick="editPatient('{{ $patient->id }}')" data-backdrop="static" data-toggle="modal">
                                     {{ $patient->fname }}
