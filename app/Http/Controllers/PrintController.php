@@ -123,37 +123,42 @@ class PrintController extends Controller
                     $proponent = Proponent::where('id', $patient->proponent_id)->first();
                     $name_file = $patient->lname .', '. $patient->fname . ' - ' . $proponent->proponent;
                     $facility = AddFacilityInfo::where('facility_id', $patient->facility_id)->first();
-                    if($facility->official_mail !== null || $facility->official_mail !== "" || $facility->official_mail !== "none"){
-                        $data = [
-                            'title' => 'Welcome to MAIF',
-                            'date' => date('m/d/Y'),
-                            'patient' => $patient,
-                            'age' => $this->calculateAge($patient->dob)
-                        ];
-                        $options = [];
-                        $recipientEmail = $facility->official_mail;
-                        $cc = str_replace(' ','',$facility->cc);
-                        $cc_mails = explode(',',  $cc);
-                        
-                        $pdf = PDF::loadView('maif.print_patient', $data, $options);
-                        $pdfFilePath = storage_path("app\pdfs");
-                        $pdf->save($pdfFilePath);
-            
-                        try {
-                            $this->sendMail($recipientEmail,$pdfFilePath,$cc_mails,$name_file);
-                            $patient->remarks = 1;
-                            $patient->save();
-                            $history = new MailHistory();
-                            $history->patient_id = $patient->id;
-                            $history->sent_by = Auth::user()->userid;
-                            $history->modified_by = $patient->created_by;
-                            $history->save();
-                            session()->flash('email_sent', true);
-    
-                        } catch (Exception $e) {
-                            session()->flash('email_unsent', true);
+                    if($facility){
+                        if($facility->official_mail !== null || $facility->official_mail !== "" || $facility->official_mail !== "none"){
+                            $data = [
+                                'title' => 'Welcome to MAIF',
+                                'date' => date('m/d/Y'),
+                                'patient' => $patient,
+                                'age' => $this->calculateAge($patient->dob)
+                            ];
+                            $options = [];
+                            $recipientEmail = $facility->official_mail;
+                            $cc = str_replace(' ','',$facility->cc);
+                            $cc_mails = explode(',',  $cc);
+                            
+                            $pdf = PDF::loadView('maif.print_patient', $data, $options);
+                            $pdfFilePath = storage_path("app\pdfs");
+                            $pdf->save($pdfFilePath);
+                
+                            try {
+                                $this->sendMail($recipientEmail,$pdfFilePath,$cc_mails,$name_file);
+                                $patient->remarks = 1;
+                                $patient->save();
+                                $history = new MailHistory();
+                                $history->patient_id = $patient->id;
+                                $history->sent_by = Auth::user()->userid;
+                                $history->modified_by = $patient->created_by;
+                                $history->save();
+                                session()->flash('email_sent', true);
+        
+                            } catch (Exception $e) {
+                                session()->flash('email_unsent', true);
+                            }
                         }
+                    }else{
+                        session()->flash('email_unsent', true);
                     }
+                    
                 }
             }
             return redirect()->route('home');
