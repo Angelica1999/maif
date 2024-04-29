@@ -38,6 +38,10 @@
     #barangay_id + .select2-container {
         width: 220px !important;
     }
+    .select2-container--default .select2-results__option:hover {
+        background-color: green !important; 
+        color: white !important; 
+    }
 
 </style>
 @extends('layouts.app')
@@ -102,23 +106,18 @@
                         <th style="min-width:10px;">Remarks</th>
                         <th style="min-width:10px; text-align:center;">Group</th>
                         <th style="min-width:150px">Actual Amount</th>
-                        <th style="min-width:120px; text-align:center;">Date</th>
-                        <th>
-                            <!-- <span class="fa fa-plus" style="cursor:pointer;" onclick="">Firstname</span> -->
-                            <a style="color:black;"  href="{{route('home', ['key' => 'fname'])}}" >Firstname</a>
-                        </th>
-                        <th><a style="color:black;"  href="{{route('home', ['key' => 'mname'])}}" >Middlename</a></th>
-                        <th><a style="color:black;"  href="{{route('home', ['key' => 'lname'])}}" >Lastname</a></th>
-                        <th>Facility</th>
-                        <th>Proponent</th>
-                        <!-- <th style="min-width:120px">DOB</th> -->
-                        {{-- <th>Facility</th> --}}
-                        <th style="min-width:90px;"><a style="color:black;"  href="{{route('home', ['key' => 'region'])}}" >Region</a></th>
-                        <th><a style="color:black;"  href="{{route('home', ['key' => 'province'])}}" >Province</a></th>
-                        <th><a style="color:black;"  href="{{route('home', ['key' => 'municipality'])}}" >Municipality</a></th>
-                        <th><a style="color:black;"  href="{{route('home', ['key' => 'barangay'])}}" >Barangay</a></th>
-                        <th style="min-width:180px">Guaranteed Amount</th>
-                        <th style="min-width:180px">Created By</th>
+                        <th style="min-width:120px; text-align:center;">Date &nbsp;&nbsp;</th>
+                        <th style="min-width:120px; text-align:center;">Firstname &nbsp;&nbsp;</th>
+                        <th style="min-width:130px; text-align:center;">Middlename &nbsp;&nbsp;</th>
+                        <th style="min-width:120px; text-align:center;"> Lastname &nbsp;&nbsp;</th>
+                        <th style="min-width:120px; text-align:center;">Facility &nbsp;&nbsp;</th>
+                        <th style="min-width:120px; text-align:center;">Proponent &nbsp;&nbsp;</th>
+                        <th style="min-width:90px;">Region &nbsp;&nbsp;</th>
+                        <th style="min-width:100px; text-align:center;">Province &nbsp;&nbsp;</th>
+                        <th style="min-width:130px; text-align:center;">Municipality &nbsp;&nbsp;</th>
+                        <th style="min-width:120px; text-align:center;">Barangay &nbsp;&nbsp;</th>
+                        <th style="min-width:180px">Guaranteed Amount &nbsp;&nbsp;</th>
+                        <th style="min-width:180px">Created By &nbsp;&nbsp;</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -395,7 +394,7 @@
             </div>
             <div class="modal_body">
                 <div class="table-container">
-                    <table class="table table-bordered" style="margin:5px; padding:5px;">
+                    <table class="table table-bordered">
                         <thead>
                             <tr>
                             <th scope="col">Patient</th>
@@ -468,6 +467,9 @@
 
     $('.btn-secondary').on('click', function(e) {
         $('#contractForm')[0].reset();
+        $('#facility_id').val('').trigger('change');
+        $('#proponent_id').val('').trigger('change');
+
     });
 
     $('.send_mailform').on('click', function(e) {
@@ -516,6 +518,21 @@
     }
 
     $(document).ready(function () {
+        // function initializeDataTable() {
+        //     var table = $('#patient_table').DataTable({
+        //         paging: true,
+        //         pageLength: 50,
+        //         drawCallback: function() {
+        //             initializeEditable();
+        //             initializeGroupFunctions();
+        //             initializeMailboxes();
+        //         }
+        //     });
+
+        //     $('#patient_table_length').hide();
+        //     $('#patient_table_filter').hide();
+        //     $('#patient_table_paginate').css('float', 'right');
+        // }
         function initializeDataTable() {
             var table = $('#patient_table').DataTable({
                 paging: true,
@@ -524,16 +541,38 @@
                     initializeEditable();
                     initializeGroupFunctions();
                     initializeMailboxes();
+                },
+                initComplete: function () {
+                    var api = this.api();
+                    api.columns().every(function (index) {
+
+                        if(index < 6) return;
+
+                        var column = this;
+                        var header = $(column.header());
+                        var headerText = header.text().trim();
+                        var select = $('<select style="width: 20px;"><option value="">' + headerText + '</option></select>')
+                            .appendTo(header)
+                            .on('change', function () {
+                                var val = $.fn.dataTable.util.escapeRegex($(this).val());
+                                column.search(val ? '^' + val + '$' : '', true, false).draw();
+                            });
+
+                        column.data().unique().sort().each(function (d, j) {
+                            if(index == 7){
+                                var text = $(d).text().trim(); 
+                                select.append('<option value="' + text + '">' + text + '</option>');
+                            }else{
+                                select.append('<option value="' + d + '">' + d + '</option>');
+                            }
+                        });
+                    });
                 }
             });
 
             $('#search_patient').on('keyup', function() {
                 table.search(this.value).draw();
             });
-
-            $('#patient_table_length').hide();
-            $('#patient_table_filter').hide();
-            $('#patient_table_paginate').css('float', 'right');
         }
 
         function initializeEditable() {
@@ -885,6 +924,7 @@
     }
 
     function onchangeForPatientCode(data) {
+        var facility_id = $('#facility_id').val();
         if(edit_c == 0){
             if(data.val()) {
                 $.get("{{ url('patient/code').'/' }}"+data.val()+"/"+facility_id, function(result) {

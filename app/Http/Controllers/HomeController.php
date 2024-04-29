@@ -73,30 +73,30 @@ class HomeController extends Controller
         //sort table header
         if($request->key == 'fname'){
             $patients = $patients->orderBy('fname', 'asc')->get();
-        }else if($request->key == 'mname'){
-            $patients = $patients->orderBy('mname', 'asc')->get();
-        }else if($request->key == 'lname'){
-            $patients = $patients->orderBy('lname', 'asc')->get();
-        }else if($request->key == 'region'){
-            $patients = $patients->orderBy('region', 'asc')->get();
-        }else if($request->key == 'province'){
-            $patients = $patients->orderBy('province_id', 'asc')->get();
-        }else if($request->key == 'municipality'){
-            $patients = $patients
-                        ->orderBy(
-                            \DB::connection('cloud_mysql')
-                                ->table('muncity')
-                                ->select('description')
-                                ->whereColumn('muncity.id', 'patients.muncity_id')
-                        )->get();
-        }else if($request->key == 'barangay'){
-            $patients = $patients
-                        ->orderBy(
-                            \DB::connection('cloud_mysql')
-                                ->table('barangay')
-                                ->select('description')
-                                ->whereColumn('barangay.id', 'patients.barangay_id')
-                        )->get();
+        // }else if($request->key == 'mname'){
+        //     $patients = $patients->orderBy('mname', 'asc')->get();
+        // }else if($request->key == 'lname'){
+        //     $patients = $patients->orderBy('lname', 'asc')->get();
+        // }else if($request->key == 'region'){
+        //     $patients = $patients->orderBy('region', 'asc')->get();
+        // }else if($request->key == 'province'){
+        //     $patients = $patients->orderBy('province_id', 'asc')->get();
+        // }else if($request->key == 'municipality'){
+        //     $patients = $patients
+        //                 ->orderBy(
+        //                     \DB::connection('cloud_mysql')
+        //                         ->table('muncity')
+        //                         ->select('description')
+        //                         ->whereColumn('muncity.id', 'patients.muncity_id')
+        //                 )->get();
+        // }else if($request->key == 'barangay'){
+        //     $patients = $patients
+        //                 ->orderBy(
+        //                     \DB::connection('cloud_mysql')
+        //                         ->table('barangay')
+        //                         ->select('description')
+        //                         ->whereColumn('barangay.id', 'patients.barangay_id')
+        //                 )->get();
         }else{
             $patients = $patients->orderBy('id', 'desc')->get();
         }
