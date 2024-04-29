@@ -9,7 +9,33 @@
         
         var table = $('#dv_table').DataTable({
             paging: true,
-            pageLength: 50  
+            pageLength: 50 ,
+            initComplete: function () {
+                    var api = this.api();
+                    api.columns().every(function (index) {
+
+                        if(index < 6) return;
+
+                        var column = this;
+                        var header = $(column.header());
+                        var headerText = header.text().trim();
+                        var select = $('<select style="width: 20px;"><option value="">' + headerText + '</option></select>')
+                            .appendTo(header)
+                            .on('change', function () {
+                                var val = $.fn.dataTable.util.escapeRegex($(this).val());
+                                column.search(val ? '^' + val + '$' : '', true, false).draw();
+                            });
+
+                        column.data().unique().sort().each(function (d, j) {
+                            if(index == 8){
+                                var text = $(d).text().trim(); 
+                                select.append('<option value="' + text + '">' + text + '</option>');
+                            }else{
+                                select.append('<option value="' + d + '">' + d + '</option>');
+                            }
+                        });
+                    });
+                }
         });
 
         $('#search-input').on('keyup', function() {

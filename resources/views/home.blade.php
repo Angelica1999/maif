@@ -106,18 +106,18 @@
                         <th style="min-width:10px;">Remarks</th>
                         <th style="min-width:10px; text-align:center;">Group</th>
                         <th style="min-width:150px">Actual Amount</th>
-                        <th style="min-width:120px; text-align:center;">Date &nbsp;&nbsp;</th>
-                        <th style="min-width:120px; text-align:center;">Firstname &nbsp;&nbsp;</th>
-                        <th style="min-width:130px; text-align:center;">Middlename &nbsp;&nbsp;</th>
-                        <th style="min-width:120px; text-align:center;"> Lastname &nbsp;&nbsp;</th>
-                        <th style="min-width:120px; text-align:center;">Facility &nbsp;&nbsp;</th>
-                        <th style="min-width:120px; text-align:center;">Proponent &nbsp;&nbsp;</th>
-                        <th style="min-width:90px;">Region &nbsp;&nbsp;</th>
-                        <th style="min-width:100px; text-align:center;">Province &nbsp;&nbsp;</th>
-                        <th style="min-width:130px; text-align:center;">Municipality &nbsp;&nbsp;</th>
-                        <th style="min-width:120px; text-align:center;">Barangay &nbsp;&nbsp;</th>
-                        <th style="min-width:180px">Guaranteed Amount &nbsp;&nbsp;</th>
-                        <th style="min-width:180px">Created By &nbsp;&nbsp;</th>
+                        <th style="min-width:120px; text-align:center;">Date </th>
+                        <th style="min-width:120px; text-align:center;">Firstname </th>
+                        <th style="min-width:130px; text-align:center;">Middlename </th>
+                        <th style="min-width:120px; text-align:center;"> Lastname </th>
+                        <th style="min-width:120px; text-align:center;">Facility </th>
+                        <th style="min-width:120px; text-align:center;">Proponent </th>
+                        <th style="min-width:90px;">Region </th>
+                        <th style="min-width:100px; text-align:center;">Province </th>
+                        <th style="min-width:130px; text-align:center;">Municipality </th>
+                        <th style="min-width:120px; text-align:center;">Barangay </th>
+                        <th style="min-width:180px">Guaranteed Amount </th>
+                        <th style="min-width:180px">Created By </th>
                     </tr>
                 </thead>
                 <tbody>
