@@ -112,6 +112,7 @@
                         <th style="min-width:120px; text-align:center;"> Lastname </th>
                         <th style="min-width:120px; text-align:center;">Facility </th>
                         <th style="min-width:120px; text-align:center;">Proponent </th>
+                        <th style="min-width:100px; text-align:center;">Code </th>
                         <th style="min-width:90px;">Region </th>
                         <th style="min-width:100px; text-align:center;">Province </th>
                         <th style="min-width:130px; text-align:center;">Municipality </th>
@@ -163,6 +164,7 @@
                             <td class="td">{{ $patient->lname }}</td>
                             <td class="td">{{ $patient->facility->name }}</td>
                             <td class="td">{{ $patient->proponentData ? $patient->proponentData->proponent : 'N/A' }}</td>
+                            <td class="td">{{ $patient->patient_code}}</td>
                             {{-- <td>
                                 @if(isset($patient->facility->description))
                                     {{ $patient->facility->description }}
