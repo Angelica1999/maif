@@ -11,7 +11,7 @@
     <div class="card">
         <div class="card-body">
             <form method="GET" action="{{ route('fundsource') }}">
-                <div class="input-group float-right w-50" style="min-width: 600px;">
+                <div class="input-group float-right w-50" style="max-width: 600px;">
                     <input type="text" class="form-control" name="keyword" placeholder="SAA, PROPONENT, FACILITY" value="{{ $keyword }}">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
@@ -40,7 +40,7 @@
                                             <h4 class="card-title" style="text-align: left; margin: 0;">{{ $fund->saa }}</h4>
                                         @endif
                                         @if($user->section != 6)
-                                            <button class="btn btn-sm update_saa" style="cursor: pointer; text-align: right;color:white; background-color:#417524" data-proponent-id="" data-backdrop="static" data-toggle="modal" onclick="createBreakdowns({{ $fund->id }})" href="#create_fundsource">Create Breakdowns</button>                                      
+                                            <button class="btn btn-sm update_saa" style="min-width:110px;cursor: pointer; text-align: right;color:white; background-color:#417524" data-proponent-id="" data-backdrop="static" data-toggle="modal" onclick="createBreakdowns({{ $fund->id }})" href="#create_fundsource">Breakdowns</button>                                      
                                         @endif
                                     </div>
 
@@ -75,12 +75,12 @@
 
                                                         <div class="d-flex justify-content-between align-items-center">
                                                             <span class="ml-3">Allocated Funds &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->alocated_funds)), 2, '.', ',') }}</strong></span>
-                                                            <button style="width:120px" id="track" data-backdrop="static" data-proponentInfo-id="{{ $proponentInfo->id }}" data-toggle="modal" href="#track_details2" onclick="track_details2(event)" class='btn btn-sm btn-outline-info track_details2'>Track</button>
+                                                            <button style="min-width:90px" id="track" data-backdrop="static" data-proponentInfo-id="{{ $proponentInfo->id }}" data-toggle="modal" href="#track_details2" onclick="track_details2(event)" class='btn btn-sm btn-outline-info track_details2'>Track</button>
                                                         </div>
                                                         <div class="d-flex justify-content-between align-items-center">
                                                             <span class="ml-3">Administrative Cost : <strong class="text-info">{{ $proponentInfo->admin_cost}}</strong></span>
                                                             @if($user->section != 6)
-                                                                <button style="width:120px" id="transfer_funds" data-backdrop="static" data-toggle="modal" href="#transfer_fundsource" onclick="transferFunds({{ $proponentInfo->id }})" class='btn btn-sm btn-outline-success ml-2 transfer_funds'>Transfer Funds</button>
+                                                                <button style="min-width:90px" id="transfer_funds" data-backdrop="static" data-toggle="modal" href="#transfer_fundsource" onclick="transferFunds({{ $proponentInfo->id }})" style="width:100px" class='btn btn-sm btn-outline-success ml-2 transfer_funds'>Transfer</button>
                                                             @endif
                                                         </div>
                                                         <div class="d-flex justify-content-between align-items-center">
