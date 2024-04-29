@@ -23,6 +23,8 @@
     <!-- End plugin css for this page -->  
     <link rel="shortcut icon" href="{{ asset('images/doh-logo.png') }}" />
     <!-- Scripts -->
+    <!-- datatables -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
     {{-- @vite(['resources/sass/app.scss', 'resources/js/app.js']) --}}
     @yield('css')
 </head>
