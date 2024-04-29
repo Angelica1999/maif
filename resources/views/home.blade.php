@@ -105,7 +105,7 @@
                         </th>
                         <th style="min-width:10px;">Remarks</th>
                         <th style="min-width:10px; text-align:center;">Group</th>
-                        <th style="min-width:150px">Actual Amount</th>
+                        <th style="min-width:120px">Actual Amount</th>
                         <th style="min-width:120px; text-align:center;">Date </th>
                         <th style="min-width:120px; text-align:center;">Firstname </th>
                         <th style="min-width:130px; text-align:center;">Middlename </th>
@@ -118,6 +118,7 @@
                         <th style="min-width:130px; text-align:center;">Municipality </th>
                         <th style="min-width:120px; text-align:center;">Barangay </th>
                         <th style="min-width:180px">Guaranteed Amount </th>
+                        <th style="min-width:110px">Created On </th>
                         <th style="min-width:180px">Created By </th>
                     </tr>
                 </thead>
@@ -195,6 +196,7 @@
                                 @endif
                             </td>
                             <td class="td">{{ number_format((float) str_replace(',', '', $patient->guaranteed_amount), 2, '.', ',') }}</td>
+                            <td>{{date('F j, Y', strtotime($patient->created_at))}}</td>
                             <td class="td">{{ $patient->encoded_by->lname .', '. $patient->encoded_by->fname }}</td>
                         </tr>
                     @endforeach
