@@ -338,7 +338,9 @@
                     
                 });
             });
-
+            console.log('chaki', nu);
+            nu = nu/5;
+            console.log('chaki1', nu);
             formData = formData.filter(function (data, index, array) {
                 return (
                     data.proponent !== "" &&
@@ -351,6 +353,8 @@
                     data.facility_id !== undefined 
                 );
             });
+            console.log('Collected before:', formData);
+
             
             // var divisor = {{$fundsource[0]->proponents->count()}};
             // var dividend = Math.round(formData.length/4);
@@ -362,28 +366,22 @@
             // console.log('htrry', dividend/divisor );
             // console.log('htrry', dividend % divisor );
 
-            // var count = {{$pro_count}};
-
-            // console.log('count', count);
-            // var to_deduct = 0;
-            // if(count>0){
-            //     if(count >=5){
-            //         to_deduct = count/5 * 3;
-            //     }
-            //     var cal = count * 5;
-            //     console.log('htrry', cal );
-
-            //     // var add1 = Math.floor(formData.length/4);
-            //     formData.splice(formData.length - count + count);
-            // }
-
-            // console.log('Collected Datasdsad:', formData);
-            // console.log('Collected Datasdsad:', formData.length);
             var count = {{$pro_count}};
-            if(count > 0){
-                formData.splice(count+click);
-            }
-            formData.splice(formData.length - remove_click);
+            var to_deduct = 0;
+            if(count>0){
+                if(count >=5){
+                    to_deduct = count/5 * 3;
+                }
+                // var add1 = Math.floor(formData.length/4);
+                formData.splice(formData.length - count);
+        }
+            console.log('Collected Datasdsad:', formData);
+            // console.log('Collected Datasdsad:', formData.length);
+            // var count = {{$pro_count}};
+            // if(count > 0){
+            //     formData.splice(count+click);
+            // }
+            // formData.splice(formData.length - remove_click);
             return formData;
     }
 
@@ -431,6 +429,7 @@
 
         $(document).on('click', '.clone .remove_pro-btn', function () {
             remove_click = 1 + remove_click;
+            getData();
             display();
             $(this).closest('.clone').remove();
             $(this).closest('.clone hr').remove();
@@ -440,6 +439,7 @@
         $(document).on('click', '.clone .remove_fac-clone', function () {
             $(this).closest('.row').remove();
             remove_click = 1 + remove_click;
+            getData();
             display();
         });
 
