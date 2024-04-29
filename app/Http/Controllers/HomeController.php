@@ -63,16 +63,16 @@ class HomeController extends Controller
             }
         ]);
         //for search
-        if ($request->viewAll) {
-            $request->keyword = '';
-        } elseif ($request->keyword) {
-            $patients = $patients->where('fname', 'LIKE', "%$request->keyword%")
-                ->orWhere('lname', 'LIKE', "%$request->keyword%")
-                ->orWhere('mname', 'LIKE', "%$request->keyword%");
-        }
-        //sort table header
-        if($request->key == 'fname'){
-            $patients = $patients->orderBy('fname', 'asc')->get();
+        // if ($request->viewAll) {
+        //     $request->keyword = '';
+        // } elseif ($request->keyword) {
+        //     $patients = $patients->where('fname', 'LIKE', "%$request->keyword%")
+        //         ->orWhere('lname', 'LIKE', "%$request->keyword%")
+        //         ->orWhere('mname', 'LIKE', "%$request->keyword%");
+        // }
+        // //sort table header
+        // if($request->key == 'fname'){
+        //     $patients = $patients->orderBy('fname', 'asc')->get();
         // }else if($request->key == 'mname'){
         //     $patients = $patients->orderBy('mname', 'asc')->get();
         // }else if($request->key == 'lname'){
@@ -97,9 +97,15 @@ class HomeController extends Controller
         //                         ->select('description')
         //                         ->whereColumn('barangay.id', 'patients.barangay_id')
         //                 )->get();
-        }else{
-            $patients = $patients->orderBy('id', 'desc')->get();
-        }
+        // }else{
+        //     
+        // }
+
+        //convert the search and sorting into datatables
+
+        $patients = $patients->orderByRaw('ISNULL(remarks) DESC')
+                    ->orderBy('remarks', 'ASC')
+                    ->get();
 
         return view('home', [
             'patients' => $patients,
