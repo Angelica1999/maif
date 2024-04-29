@@ -53,17 +53,17 @@
                                     </button>
                                 </div>
                             </th>
-                            <th>Remarks</th>
-                            <th>Payee</th>
-                            <th>Saa No.</th>
-                            <th>Proponent</th>
-                            <th>Date</th>
-                            <th>Month</th>
-                            <th>Amount</th>
-                            <th>Total</th>
+                            <th style="min-width: 90px;">Remarks </th>
+                            <th style="min-width: 70px;">Payee </th>
+                            <th>Saa No. </th>
+                            <th style="min-width: 100px;">Proponent </th>
+                            <th style="min-width: 70px;">Date </th>
+                            <th style="min-width: 90px;">Month </th>
+                            <th style="min-width: 90px;">Amount </th>
+                            <th>Total </th>
                             <!-- <th style="min-width: 150px;">Deduction</th> -->
                             <!-- <th style="min-width: 130px;">Total</th>  -->
-                            <th style="min-width: 100px;">Created By</th>
+                            <th style="min-width: 110px;">Created By </th>
                         </tr>
                     </thead>
                     <tbody class="table_body">
