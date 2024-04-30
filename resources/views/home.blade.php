@@ -50,18 +50,18 @@
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-            <!-- <form method="GET" action="{{ route('home') }}"> -->
+            <form method="GET" action="{{ route('home') }}">
                 <div class="input-group float-right w-50" style="min-width: 500px;">
                 <input type="hidden" class="form-control" name="key">
-                    <input type="text" class="form-control" name="keyword" id="search_patient" placeholder="Search..." value="{{ $keyword }}" aria-label="Recipient's username">
+                    <input type="text" class="form-control" name="" id="search_patient" placeholder="Search..." value="" aria-label="Recipient's username">
                         <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
-                        <!-- <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button> -->
+                        <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
                         <button type="button" href="#create_patient" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
-
+                        <button type="button" href="#generate_dates" data-backdrop="static" data-toggle="modal" style="background-color:teal; color:white; width:100px" class=""><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
                     </div>
                 </div>
-            <!-- </form> -->
+            </form>
            
             <h4 class="card-title">Manage Patients</h4>
             <span class="card-description">
@@ -106,23 +106,23 @@
                         <th style="min-width:10px;">Remarks</th>
                         <th style="min-width:10px; text-align:center;">Group</th>
                         <th style="min-width:120px">Actual Amount</th>
+                        <th style="min-width:100px">Guaranteed </th>
                         <th style="min-width:120px; text-align:center;">Date </th>
-                        <th style="min-width:120px; text-align:center;">Firstname </th>
-                        <th style="min-width:130px; text-align:center;">Middlename </th>
-                        <th style="min-width:120px; text-align:center;"> Lastname </th>
+                        <th style="min-width:90px; text-align:center;">Firstname </th>
+                        <th style="min-width:100px; text-align:center;">Middlename </th>
+                        <th style="min-width:100px; text-align:center;">Lastname </th>
                         <th style="min-width:120px; text-align:center;">Facility </th>
                         <th style="min-width:120px; text-align:center;">Proponent </th>
-                        <th style="min-width:100px; text-align:center;">Code </th>
-                        <th style="min-width:90px;">Region </th>
+                        <th>Code </th>
+                        <th style="min-width:100px;">Region </th>
                         <th style="min-width:100px; text-align:center;">Province </th>
-                        <th style="min-width:130px; text-align:center;">Municipality </th>
-                        <th style="min-width:120px; text-align:center;">Barangay </th>
-                        <th style="min-width:180px">Guaranteed Amount </th>
-                        <th style="min-width:110px">Created On </th>
-                        <th style="min-width:180px">Created By </th>
+                        <th style="min-width:100px; text-align:center;">Municipality </th>
+                        <th style="min-width:100px; text-align:center;">Barangay </th>
+                        <th style="min-width:100px">Created On </th>
+                        <th style="min-width:190px">Created By </th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="list_body">
                     @foreach($patients as $index=> $patient)
                         <tr>
                             <td>
@@ -155,6 +155,7 @@
                             <td class="editable-amount" data-actual-amount="{{!Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}" data-patient-id="{{ $patient->id }}" data-guaranteed-amount="{{str_replace(',', '', $patient->guaranteed_amount)}}">
                                 <a href="#" class="number_editable"  title="Actual Amount" id="{{ $patient->id }}">{{!Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}</a>
                             </td>
+                            <td class="td">{{ number_format((float) str_replace(',', '', $patient->guaranteed_amount), 2, '.', ',') }}</td>
                             <td>{{date('F j, Y', strtotime($patient->date_guarantee_letter))}}</td>
                             <td class="td">
                                 <a href="#create_patient"   onclick="editPatient('{{ $patient->id }}')" data-backdrop="static" data-toggle="modal">
@@ -195,7 +196,6 @@
                                     {{ $patient->other_barangay }}
                                 @endif
                             </td>
-                            <td class="td">{{ number_format((float) str_replace(',', '', $patient->guaranteed_amount), 2, '.', ',') }}</td>
                             <td>{{date('F j, Y', strtotime($patient->created_at))}}</td>
                             <td class="td">{{ $patient->encoded_by->lname .', '. $patient->encoded_by->fname }}</td>
                         </tr>
@@ -454,6 +454,23 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="generate_dates" tabindex="-1" style="" role="dialog" style="opacity:3" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content"> 
+            <form method="GET" action="{{ route('home') }}">
+                <div class="modal-body_release" style="padding:10px">
+                    <h4 class="text-success"><i style = "font-size:30px"class="typcn typcn-location-arrow menu-icon"></i> Filter Dates</h4><hr/>
+                    <input type="text" style="text-align:center" class="form-control" id="filter_dates" value="" name="filter_dates" />
+                    @csrf    
+                </div>
+                <div class="modal-footer">
+                    <button style = "background-color:gray; color:white"  class="btn btn-xs btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> Close</button>
+                    <button type="submit" class="btn btn-success btn-xs btn-submit" onclick=""><i style = "" class="typcn typcn-location-arrow menu-icon"></i> Generate</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <div class="loading-container">
     <img src="public\images\loading.gif" alt="Loading..." class="loading-spinner">
@@ -462,12 +479,21 @@
 @section('js')
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 <script src="{{ asset('admin/vendors/x-editable/bootstrap-editable.min.js?v=1') }}"></script>
+<script src="{{ asset('admin/vendors/daterangepicker-master/moment.min.js?v=1') }}"></script>
+<script src="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.js?v=1') }}"></script>
 <script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.4/js/dataTables.bootstrap4.min.js"></script>
 
 @include('maif.editable_js')
 
 <script>
+    $(function() {
+        $('#filter_dates').daterangepicker();
+    });
+
+    $('#list_body').on('click', function(){
+        $('.filter').hide();
+    });
 
     $('.btn-secondary').on('click', function(e) {
         $('#contractForm')[0].reset();
@@ -522,21 +548,7 @@
     }
 
     $(document).ready(function () {
-        // function initializeDataTable() {
-        //     var table = $('#patient_table').DataTable({
-        //         paging: true,
-        //         pageLength: 50,
-        //         drawCallback: function() {
-        //             initializeEditable();
-        //             initializeGroupFunctions();
-        //             initializeMailboxes();
-        //         }
-        //     });
 
-        //     $('#patient_table_length').hide();
-        //     $('#patient_table_filter').hide();
-        //     $('#patient_table_paginate').css('float', 'right');
-        // }
         function initializeDataTable() {
             var table = $('#patient_table').DataTable({
                 paging: true,
@@ -549,26 +561,40 @@
                 initComplete: function () {
                     var api = this.api();
                     api.columns().every(function (index) {
-
-                        if(index < 6) return;
-
+                        if(index < 8 ) return;
                         var column = this;
                         var header = $(column.header());
                         var headerText = header.text().trim();
-                        var select = $('<select style="width: 20px;"><option value="">' + headerText + '</option></select>')
-                            .appendTo(header)
+                        var filterDiv = $('<div class="filter"></div>').appendTo(header);
+                        
+                        var select = $('<select style="width: 120px;" multiple><option value="">' + headerText + '</option></select>')
+                            .appendTo(filterDiv)
                             .on('change', function () {
-                                var val = $.fn.dataTable.util.escapeRegex($(this).val());
-                                column.search(val ? '^' + val + '$' : '', true, false).draw();
-                            });
+                                var selectedValues = $(this).val();
+                                if(index == 8){
+                                    var val = selectedValues ? selectedValues.join('|') : '';
+                                    column.search(val, true, false).draw();
+                                }else{
+                                    var val = selectedValues ? selectedValues.map(function(value) {
+                                            return $.fn.dataTable.util.escapeRegex(value);
+                                        }).join('|') : '';
+                                    column.search(val ? '^(' + val + ')$' : '', true, false).draw();
+                                }
+                            }).select2();
 
                         column.data().unique().sort().each(function (d, j) {
-                            if(index == 7){
+                            if(index == 8){
                                 var text = $(d).text().trim(); 
                                 select.append('<option value="' + text + '">' + text + '</option>');
                             }else{
                                 select.append('<option value="' + d + '">' + d + '</option>');
-                            }
+                            } 
+                        });
+                    
+                        filterDiv.hide();
+                        header.click(function() {
+                            $('.filter').hide();
+                            $(this).find('.filter').show();
                         });
                     });
                 }

@@ -7,12 +7,15 @@
         display: block;
     }
 </style>
-<?php $joinedData = DB::connection('dohdtr')
+<?php 
+    $id = Auth::user()->userid;
+    $joinedData = DB::connection('dohdtr')
                     ->table('users')
                     ->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
-                    ->where('users.userid', '=', Auth::user()->userid)
+                    ->where('users.userid', '=', $id)
                     ->select('users.section', 'users.division')
-                    ->first();?>
+                    ->first();
+?>
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
   <ul class="nav">
     <li class="nav-item">
@@ -82,7 +85,7 @@
             </li>
         </ul>
     @endif
-    @if($joinedData->section == 105 || $joinedData->section == 80 || $joinedData->section == 36 || $joinedData->section == 31)
+    @if($joinedData->section == 105 || $id == 2760 || $id == 201400208 || $joinedData->section == 36 || $joinedData->section == 31)
 
         <ul class="nav flex-column" style=" margin-bottom: 0;">
             <li class="nav-item">

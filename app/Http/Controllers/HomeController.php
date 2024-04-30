@@ -42,6 +42,9 @@ class HomeController extends Controller
 
 
      public function index(Request $request){
+
+        $filter_date = $request->input('filter_dates');
+        
         $patients = Patients::with([
             'province' => function ($query) {
                 $query->select('id', 'description');
@@ -62,50 +65,15 @@ class HomeController extends Controller
                 $query->select('id','proponent');
             }
         ]);
-        //for search
-        // if ($request->viewAll) {
-        //     $request->keyword = '';
-        // } elseif ($request->keyword) {
-        //     $patients = $patients->where('fname', 'LIKE', "%$request->keyword%")
-        //         ->orWhere('lname', 'LIKE', "%$request->keyword%")
-        //         ->orWhere('mname', 'LIKE', "%$request->keyword%");
-        // }
-        // //sort table header
-        // if($request->key == 'fname'){
-        //     $patients = $patients->orderBy('fname', 'asc')->get();
-        // }else if($request->key == 'mname'){
-        //     $patients = $patients->orderBy('mname', 'asc')->get();
-        // }else if($request->key == 'lname'){
-        //     $patients = $patients->orderBy('lname', 'asc')->get();
-        // }else if($request->key == 'region'){
-        //     $patients = $patients->orderBy('region', 'asc')->get();
-        // }else if($request->key == 'province'){
-        //     $patients = $patients->orderBy('province_id', 'asc')->get();
-        // }else if($request->key == 'municipality'){
-        //     $patients = $patients
-        //                 ->orderBy(
-        //                     \DB::connection('cloud_mysql')
-        //                         ->table('muncity')
-        //                         ->select('description')
-        //                         ->whereColumn('muncity.id', 'patients.muncity_id')
-        //                 )->get();
-        // }else if($request->key == 'barangay'){
-        //     $patients = $patients
-        //                 ->orderBy(
-        //                     \DB::connection('cloud_mysql')
-        //                         ->table('barangay')
-        //                         ->select('description')
-        //                         ->whereColumn('barangay.id', 'patients.barangay_id')
-        //                 )->get();
-        // }else{
-        //     
-        // }
-
-        //convert the search and sorting into datatables
-
-        $patients = $patients->orderByRaw('ISNULL(remarks) DESC')
-                    ->orderBy('remarks', 'ASC')
-                    ->get();
+       
+        if($filter_date){
+            $dateRange = explode(' - ', $filter_date);
+            $start_date = date('Y-m-d', strtotime($dateRange[0]));
+            $end_date = date('Y-m-d', strtotime($dateRange[1]));
+            $patients = $patients ->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59'])->orderBy('id', 'desc')->get();
+        }else{
+            $patients = $patients ->orderBy('id', 'desc')->get();
+        }
 
         return view('home', [
             'patients' => $patients,
@@ -120,7 +88,6 @@ class HomeController extends Controller
             'proponents' => Proponent::get(),
             'history' => MailHistory::with('patient', 'sent', 'modified')->get(),
             'logs' => PatientLogs::with('modified', 'facility', 'province', 'muncity', 'barangay', 'proponent')->get()
-
         ]);
      }
 
