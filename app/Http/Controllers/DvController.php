@@ -41,11 +41,7 @@ class DvController extends Controller
                 }
             }
         }
-                
-        if($request->viewAll){
-            $request->keyword = '';
-        }
-        
+          
         $results = Dv::with(['fundsource', 'facility', 'user', 'master', 'dv2'])
                     ->when($request->keyword, function ($query) use ($request) {
                         $query->where('route_no', 'LIKE', "%$request->keyword%");

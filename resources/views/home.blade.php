@@ -58,7 +58,7 @@
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
                         <button type="button" href="#create_patient" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
-                        <button type="button" href="#generate_dates" data-backdrop="static" data-toggle="modal" style="background-color:teal; color:white; width:100px" class=""><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
+                        <button type="button" href="#generate_filter" data-backdrop="static" data-toggle="modal" style="background-color:teal; color:white; width:100px" class=""><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
                     </div>
                 </div>
             </form>
@@ -454,9 +454,10 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="generate_dates" tabindex="-1" style="" role="dialog" style="opacity:3" aria-hidden="true">
+
+<div class="modal fade" id="generate_filter" tabindex="-1" role="dialog" aria-hidden="true" style="opacity:2">
     <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content"> 
+        <div class="modal-content">
             <form method="GET" action="{{ route('home') }}">
                 <div class="modal-body_release" style="padding:10px">
                     <h4 class="text-success"><i style = "font-size:30px"class="typcn typcn-location-arrow menu-icon"></i> Filter Dates</h4><hr/>
@@ -1101,47 +1102,6 @@
         }
         
     }
-
-    // $('#remaining_balance').on('click', function() {
-    //     console.log('click');
-    // });
-
-// function onchangeForPatientProp(data) {
-//      var proponent_id = data('proponent-id');
-//      var facility_id = data('facility-id');
-
-//             if(proponent_id && facility_id && data()) {
-//                 $.get("{{ url('patient/proponent').'/' }}" + proponent_id + "/" + facility_id + "/" + selectElement.val(), function(result) {
-//                     console.log(result);
-//                     $("#proponent").val(result.patient_proponent);
-//                     $("#facility_name").val(result.facilityname);
-//                 });
-//             }
-//         }
-
-// function onchangeForPatientProp(data) {
-//             if(data.val()) {
-//                 $.get("{{ url('patient/code').'/' }}"+proponent_id+"/"+data.val(), function(result) {
-//                     console.log(result);
-//                     $("#proponent").val(result);
-//                 });
-//             }
-//         }
-
-//         function onchangeForPatientProp(data) {
-//     if (data.val()) {
-//         var proponent_id = data.val(); // Get the selected proponent_id
-//         $.get("{{ url('patient/proponent') }}/" + proponent_id, function(result) {
-//             // Assuming the response contains facility and proponent data
-//             if (result.facility) {
-//                 $("#facility_name").val(result.facility.name); // Update the facility input
-//             }
-//             if (result.proponent) {
-//                 $("#proponent").val(result.proponent); // Update the proponent input
-//             }
-//         });
-//     }
-// }
 
     </script>
 @endsection
