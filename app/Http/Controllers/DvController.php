@@ -30,7 +30,6 @@ class DvController extends Controller
 
     public function dv(Request $request){
 
-        // $dv_update = Dv::whereNotNull('dv_no')->with(['fundsource','facility', 'user'])->get();
         $dv= Dv::whereNull('dv_no')->orWhere('dv_no', '')->get();
         foreach($dv as $d){
             $master = TrackingMaster::where('route_no', $d->route_no)->first();
@@ -42,12 +41,6 @@ class DvController extends Controller
                 }
             }
         }
-
-        // foreach ($dv_update as $result) {
-        //     if($result->master->div_no != null){
-        //         $result->update(['dv_no' => $result->master->div_no]);
-        //     }
-        // }
                 
         if($request->viewAll){
             $request->keyword = '';
@@ -56,10 +49,18 @@ class DvController extends Controller
         $results = Dv::with(['fundsource', 'facility', 'user', 'master', 'dv2'])
                     ->when($request->keyword, function ($query) use ($request) {
                         $query->where('route_no', 'LIKE', "%$request->keyword%");
-                    })
-                ->orderby('id', 'desc')
-                ->get();
-                // ->paginate(50);
+                    });
+
+        $filter_dates = $request->input('dates_filter');
+
+        if($filter_dates){
+            $dateRange = explode(' - ', $filter_dates);
+            $start_date = date('Y-m-d', strtotime($dateRange[0]));
+            $end_date = date('Y-m-d', strtotime($dateRange[1]));
+            $results = $results ->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59'])->orderBy('id', 'desc')->get();
+        }else{
+            $results = $results->orderby('id', 'desc')->get();
+        }
 
         if(Auth::user()->userid == 1027 || Auth::user()->userid == 2660){
             

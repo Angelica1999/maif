@@ -18,7 +18,7 @@
                 <div class="input-group float-right w-50" style="min-width: 600px;">
                     <input type="text" class="form-control" name="keyword" placeholder="Search..." value="{{$keyword}}" id="search-input">
                     <div class="input-group-append">
-                        <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
+                        <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
                         <!-- <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button> -->
                         @if(Auth::user()->userid != 1027 || Auth::user()->userid == 2660)
                             <button type="button" href="#create_dv" onclick="createDv()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
@@ -26,6 +26,7 @@
                             <input type="hidden" class="all_route" id="all_route" name="all_route">
                         @else
                         @endif
+                        <button type="button" href="#filter_dv" data-backdrop="static" data-toggle="modal" style="background-color:teal; color:white; width:100px" class=""><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
                     </div>
                 </div>
             <!-- </form> -->
@@ -53,17 +54,15 @@
                                     </button>
                                 </div>
                             </th>
-                            <th style="min-width: 90px;">Remarks </th>
-                            <th style="min-width: 70px;">Payee </th>
-                            <th>Saa No. </th>
-                            <th style="min-width: 100px;">Proponent </th>
-                            <th style="min-width: 70px;">Date </th>
-                            <th style="min-width: 90px;">Month </th>
-                            <th style="min-width: 90px;">Amount </th>
-                            <th>Total </th>
-                            <!-- <th style="min-width: 150px;">Deduction</th> -->
-                            <!-- <th style="min-width: 130px;">Total</th>  -->
-                            <th style="min-width: 110px;">Created By </th>
+                            <th style="min-width: 170px;">Remarks </th>
+                            <th style="min-width: 150px;">Payee </th>
+                            <th style="min-width: 160px;">Saa No. </th>
+                            <th style="min-width: 180px;">Proponent </th>
+                            <th style="min-width: 140px;">Date </th>
+                            <th style="min-width: 160px;">Month </th>
+                            <th style="min-width: 170px;">Amount </th>
+                            <th style="min-width: 150px;">Total </th>
+                            <th style="min-width: 190px;">Created By </th>
                         </tr>
                     </thead>
                     <tbody class="table_body">
@@ -239,6 +238,23 @@
                 <div id="sample_modal" style="background: transparent; border: none;">
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="filter_dv" tabindex="-1" style="" role="dialog" style="opacity:3" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content"> 
+            <form method="GET" action="{{ route('dv') }}">
+                <div class="modal-body_release" style="padding:10px">
+                    <h4 class="text-success"><i style = "font-size:30px"class="typcn typcn-location-arrow menu-icon"></i> Filter Dates</h4><hr/>
+                    <input type="text" style="text-align:center" class="form-control" id="dates_filter" value="" name="dates_filter" />
+                    @csrf    
+                </div>
+                <div class="modal-footer">
+                    <button style = "background-color:gray; color:white"  class="btn btn-xs btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> Close</button>
+                    <button type="submit" class="btn btn-success btn-xs btn-submit" onclick=""><i style = "" class="typcn typcn-location-arrow menu-icon"></i> Generate</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

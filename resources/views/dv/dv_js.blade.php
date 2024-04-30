@@ -2,40 +2,61 @@
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 <script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.4/js/dataTables.bootstrap4.min.js"></script>
-
+<script src="{{ asset('admin/vendors/daterangepicker-master/moment.min.js?v=1') }}"></script>
+<script src="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.js?v=1') }}"></script>
 <script>
-
+    
+    $('.table_body').on('click', function(){
+        $('.filter_dates').hide();
+    });
+    $(function() {
+        $('#dates_filter').daterangepicker();
+    });
     $(document).ready(function() {
         
         var table = $('#dv_table').DataTable({
             paging: true,
             pageLength: 50 ,
             initComplete: function () {
-                    var api = this.api();
-                    api.columns().every(function (index) {
-
-                        if(index < 6) return;
-
-                        var column = this;
-                        var header = $(column.header());
-                        var headerText = header.text().trim();
-                        var select = $('<select style="width: 20px;"><option value="">' + headerText + '</option></select>')
-                            .appendTo(header)
-                            .on('change', function () {
-                                var val = $.fn.dataTable.util.escapeRegex($(this).val());
-                                column.search(val ? '^' + val + '$' : '', true, false).draw();
-                            });
-
-                        column.data().unique().sort().each(function (d, j) {
+                var api = this.api();
+                api.columns().every(function (index) {
+                    if(index < 6 ) return;
+                    var column = this;
+                    var header = $(column.header());
+                    var headerText = header.text().trim();
+                    var filterDiv = $('<div class="filter_dates"></div>').appendTo(header);
+                    
+                    var select = $('<select style="width: 120px;" multiple><option value="">' + headerText + '</option></select>')
+                        .appendTo(filterDiv)
+                        .on('change', function () {
+                            var selectedValues = $(this).val();
                             if(index == 8){
-                                var text = $(d).text().trim(); 
-                                select.append('<option value="' + text + '">' + text + '</option>');
+                                var val = selectedValues ? selectedValues.join('|') : '';
+                                column.search(val, true, false).draw();
                             }else{
-                                select.append('<option value="' + d + '">' + d + '</option>');
+                                var val = selectedValues ? selectedValues.map(function(value) {
+                                        return $.fn.dataTable.util.escapeRegex(value);
+                                    }).join('|') : '';
+                                column.search(val ? '^(' + val + ')$' : '', true, false).draw();
                             }
-                        });
+                        }).select2();
+
+                    column.data().unique().sort().each(function (d, j) {
+                        if(index == 8){
+                            var text = $(d).text().trim(); 
+                            select.append('<option value="' + text + '">' + text + '</option>');
+                        }else{
+                            select.append('<option value="' + d + '">' + d + '</option>');
+                        }
                     });
-                }
+
+                    filterDiv.hide();
+                    header.click(function() {
+                        $('.filter_dates').hide();
+                        $(this).find('.filter_dates').show();
+                    });
+                });
+            }
         });
 
         $('#search-input').on('keyup', function() {
