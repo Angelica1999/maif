@@ -492,6 +492,15 @@
         $('#filter_dates').daterangepicker();
     });
 
+    var proponents,all_patients,history,logs;
+
+    $.get("{{ url('patient') }}", function(result) {
+        proponents = result.proponents;
+        all_patients = result.all_pat;
+        history = result.history;
+        logs = result.logs;
+    });
+
     $('#list_body').on('click', function(){
         $('.filter').hide();
     });
@@ -800,14 +809,13 @@
         editRoute = editRoute.replace(':id', id);
         $('#contractForm').attr('action', editRoute);
         $('#create_pat_btn').text('Update Patient');
-        var proponents = @json($proponents);
+        console.log('proponents', proponents);
         proponents.forEach(function(optionData) {
             $('.proponent_id1').append($('<option>', {
                 value: optionData.id,
                 text: optionData.proponent
             }));
         });
-        var all_patients = @json($all_pat);
         var patient = all_patients.filter(item => item.id == id)[0];
         $('#title').html('<i style="font-size:30px" class="typcn typcn-user-outline menu-icon"></i> Update Patient');
         console.log('chaki', patient);
@@ -1016,7 +1024,6 @@
     
     function populateHistory(id){
         $('#gl_history').empty();
-        var logs = @json($logs);
         logs = logs.filter(item => item.patient_id == id);
         console.log('history', logs);
         if(logs != ''){
@@ -1068,7 +1075,6 @@
 
     function populate(id){
         $('#mail_history').empty();
-        var history = @json($history);
         history = history.filter(item => item.patient_id == id);
         console.log('history', history);
         if(history != ''){
