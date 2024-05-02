@@ -623,7 +623,7 @@
         function initializeDataTable() {
             var table = $('#patient_table').DataTable({
                 paging: true,
-                pageLength: 5,
+                pageLength: 50,
                 drawCallback: function() {
                     initializeEditable();
                     initializeGroupFunctions();
