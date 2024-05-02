@@ -1,7 +1,6 @@
-<form  method="post" id ="dv_form"> 
+<form  method="post" id ="group_form"> 
     @csrf   
-    <input type="hidden" name="dv" id ="dv" value="">
-    <input type="hidden" name="dv_id" id="dv_id" value="">
+    <input type="hidden" name="group_id" id ="group_id" value="{{$group->id}}">
     <div class="clearfix"></div>
     <div class="table-container" >
         <table class="table table-list table-hover table-striped" id="track_details">
@@ -74,16 +73,12 @@
             var result = total - amount;
             var answer = confirm('Are you sure you wanted to remove this patient from this group?');
             if(answer){
-                $.get("{{ url('patient/').'/' }}"+patient_id, function(result) {});
+                $.get("{{ url('group/remove_patient').'/' }}"+patient_id, function(result) {
+                    console.log('chaki', result);
+                });
                 to_remove.remove();
                 $('.amount_total').val(formatNumberWithCommas(result));
-            }else{
-                console.log("false");
             }
-            // $('#group_confirm').modal('show');
-            // $('#confirmButton').on('click', function(){
-            //     console.log('button clicked 2');
-            // });
         });
     });
     function formatNumberWithCommas(number) {

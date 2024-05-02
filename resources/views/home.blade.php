@@ -50,42 +50,46 @@
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-            <form method="GET" action="{{ route('home') }}">
-                <div class="input-group float-right w-50" style="min-width: 500px;">
-                <input type="hidden" class="form-control" name="key">
-                    <input type="text" class="form-control" name="" id="search_patient" placeholder="Search..." value="" aria-label="Recipient's username">
-                        <div class="input-group-append">
-                        <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
-                        <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
-                        <button type="button" href="#create_patient" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
-                        <button type="button" href="#generate_filter" data-backdrop="static" data-toggle="modal" style="background-color:teal; color:white; width:100px" class=""><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
-                    </div>
+            <div class="float-right">
+                <div class="input-group">
+                    <form method="GET" action="{{ route('home') }}">
+                        <div class="input-group">
+                            <input type="hidden" class="form-control" name="key">
+                            <input type="text" class="form-control" name="" id="search_patient" placeholder="Search..." value="" aria-label="Recipient's username">
+                            <div class="input-group-append">
+                                <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
+                                <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
+                                <button type="button" href="#create_patient" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
+                                <button type="button" href="#generate_filter" data-backdrop="static" data-toggle="modal" style="background-color:teal; color:white; width:100px" class=""><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
+                            </div>  
+                        </div>
+                    </form>
+                    <form method="POST" action="{{ route('sent.mails') }}" class="send_mailform">
+                        @csrf
+                        <div style="display: flex; justify-content: flex-end;">
+                            <button class="btn-sm send_mails" name="send_mails[]" style="display:none;background-color: green; color: white; height:48px; width:100px">Send Mails</button>
+                            <input type="hidden" class="form-control idss" name="idss" id="idss" >
+                        </div>
+                    </form>
+                    <form method="POST" action="{{ route('save.group') }}">
+                        @csrf
+                        <div style="display: flex; justify-content: flex-end;">
+                            <label class="totalAmountLabel" style="display:none; height:30px;" ><b>Total Amount:</b></label>
+                            <input style="display:none; vertical-align:center; width:150px" class="form-control group_amountT" name="group_amountT" id="group_amountT" readonly>
+                            <button class=" btn-sm group-btn" style="display:none;background-color: green; color: white; height:48px; width:100px">Group</button>
+                            <input type="hidden" class="form-control group_facility" name="group_facility" id="group_facility" >
+                            <input type="hidden" class="form-control group_proponent" name="group_proponent" id="group_proponent" >
+                            <input type="hidden" class="form-control group_patients" name="group_patients" id="group_patients" >
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
            
             <h4 class="card-title">Manage Patients</h4>
             <span class="card-description">
                 MAIF-IPP
             </span>
-            <form method="POST" action="{{ route('sent.mails') }}" class="send_mailform">
-                @csrf
-                <div style="display: flex; justify-content: flex-end;">
-                    <button class="btn-sm send_mails" name="send_mails[]" style="display:none;background-color: green; color: white; height:45px">Send Mails</button>
-                    <input type="hidden" class="form-control idss" name="idss" id="idss" >
-                </div>
-            </form>
-            <form method="POST" action="{{ route('save.group') }}">
-                @csrf
-                <div class="input-group float-right w-30" style="min-width: 300px; max-width: 300px;">
-                    <label class="totalAmountLabel" style="display:none; height:30px;" ><b>Total Amount:</b></label>
-                    <input style="display:none; vertical-align:center" class="form-control group_amountT" name="group_amountT" id="group_amountT" style="width:10px;" readonly>
-                    <button class=" btn-sm btn-success group-btn" style="display:none; height:50px;">Group</button>
-                    <input type="hidden" class="form-control group_facility" name="group_facility" id="group_facility" >
-                    <input type="hidden" class="form-control group_proponent" name="group_proponent" id="group_proponent" >
-                    <input type="hidden" class="form-control group_patients" name="group_patients" id="group_patients" >
-
-                </div>
-            </form>
+            
             @if(count($patients) > 0)
             <div class="table-responsive">
                 <table class="table table-striped" id="patient_table">
@@ -98,7 +102,7 @@
                                 <button class="btn-info select_all" style="width: 25px; display: flex; justify-content: center; align-items: center;">
                                     <i class="typcn typcn-input-checked"></i>
                                 </button>
-                                <button class="btn-danger select_all" style="width: 25px; display: flex; justify-content: center; align-items: center;">
+                                <button class="btn-danger unselect_all" style="width: 25px; display: flex; justify-content: center; align-items: center;">
                                     <i class="typcn typcn-times menu-icon"></i>
                                 </button>
                             </div>
@@ -540,6 +544,7 @@
     function itemChecked(element){
         var parentTd = $(element).closest('td');   
         var patientId = parentTd.attr('data-patient-id');
+        console.log('id', patientId);
         if(id_list.includes(patientId)){
             console.log("Patient ID already exists in the array.");
             id_list = id_list.filter(id => id !== patientId);
@@ -549,12 +554,68 @@
             id_list.push(patientId);
             console.log("Added Patient ID to the array:", id_list);
         }
-        $('.send_mails').val(id_list);
+
+        if(id_list.length != 0){
+            $('.send_mails').val(id_list).show();
+        }else{
+            $('.send_mails').val('').hide();
+        }
     }
 
-    function groupItem(el){
+    var group_a = [];
+    var group_i = [];
+    var g_fac, g_pro;
+    function groupItem(element){
+
         var parentTd = $(element).closest('td');   
         var patientId = parentTd.attr('data-patient-id');
+        var amount = parentTd.attr('data-amount');
+        amount = amount.replace(/,/g,'');
+        if(group_i.includes(patientId)){
+            var r_index = group_i.indexOf(patientId); 
+            group_i = group_i.filter(id => id !== patientId);
+            console.log('index', r_index);
+            if (r_index !== -1) {
+                group_a.splice(r_index, 1);
+            }
+        }else{
+            if(amount == 0 || amount == null || amount == ''){
+                alert('Fill up actual amount first!');
+                element.prop('checked', false);
+            }else{
+                var c_pro = parentTd.attr('data-proponent-id');
+                var c_fac = parentTd.attr('data-facility-id');
+                console.log('dsfdf', c_pro)
+                if (g_fac != 0 || c_fac == g_fac || g_pro != 0 || c_pro == g_pro) {
+                    group_a.push(amount);
+                    group_i.push(patientId);
+                    g_fac = c_fac;
+                    g_pro = c_pro;
+                }else{
+                    alert('Make sure you are selecting patient with same facility and proponent!');
+                    element.prop('checked', false);
+                }
+            }
+        }
+        
+        var sum = group_a.reduce((accumulator, currentValue)  => accumulator + parseFloat(currentValue), 0);
+        if(group_a.length != 0){
+            sum = sum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            $('.group_amountT').val(sum).show();
+            $('.group_facility').val(g_fac);
+            $('.group_proponent').val(g_pro);
+            $('.group_patients').val(group_i.join(','));
+            $('.group-btn').show();
+            $('.totalAmountLabel').show();
+        }else{
+            $('.group_amountT').val('').hide();
+            $('.totalAmountLabel').hide();
+            $('.group-btn').hide();
+        }
+    }
+    
+    function calGroup(){
+        
     }
 
     $(document).ready(function () {
@@ -562,7 +623,7 @@
         function initializeDataTable() {
             var table = $('#patient_table').DataTable({
                 paging: true,
-                pageLength: 50,
+                pageLength: 5,
                 drawCallback: function() {
                     initializeEditable();
                     initializeGroupFunctions();
@@ -669,110 +730,45 @@
         }
 
         function initializeGroupFunctions() {
-            function setNull(){
-                $('.group-btn').hide();
-                $('.totalAmountLabel').hide();
-                $('.group_amountT').val('').hide();
-            }
 
-            $('.group-checkbox').change(function () {
+            $('#patient_table').on('change', '.group-checkbox', function() {
                 if ($(this).prop('checked')) {
                     var selectedProponentId = $(this).closest('.group-amount').data('proponent-id');
                     var selectedFacilityId = $(this).closest('.group-amount').data('facility-id');
 
-                    $('.group-checkbox').not(this).each(function () {
-                        var proponentId = $(this).closest('.group-amount').data('proponent-id');
-                        var facilityId = $(this).closest('.group-amount').data('facility-id');
+                    $('#patient_table').DataTable().rows().every(function() {
+                        var row = this.node();
+                        var proponentId = $(row).find('.group-amount').data('proponent-id');
+                        var facilityId = $(row).find('.group-amount').data('facility-id');
 
                         if (proponentId !== selectedProponentId || facilityId !== selectedFacilityId) {
-                            $(this).prop('disabled', true);
-                            $(this).prop('checked', false);
+                            $(row).find('.group-checkbox').prop('disabled', true);
+                            $(row).find('.group-checkbox').prop('checked', false);
                         } else {
-                            $(this).prop('disabled', false);
+                            $(row).find('.group-checkbox').prop('disabled', false);
                         }
                     });
+
                 } else {
-                    $('.group-checkbox').prop('disabled', false);
-                }
-                var checkedCheckboxes = $('.group-checkbox:checked');
-                var totalAmount = 0;
-                var patientId = [];
-                var proponentId = 0;
-                var facilityId = 0;
-
-                checkedCheckboxes.each(function () {
-                    var amount = $(this).closest('.group-amount').data('amount');
-                    if(amount == null || amount == '' || amount == undefined){
-                        amountError();
-                        setNull();
-                        totalAmount = 0;
-                        $('.group-checkbox').prop('checked', false);
-                    }else{
-                        var currentProponent = $(this).closest('.group-amount').data('proponent-id');
-                        var currentFacility = $(this).closest('.group-amount').data('facility-id');
-                        var patient = $(this).closest('.group-amount').data('patient-id');
-
-                        if (facilityId == 0 || currentFacility == facilityId || proponentId == 0 || currentProponent == proponentId) {
-                            facilityId = currentFacility;
-                            proponentId = currentProponent;
-                            totalAmount += parseFloat(amount);
-                            patientId.push(patient);
-                        } else {
-                            error();
-                            $('.group-checkbox').prop('checked', false);
-                        }
-                    }
-                });
-                if(totalAmount > 0){
-                    totalAmount = totalAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                    $('.group_amountT').val(totalAmount).show();
-                    $('.group_facility').val(facilityId);
-                    $('.group_proponent').val(proponentId);
-                    $('.group_patients').val(patientId.join(','));
-                    $('.group-btn').show();
-                    $('.totalAmountLabel').show();
-                }
-
-                if(checkedCheckboxes.length == '0'){
-                    setNull();
+                    $('#patient_table').find('.group-checkbox').prop('disabled', false);
                 }
             });
         }
 
         function initializeMailboxes() {
-            $('.group-mailCheckBox').change(function () {
-                $('.send_mails').show();
-                if ($(this).prop('checked')) {
-                    $('.group-checkbox').prop('disabled', true);
-                } else {
-                    $('.group-checkbox').prop('disabled', false);
-                }
-                var checkedMailBoxes = $('.group-mailCheckBox:checked');
-                
-                var ids = [];
-                
-                checkedMailBoxes.each(function () {
-                    var patient = $(this).closest('.group-email').data('patient-id');
-                    ids.push(patient);
-                    all_ids.push(patient);
+           
+            $('.select_all').on('click', function() {
+                $('#patient_table').DataTable().$('input.group-mailCheckBox').each(function() {
+                    $(this).prop('checked', true).trigger('change');
                 });
-                if(ids.length ==  0){
-                    $('.send_mails').hide();
-                }
-                // $('.send_mails').val(ids);
             });
 
-            //select_all
-            $('.select_all').on('click', function(){
-                $('.group-mailCheckBox').prop('checked', true);
-                $('.group-mailCheckBox').trigger('change');
+            $('.unselect_all').on('click', function() {
+                $('#patient_table').DataTable().$('input.group-mailCheckBox').each(function() {
+                    $(this).prop('checked', false).trigger('change');
+                });
             });
 
-            //unselect_all
-            $('.unselect_all').on('click', function(){
-                $('.group-mailCheckBox').prop('checked', false);
-                $('.group-mailCheckBox').trigger('change');
-            });
         }
 
         // Initialize on document ready

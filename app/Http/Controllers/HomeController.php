@@ -418,7 +418,6 @@ class HomeController extends Controller
           session()->flash('remove_patientgroup', true); 
     }
     public function getPatients($facility_id, $proponent_id){
-
         return Patients::where(function($query) {
             $query->whereNull('group_id')
                   ->orWhere('group_id', '=', '');
@@ -452,7 +451,6 @@ class HomeController extends Controller
 
         $patients = $request->input('group_patients');
         $patientsArray = explode(',', $patients);
-        return $patientsArray;
         $group = new Group();
         $group->facility_id = $request->input('group_facility');
         $group->proponent_id = $request->input('group_proponent');
@@ -508,13 +506,7 @@ class HomeController extends Controller
         $municipal = Muncity::select('id', 'description')->get();
         $barangay = Barangay::select('id', 'description')->get();
         return [
-            // 'provinces' => Province::get(),
-            // 'fundsources' => Fundsource::get(),
-            // 'proponents' => Proponent::get(),
-            // 'facility' => Facility::get(),
             'patient' => $patient
-            // 'municipal' => $municipal,
-            // 'barangay' => $barangay,
         ];        
     }
 
@@ -551,7 +543,7 @@ class HomeController extends Controller
         ]);
     }
  
-   public function updatePatient($id, Request $request){
+    public function updatePatient($id, Request $request){
         // $patient_id = $request->input('patient_id');
         $patient_id = $id;
         $patient = Patients::where('id', $patient_id)->first();
@@ -592,18 +584,25 @@ class HomeController extends Controller
 
         $patient->save();
         return redirect()->back();
-   }
+    }
 
-   public function removePatient($id){
+    public function removePatient($id){
         if($id){
             Patients::where('id', $id)->delete();
         }
         return redirect()->back()->with('remove_patient', true);
-   }
+    }
 
-    // public function facilityGet(Request $request) {
-    //     return Facility::where('province',$request->province_id)->where('hospital_type','private')->get();
-    // }
+    public function groupRemovePatient($id){
+        $pat = Patients::where('id', $id)->first();
+        if($pat){
+            $gr = Group::where('id', $pat->group_id)->first();
+            $gr->amount = (double)str_replace(',', '', $gr->amount) - (double)str_replace(',', '', $pat->actual_amount);
+            $gr->save();
+            $pat->group_id = null;
+            $pat->save();
+        }
+    }
 
     public function muncityGet(Request $request) {
         return Muncity::where('province_id',$request->province_id)->whereNull('vaccine_used')->get();
