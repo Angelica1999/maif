@@ -36,6 +36,8 @@ Route::get('/patient/edit/{patient_id}', [App\Http\Controllers\HomeController::c
 Route::post('/patient/update/{id}', [App\Http\Controllers\HomeController::class, 'updatePatient'])->name('patient.update');
 Route::get('/patient/remove/{id}', [App\Http\Controllers\HomeController::class, 'removePatient'])->name('patient.remove');
 Route::get('/patient/{id}', [App\Http\Controllers\HomeController::class, 'fetchPatient'])->name('patient.fetch');
+Route::get('/patient', [App\Http\Controllers\HomeController::class, 'fetchAdditionalData'])->name('home.addditional');
+
 
 Route::get('/patient/pdf', [App\Http\Controllers\PrintController::class, 'patientPdf'])->name('patient.pdf');
 Route::get('patient/pdf/{patientid}', [App\Http\Controllers\PrintController::class, 'patientPdf'])->name('patient.pdf');

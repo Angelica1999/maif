@@ -81,14 +81,18 @@ class HomeController extends Controller
             'provinces' => Province::get(),
             'municipalities' => Muncity::get(),
             'barangays' => Barangay::get(),
-            'fundsources' => Fundsource::get(),
             'facilities' => Facility::get(),
-            'user' => Auth::user(),
+            'user' => Auth::user()
+        ]);
+     }
+
+     public function fetchAdditionalData(){
+        return [
             'all_pat' => Patients::get(),
             'proponents' => Proponent::get(),
             'history' => MailHistory::with('patient', 'sent', 'modified')->get(),
             'logs' => PatientLogs::with('modified', 'facility', 'province', 'muncity', 'barangay', 'proponent')->get()
-        ]);
+        ];
      }
 
     public function report(Request $request){

@@ -155,7 +155,6 @@
                                             $ids = array_map('intval', json_decode($dvs->info_id));
                                             if($ids){
                                                 $id = $proponentInfo->where('id', $ids[0])->value('proponent_id');
-                                                echo "1";
                                                 echo $proponents->where('id', $id)->value('proponent');
                                             }
 
