@@ -118,9 +118,8 @@ class FundSourceController extends Controller
                 $fundsources = $fundsources->where('saa', 'LIKE', "%$request->keyword%");
             }
         } 
-        $fundsources = $fundsources
-                        ->orderBy('id','desc')
-                        ->paginate(15);
+        
+        $fundsources = $fundsources->orderByRaw("CASE WHEN saa LIKE 'conap%' THEN 0 ELSE 1 END, saa ASC")->paginate(15);
 
         $user = DB::connection('dohdtr')->table('users')->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
                 ->where('users.userid', '=', Auth::user()->userid)
