@@ -28,14 +28,14 @@ class FundSourceController2 extends Controller{
                     ->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
                     ->where('users.userid', '=', Auth::user()->userid)
                     ->value('users.section');
-      $fundsources = Fundsource:: orderBy('id', 'desc')->paginate(15);
+      $fundsources = Fundsource::orderByRaw("CASE WHEN saa LIKE 'conap%' THEN 0 ELSE 1 END, saa ASC")->paginate(15);
       if($request->viewAll) {
         $request->keyword = '';
       }
       else if($request->keyword) {
-          $fundsources = Fundsource::where('saa', 'LIKE', "%$request->keyword%")->orderBy('id', 'desc')->paginate(15);
+          $fundsources = Fundsource::where('saa', 'LIKE', "%$request->keyword%")->orderByRaw("CASE WHEN saa LIKE 'conap%' THEN 0 ELSE 1 END, saa ASC")->paginate(15);
       } 
-      
+
       return view('fundsource_budget.fundsource2',[
           'fundsources' => $fundsources,
           'keyword' => $request->keyword,
