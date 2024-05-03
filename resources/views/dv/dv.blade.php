@@ -8,6 +8,9 @@
     #dv_table_filter {
         display: none;
     }
+    div.dataTables_wrapper div.dataTables_filter {
+        display: none;
+    }
 </style>
 @extends('layouts.app')
 @section('content')
@@ -19,8 +22,8 @@
                     <input type="text" class="form-control" name="keyword" placeholder="Search..." value="{{$keyword}}" id="search-input">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
-                        <button type="button" href="#filter_dv" data-backdrop="static" data-toggle="modal" style="background-color:teal; color:white; width:100px" class=""><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
+                        <button type="button" href="#filter_dv" data-backdrop="static" data-toggle="modal" style="background-color:teal; color:white; width:100px" class=""><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
                         @if(Auth::user()->userid != 1027 || Auth::user()->userid == 2660)
                             <button type="button" href="#create_dv" onclick="createDv()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
                             <button type="button" id="release_btn" data-target="#releaseTo" style="display:none; background:teal; color:white" onclick="putRoutes($(this))" data-target="#releaseTo" data-backdrop="static" data-toggle="modal" class="btn btn-md">Release All</button>
@@ -88,10 +91,14 @@
                                         <?php
                                             $routed = TrackingDetails::where('route_no',$dvs->route_no)
                                                 ->count();
-                                            $doc_id = TrackingDetails::where('route_no',$dvs->route_no)
-                                                    ->orderBy('id','desc')
-                                                    ->first()
-                                                    ->id;
+                                            if($routed){
+                                                $doc_id = TrackingDetails::where('route_no',$dvs->route_no)
+                                                ->orderBy('id','desc')
+                                                ->first()
+                                                ->id;
+                                            }else{
+                                                $doc_id= 0;
+                                            }
                                         ?>
                                         <button data-toggle="modal" data-target="#releaseTo" data-id="{{ $doc_id }}" data-route_no="{{ $dvs->route_no }}" onclick="putRoute($(this))" style="background-color:#1E90FF;color:white; width:85px;" type="button" class="btn btn-xs">Release To</button>
                                     @else

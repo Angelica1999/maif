@@ -24,7 +24,7 @@
     <link rel="shortcut icon" href="{{ asset('images/doh-logo.png') }}" />
     <!-- Scripts -->
     <!-- datatables -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="{{ asset('admin/vendors/datatables.net-bs4/dataTables.bootstrap4.css') }}">
     <!-- datarangepicker -->
     <link rel="stylesheet" href="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.css') }}">
 
