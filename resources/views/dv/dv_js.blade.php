@@ -1,7 +1,7 @@
 @section('js')
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
-<script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.11.4/js/dataTables.bootstrap4.min.js"></script>
+<script src="{{ asset('admin/vendors/datatables.net/jquery.dataTables.js') }}"></script>
+<script src="{{ asset('admin/vendors/datatables.net-bs4/dataTables.bootstrap4.js') }}"></script>
 <script src="{{ asset('admin/vendors/daterangepicker-master/moment.min.js?v=1') }}"></script>
 <script src="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.js?v=1') }}"></script>
 <script>
@@ -16,6 +16,7 @@
         
         var table = $('#dv_table').DataTable({
             paging: true,
+            deferRender: true,
             pageLength: 50 ,
             initComplete: function () {
                 var api = this.api();
