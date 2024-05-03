@@ -400,20 +400,8 @@
                 <h4 class="text-success" id="title"><i class="typcn typcn-location menu-icon"></i>Mail History</h4><hr />
                 @csrf
             </div>
-            <div class="modal_body">
-                <div class="table-container">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                            <th scope="col">Patient</th>
-                            <th scope="col">Modified By</th>
-                            <th scope="col">Sent By</th>
-                            <th scope="col">On</th>
-                            </tr>
-                        </thead>
-                        <tbody id="mail_history"></tbody>
-                    </table>
-                </div>
+            <div class="mail_body">
+                
             </div>
             <div class="modal-footer">
                 <button style = "background-color:lightgray"  class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> Close</button>
@@ -430,27 +418,7 @@
                 <h4 class="text-success" id="title"><i class="typcn typcn-location menu-icon"></i>Patient History</h4><hr/>
                 @csrf
             </div>
-            <div class="modal_body">
-                <div class="table-container" style="margin:5px; padding:10px">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr style="background-color:gray; color:white">
-                                <th scope="col">Patient</th>
-                                <th scope="col">Birthdate</th>
-                                <th scope="col">Address</th>
-                                <th scope="col">Date</th>
-                                <th scope="col">Facility</th>
-                                <th scope="col">Proponent</th>
-                                <th scope="col">Code</th>
-                                <th scope="col">Guaranteed</th>
-                                <th scope="col">Actual</th>
-                                <th scope="col">Modified By</th>
-                                <th scope="col">On</th>
-                            </tr>
-                        </thead>
-                        <tbody id="gl_history"></tbody>
-                    </table>
-                </div>
+            <div class="p_body">
             </div>
             <div class="modal-footer">
                 <button style = "background-color:lightgray"  class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> Close</button>
@@ -496,13 +464,11 @@
         $('#filter_dates').daterangepicker();
     });
 
-    var proponents,all_patients,history,logs;
+    var proponents,all_patients;
 
     $.get("{{ url('patient') }}", function(result) {
         proponents = result.proponents;
         all_patients = result.all_pat;
-        history = result.history;
-        logs = result.logs;
     });
 
     $('#list_body').on('click', function(){
@@ -1020,89 +986,27 @@
     
     function populateHistory(id){
         $('#gl_history').empty();
-        logs = logs.filter(item => item.patient_id == id);
-        console.log('history', logs);
-        if(logs != ''){
-            logs.forEach(function(optionData) {
-                var patient = optionData.lname + ', ' + optionData.fname;
-                console.log('check', optionData);
-                if(optionData.region == "Region 7"){
-                    var barangay = optionData.barangay && optionData.barangay !== null ? optionData.barangay.description : '';
-                    var muncity = optionData.muncity && optionData.muncity !== null ? optionData.muncity.description : '';
-                    var province = optionData.province && optionData.province !== null ? optionData.province.description : '';
-                    var address = ((barangay != '') ? barangay + ', ' : ' ') +
-                                    ((muncity != '') ? muncity + ', ' : ' ') +
-                                    ((province != '') ? province + ', ' : ' ') +
-                                    ((optionData.region != '') ? optionData.region : ' ');
-                }else{
-                    address = ((optionData.other_barangay !== null) ? optionData.other_barangay + ', ' : ' ') +
-                                ((optionData.other_muncity !== null) ? optionData.other_muncity + ', ' : ' ') +
-                                ((optionData.other_province !== null) ? optionData.other_province + ', ' : ' ') +
-                                ((optionData.region !== null) ? optionData.region : ' ');
-                }
-                var modified = optionData.modified && optionData.modified !== null ? optionData.modified.lname + ', ' + optionData.modified.fname : '-';
-                var facility = optionData.facility && optionData.facility !== null ? optionData.facility.name : '-';
-                
-                var proponent = optionData.proponent && optionData.proponent !== null ? optionData.proponent.proponent : '-';
-                var actual = (optionData.actual_amount !== null)?optionData.actual_amount:'-';
-                var dob = optionData.dob !== null ? formatDate(optionData.dob) : ' ';
-                var new_row = '<tr style="text-align:center">' +
-                                '<td>' + patient + '</td>' +
-                                '<td>' + dob + '</td>' +
-                                '<td>' + address + '</td>' +
-                                '<td>' + formatDate(optionData.date_guarantee_letter) + '</td>' +
-                                '<td>' + facility + '</td>' +
-                                '<td>' + proponent + '</td>' +
-                                '<td>' + optionData.patient_code + '</td>' +
-                                '<td>' + optionData.guaranteed_amount + '</td>' +
-                                '<td>' + actual + '</td>' +
-                                '<td>' + modified + '</td>' +
-                                '<td>' + formatDate(optionData.created_at) + '</td>';
-                                '</tr>';
-                $('#gl_history').append(new_row);
-            });
-        }else{
-            var new_row = '<tr>' +
-                '<td colspan ="11">' + "No Data Available" + '</td>' +
-                '</tr>';
-            $('#gl_history').append(new_row);       
-        }
+        $('.p_body').html(loading);
+        var url = "{{ url('/patient/history').'/' }}"+id;
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(result) {
+                $('.p_body').html(result);
+            }
+        });
     }
 
     function populate(id){
         $('#mail_history').empty();
-        history = history.filter(item => item.patient_id == id);
-        console.log('history', history);
-        if(history != ''){
-            history.forEach(function(optionData) {
-                var patient = optionData.patient && optionData.patient !== null ? optionData.patient.lname + ', ' + optionData.patient.fname : '-';
-                var sent = optionData.sent && optionData.sent !== null ? optionData.sent.lname + ', ' + optionData.sent.fname : '-';
-                var modified = optionData.modified && optionData.modified !== null ? optionData.modified.lname + ', ' + optionData.modified.fname : '-';
-                var date = new Date(optionData.created_at);
-                var formattedDate = date.toLocaleString('en-US', {
-                    month: 'long',
-                    day: 'numeric',
-                    year: 'numeric'
-                });
-                var formattedTime = date.toLocaleTimeString('en-US', {
-                    hour: 'numeric',
-                    minute: 'numeric'
-                });
-                var new_row = '<tr style="text-align:center">' +
-                                '<td>' + patient + '</td>' +
-                                '<td>' + modified + '</td>' +
-                                '<td>' + sent + '</td>' +
-                                '<td>' + formattedDate+'<br>'+ formattedTime + '</td>';
-                                '</tr>';
-                $('#mail_history').append(new_row);
-            });
-        }else{
-            var new_row = '<tr>' +
-                '<td colspan ="11">' + "No Data Available" + '</td>' +
-                '</tr>';
-            $('#mail_history').append(new_row);       
-        }
-        
+        var url = "{{ url('/mail/history').'/' }}"+id;
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(result) {
+                $('.mail_body').html(result);
+            }
+        });
     }
 
     </script>

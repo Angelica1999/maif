@@ -89,9 +89,7 @@ class HomeController extends Controller
      public function fetchAdditionalData(){
         return [
             'all_pat' => Patients::get(),
-            'proponents' => Proponent::get(),
-            'history' => MailHistory::with('patient', 'sent', 'modified')->get(),
-            'logs' => PatientLogs::with('modified', 'facility', 'province', 'muncity', 'barangay', 'proponent')->get()
+            'proponents' => Proponent::get()
         ];
      }
 
@@ -540,6 +538,18 @@ class HomeController extends Controller
             'patient' => $patient,
             'municipal' => $municipal,
             'barangay' => $barangay,
+        ]);
+    }
+
+    public function mailHistory($id){
+        return view('maif.mail_history',[
+            'history' => MailHistory::where('patient_id', $id)->with('patient', 'sent', 'modified')->get()
+        ]);
+    }
+
+    public function patientHistory($id){
+        return view('maif.patient_history',[
+            'logs' => PatientLogs::where('patient_id', $id)->with('modified', 'facility', 'province', 'muncity', 'barangay', 'proponent')->get()
         ]);
     }
  
