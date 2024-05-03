@@ -39,6 +39,9 @@ Route::get('/patient/{id}', [App\Http\Controllers\HomeController::class, 'fetchP
 Route::get('/patient', [App\Http\Controllers\HomeController::class, 'fetchAdditionalData'])->name('home.addditional');
 Route::get('/group/remove_patient/{id}', [App\Http\Controllers\HomeController::class, 'groupRemovePatient'])->name('patient.group_remove');
 
+Route::get('/mail/history/{id}', [App\Http\Controllers\HomeController::class, 'mailHistory'])->name('mail.history');
+Route::get('/patient/history/{id}', [App\Http\Controllers\HomeController::class, 'patientHistory'])->name('patient.history');
+
 
 Route::get('/patient/pdf', [App\Http\Controllers\PrintController::class, 'patientPdf'])->name('patient.pdf');
 Route::get('patient/pdf/{patientid}', [App\Http\Controllers\PrintController::class, 'patientPdf'])->name('patient.pdf');

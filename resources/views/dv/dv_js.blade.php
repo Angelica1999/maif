@@ -514,6 +514,24 @@
             removeNullOptions();
         }
 
+    function addOption(data){
+        data.forEach(function(item) {
+            var option = $('<option>', {
+                value: item.value,
+                text: item.text,
+                dataval: item.dataval,
+                dataproponentInfo_id: item.dataproponentInfo_id,
+                dataprogroup: item.dataprogroup,
+                dataproponent: item.dataproponent,
+                'data-color': item.d_color
+            });
+
+            $('#saa1').append(option.clone());
+            $('#saa2').append(option.clone());
+            $('#saa3').append(option.clone());
+        });
+    }
+
     function handleChangesF(facility_id){
         $.get("{{ url('fetch/fundsource').'/' }}"+facility_id, function(result) {
             console.log('res', result);
@@ -529,40 +547,129 @@
 
             $('#saa2').append($('<option>', {value: '',text: 'Select SAA'}));
             $('#saa3').append($('<option>', {value: '',text: 'Select SAA'}));
-
+            var first = [],
+                sec = [],
+                third = [],
+                fourth = [],
+                fifth = [],
+                six = [];
             $.each(data_result, function(index, optionData){
                 var rem_balance = parseFloat(optionData.remaining_balance.replace(/,/g, '')).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
 
-                
+                // arrangement:
+                //     - conap specific hospitals
+                //     - conap cvchd
+                //     - specific hospitals
+                //     - cvchd
+                //     - no funds conap
+                //     - no funds saa 2024
+
+                var check_p = 0;  
+
+                var id = optionData.facility_id;
+                if(id.includes('702')){
+                    console.log('id');
+
+                }else{
+                    console.log('idd');
+
+                }
                 if(optionData.facility !== null){
-                    console.log('facility', optionData.facility.id);
                     if(optionData.facility.id == facility_id){
                         text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + rem_balance;
                     }else{
                         text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + optionData.facility.name + ' - ' + rem_balance;
-                    }
+                        check_p = 1;
+                    } 
                 }else{
-                    text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + rem_balance;
+                    if(id.includes('702')){
+                        check_p = 1;
+                        text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + 'DOH CVCHD' + ' - ' + rem_balance;
+                    }else{
+                        text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + rem_balance;
+                    }
                 }
 
                 var color = '';
                 if(rem_balance == '0' || rem_balance == '0.00'){
                     color = 'red';
-                    console.log('red');
+                    if(optionData.fundsource.saa.includes('conap')){
+                            obj = {
+                                value: optionData.fundsource_id,
+                                text: text_display,
+                                dataval: optionData.remaining_balance,
+                                dataproponentInfo_id: optionData.id,
+                                dataprogroup: optionData.proponent.pro_group,
+                                dataproponent: optionData.proponent.id,
+                                d_color: color
+                              }
+                            fifth.push(obj);
+                        }else{
+                            obj = {
+                                value: optionData.fundsource_id,
+                                text: text_display,
+                                dataval: optionData.remaining_balance,
+                                dataproponentInfo_id: optionData.id,
+                                dataprogroup: optionData.proponent.pro_group,
+                                dataproponent: optionData.proponent.id,
+                                d_color: color
+                              }
+                            six.push(obj);
+                        }
                 }else{
+
                     color = 'normal';
-                    console.log('normal');
+
+                    if(optionData.fundsource.saa.includes('conap')){
+                        if(check_p == 1){
+                            obj = {
+                                value: optionData.fundsource_id,
+                                text: text_display,
+                                dataval: optionData.remaining_balance,
+                                dataproponentInfo_id: optionData.id,
+                                dataprogroup: optionData.proponent.pro_group,
+                                dataproponent: optionData.proponent.id,
+                                d_color: color
+                              }
+                            sec.push(obj);
+                        }else{
+                            obj = {
+                                value: optionData.fundsource_id,
+                                text: text_display,
+                                dataval: optionData.remaining_balance,
+                                dataproponentInfo_id: optionData.id,
+                                dataprogroup: optionData.proponent.pro_group,
+                                dataproponent: optionData.proponent.id,
+                                d_color: color
+                              }
+                            first.push(obj);
+                        }
+                    }else{
+                        if(check_p == 1){
+                            obj = {
+                                value: optionData.fundsource_id,
+                                text: text_display,
+                                dataval: optionData.remaining_balance,
+                                dataproponentInfo_id: optionData.id,
+                                dataprogroup: optionData.proponent.pro_group,
+                                dataproponent: optionData.proponent.id,
+                                d_color: color
+                              }
+                            fourth.push(obj);
+                        }else{
+                            obj = {
+                                value: optionData.fundsource_id,
+                                text: text_display,
+                                dataval: optionData.remaining_balance,
+                                dataproponentInfo_id: optionData.id,
+                                dataprogroup: optionData.proponent.pro_group,
+                                dataproponent: optionData.proponent.id,
+                                d_color: color
+                              }
+                            third.push(obj);
+                        }
+                    }
                 }
-                
-                $('#saa1').append($('<option>', {
-                        value: optionData.fundsource_id,
-                        text: text_display,
-                        dataval: optionData.remaining_balance,
-                        dataproponentInfo_id: optionData.id,
-                        dataprogroup: optionData.proponent.pro_group,
-                        dataproponent: optionData.proponent.id,
-                        'data-color': color
-                }));
 
                 $('#saa1').select2({
                     templateResult: function (data) {
@@ -572,24 +679,15 @@
                         return data.text;
                     }
                 });
-
-                $('#saa2').append($('<option>', {
-                            value: optionData.fundsource_id,
-                            text: text_display,
-                            dataval: optionData.remaining_balance,
-                            dataproponentInfo_id: optionData.id,
-                            dataprogroup: optionData.proponent.pro_group,
-                            dataproponent: optionData.proponent.id
-                }));
-                $('#saa3').append($('<option>', {
-                        value: optionData.fundsource_id,
-                        text: text_display,
-                        dataval: optionData.remaining_balance,
-                        dataproponentInfo_id: optionData.id,
-                        dataprogroup: optionData.proponent.pro_group,
-                        dataproponent: optionData.proponent.id
-                }));
             });
+
+            addOption(first);
+            addOption(sec);
+            addOption(third);
+            addOption(fourth);
+            addOption(fifth);
+            addOption(six);
+
             $('#saa1').prop('disabled', false);
             $('#inputValue1').prop('disabled', false);
 
