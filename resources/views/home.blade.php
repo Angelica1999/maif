@@ -454,8 +454,6 @@
 <script src="{{ asset('admin/vendors/x-editable/bootstrap-editable.min.js?v=1') }}"></script>
 <script src="{{ asset('admin/vendors/daterangepicker-master/moment.min.js?v=1') }}"></script>
 <script src="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.js?v=1') }}"></script>
-<!-- <script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script> -->
-<!-- <script src="https://cdn.datatables.net/1.11.4/js/dataTables.bootstrap4.min.js"></script> -->
 <script src="{{ asset('admin/vendors/datatables.net/jquery.dataTables.js') }}"></script>
 <script src="{{ asset('admin/vendors/datatables.net-bs4/dataTables.bootstrap4.js') }}"></script>
 
@@ -588,11 +586,10 @@
 
     $(document).ready(function () {
         console.log(jQuery.fn.jquery);
-
         function initializeDataTable() {
             var table = $('#patient_table').DataTable({
                 paging: true,
-                deferRender: true,
+                // deferRender: true,
                 pageLength: 50,
                 drawCallback: function() {
                     initializeEditable();
