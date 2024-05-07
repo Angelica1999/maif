@@ -12,6 +12,7 @@
                     <th scope="col">Code</th>
                     <th scope="col">Guaranteed</th>
                     <th scope="col">Actual</th>
+                    <th scope="col">Remarks</th>
                     <th scope="col">Modified By</th>
                     <th scope="col">On</th>
                 </tr>
@@ -44,6 +45,7 @@
                     <td>{{$l->proponent_code}}</td>
                     <td>{{number_format(str_replace(',','', $l->guaranteed_amount), 2, ',','.')}}</td>
                     <td>{{!Empty($l->actual_amount)?number_format(str_replace(',','', $l->actual_amount), 2, ',','.'): ' '}}</td>
+                    <td>{{$l->pat_rem}}</td>
                     <td>{{$l->modified->lname}}, {{$l->modified->fname}} {{$l->modified->mname}}</td>
                     <td>{{date('F j, Y', strtotime($l->created_at))}}</td>
                 </tr>
