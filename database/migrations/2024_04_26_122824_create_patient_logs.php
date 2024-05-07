@@ -51,7 +51,7 @@ return new class extends Migration
     {
         Schema::table('patient_logs', function (Blueprint $table) {
             //
-            Schema::dropIfExists('mail_history');
+            Schema::dropIfExists('patient_logs');
         });
     }
 };

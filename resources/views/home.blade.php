@@ -59,8 +59,8 @@
                             <div class="input-group-append">
                                 <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
                                 <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
-                                <button type="button" href="#create_patient" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
                                 <button type="button" href="#generate_filter" data-backdrop="static" data-toggle="modal" style="background-color:teal; color:white; width:100px" class=""><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
+                                <button type="button" href="#create_patient" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
                             </div>  
                         </div>
                     </form>
@@ -107,7 +107,8 @@
                                 </button>
                             </div>
                         </th>
-                        <th style="min-width:10px;">Remarks</th>
+                        <th>Status</th>
+                        <th>Remarks</th>
                         <th style="min-width:10px; text-align:center;">Group</th>
                         <th style="min-width:120px">Actual Amount</th>
                         <th style="min-width:100px">Guaranteed </th>
@@ -147,6 +148,7 @@
                                     <i class="typcn typcn-tick menu-icon">
                                 @endif
                             </td>
+                            <td>{{$patient->pat_rem}}</td>
                             <td style="text-align:center;" class="group-amount" data-patient-id="{{ $patient->id }}" data-proponent-id="{{$patient->proponent_id}}" 
                                 data-amount="{{$patient->actual_amount}}" data-facility-id="{{$patient->facility_id}}" >
                                 @if($patient->group_id == null)
@@ -358,7 +360,6 @@
                         <hr>
                         <strong>Transaction</strong>
                         <hr>
-                      
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -378,6 +379,15 @@
                                     <input type="text" class="form-control" id="remaining_balance" style="width:220px;" name="remaining_balance" placeholder="Remaining Balance" readonly>
                                 </div>
                                 <div id="suggestions"></div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="fname">Remarks</label>
+                                    <textarea type="text" class="form-control" id="pat_rem" style="width:470px;" name="pat_rem" placeholder="Remarks"></textarea>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -599,7 +609,7 @@
                 initComplete: function () {
                     var api = this.api();
                     api.columns().every(function (index) {
-                        if(index < 8 ) return;
+                        if(index < 9 ) return;
                         var column = this;
                         var header = $(column.header());
                         var headerText = header.text().trim();
@@ -609,7 +619,7 @@
                             .appendTo(filterDiv)
                             .on('change', function () {
                                 var selectedValues = $(this).val();
-                                if(index == 8){
+                                if(index == 9){
                                     var val = selectedValues ? selectedValues.join('|') : '';
                                     column.search(val, true, false).draw();
                                 }else{
@@ -621,7 +631,7 @@
                             }).select2();
 
                         column.data().unique().sort().each(function (d, j) {
-                            if(index == 8){
+                            if(index == 9){
                                 var text = $(d).text().trim(); 
                                 select.append('<option value="' + text + '">' + text + '</option>');
                             }else{
@@ -812,6 +822,7 @@
             $('.facility_id1').val(patient.facility_id).trigger('change');
             $('#patient_code').val(patient.patient_code);
             $('#remaining_balance').val(patient.remaining_balance);
+            $('#pat_rem').val(patient.pat_rem);
         }
         edit_c = 0;
         
