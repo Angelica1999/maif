@@ -591,6 +591,7 @@ class HomeController extends Controller
         $patient->guaranteed_amount = $request->input('guaranteed_amount');
         $patient->actual_amount = $request->input('actual_amount');
         $patient->remaining_balance = $request->input('remaining_balance');
+        $patient->pat_rem = $request->input('pat_rem');
 
         $patient->save();
         return redirect()->back();
