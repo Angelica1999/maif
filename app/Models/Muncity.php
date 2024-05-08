@@ -9,7 +9,7 @@ class Muncity extends Model
 {
     use HasFactory;
 
-    protected $connection = 'cloud_mysql';
+    // protected $connection = 'cloud_mysql';
     protected $table = 'muncity';
     protected $guarded = array();
 }
