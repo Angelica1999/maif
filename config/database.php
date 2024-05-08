@@ -67,24 +67,24 @@ return [
             ]) : [],
         ],
 
-        'cloud_mysql' => [
-            'driver' => 'mysql',
-            'host' => '180.232.110.41',
-            'port' => '3306',
-            'database' => 'doh_referral',
-            'username' => 'root',
-            'password' => 'HPCgqd68312',
-            'unix_socket' => env('DB_SOCKET', ''),
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => '',
-            'prefix_indexes' => true,
-            'strict' => true,
-            'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
-        ],
+        // 'cloud_mysql' => [
+        //     'driver' => 'mysql',
+        //     'host' => '180.232.110.41',
+        //     'port' => '3306',
+        //     'database' => 'doh_referral',
+        //     'username' => 'root',
+        //     'password' => 'HPCgqd68312',
+        //     'unix_socket' => env('DB_SOCKET', ''),
+        //     'charset' => 'utf8mb4',
+        //     'collation' => 'utf8mb4_unicode_ci',
+        //     'prefix' => '',
+        //     'prefix_indexes' => true,
+        //     'strict' => true,
+        //     'engine' => null,
+        //     'options' => extension_loaded('pdo_mysql') ? array_filter([
+        //         PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+        //     ]) : [],
+        // ],
 
         'pgsql' => [
             'driver' => 'pgsql',
