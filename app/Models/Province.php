@@ -9,7 +9,7 @@ class Province extends Model
 {
     use HasFactory;
 
-    protected $connection = 'cloud_mysql';
+    // protected $connection = 'cloud_mysql';
     protected $table = 'province';
     protected $guarded = array();
 }

@@ -9,7 +9,7 @@ class Barangay extends Model
 {
     use HasFactory;
 
-    protected $connection = 'cloud_mysql';
+    // protected $connection = 'cloud_mysql';
     protected $table = 'barangay';
     protected $guarded = array();
 }
