@@ -20,7 +20,10 @@
             <input type="password" name="password" class="form-control form-control-lg @error('password') is-invalid @enderror" placeholder="{{ __('Password') }}" required autocomplete="current-password">
         </div>
         <div class="mt-3">
-            <button type="submit" class="btn btn-block btn-success btn-lg font-weight-medium auth-form-btn">SIGN IN</a>
+            <button type="submit" class="btn btn-block btn-success btn-lg font-weight-medium auth-form-btn">SIGN IN</button>
+        </div>
+        <div style="text-align: center;">
+            <a href="http://192.168.110.7/gl" class="text-success">Proceed to GL</a>
         </div>
         <div class="my-2 d-flex justify-content-between align-items-center">
             <div class="form-check form-check-success">
