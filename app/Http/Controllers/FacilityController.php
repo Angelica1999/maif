@@ -119,6 +119,17 @@ class FacilityController extends Controller
             return 0;
         }
      }
-      
-
+    
+     public function updateData(){
+        Facility::truncate();
+        $main_facility = DB::connection('cloud_mysql')
+            ->table('facility')
+            ->get();   
+        foreach ($main_facility as $fac) {
+            $f = new Facility();
+            $f->fill(get_object_vars($fac));
+            $f->save();
+        }
+        return redirect()->back()->with('update_fac', true);
+    }
 }

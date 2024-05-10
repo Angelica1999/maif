@@ -569,7 +569,7 @@
                
                 if(optionData.facility !== null){
                     if(optionData.facility.id == facility_id){
-                        text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + rem_balance;
+                        text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - SF - ' + rem_balance;
                     }else{
                         text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + optionData.facility.name + ' - ' + rem_balance;
                         check_p = 1;
@@ -579,7 +579,7 @@
                         check_p = 1;
                         text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + 'DOH CVCHD' + ' - ' + rem_balance;
                     }else{
-                        text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + rem_balance;
+                        text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - SF - ' + rem_balance;
                     }
                 }
 

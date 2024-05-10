@@ -242,9 +242,15 @@
            });
         @endif
         @if(session('remove_patient'))
-           <?php session()->forget('dv_remove'); ?>
+           <?php session()->forget('remove_patient'); ?>
            Lobibox.notify('error', {
               msg: 'Successfully removed the patient!'
+           });
+        @endif
+        @if(session('update_fac'))
+           <?php session()->forget('update_fac'); ?>
+           Lobibox.notify('error', {
+              msg: 'Successfully updated facility list!'
            });
         @endif
     </script>
