@@ -17,7 +17,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    public const MAIF = '/fundsource';
+    public const MAIF = '/fundsource/list';
     public const BUDGET = '/fundsource_budget';
     public const ACCOUNTING = '/dv1';
     public const CASHIER = '/cashier/pending';

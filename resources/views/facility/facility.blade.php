@@ -10,6 +10,10 @@
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
+                        <a class="btn btn-sm btn-success text-white" style="display: inline-flex; align-items: center;" href="{{ route('update.data') }}">
+                            <img src="\maif\public\images\icons8_eye_16.png" style="margin-right: 5px;">
+                            <span style="vertical-align: middle;">Update</span>
+                        </a>
                     </div>
                 </div>
             </form>
@@ -25,14 +29,8 @@
                         <th></th>
                         <th>Name</th>
                         <th>Address</th>
-                        <!-- <th style="width:150px;">Social Worker</th> -->
-                        <!-- <th style="width:250px;">Social Worker Email</th> -->
-                        <!-- <th style="width:200px;">Social Worker Contact</th> -->
-                        <!-- <th style="width:150px;">Finance Officer</th> -->
                         <th>Official Email</th>
-                        <th>Additional Email(s)</th>
-                        <!-- <th style="width:200px;">Finance Officer Email</th> -->
-                        <!-- <th style="width:200px;">Finance Officer Contact</th> -->
+                        <th style="min-width:200px">Additional Email(s)</th>
                         <th>Vat</th>
                         <th>Ewt</th>
                     </tr>
@@ -53,12 +51,6 @@
                             </td>
                             <td class="td">{{ $facility->name }}</td>
                             <td class="td">{{ $facility->address }}</td>
-                            <!-- <td class="td">{{ $facility->AddFacilityInfo->social_worker ?? '' }}</td> -->
-                            <!-- <td>{{ $facility->AddFacilityInfo->social_worker_email ?? '' }}</td> -->
-                            <!-- <td>{{ $facility->AddFacilityInfo->social_worker_contact ?? '' }}</td> -->
-                            <!-- <td class="td">{{ $facility->AddFacilityInfo->finance_officer ?? '' }}</td> -->
-                            <!-- <td>{{ $facility->AddFacilityInfo->finance_officer_email ?? '' }}</td> -->
-                            <!-- <td>{{ $facility->AddFacilityInfo->finance_officer_contact ?? '' }}</td> -->
                             <td class="td">{{ $facility->AddFacilityInfo->official_mail ?? '' }}</td>
                             <td class="td">{{ $facility->AddFacilityInfo->cc ?? '' }}</td>
                             <td class="td">{{ $facility->AddFacilityInfo->vat ?? '' }}</td>
