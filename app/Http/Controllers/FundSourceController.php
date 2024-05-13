@@ -908,7 +908,12 @@ class FundSourceController extends Controller
         $proponents = Proponent::select( DB::raw('MAX(id) as id'), DB::raw('MAX(proponent) as proponent'), 
                         DB::raw('MAX(proponent_code) as proponent_code'))
                         ->groupBy('proponent_code')
-                        ->orderBy('id', 'desc');   
+                        ->orderBy('id', 'desc'); 
+        if($req->viewAll){
+            $req->keyword = '';
+        }else if($req->keyword){
+            $proponents->where('proponent', 'LIKE', "%$req->keyword%")->orWhere('proponent_code', 'LIKE', "%$req->keyword%");
+        } 
         return view('proponents.proponents', [
             'proponents' => $proponents->paginate(50),
             'keyword' => $req->keyword,
