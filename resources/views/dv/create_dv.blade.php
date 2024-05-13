@@ -174,6 +174,7 @@
                                 <input type="month" id="billingMonth1" name="billingMonth1" asp-for="MonthYearFrom" style="width: 110px; height: 28px; font-size: 8pt;" class="ft15" required>
                                 <input type="month" id="billingMonth2" name="billingMonth2" asp-for="MonthYearTo" style="width: 110px; height: 28px; font-size: 8pt;" class="ft15" >
                                 in the amount of:</p><br>
+                                <i class="text-danger" style="margin-left:50px">SF- Speficic Facility</i>
                                 <div style="display: flex; align-items: center;">
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                     <select name="fundsource_id" id="saa1" style="width:150px;" class="js-example-basic-single1" onchange="generateGroup()" required disabled>
