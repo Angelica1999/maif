@@ -33,8 +33,8 @@
                             <div class="card">
                                 <div class="card-body">
                                     <div style ="">
-                                        <a href="#updateProponent" data-toggle="modal" type="button" class="btn btn-sm" onclick="putData()">
-                                            <h4 class="card-title" style="text-align:left;">{{ $proponent->proponent }}</h4>
+                                        <a href="#updateProponent" data-toggle="modal" type="button" class="btn btn-sm" onclick="putData({{$proponent->id}})">
+                                            <h4 class="card-title text-success" style="text-align:left;">{{ $proponent->proponent }}</h4>
                                         </a>
                                         <ul class="list-arrow">
                                           <li style="margin-left:25px;"><b>{{$proponent->proponent_code}}</b></li>
@@ -64,14 +64,11 @@
 <div class="modal fade" id="updateProponent" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content"> 
-            <form action="{{route('document.release')}}" method="POST">
-                <div class="modal-body_release" style="padding:10px">
+            <form action="{{route('proponent.update')}}" method="POST">
+                <div class="modal-proponent" style="padding:10px">
                     <h4 class="text-success"><i style = "font-size:30px"class="typcn typcn-user menu-icon"></i>Update</h4><hr />
                     @csrf
-                    <input type="hidden" name="route_no" id="route_no">
-                    <input type="hidden" name="multiple" id="multiple">
-                    <input type="hidden" name="op" id="op" value="0">
-                    <input type="hidden" name="currentID" id="currentID" value="0">
+                    <input type="hidden" name="id" id="id">
                     <div class="form-group">
                         <b><label>Proponent</label><b>
                         <input name="proponent" id="proponent" class="form-control"></input>
@@ -95,9 +92,15 @@
 
 @section('js')
     <script>
-        function putData(){
-            var data = '{!! json_encode($proponents) !!}';
-            console.log('data', data);
+        function putData(id){
+            var data = '{!! json_encode($all_proponents) !!}';
+            var proponents = JSON.parse(data);
+            var proponent = proponents.find(item => item.id === id);
+            if(proponent){
+                $('#id').val(proponent.id);
+                $('#proponent').val(proponent.proponent);
+                $('#proponent_code').val(proponent.proponent_code);
+            }
         }
         
     </script>

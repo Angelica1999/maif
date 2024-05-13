@@ -911,7 +911,8 @@ class FundSourceController extends Controller
                         ->orderBy('id', 'desc');   
         return view('proponents.proponents', [
             'proponents' => $proponents->paginate(50),
-            'keyword' => $req->keyword
+            'keyword' => $req->keyword,
+            'all_proponents' => Proponent::get()
         ]);
     }
 
@@ -943,5 +944,21 @@ class FundSourceController extends Controller
             '<table cellspacing="1" cellpadding="5" border="1">'.$table_body.'</table>';
 
         return $display;
+    }
+
+    public function updateProponent(Request $req){
+        if($req->id){
+            $pro = Proponent::where('id', $req->id)->first();
+            $all = Proponent::where('proponent_code', $pro->proponent_code)->get();
+            foreach($all as $p){
+                $p->proponent = $req->proponent;
+                $p->proponent_code = $req->proponent_code;
+                $p->save();
+            }
+
+            return redirect()->back()->with('update_proponent', true);
+        }else{
+            return redirect()->back()->with('unreachable', true);
+        }
     }
 }

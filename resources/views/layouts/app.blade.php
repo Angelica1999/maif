@@ -249,8 +249,20 @@
         @endif
         @if(session('update_fac'))
            <?php session()->forget('update_fac'); ?>
-           Lobibox.notify('error', {
+           Lobibox.notify('success', {
               msg: 'Successfully updated facility list!'
+           });
+        @endif
+        @if(session('update_proponent'))
+           <?php session()->forget('update_proponent'); ?>
+           Lobibox.notify('success', {
+              msg: 'Successfully updated the proponent!'
+           });
+        @endif
+        @if(session('unreachable'))
+           <?php session()->forget('unreachable'); ?>
+           Lobibox.notify('error', {
+              msg: 'Cannot find proponent!'
            });
         @endif
     </script>
