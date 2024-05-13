@@ -31,9 +31,9 @@
                                 <div class="card-body">
                                     <div style ="display:flex; justify-content:space-between;">
                                         @if($section == 6)
-                                            <h4 class="card-title" style=" text-align:left">{{ $fund->saa }}</h4>
+                                            <h4 class="card-title text-success" style=" text-align:left">{{ $fund->saa }}</h4>
                                         @else
-                                            <b><h3><a href="#update_fundsource" onclick="updateFundsource('{{ $fund->id }}')" data-backdrop="static" data-toggle="modal">{{$fund->saa}}</a></h3></b>
+                                            <b><h3><a class="card-title text-success" href="#update_fundsource" onclick="updateFundsource('{{ $fund->id }}')" data-backdrop="static" data-toggle="modal">{{$fund->saa}}</a></h3></b>
                                         @endif
                                         <!-- <button class="btn btn-sm update_saa" style="cursor: pointer; text-align: right; background-color:#417524; color:white;" data-proponent-id="" data-backdrop="static" data-toggle="modal" onclick="editfundsource()" href="#create_fundsource">Update</button> -->
 
