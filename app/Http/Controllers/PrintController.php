@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Image;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use PDF;
+
 use App\Jobs\SendMultipleEmails;
 
 class PrintController extends Controller
@@ -164,7 +165,7 @@ class PrintController extends Controller
     }
 
     public function dv2Image($route_no) {
-
+   
         try {
             $dv2 = Dv2::where('route_no', $route_no)
                 ->leftJoin('patients as p1', 'dv2.lname', '=', 'p1.id')
@@ -174,9 +175,13 @@ class PrintController extends Controller
             $total = Dv2::where('route_no', $route_no)
                 ->select(DB::raw('SUM(REPLACE(amount, ",", "")) as totalAmount'))
                 ->first()->totalAmount;
-    
-            $imageWidth = 500; // Set your desired width
-            $imageHeight = 600; // Set your desired height
+            
+            $imageWidth = 600; 
+            if(count($dv2) >= 10){
+                $imageHeight = 620 + (count($dv2) * 55); 
+            }else{
+                $imageHeight = 620 + (count($dv2) * 30); 
+            }
             $image = imagecreate($imageWidth, $imageHeight);
     
             $backgroundColor = imagecolorallocate($image, 255, 255, 255); // white
@@ -185,30 +190,30 @@ class PrintController extends Controller
             $fontSize = 12;
             $fontHeight = imagettfbbox($fontSize, 0, $fontpath, 'Sample')['1'];
 
-            $y = 50;
-            imagettftext($image, $fontSize + 4, 0, 100, $y, $textColor, $fontpath, 'Disbursement Voucher V2');
-            $y += $fontSize + 5;
-            imagettftext($image, $fontSize, 0, 190, $y, $textColor, $fontpath, 'MAIF-IPP');
+            $y = 70;
+            imagettftext($image, $fontSize + 4, 0, 160, $y, $textColor, $fontpath, 'Disbursement Voucher V2');
+            $y += $fontSize + 10;
+            imagettftext($image, $fontSize, 0, 250, $y, $textColor, $fontpath, 'MAIF-IPP');
 
             $y += $fontSize + 30;
-            $boxWidth = 380;
-            $boxHeight = 50;
+            $boxWidth = 455;
+            $boxHeight = 60;
 
-            imagefilledrectangle($image, 60, $y, 65 + $boxWidth, $y + $boxHeight, $backgroundColor);
-            imagerectangle($image, 60, $y, 65 + $boxWidth, $y + $boxHeight, $textColor);
+            imagefilledrectangle($image, 55, $y, 55 + $boxWidth, $y + $boxHeight, $backgroundColor);
+            imagerectangle($image, 70, $y, 70 + $boxWidth, $y + $boxHeight, $textColor);
             $text = htmlspecialchars($dv2[0]->facility);
             $maxWidth = 50; 
             $wrappedText = wordwrap($text, $maxWidth, "\n", true);
             $lines = explode("\n", $wrappedText);
-            
+
             foreach ($lines as $lineNumber => $line) {
                 $yPosition = $y + ($boxHeight + $fontHeight) / 2 + ($lineNumber * $fontHeight);
-                imagettftext($image, $fontSize, 0, 70, $yPosition, $textColor, $fontpath, $line);
+                imagettftext($image, $fontSize, 0, 95, $yPosition, $textColor, $fontpath, $line);
                 $y += 10;
-
             }
-            $y += $fontSize + 30;
-            $boxWidth = 400;
+            
+            $y += $fontSize + 50;
+            $boxWidth = 500;
             $boxHeight = 70;
 
             foreach ($dv2 as $data) {
@@ -216,29 +221,31 @@ class PrintController extends Controller
                 imagefilledrectangle($image, 45, $y, 50 + $boxWidth, $y + $boxHeight, $backgroundColor);
                 imagerectangle($image, 45, $y, 50 + $boxWidth, $y + $boxHeight, $textColor);
 
-                imagettftext($image, $fontSize, 0, 160, $y + ($boxHeight + $fontHeight) / 2 - 15, $textColor, $fontpath, (!empty($data->ref_no) ? htmlspecialchars($data->ref_no) : ""));
+                imagettftext($image, $fontSize, 0, 200, $y + ($boxHeight + $fontHeight) / 2 - 15, $textColor, $fontpath, (!empty($data->ref_no) ? htmlspecialchars($data->ref_no) : ""));
                 $y += $fontSize + 5;
 
                 imagettftext($image, $fontSize, 0, 70, $y + ($boxHeight + $fontHeight) / 2 -10, $textColor, $fontpath, (!empty($data->lname1) ? htmlspecialchars($data->lname1) : $data->lname));
-                imagettftext($image, $fontSize, 0, 320, $y + ($boxHeight + $fontHeight) / 2 -10, $textColor, $fontpath, (!empty($data->amount) ? $data->amount : 0.00));
+                imagettftext($image, $fontSize, 0, 400, $y + ($boxHeight + $fontHeight) / 2 -10, $textColor, $fontpath, (!empty($data->amount) ? $data->amount : 0.00));
                 $y += $fontSize + 5;
 
                 imagettftext($image, $fontSize, 0, 70, $y + ($boxHeight + $fontHeight) / 2-10, $textColor, $fontpath, (isset($data->lname_2) ? htmlspecialchars($data->lname_2) : ($data->lname2 != 0 ? $data->lname2 : '')));
 
-                $y += $boxHeight + 5;
+                $y += $boxHeight - 20;
+                $imageWidth = $imageWidth + 20; 
+                $imageHeight = $imageHeight + 50; 
             }
 
             $y += $fontSize + 15;
 
-            $boxWidth = 270;
-            $boxHeight = 30;
+            $boxWidth = 300;
+            $boxHeight = 50;
 
             $verticalCenter = $y + ($boxHeight + $fontHeight) / 2;
 
-            imagefilledrectangle($image, 180, $y, 180 + $boxWidth, $y + $boxHeight, $backgroundColor);
-            imagerectangle($image, 180, $y, 180 + $boxWidth, $y + $boxHeight, $textColor);
+            imagefilledrectangle($image, 250, $y, 250 + $boxWidth, $y + $boxHeight, $backgroundColor);
+            imagerectangle($image, 250, $y, 250 + $boxWidth, $y + $boxHeight, $textColor);
 
-            imagettftext($image, $fontSize, 0, 185, $verticalCenter, $textColor, $fontpath, 'Total Amount: PHP ' . number_format($total, 2, '.', ','));
+            imagettftext($image, $fontSize, 0, 260, $verticalCenter, $textColor, $fontpath, 'Total Amount: PHP ' . number_format($total, 2, '.', ','));
             $y += $boxHeight + 5;
 
             $filename = $route_no . '.png';
