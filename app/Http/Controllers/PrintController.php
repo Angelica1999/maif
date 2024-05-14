@@ -177,8 +177,14 @@ class PrintController extends Controller
                 ->first()->totalAmount;
             
             $imageWidth = 600; 
-            if(count($dv2) >= 10){
-                $imageHeight = 620 + (count($dv2) * 55); 
+            if(count($dv2) >= 95){
+                $imageHeight = 620 + (count($dv2) * 85); 
+            }else if(count($dv2) >= 10){
+                $imageHeight = 620 + (count($dv2) * 75); 
+            }else if(count($dv2) <= 10 && count($dv2) >= 5){
+                $imageHeight = 620 + (count($dv2) * 65); 
+            }else if(count($dv2) >= 5){
+                $imageHeight = 620 + (count($dv2) * 40); 
             }else{
                 $imageHeight = 620 + (count($dv2) * 30); 
             }
@@ -218,21 +224,52 @@ class PrintController extends Controller
 
             foreach ($dv2 as $data) {
 
-                imagefilledrectangle($image, 45, $y, 50 + $boxWidth, $y + $boxHeight, $backgroundColor);
-                imagerectangle($image, 45, $y, 50 + $boxWidth, $y + $boxHeight, $textColor);
+                if(strlen(htmlspecialchars($data->ref_no)) >= 40){
+                    $boxHeight = 100;
+                    imagefilledrectangle($image, 45, $y, 50 + $boxWidth, $y + $boxHeight, $backgroundColor);
+                    imagerectangle($image, 45, $y, 50 + $boxWidth, $y + $boxHeight, $textColor);
 
-                imagettftext($image, $fontSize, 0, 200, $y + ($boxHeight + $fontHeight) / 2 - 15, $textColor, $fontpath, (!empty($data->ref_no) ? htmlspecialchars($data->ref_no) : ""));
-                $y += $fontSize + 5;
+                    $text = htmlspecialchars($data->ref_no);
+                    $maxWidth = 37; 
+                    $wrappedText = wordwrap($text, $maxWidth, "\n", true);
+                    $lines = explode("\n", $wrappedText);
 
-                imagettftext($image, $fontSize, 0, 70, $y + ($boxHeight + $fontHeight) / 2 -10, $textColor, $fontpath, (!empty($data->lname1) ? htmlspecialchars($data->lname1) : $data->lname));
-                imagettftext($image, $fontSize, 0, 400, $y + ($boxHeight + $fontHeight) / 2 -10, $textColor, $fontpath, (!empty($data->amount) ? $data->amount : 0.00));
-                $y += $fontSize + 5;
+                    foreach ($lines as $lineNumber => $line) {
+                         $yPosition = $y + ($boxHeight + $fontHeight) / 2 - 15 + ($lineNumber * $fontHeight);
+                        imagettftext($image, $fontSize, 0, 190, $yPosition, $textColor, $fontpath, $line);
+                        $y += 10;
+                    }
 
-                imagettftext($image, $fontSize, 0, 70, $y + ($boxHeight + $fontHeight) / 2-10, $textColor, $fontpath, (isset($data->lname_2) ? htmlspecialchars($data->lname_2) : ($data->lname2 != 0 ? $data->lname2 : '')));
+                    $y += (count($lines) * $fontHeight) - 10;
 
-                $y += $boxHeight - 20;
-                $imageWidth = $imageWidth + 20; 
-                $imageHeight = $imageHeight + 50; 
+                    imagettftext($image, $fontSize, 0, 70, $y + ($boxHeight + $fontHeight) / 2 -10, $textColor, $fontpath, (!empty($data->lname1) ? htmlspecialchars($data->lname1) : $data->lname));
+                    imagettftext($image, $fontSize, 0, 400, $y + ($boxHeight + $fontHeight) / 2 -10, $textColor, $fontpath, (!empty($data->amount) ? $data->amount : 0.00));
+                    $y += $fontSize + 5;
+
+                    imagettftext($image, $fontSize, 0, 70, $y + ($boxHeight + $fontHeight) / 2-10, $textColor, $fontpath, (isset($data->lname_2) ? htmlspecialchars($data->lname_2) : ($data->lname2 != 0 ? $data->lname2 : '')));
+
+                    $y += $boxHeight - 20;
+                    $imageWidth = $imageWidth + 20; 
+                    $imageHeight = $imageHeight + 50; 
+                }else{
+                    $boxHeight = 70;
+                    imagefilledrectangle($image, 45, $y, 50 + $boxWidth, $y + $boxHeight, $backgroundColor);
+                    imagerectangle($image, 45, $y, 50 + $boxWidth, $y + $boxHeight, $textColor);
+
+                    imagettftext($image, $fontSize, 0, 190, $y + ($boxHeight + $fontHeight) / 2 - 15, $textColor, $fontpath, (!empty($data->ref_no) ? htmlspecialchars($data->ref_no) : ""));
+                    $y += $fontSize + 5;
+
+                    imagettftext($image, $fontSize, 0, 70, $y + ($boxHeight + $fontHeight) / 2 -10, $textColor, $fontpath, (!empty($data->lname1) ? htmlspecialchars($data->lname1) : $data->lname));
+                    imagettftext($image, $fontSize, 0, 400, $y + ($boxHeight + $fontHeight) / 2 -10, $textColor, $fontpath, (!empty($data->amount) ? $data->amount : 0.00));
+                    $y += $fontSize + 5;
+
+                    imagettftext($image, $fontSize, 0, 70, $y + ($boxHeight + $fontHeight) / 2-10, $textColor, $fontpath, (isset($data->lname_2) ? htmlspecialchars($data->lname_2) : ($data->lname2 != 0 ? $data->lname2 : '')));
+
+                    $y += $boxHeight - 20;
+                    $imageWidth = $imageWidth + 20; 
+                    $imageHeight = $imageHeight + 50; 
+                }
+                
             }
 
             $y += $fontSize + 15;

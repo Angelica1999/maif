@@ -535,9 +535,7 @@
 
     function handleChangesF(facility_id){
         $.get("{{ url('fetch/fundsource').'/' }}"+facility_id, function(result) {
-            console.log('res', result);
 
-            console.log('facility', facility_id);
             $('#facilityAddress').text(result.facility.address);
             $("#facilitaddress").val(result.facility.address);
             $('#hospitalAddress').text(result.facility.name);
@@ -568,13 +566,7 @@
                 var check_p = 0;  
 
                 var id = optionData.facility_id;
-                if(id.includes('702')){
-                    console.log('id');
-
-                }else{
-                    console.log('idd');
-
-                }
+               
                 if(optionData.facility !== null){
                     if(optionData.facility.id == facility_id){
                         text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - SF - ' + rem_balance;
@@ -594,7 +586,7 @@
                 var color = '';
                 if(rem_balance == '0' || rem_balance == '0.00'){
                     color = 'red';
-                    if(optionData.fundsource.saa.includes('conap')){
+                    if(optionData.fundsource.saa.includes('CONAP')){
                             obj = {
                                 value: optionData.fundsource_id,
                                 text: text_display,
@@ -621,7 +613,7 @@
 
                     color = 'normal';
 
-                    if(optionData.fundsource.saa.includes('conap')){
+                    if(optionData.fundsource.saa.includes('CONAP')){
                         if(check_p == 1){
                             obj = {
                                 value: optionData.fundsource_id,
