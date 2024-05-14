@@ -95,16 +95,21 @@ class Dv2Controller extends Controller
             $dv_1 = Dv::where('route_no', $route_no)->first();
             $groupIdArray = explode(',', $dv_1->group_id);
             $proponentArray = json_decode($dv_1->proponent_id, true);
-            $dv = Dv::where('route_no', $route_no)
-                ->leftJoin('proponent', function ($join) use ($proponentArray) {
-                    $join->on('proponent.id', '=', \DB::raw($proponentArray[0]));
-                })
-                ->with('facility')->first();
-            $group = Group::whereIn('id', $groupIdArray)->with('patient')->get();
-            $total = Group::whereIn('id', $groupIdArray)
-                        ->select(DB::raw('SUM(REPLACE(amount, ",", "")) as totalAmount'))
-                        ->first()->totalAmount;
-            return view('dv.create_dv2', ['dv'=> $dv, 'group'=>$group, 'total'=>$total]);
+            if($proponentArray){
+                $dv = Dv::where('route_no', $route_no)
+                    ->leftJoin('proponent', function ($join) use ($proponentArray) {
+                        $join->on('proponent.id', '=', \DB::raw($proponentArray[0]));
+                    })
+                    ->with('facility')->first();
+                $group = Group::whereIn('id', $groupIdArray)->with('patient')->get();
+                $total = Group::whereIn('id', $groupIdArray)
+                            ->select(DB::raw('SUM(REPLACE(amount, ",", "")) as totalAmount'))
+                            ->first()->totalAmount;
+                return view('dv.create_dv2', ['dv'=> $dv, 'group'=>$group, 'total'=>$total]);
+            }else{
+                return "No proponent being recorded, please contact system administrator!";
+            }
+            
         }
     }
 

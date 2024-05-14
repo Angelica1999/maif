@@ -13,7 +13,8 @@
                         <div class="cgrid-margin grid-margin-md-0 stretch-card" style="width:100%">
                             <div class="card" style="padding: 10px; border: 1px solid gray" >
                                 <br>
-                                <input class=" form-control mx-auto d-block text-center" value="{{$dv->facility->name .'('.$dv->proponent.')'}}" name="facility" style="width:80%; height:40px; font-weight:bold" readonly>
+                                <textarea class=" form-control mx-auto d-block text-center"  style="width:80%; font-weight:bold" readonly>{{$dv->facility->name .'('.$dv->proponent.')'}}</textarea>
+                                <input type="hidden" class="form-control mx-auto d-block text-center" value="{{$dv->facility->name .'('.$dv->proponent.')'}}" name="facility" style="width:80%; height:40px; font-weight:bold" readonly>
                                 <div class="auto_generated">
                                 @if(isset($group))
                                 @foreach($group as $per_group)
@@ -64,7 +65,7 @@
                                                     <input class="form-control mx-auto d-block text-center" name="g_lname2[]" value="" placeholder="LastName" style="width:80%; height:35px; margin-top:5px">
                                                 </div>
                                                 <div style="overflow: hidden; text-overflow: ellipsis; height: 100%; box-sizing: border-box;">
-                                                    <input class="form-control mx-auto d-block text-center amount_total" id="amount[]" name="amount[]" value="" oninput="calculateSum()" onkeyup="validateAmount(this)" style="width:90%; height:30px; margin-top:5px" >
+                                                    <input class="form-control mx-auto d-block text-center amount_total" id="amount[]" name="amount[]" value="" oninput="calculateSum()" onkeyup="validateAmount(this)" style="width:90%; height:30px; margin-top:5px" required>
                                                 </div>
                                             </div>
                                         </div>

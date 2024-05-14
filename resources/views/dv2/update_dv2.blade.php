@@ -17,7 +17,8 @@
                         <div class="cgrid-margin grid-margin-md-0 stretch-card" style="width:100%">
                             <div class="card" style="padding: 10px; border: 1px solid gray" >
                                 <br>
-                                <input class=" form-control mx-auto d-block text-center" value="{{ $dv2[0]->facility }}" name="facility" style="width:80%; height:40px; font-weight:bold" >
+                                <textarea class=" form-control mx-auto d-block text-center" style="width:80%; font-weight:bold" readonly>{{ $dv2[0]->facility }}</textarea>
+                                <input type="hidden" class=" form-control mx-auto d-block text-center" value="{{ $dv2[0]->facility }}" name="facility" style="width:80%; height:40px; font-weight:bold" >
                                 <div class="auto_generated">
                                     <input type="hidden" value="{{$dv2[0]->route_no}}" name="route_no">
                                     <div width="100%" class="for_clone1">
@@ -86,7 +87,7 @@
                                                 </select> -->
                                             </div>
                                             <div style="overflow: hidden; text-overflow: ellipsis; height: 100%; box-sizing: border-box;">
-                                                <input class="form-control mx-auto d-block text-center amount_total" id="amount[]" name="amount[]" oninput="calculateSum(this.value)" onkeyup="validateAmount(this)" value="{{number_format(str_replace(',','',$dv->amount),2,'.',',')}}" style="width:80%; height:30px; margin-top:5px" >
+                                                <input class="form-control mx-auto d-block text-center amount_total" id="amount[]" name="amount[]" oninput="calculateSum(this.value)" onkeyup="validateAmount(this)" value="{{number_format(str_replace(',','',$dv->amount),2,'.',',')}}" style="width:80%; height:30px; margin-top:5px" required>
                                             </div>
                                         </div>
                                     </div>
@@ -110,7 +111,7 @@
                                                         <input class="form-control mx-auto d-block text-center" name="g_lname2[]" value="" placeholder="LastName" style="width:80%; height:35px; margin-top:5px">
                                                     </div>
                                                     <div style="overflow: hidden; text-overflow: ellipsis; height: 100%; box-sizing: border-box;">
-                                                        <input class="form-control mx-auto d-block text-center amount_total" id="amount[]" name="amount[]" oninput="calculateSum(this.value)" onkeyup="validateAmount(this)" style="width:90%; height:30px; margin-top:5px" >
+                                                        <input class="form-control mx-auto d-block text-center amount_total" id="amount[]" name="amount[]" oninput="calculateSum(this.value)" onkeyup="validateAmount(this)" style="width:90%; height:30px; margin-top:5px" required>
                                                     </div>
                                                 </div>
                                             </div>
