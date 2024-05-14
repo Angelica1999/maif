@@ -12,16 +12,23 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            border: 1px solid black;
         }
 
-        .card {
-            padding: 10px;
-            box-sizing: border-box;
-            border: 1px solid gray;
-            width: 88%;
-            margin-left: 10px ;
+        .card-title {
             text-align: center;
+        }
+
+        .card-description {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            text-align: center;
+            margin: 0 auto;
+            width: 55%;
+            font-weight: bold;
+            border: 1px solid black;
         }
 
         .card1 {
@@ -30,9 +37,24 @@
             border: 1px solid gray;
             width: 75%;
             margin: 10px auto;
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            page-break-inside: avoid;
+        }
+
+        .card1 div {
             display: flex;
             justify-content: space-between;
+        }
+
+        .for_clone {
+            width: 100%;
+        }
+
+        @media print {
+            .card1 {
+                page-break-inside: avoid;
+            }
         }
     </style>
 </head>
@@ -41,13 +63,13 @@
         <div class="col-lg-12 grid-margin stretch-card">
             <h4 class="card-title">Disbursement Voucher V2</h4>
             <p class="card-description">MAIF-IPP</p>
-            <div class="card">
+            <div class="">
                 <br>
-                <input type="text" class="text-center mx-auto form-control" style="width: 55%; font-weight: bold; border:1px solid black" value="{{ $dv2[0]->facility }}">
-                <div class="for_clone" width="100%">
+                <input type="text" class="form-control" value="{{ $dv2[0]->facility }}">
+                <div class="for_clone">
                     @foreach($dv2 as $dv)
                         <div class="card1">
-                            <div>
+                            <div style="text-align:center">
                                 <span>{{ htmlspecialchars($dv->ref_no) }}</span>
                             </div>
                             <div style="display:flex;">
@@ -61,7 +83,7 @@
                                         {{ htmlspecialchars($dv->lname_2) }}
                                     @else
                                         @if($dv->lname2 != 0)
-                                            {{ $dv->lname2 }}
+                                            {{ htmlspecialchars($dv->lname2) }}
                                         @endif
                                     @endif
                                 </span>
@@ -69,8 +91,7 @@
                         </div>
                     @endforeach
                 </div>
-                <input type="text" style="width: 30%; border:1px solid black; margin-left:140px" value="PHP {{ number_format($total, 2, '.',',')}}">
-
+                <input type="text" style="width: 30%; border:1px solid black; margin: 20px auto 0 auto; display: block;" value="PHP {{ number_format($total, 2, '.', ',') }}">
             </div>
         </div>
     @endif
