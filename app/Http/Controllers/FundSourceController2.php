@@ -23,6 +23,7 @@ class FundSourceController2 extends Controller{
     }
 
     public function fundSource2(Request $request) {
+      
       $section = DB::connection('dohdtr')
                     ->table('users')
                     ->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
