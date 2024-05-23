@@ -40,6 +40,8 @@
                         @foreach($dv2_list as $dv2)
                             <tr>
                                 <td class="td">
+                                    <a type="button" class="btn btn-xs" style="background-color:#165A54;color:white;" data-toggle="modal"
+                                        href="#iframeModal" data-routeId="{{$dv2->route_no}}" id="track_load" onclick="openModal()">Track</a>
                                     <a href="{{ route('dv2.pdf', ['route_no' => $dv2->route_no]) }}" target="_blank" type="button" class="btn btn-info btn-xs">Print</a>
                                     <a href="{{ route('dv2.image', ['route_no' => $dv2->route_no]) }}" target="_blank" type="button" class="btn btn-success btn-xs">Image</a>
                                     @if($section == 105 || $section == 80)
@@ -83,6 +85,20 @@
     </div>
 </div>
 
+@endsection
+@include('modal')
+@section('js')
+    <script>
+        function openModal() {
+            var routeNoo = event.target.getAttribute('data-routeId'); 
+            var src = "https://mis.cvchd7.com/dts/document/trackMaif/" + routeNoo;
+            // $('.modal-body').html(loading);
+            setTimeout(function() {
+                $("#trackIframe").attr("src", src);
+                $("#iframeModal").css("display", "block");
+            }, 150);
+        }
+    </script>
 @endsection
 
 
