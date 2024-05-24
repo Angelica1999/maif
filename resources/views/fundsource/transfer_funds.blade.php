@@ -143,6 +143,7 @@ function validateBalance(value){
     var saa_id, proponent;
 
     function updateProponent(fundsource_id){
+        console.log('fundsource', fundsource_id);
         $('.fac').val('');
         $('.break_fac').empty();
         $('.break_fac').append($('<option>',{
@@ -151,8 +152,8 @@ function validateBalance(value){
         }));
         saa_id = fundsource_id;
         $('.to_proponent').empty();
-        $.get("fundsource/" + fundsource_id, function(result) {
-
+        $.get("proponents/lists/" + fundsource_id, function(result) {
+            console.log('res', result);
             $('.to_proponent').append($('<option>',{
                 value : "",
                 text : "Please select proponent"
@@ -184,9 +185,11 @@ function validateBalance(value){
     function updateFacility(proponent_id){
         $('.fac').val('');
         proponent = proponent_id
+        console.log('here updateF', proponent_id);
+
         if(proponent_id == "others"){
             $('.to_proponent').empty();
-            $.get("fundsource/" + "all", function(result) {
+            $.get("proponents/lists/" + "all", function(result) {
 
                 $('.to_proponent').append($('<option>',{
                     value : "",
@@ -207,6 +210,7 @@ function validateBalance(value){
             $('.to_proponent').prop('disabled', false);
         }else if(proponent_id == "specific"){
             updateProponent(saa_id);
+    
         }else{
             generateInfo(saa_id, proponent);
         }
