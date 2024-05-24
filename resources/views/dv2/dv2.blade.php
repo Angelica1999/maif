@@ -1,5 +1,9 @@
+<style>
+      .custom-center-align .lobibox-body .lobibox-message {
+        text-align: center;
+    }
+</style>
 @extends('layouts.app')
-
 @section('content')
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
@@ -45,7 +49,7 @@
                                     <a href="{{ route('dv2.pdf', ['route_no' => $dv2->route_no]) }}" target="_blank" type="button" class="btn btn-info btn-xs">Print</a>
                                     <a href="{{ route('dv2.image', ['route_no' => $dv2->route_no]) }}" target="_blank" type="button" class="btn btn-success btn-xs">Image</a>
                                     @if($section == 105 || $section == 80)
-                                        <a href="{{ route('dv2.remove', ['route_no' => $dv2->route_no]) }}" type="button" class="btn btn-danger btn-xs">Delete</a>
+                                        <a onclick="deleteDv2('{{$dv2->route_no}}')" style="color:white" type="button" class="btn btn-danger btn-xs">Delete</a>
                                     @endif
                                 </td> 
                                 <td class="td">{{ $dv2->route_no }}</td>   
@@ -91,12 +95,40 @@
     <script>
         function openModal() {
             var routeNoo = event.target.getAttribute('data-routeId'); 
+            console.log('chaki', routeNoo);
             var src = "https://mis.cvchd7.com/dts/document/trackMaif/" + routeNoo;
             // $('.modal-body').html(loading);
             setTimeout(function() {
                 $("#trackIframe").attr("src", src);
                 $("#iframeModal").css("display", "block");
             }, 150);
+        }
+
+        function deleteDv2(route_no){
+            console.log('route_no', route_no);
+            Lobibox.alert('error',
+                {
+                    size: 'mini',
+                    msg: '<div style="text-align:center;"><i class="typcn typcn-delete menu-icon" style="color:red; font-size:30px"></i>Are you sure you want to delete this?</div>',
+                    buttons:{
+                        ok:{
+                            'class': 'lobibox-btn lobibox-btn-ok',
+                            text: 'Delete',
+                            closeOnClick: true
+                        },
+                        cancel: {
+                            'class': 'lobibox-btn lobibox-btn-cancel',
+                            text: 'Cancel',
+                            closeOnClick: true
+                        }
+                    },
+                    callback: function(lobibox, type){
+                        if (type == "ok"){
+                            window.location.href="dv2/remove/" + route_no;
+                        }
+                    }
+                }
+            )
         }
     </script>
 @endsection

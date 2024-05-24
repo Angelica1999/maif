@@ -1116,10 +1116,13 @@
                         text: 'Generate PDF'
                     });
                     var deleteButton = $('<a>', {
-                        href: "{{ route('remove.dv', '') }}/" + result.dv.route_no,
+                        // href: "{{ route('remove.dv', '') }}/" + result.dv.route_no,
                         type: 'button',
                         class: 'btn btn-danger btn-sm',
-                        text: 'Delete'
+                        text: 'Remove',
+                        style: 'color:white'
+                    }).on('click', function() {
+                        deleteDv1(result.dv.route_no);
                     });
 
                         $('#dv_footer').append(printButton);
@@ -1303,8 +1306,34 @@
         }, 0);
        
     }
-        
 
+    function deleteDv1(route_no){
+            console.log('route_no', route_no);
+            Lobibox.alert('error',
+                {
+                    size: 'mini',
+                    msg: '<div style="text-align:center;"><i class="typcn typcn-delete menu-icon" style="color:red; font-size:30px"></i>Are you sure you want to delete this?</div>',
+                    buttons:{
+                        ok:{
+                            'class': 'lobibox-btn lobibox-btn-ok',
+                            text: 'Delete',
+                            closeOnClick: true
+                        },
+                        cancel: {
+                            'class': 'lobibox-btn lobibox-btn-cancel',
+                            text: 'Cancel',
+                            closeOnClick: true
+                        }
+                    },
+                    callback: function(lobibox, type){
+                        if (type == "ok"){
+                            window.location.href="dv1/remove/" + route_no;
+                        }
+                    }
+                }
+            )
+        }
+        
 </script>
 
 @endsection

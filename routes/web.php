@@ -171,6 +171,7 @@ Route::match(['get', 'post'],'/proponents/excel/', [App\Http\Controllers\FundSou
 
 Route::match(['get', 'post'],'/data/update/', [App\Http\Controllers\FacilityController::class, 'updateData'])->name('update.data');
 
+Route::match(['get', 'post'],'/test/sample/', [App\Http\Controllers\UtilizationController::class, 'test'])->name('test.test');
 
 
 

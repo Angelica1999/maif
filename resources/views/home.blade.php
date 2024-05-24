@@ -394,7 +394,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="submit" id="create_pat_btn" class="btn btn-primary">Create Patient</button>
-                        <a type="button" class="btn btn-danger" style="display:none; color:white">Remove</a>
+                        <a type="button" class="btn btn-danger" onclick="removePatient()"style="display:none; color:white">Remove</a>
                     </div>
                 </form>
             </div>
@@ -599,7 +599,7 @@
         function initializeDataTable() {
             var table = $('#patient_table').DataTable({
                 paging: true,
-                // deferRender: true,
+                deferRender: true,
                 pageLength: 50,
                 drawCallback: function() {
                     initializeEditable();
@@ -796,7 +796,7 @@
             if(patient.group_id == null || patient.group_id == null){
                 var removeRoute = `{{ route('patient.remove', ['id' => ':id']) }}`;
                 removeRoute = removeRoute.replace(':id', id);
-                $('.btn.btn-danger').attr('href', removeRoute).css('display', 'inline-block').text('Remove');
+                $('.btn.btn-danger').attr('data-id', id).css('display', 'inline-block').text('Remove');
             }
 
             $('#fname').val(patient.fname);
@@ -1019,6 +1019,34 @@
                 $('.mail_body').html(result);
             }
         });
+    }
+
+    function removePatient(){
+        var id = event.target.getAttribute('data-id');
+        console.log('route_no', id);
+        Lobibox.alert('error',
+            {
+                size: 'mini',
+                msg: '<div style="text-align:center;"><i class="typcn typcn-delete menu-icon" style="color:red; font-size:30px"></i>Are you sure you want to delete this?</div>',
+                buttons:{
+                    ok:{
+                        'class': 'lobibox-btn lobibox-btn-ok',
+                        text: 'Delete',
+                        closeOnClick: true
+                    },
+                    cancel: {
+                        'class': 'lobibox-btn lobibox-btn-cancel',
+                        text: 'Cancel',
+                        closeOnClick: true
+                    }
+                },
+                callback: function(lobibox, type){
+                    if (type == "ok"){
+                        window.location.href="patient/remove/" + id;
+                    }
+                }
+            }
+        )
     }
 
     </script>
