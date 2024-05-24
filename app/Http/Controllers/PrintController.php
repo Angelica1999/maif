@@ -161,7 +161,8 @@ class PrintController extends Controller
         ];
         $pdf = PDF::loadView('dv2.print_dv2', $data);
         $pdf->setPaper('A4');
-        return $pdf->stream('dv2.pdf');
+        $filename = $dv2[0]->facility.' - '.number_format(str_replace(',','',$total), 2, '.', ',').' - '.$route_no . '.pdf';
+        return $pdf->stream($filename);
     }
 
     public function dv2Image($route_no) {
@@ -284,8 +285,7 @@ class PrintController extends Controller
 
             imagettftext($image, $fontSize, 0, 260, $verticalCenter, $textColor, $fontpath, 'Total Amount: PHP ' . number_format($total, 2, '.', ','));
             $y += $boxHeight + 5;
-
-            $filename = $route_no . '.png';
+            $filename = $dv2[0]->facility.' - '.number_format(str_replace(',','',$total), 2, '.', ',').' - '.$route_no . '.png';
             header('Content-Type: image/jpeg');
             // header('Content-Disposition: attachment; filename="'. $filename.'"');
 
