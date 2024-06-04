@@ -103,7 +103,7 @@
                             <td width="25%">
                                 <span style="margin-bottom: 20px">Fund Cluster :</span><br>
                                 <span style="margin-top: 20px">Date: </span>
-                                &nbsp;&nbsp;&nbsp;&nbsp;<input type="date" asp-for="Date" name="datefield"  id="dateField" style="width: 150px; height: 28px; font-size:8pt" class="ft15" required>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<input type="date" asp-for="Date" name="datefield"  id="dateField" style="width: 150px; height: 28px; font-size:8pt" class="ft15" value="{{(new DateTime())->format('Y-m-d')}}" required>
                                 <br>
                                 <div>
                                     <span>DV No:</span>
