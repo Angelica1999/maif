@@ -196,6 +196,12 @@
                       <span class="menu-title">Facility</span>
                     </a>
                   </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{{ route('report.saa') }}">
+                      <i class="typcn typcn-th-list-outline menu-icon"></i>
+                      <span class="menu-title">SAA</span>
+                    </a>
+                  </li>
                 </ul>
             </li>
         </ul>

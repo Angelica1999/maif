@@ -40,7 +40,7 @@
                 @include('layouts.partials._sidebar')
                 <div class="main-panel">   
                     <div class="content-wrapper">
-                        <div class="text-center p-2" style="background-color: #727dab;width:100%;margin-bottom:30px;">
+                        <div class="text-center p-2" style="background-color: #59ab91;width:100%;margin-bottom:30px;">
                             <img src="{{ asset('images/banner_maif_2024.png') }}" alt="banner"/>  
                         </div>   
                         <div class="row">

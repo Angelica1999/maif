@@ -174,7 +174,11 @@ class FundSourceController2 extends Controller{
         }
         
         $all= array_map('intval', json_decode($dv->fundsource_id));
-        $fund_source = Fundsource::whereIn('id', $all)->get();
+        $fund_source = [];
+        foreach($all as $id){
+            $fund_source []= Fundsource::where('id', $id)->first();
+        }
+        // $fund_source = Fundsource::whereIn('id', $all)->get();
       }
       return view('fundsource_budget.obligate_dv', [ 
         'dv' =>$dv, 
