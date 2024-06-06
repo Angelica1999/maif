@@ -173,6 +173,8 @@ Route::match(['get', 'post'],'/data/update/', [App\Http\Controllers\FacilityCont
 
 Route::match(['get', 'post'],'/test/sample/', [App\Http\Controllers\UtilizationController::class, 'test'])->name('test.test');
 
+Route::get('report/saa', [App\Http\Controllers\ReportController::class, 'reportSaa'])->name('report.saa');
+
 
 
 

@@ -612,9 +612,11 @@
                         if(index < 9 ) return;
                         var column = this;
                         var header = $(column.header());
+                        console.log('header', header);
                         var headerText = header.text().trim();
+                        console.log('header_text', headerText);
                         var filterDiv = $('<div class="filter"></div>').appendTo(header);
-                        
+                        console.log('filterDiv', filterDiv);
                         var select = $('<select style="width: 120px;" multiple><option value="">' + headerText + '</option></select>')
                             .appendTo(filterDiv)
                             .on('change', function () {
