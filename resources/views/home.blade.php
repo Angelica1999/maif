@@ -128,7 +128,7 @@
                     </tr>
                 </thead>
                 <tbody id="list_body">
-                    @foreach($patients as $index=> $patient)
+                    <!-- @foreach($patients as $index=> $patient)
                         <tr>
                             <td>
                                 <button type="button" href="#patient_history" data-backdrop="static" style="width:90px;height:27px;background-color:#006BC4; color:white;" data-toggle="modal" class="" onclick="populateHistory({{$patient->id}})"><small>Edit History</small></button>
@@ -205,7 +205,7 @@
                             <td>{{date('F j, Y', strtotime($patient->created_at))}}</td>
                             <td class="td">{{ $patient->encoded_by->lname .', '. $patient->encoded_by->fname }}</td>
                         </tr>
-                    @endforeach
+                    @endforeach -->
                 </tbody>
                 </table>
             </div>
@@ -600,54 +600,234 @@
             var table = $('#patient_table').DataTable({
                 paging: true,
                 deferRender: true,
+                processing:true,
+                ajax: {
+                url: "{{ route('home') }}",
+                    type: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                },
                 pageLength: 50,
+                columns: [
+                    {
+                        data: 'id',
+                        name: 'action',
+                        render: function(data, type, full, meta) {
+                            return `
+                                <td>
+                                    <button type="button" href="#patient_history" data-backdrop="static" style="width:90px;height:27px;background-color:#006BC4; color:white;" data-toggle="modal" class="" onclick="populateHistory(${data})"><small>Edit History</small></button>
+                                    <button type="button" href="#get_mail" data-backdrop="static" data-toggle="modal" class="" style="width:90px;height:27px;background-color:#005C6F; color:white;" onclick="populate(${data})"><small>Mail History</small></button>
+                                </td>`;
+                        }
+                    },
+                    {
+                        data: 'id',
+                        name: 'action',
+                        render: function(data, type, full, meta) {
+                            var printUrl = "{{ route('patient.pdf', ['patientid' => ':patientId']) }}".replace(':patientId', data);
+                            var sendPdfUrl = "{{ route('patient.sendpdf', ['patientid' => ':patientId']) }}".replace(':patientId', data);
+                            return `
+                                <td class="td">
+                                    <a href="${printUrl}" style="background-color:teal;color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
+                                    <a href="${sendPdfUrl}" type="button" style="width:50px;" class="btn btn-success btn-xs" id="send_btn">Send</a>
+                                </td>`;
+                        }
+                    },
+                    {
+                        data: 'id',
+                        name: 'group-email',
+                        render: function(data, type, full, meta) {
+                            return `
+                                <td style="text-align:center;" class="group-email" data-patient-id="${data}">
+                                    <input class="sent_mails" name="mail_ids[]" type="hidden">
+                                    <input type="checkbox" style="width: 60px; height: 20px;" name="mailCheckbox[]" id="mailCheckboxId_${meta.row}" class="group-mailCheckBox" onclick="itemChecked($(this))">
+                                </td>`;
+                        }
+                    },
+                    {
+                        data: 'remarks',
+                        name: 'status',
+                        render: function(data, type, full, meta) {
+                            var remarksHtml = (data == 1) ? '<i class="typcn typcn-tick menu-icon"></i>' : '';
+                            return '<td style="text-align:center">' + remarksHtml + '</td>';
+                        }
+                    },
+                    { data: 'pat_rem', name: 'pat_rem', orderable: false, searchable: false },
+                    {
+                        data: 'id',
+                        name: 'group-amount',
+                        render: function(data, type, full, meta) {
+                            var checkboxHtml = (full.group_id == null) ? '<input type="checkbox" style="width: 60px; height: 20px;" name="someCheckbox[]" id="someCheckboxId_' + meta.row + '" class="group-checkbox" onclick="groupItem($(this))">' : 'w/group';
+                            return `
+                                <td style="text-align:center">${checkboxHtml}</td>
+                                <td style="text-align:center;" class="group-amount"
+                                    data-patient-id="${full.id}"
+                                    data-proponent-id="${full.proponent_id}"
+                                    data-amount="${full.actual_amount}"
+                                    data-facility-id="${full.facility_id}"></td>`;
+                        }
+                    },
+                    {
+                        data: 'id',
+                        name: 'editable-amount',
+                        render: function(data, type, full, meta) {
+                            var actualAmount = full.actual_amount ? parseFloat(full.actual_amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') : '0.00';
+                            var guaranteedAmount = full.guaranteed_amount ? parseFloat(full.guaranteed_amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') : '0.00';
+                            return `
+                                <td class="editable-amount" data-actual-amount="${actualAmount}"
+                                    data-patient-id="${data}" data-guaranteed-amount="${guaranteedAmount}">
+                                    <a href="#" class="number_editable"  title="Actual Amount" id="${data}">${actualAmount}</a>
+                                </td>`;
+                        }
+                    },
+                    {
+                        data: 'guaranteed_amount',
+                        name: 'guaranteed_amount',
+                        render: function(data, type, full, meta) {
+                            var formattedNumber = parseFloat(data).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+                            return '<td class="td">' + formattedNumber + '</td>';
+                        }
+                    },
+                    {
+                        data: 'date_guarantee_letter',
+                        name: 'date_guarantee_letter',
+                        render: function(data, type, full, meta) {
+                            return '<td>' + moment(data).format('MMMM D, YYYY') + '</td>';
+                        }
+                    },
+                    {
+                        data: 'fname',
+                        name: 'Firstname',
+                        render: function(data, type, full, meta) {
+                            return '<td class="td"><a href="#create_patient" onclick="editPatient(\'' + full.id + '\')" data-backdrop="static" data-toggle="modal">' + data + '</a></td>';
+                        }
+                    },
+                    {
+                        data: 'mname',
+                        name: 'Middlename',
+                        render: function(data, type, full, meta) {
+                            return '<td class="td">' + data + '</td>';
+                        }
+                    },
+                    {
+                        data: 'lname',
+                        name: 'Lastname',
+                        render: function(data, type, full, meta) {
+                            return '<td class="td">' + data + '</td>';
+                        }
+                    },
+                    {
+                        data: 'facility.name',
+                        name: 'Facility',
+                        render: function(data, type, full, meta) {
+                            return '<td class="td">' + (data ? data : 'N/A') + '</td>';
+                        }
+                    },
+                    {
+                        data: 'proponent_data.proponent',
+                        name: 'Proponent',
+                        render: function(data, type, full, meta) {
+                            return '<td class="td">' + (data ? data : 'N/A') + '</td>';
+                        }
+                    },
+                    {
+                        data: 'patient_code',
+                        name: 'Code',
+                        render: function(data, type, full, meta) {
+                            return '<td class="td">' + (data ? data : 'N/A') + '</td>';
+                        }
+                    },
+                    {
+                        data: 'region',
+                        name: 'Region',
+                        render: function(data, type, full, meta) {
+                            return '<td class="td">' + (data ? data : 'N/A') + '</td>';
+                        }
+                    },
+                    {
+                        data: 'id',
+                        name: 'Province',
+                        render: function(data, type, full, meta) {
+                            return '<td class="td">' + (full.province ? full.province.description : full.other_province) + '</td>';
+                        }
+                    },
+                    {
+                        data: 'id',
+                        name: 'Municipality',
+                        orderable: true,
+                        searchable: true,
+                        render: function(data, type, full, meta) {
+                            return '<td class="td">' + (full.muncity ? full.muncity.description : full.other_muncity) + '</td>';
+                        }
+                    },
+                    {
+                        data: 'id',
+                        name: 'Barangay',
+                        render: function(data, type, full, meta) {
+                            return '<td class="td">' + (full.barangay ? full.barangay.description : full.other_barangay) + '</td>';
+                        }
+                    },
+                    {
+                        data: 'created_at',
+                        name: 'Created On',
+                        render: function(data, type, full, meta) {
+                            return '<td>' + moment(data).format('MMMM D, YYYY') + '</td>';
+                        }
+                    },
+                    {
+                        data: 'encoded_by',
+                        name: 'Created By',
+                        render: function(data, type, full, meta) {
+                            return '<td class="td">' + data.lname + ', ' + data.fname + '</td>';
+                        }
+                    }
+                ],
+
                 drawCallback: function() {
                     initializeEditable();
                     initializeGroupFunctions();
                     initializeMailboxes();
                 },
+                
                 initComplete: function () {
                     var api = this.api();
+
                     api.columns().every(function (index) {
-                        if(index < 9 ) return;
+                        if (index < 9) return;
                         var column = this;
                         var header = $(column.header());
-                        console.log('header', header);
                         var headerText = header.text().trim();
-                        console.log('header_text', headerText);
                         var filterDiv = $('<div class="filter"></div>').appendTo(header);
-                        console.log('filterDiv', filterDiv);
+
                         var select = $('<select style="width: 120px;" multiple><option value="">' + headerText + '</option></select>')
                             .appendTo(filterDiv)
                             .on('change', function () {
                                 var selectedValues = $(this).val();
-                                if(index == 9){
-                                    var val = selectedValues ? selectedValues.join('|') : '';
-                                    column.search(val, true, false).draw();
-                                }else{
-                                    var val = selectedValues ? selectedValues.map(function(value) {
-                                            return $.fn.dataTable.util.escapeRegex(value);
-                                        }).join('|') : '';
-                                    column.search(val ? '^(' + val + ')$' : '', true, false).draw();
-                                }
+                                var val = selectedValues ? selectedValues.map(function (value) {
+                                    return $.fn.dataTable.util.escapeRegex(value);
+                                }).join('|') : '';
+
+                                column.search(val ? '^(' + val + ')$' : '', true, false).draw();
                             }).select2();
 
                         column.data().unique().sort().each(function (d, j) {
-                            if(index == 9){
-                                var text = $(d).text().trim(); 
+                            if (index == 9) {
+                                var text = d ? d.trim() : ''; // Trim the text if it exists
                                 select.append('<option value="' + text + '">' + text + '</option>');
-                            }else{
+                            } else {
                                 select.append('<option value="' + d + '">' + d + '</option>');
-                            } 
+                            }
                         });
-                    
+
                         filterDiv.hide();
-                        header.click(function() {
+                        header.click(function () {
                             $('.filter').hide();
-                            $(this).find('.filter').show();
+                            filterDiv.show();
                         });
                     });
                 }
+
             });
 
             $('#search_patient').on('keyup', function() {

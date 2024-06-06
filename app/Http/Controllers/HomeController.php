@@ -21,7 +21,7 @@ use App\Models\PatientLogs;
 use App\Models\MailHistory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-
+use DataTables;
 class HomeController extends Controller
 {
     /**
@@ -73,6 +73,12 @@ class HomeController extends Controller
             $patients = $patients ->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59'])->orderBy('id', 'desc')->get();
         }else{
             $patients = $patients ->orderBy('id', 'desc')->get();
+        }
+
+        if ($request->ajax()) {
+            $data = $patients;
+            return DataTables::of($data)
+                    ->make(true);
         }
 
         return view('home', [

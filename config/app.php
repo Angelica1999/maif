@@ -172,6 +172,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,
         Milon\Barcode\BarcodeServiceProvider::class,
+        Yajra\DataTables\DataTablesServiceProvider::class,
         
         // Intervention\Image\ImageServiceProvider::class,
     ])->toArray(),
@@ -191,6 +192,7 @@ return [
         // 'Example' => App\Facades\Example::class,
         'PDF' => Barryvdh\DomPDF\Facade::class,
         'DNS1D' => Milon\Barcode\Facades\DNS1DFacade::class,
+        'DataTables' => Yajra\DataTables\Facades\DataTables::class,
         // 'Image' => Intervention\Image\Facades\Image::class,
     ])->toArray(),
 
