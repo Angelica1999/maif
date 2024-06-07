@@ -3,9 +3,9 @@
   .loading-container {
         position: fixed;
         top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 1000;
+        left: 54.5%;
+        transform: translate(-40%, -60%);
+        z-index: 2000;
         display: none; 
     }
     .loading-spinner {
@@ -67,7 +67,7 @@
                     <form method="POST" action="{{ route('sent.mails') }}" class="send_mailform">
                         @csrf
                         <div style="display: flex; justify-content: flex-end;">
-                            <button class="btn-sm send_mails" name="send_mails[]" style="display:none;background-color: green; color: white; height:48px; width:100px">Send Mails</button>
+                            <button class="btn-sm send_mails" name="send_mails[]" onclick="loading($this)" style="display:none;background-color: green; color: white; height:48px; width:100px">Send Mails</button>
                             <input type="hidden" class="form-control idss" name="idss" id="idss" >
                         </div>
                     </form>
@@ -90,7 +90,6 @@
                 MAIF-IPP
             </span>
             
-            @if(count($patients) > 0)
             <div class="table-responsive">
                 <table class="table table-striped" id="patient_table">
                 <thead>
@@ -128,93 +127,10 @@
                     </tr>
                 </thead>
                 <tbody id="list_body">
-                    @foreach($patients as $index=> $patient)
-                        <tr>
-                            <td>
-                                <button type="button" href="#patient_history" data-backdrop="static" style="width:90px;height:27px;background-color:#006BC4; color:white;" data-toggle="modal" class="" onclick="populateHistory({{$patient->id}})"><small>Edit History</small></button>
-                                <button type="button" href="#get_mail" data-backdrop="static" data-toggle="modal" class="" style="width:90px;height:27px;background-color:#005C6F; color:white;" onclick="populate({{$patient->id}})"><small>Mail History</small></button>
-                            </td>
-                            <td class="td">
-                                <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}" style="background-color:teal;color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
-                                <a href="{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}" type="button" style="width:50px;" class="btn btn-success btn-xs" id="send_btn">Send</a>
-                            </td>
-                            <td style="text-align:center;" class="group-email" data-patient-id="{{ $patient->id }}" >
-                                <input class="sent_mails[] " id="mail_ids[]" name="mail_ids[]" type="hidden">
-                                <input type="checkbox" style="width: 60px; height: 20px;" name="mailCheckbox[]" id="mailCheckboxId_{{ $index }}" 
-                                    class="group-mailCheckBox" onclick="itemChecked($(this))">
-                            </td>
-                            <td style="text-align:center">
-                                @if($patient->remarks == 1)
-                                    <i class="typcn typcn-tick menu-icon">
-                                @endif
-                            </td>
-                            <td>{{$patient->pat_rem}}</td>
-                            <td style="text-align:center;" class="group-amount" data-patient-id="{{ $patient->id }}" data-proponent-id="{{$patient->proponent_id}}" 
-                                data-amount="{{$patient->actual_amount}}" data-facility-id="{{$patient->facility_id}}" >
-                                @if($patient->group_id == null)
-                                <input type="checkbox" style="width: 60px; height: 20px;" name="someCheckbox[]" id="someCheckboxId_{{ $index }}" 
-                                    class="group-checkbox" onclick="groupItem($(this))">
-                                @else
-                                    w/group
-                                @endif
-                            </td>
-                            <td class="editable-amount" data-actual-amount="{{!Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}" data-patient-id="{{ $patient->id }}" data-guaranteed-amount="{{str_replace(',', '', $patient->guaranteed_amount)}}">
-                                <a href="#" class="number_editable"  title="Actual Amount" id="{{ $patient->id }}">{{!Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}</a>
-                            </td>
-                            <td class="td">{{ number_format((float) str_replace(',', '', $patient->guaranteed_amount), 2, '.', ',') }}</td>
-                            <td>{{date('F j, Y', strtotime($patient->date_guarantee_letter))}}</td>
-                            <td class="td">
-                                <a href="#create_patient"   onclick="editPatient('{{ $patient->id }}')" data-backdrop="static" data-toggle="modal">
-                                    {{ $patient->fname }}
-                                </a>
-                            </td>   
-                            <td class="td">{{ $patient->mname }}</td>
-                            <td class="td">{{ $patient->lname }}</td>
-                            <td class="td">{{ $patient->facility->name }}</td>
-                            <td class="td">{{ $patient->proponentData ? $patient->proponentData->proponent : 'N/A' }}</td>
-                            <td class="td">{{ $patient->patient_code}}</td>
-                            {{-- <td>
-                                @if(isset($patient->facility->description))
-                                    {{ $patient->facility->description }}
-                                @else
-                                    {{ $patient->other_facility }}
-                                @endif
-                            </td> --}}
-                            <td class="td">{{ $patient->region }}</td>
-                            <td class="td">
-                                @if(isset($patient->province->description))
-                                    {{ $patient->province->description }}
-                                @else
-                                    {{ $patient->other_province }}
-                                @endif
-                            </td>
-                            <td class="td">
-                                @if(isset($patient->muncity->description))
-                                    {{ $patient->muncity->description }}
-                                @else
-                                    {{ $patient->other_muncity }}
-                                @endif
-                            </td>
-                            <td class="td">
-                                @if(isset($patient->barangay->description))
-                                    {{ $patient->barangay->description }}
-                                @else
-                                    {{ $patient->other_barangay }}
-                                @endif
-                            </td>
-                            <td>{{date('F j, Y', strtotime($patient->created_at))}}</td>
-                            <td class="td">{{ $patient->encoded_by->lname .', '. $patient->encoded_by->fname }}</td>
-                        </tr>
-                    @endforeach
+                  
                 </tbody>
                 </table>
             </div>
-            @else
-                <div class="alert alert-danger" role="alert" style="width: 100%;">
-                <i class="typcn typcn-times menu-icon"></i>
-                    <strong>No patient found!</strong>
-                </div>
-            @endif
         </div>
     </div>
 </div>
@@ -458,6 +374,7 @@
 <div class="loading-container">
     <img src="public\images\loading.gif" alt="Loading..." class="loading-spinner">
 </div>
+
 @endsection
 @section('js')
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
@@ -470,6 +387,7 @@
 @include('maif.editable_js')
 
 <script>
+
     $(function() {
         $('#filter_dates').daterangepicker();
     });
@@ -490,14 +408,6 @@
         $('#facility_id').val('').trigger('change');
         $('#proponent_id').val('').trigger('change');
 
-    });
-
-    $('.send_mailform').on('click', function(e) {
-        $('.loading-container').show();
-    });
-
-    $('#send_btn').on('click', function(e) {
-        $('.loading-container').show();
     });
 
     function error(){
@@ -541,12 +451,18 @@
     var group_a = [];
     var group_i = [];
     var g_fac, g_pro;
+    
     function groupItem(element){
-
+        // 'onclick="groupItem($(this), ' + full.id + ', ' + full.proponent_id + ', ' + full.actual_amount + ', ' + full.facility_id + ')">' : 
         var parentTd = $(element).closest('td');   
         var patientId = parentTd.attr('data-patient-id');
         var amount = parentTd.attr('data-amount');
-        amount = amount.replace(/,/g,'');
+        var row = $(element).closest('tr');   
+        var edit = row.find('td.editable-amount');
+        var val = edit.attr('data-actual-amount');
+
+        console.log('row', val);
+        amount = val.replace(/,/g,'');
         if(group_i.includes(patientId)){
             var r_index = group_i.indexOf(patientId); 
             group_i = group_i.filter(id => id !== patientId);
@@ -556,7 +472,7 @@
             }
         }else{
             if(amount == 0 || amount == null || amount == ''){
-                alert('Fill up actual amount first!');
+                alert('Fill up actual amount first! It must not be greater than the guaranteed amount.');
                 element.prop('checked', false);
             }else{
                 var c_pro = parentTd.attr('data-proponent-id');
@@ -589,9 +505,10 @@
             $('.group-btn').hide();
         }
     }
-    
-    function calGroup(){
-        
+
+    function loading(element){
+        console.log('here');
+        $('.loading-container').show();
     }
 
     $(document).ready(function () {
@@ -600,59 +517,267 @@
             var table = $('#patient_table').DataTable({
                 paging: true,
                 deferRender: true,
+                processing:true,
+                scrollY:700,
+                // scrollY:true,
+                ajax: {
+                url: "{{ route('home') }}",
+                    type: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                },
                 pageLength: 50,
+                columns: [
+                    {
+                        data: 'id',
+                        name: 'action',
+                        className: 'okiii',
+                        render: function(data, type, full, meta) {
+                            return `
+                                <td class="">
+                                    <button type="button" href="#patient_history" data-backdrop="static" style="width:90px;height:27px;background-color:#006BC4; color:white;" data-toggle="modal" class="" onclick="populateHistory(${data})"><small>Edit History</small></button>
+                                    <button type="button" href="#get_mail" data-backdrop="static" data-toggle="modal" class="" style="width:90px;height:27px;background-color:#005C6F; color:white;" onclick="populate(${data})"><small>Mail History</small></button>
+                                </td>`;
+                        }
+                    },
+                    {
+                        data: 'id',
+                        name: 'action',
+                        render: function(data, type, full, meta) {
+                            var printUrl = "{{ route('patient.pdf', ['patientid' => ':patientId']) }}".replace(':patientId', data);
+                            var sendPdfUrl = "{{ route('patient.sendpdf', ['patientid' => ':patientId']) }}".replace(':patientId', data);
+                            return `
+                                <td class="td">
+                                    <a href="${printUrl}" style="background-color:teal;color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
+                                    <a href="${sendPdfUrl}" type="button" style="width:50px;" class="btn btn-success btn-xs" onclick="loading($(this))" id="send_btn">Send</a>
+                                </td>`;
+                        }
+                    },
+                    {
+                        data: 'id',
+                        name: 'group-email',
+                        className: 'group-email',
+                        render: function(data, type, full, meta) {
+                            return `
+                                <td style="text-align:center;">
+                                    <input class="sent_mails" name="mail_ids[]" type="hidden">
+                                    <input type="checkbox" style="width: 60px; height: 20px;" name="mailCheckbox[]" id="mailCheckboxId_${meta.row}" class="group-mailCheckBox" onclick="itemChecked($(this))">
+                                </td>`;
+                        }
+                    },
+                    {
+                        data: 'remarks',
+                        name: 'status',
+                        render: function(data, type, full, meta) {
+                            var remarksHtml = (data == 1) ? '<i class="typcn typcn-tick menu-icon"></i>' : '';
+                            return '<td style="text-align:center">' + remarksHtml + '</td>';
+                        }
+                    },
+                    { 
+                        data: 'pat_rem',
+                        name: 'pat_rem',
+                        className: 'remarkss',
+                        attributeName: "chaka",
+                        render: function(data, type, full, meta) {
+                            return '<td class="custom-td">' + data + '</td>';
+                        }
+                    },
+                    {
+                        data: 'id',
+                        name: 'group-amount',
+                        className: 'group-amount',
+                        render: function(data, type, full, meta) {
+                            var actualAmount = (full.actual_amount != null) ? full.actual_amount : 0;
+                            var checkboxHtml = (full.group_id == null) ? 
+                                '<input type="checkbox" style="width: 60px; height: 20px;" name="someCheckbox[]" ' +
+                                'id="someCheckboxId_' + meta.row + '" class="group-checkbox" ' +
+                                'onclick="groupItem($(this))">' : 
+                                'w/group';
+                            return `<td style="text-align:center" class="group-amount">${checkboxHtml}</td>`;
+                        }
+                    },
+                    {
+                        data: 'id',
+                        name: 'editable-amount',
+                        className: 'editable-amount',
+                        render: function(data, type, full, meta) {
+                            var actualAmount = full.actual_amount ? parseFloat(full.actual_amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') : '0.00';
+                            var guaranteedAmount = full.guaranteed_amount ? parseFloat(full.guaranteed_amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') : '0.00';
+                            return '<td class="editable-amount" data-actual-amount="' + actualAmount + '" data-patient-id="' + data + '" data-guaranteed-amount="' + guaranteedAmount + '"><a href="#" class="number_editable" title="Actual Amount" id="' + data + '">' + actualAmount + '</a></td>';
+
+                        }
+                    },
+                    {
+                        data: 'guaranteed_amount',
+                        name: 'guaranteed_amount',
+                        render: function(data, type, full, meta) {
+                            var guaranteedAmount = parseFloat(full.guaranteed_amount.replace(/,/g, '')).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+                            return '<td class="td">' + guaranteedAmount + '</td>';
+                        }
+                    },
+                    {
+                        data: 'date_guarantee_letter',
+                        name: 'date_guarantee_letter',
+                        render: function(data, type, full, meta) {
+                            return '<td>' + moment(data).format('MMMM D, YYYY') + '</td>';
+                        }
+                    },
+                    {
+                        data: 'fname',
+                        name: 'Firstname',
+                        render: function(data, type, full, meta) {
+                            return '<td class="td"><a href="#create_patient" onclick="editPatient(\'' + full.id + '\')" data-backdrop="static" data-toggle="modal">' + data + '</a></td>';
+                        }
+                    },
+                    {
+                        data: 'mname',
+                        name: 'Middlename',
+                        render: function(data, type, full, meta) {
+                            return '<td class="td">' + data + '</td>';
+                        }
+                    },
+                    {
+                        data: 'lname',
+                        name: 'Lastname',
+                        render: function(data, type, full, meta) {
+                            return '<td class="td">' + data + '</td>';
+                        }
+                    },
+                    {
+                        data: 'facility.name',
+                        name: 'Facility',
+                        render: function(data, type, full, meta) {
+                            return '<td class="td">' + (data ? data : 'N/A') + '</td>';
+                        }
+                    },
+                    {
+                        data: 'proponent_data.proponent',
+                        name: 'Proponent',
+                        render: function(data, type, full, meta) {
+                            return '<td class="td">' + (data ? data : 'N/A') + '</td>';
+                        }
+                    },
+                    {
+                        data: 'patient_code',
+                        name: 'Code',
+                        render: function(data, type, full, meta) {
+                            return '<td class="td">' + (data ? data : 'N/A') + '</td>';
+                        }
+                    },
+                    {
+                        data: 'region',
+                        name: 'Region',
+                        render: function(data, type, full, meta) {
+                            return '<td class="td">' + (data ? data : 'N/A') + '</td>';
+                        }
+                    },
+                    {
+                        data: 'id',
+                        name: 'Province',
+                        render: function(data, type, full, meta) {
+                            return '<td class="td">' + (full.province ? full.province.description : full.other_province) + '</td>';
+                        }
+                    },
+                    {
+                        data: 'id',
+                        name: 'Municipality',
+                        orderable: true,
+                        searchable: true,
+                        render: function(data, type, full, meta) {
+                            return '<td class="td">' + (full.muncity ? full.muncity.description : full.other_muncity) + '</td>';
+                        }
+                    },
+                    {
+                        data: 'id',
+                        name: 'Barangay',
+                        render: function(data, type, full, meta) {
+                            return '<td class="td">' + (full.barangay ? full.barangay.description : full.other_barangay) + '</td>';
+                        }
+                    },
+                    {
+                        data: 'created_at',
+                        name: 'Created On',
+                        render: function(data, type, full, meta) {
+                            return '<td>' + moment(data).format('MMMM D, YYYY') + '</td>';
+                        }
+                    },
+                    {
+                        data: 'encoded_by',
+                        name: 'Created By',
+                        render: function(data, type, full, meta) {
+                            return '<td class="td">' + data.lname + ', ' + data.fname + '</td>';
+                        }
+                    }
+                ],
+
                 drawCallback: function() {
                     initializeEditable();
                     initializeGroupFunctions();
                     initializeMailboxes();
                 },
+
                 initComplete: function () {
                     var api = this.api();
+
                     api.columns().every(function (index) {
-                        if(index < 9 ) return;
+                        if (index < 9) return;
                         var column = this;
                         var header = $(column.header());
-                        console.log('header', header);
                         var headerText = header.text().trim();
-                        console.log('header_text', headerText);
                         var filterDiv = $('<div class="filter"></div>').appendTo(header);
-                        console.log('filterDiv', filterDiv);
+
                         var select = $('<select style="width: 120px;" multiple><option value="">' + headerText + '</option></select>')
                             .appendTo(filterDiv)
                             .on('change', function () {
                                 var selectedValues = $(this).val();
-                                if(index == 9){
-                                    var val = selectedValues ? selectedValues.join('|') : '';
-                                    column.search(val, true, false).draw();
-                                }else{
-                                    var val = selectedValues ? selectedValues.map(function(value) {
-                                            return $.fn.dataTable.util.escapeRegex(value);
-                                        }).join('|') : '';
-                                    column.search(val ? '^(' + val + ')$' : '', true, false).draw();
-                                }
+                                var val = selectedValues ? selectedValues.map(function (value) {
+                                    return $.fn.dataTable.util.escapeRegex(value);
+                                }).join('|') : '';
+
+                                column.search(val ? '^(' + val + ')$' : '', true, false).draw();
                             }).select2();
 
                         column.data().unique().sort().each(function (d, j) {
-                            if(index == 9){
-                                var text = $(d).text().trim(); 
+                            if (index == 9) {
+                                var text = d ? d.trim() : ''; // Trim the text if it exists
                                 select.append('<option value="' + text + '">' + text + '</option>');
-                            }else{
+                            } else {
                                 select.append('<option value="' + d + '">' + d + '</option>');
-                            } 
+                            }
                         });
-                    
+
                         filterDiv.hide();
-                        header.click(function() {
+                        header.click(function () {
                             $('.filter').hide();
-                            $(this).find('.filter').show();
+                            filterDiv.show();
                         });
                     });
+                },
+                
+                createdRow: function( row, full, dataIndex ) {
+                    var actualAmount = (full.actual_amount == null)?0.00 : full.actual_amount;
+                    var id = full.id;
+                    var pro_id = full.proponent_id;
+                    var facility_id = full.facility_id;
+                    var guaranteedAmount = full.guaranteed_amount;
+
+                    $( row ).find('td:eq(6)').attr('data-actual-amount', actualAmount)
+                        .attr('data-patient-id', id).attr('data-guaranteed-amount', guaranteedAmount.replace(/,/g,''));
+
+                    $( row ).find('td:eq(5)').attr('data-patient-id', id).attr('data-proponent-id', pro_id)
+                        .attr('data-amount', actualAmount).attr('data-facility-id', facility_id);
+
+                    $( row ).find('td:eq(2)').attr('data-patient-id', id);
+
                 }
+
             });
 
             $('#search_patient').on('keyup', function() {
                 table.search(this.value).draw();
             });
+
         }
 
         function initializeEditable() {
@@ -668,6 +793,8 @@
                     var patientId = cell.data('patient-id');
                     var guaranteed_amount = cell.data('guaranteed-amount');
                     var actual_amount = cell.data('actual-amount');
+                    var editableField = this;
+
                     var url = "{{ url('update/amount').'/' }}" + patientId + '/' + newValue;
                     var json = {
                         "_token" : "<?php echo csrf_token(); ?>",
@@ -679,8 +806,11 @@
                             size: 'mini',
                             msg: "Actual amount accepts number only!"
                         }); 
-                        newValue = 0;
-                        location.reload();
+
+                        $(editableField).text(actual_amount);
+                        $(editableField).value(actual_amount);
+                        cell.attr('data-actual-amount', actual_amount);
+                        // location.reload();
                         return;  
                     }
                     var c_amount = newValue.replace(/,/g,'');
@@ -689,9 +819,12 @@
                         $(this).html(newValue);
                         Lobibox.alert('error',{
                             size: 'mini',
-                            msg: "Inputted actual amount if greater than guaranteed amount!"
+                            msg: "Inputted actual amount is greater than guaranteed amount!"
                         }); 
-                        location.reload();
+                        cell.attr('data-actual-amount', actual_amount);
+                        $(editableField).text(actual_amount);
+                        $(editableField).value(actual_amount);
+                        // location.reload();
                         return;           
                     }
 
@@ -702,7 +835,8 @@
                             size: 'mini',
                             rounded: true
                         });
-                        location.reload();
+                        cell.attr('data-actual-amount', newValue);
+                        // location.reload();
                     });
                 }
             });
