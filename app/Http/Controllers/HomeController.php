@@ -75,7 +75,7 @@ class HomeController extends Controller
             $patients = $patients ->orderBy('id', 'desc')->get();
         }
 
-        if ($request->ajax()) {
+        if ($request->ajax() ) {
             $data = $patients;
             return DataTables::of($data)
                     ->make(true);

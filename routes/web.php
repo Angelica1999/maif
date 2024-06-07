@@ -20,7 +20,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('/facility/list', [App\Http\Controllers\FacilityController::class, 'index'])->name('facility');
+Route::get('/facilities', [App\Http\Controllers\FacilityController::class, 'index'])->name('facility');
 Route::get('facility/edit/{main_id}', [App\Http\Controllers\FacilityController::class, 'facilityEdit'])->name('facility.edit');
 Route::post('facility/update', [App\Http\Controllers\FacilityController::class, 'facilityUpdate'])->name('facility.update');
 Route::get('facility/vatEwt', [App\Http\Controllers\FacilityController::class, 'getVatEwt']);
@@ -61,7 +61,7 @@ Route::get('transaction/get', [App\Http\Controllers\FundSourceController::class,
 Route::post('dv/create/save',  [App\Http\Controllers\DvController::class, 'createDvSave'])->name('dv.create.save');
 Route::get('facility/dv/{facility_id}', [App\Http\Controllers\DvController::class, 'dvfacility'])->name('facility.dv');
 
-Route::get('/fundsource/list', [App\Http\Controllers\FundSourceController::class, 'fundSource'])->name('fundsource');
+Route::get('/fundsource/lists', [App\Http\Controllers\FundSourceController::class, 'fundSource'])->name('fundsource');
 Route::get('fundsource/edit/{fundsourceId}/{proponent_id}', [App\Http\Controllers\FundSourceController::class, 'Editfundsource'])->name('fundsource.edit');
 Route::get('/fundsource/saa/get', [App\Http\Controllers\FundSourceController::class, 'fundSourceGet'])->name('fundsource.saa.get');
 Route::get('/fundsource/create', [App\Http\Controllers\FundSourceController::class, 'createFundSource'])->name('fundsource.create');
