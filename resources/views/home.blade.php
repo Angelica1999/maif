@@ -24,7 +24,7 @@
         position: absolute;
         margin-right: 50px;
         top: -8%;
-        left: 50%; /* Adjust the position as needed */
+        left: 50%;
         transform: translateY(-50%, -50%);
         width: 60px;
         height: 60px;
@@ -42,6 +42,17 @@
         background-color: green !important; 
         color: white !important; 
     }
+    #patient_table_container {
+        max-height: 700px; 
+        overflow-y: auto; 
+    }
+    .table th {
+        position: sticky; 
+        top: 0; 
+        z-index: 2; 
+        background-color: #fff; 
+        box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4); 
+    }
 
 </style>
 @extends('layouts.app')
@@ -55,26 +66,40 @@
                     <form method="GET" action="{{ route('home') }}">
                         <div class="input-group">
                             <input type="hidden" class="form-control" name="key">
-                            <input type="text" class="form-control" name="keyword" value="{{$keyword}}" id="search_patient" placeholder="Search..." value="" aria-label="Recipient's username">
+                            <input type="text" class="form-control" name="keyword" id="search_patient" placeholder="Search..." value="{{$keyword}}" aria-label="Recipient's username">
                             <div class="input-group-append">
                                 <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
                                 <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
                                 <button type="button" href="#generate_filter" data-backdrop="static" data-toggle="modal" style="background-color:teal; color:white; width:100px" class=""><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
                                 <button type="button" href="#create_patient" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
+                                <button type="submit" value="filt" style="display:none; background-color:00563B; color:white;" name="filter_col" id="filter_col" class="btn btn-success btn-md"><i class="typcn typcn-filter menu-icon"></i>Filter</button>
                             </div>  
                         </div>
+                        <input type="hidden" name="filter_date" id="filter_date"></input>
+                        <input type="hidden" name="filter_fname" id="filter_fname"></input>
+                        <input type="hidden" name="filter_mname" id="filter_mname"></input>
+                        <input type="hidden" name="filter_lname" id="filter_lname"></input>
+                        <input type="hidden" name="filter_facility" id="filter_facility"></input>
+                        <input type="hidden" name="filter_proponent" id="filter_proponent"></input>
+                        <input type="hidden" name="filter_code" id="filter_code"></input>
+                        <input type="hidden" name="filter_region" id="filter_region"></input>
+                        <input type="hidden" name="filter_province" id="filter_province"></input>
+                        <input type="hidden" name="filter_municipality" id="filter_municipality"></input>
+                        <input type="hidden" name="filter_barangay" id="filter_barangay"></input>
+                        <input type="hidden" name="filter_on" id="filter_on"></input>
+                        <input type="hidden" name="filter_by" id="filter_by"></input>
                     </form>
                     <form method="POST" action="{{ route('sent.mails') }}" class="send_mailform">
                         @csrf
                         <div style="display: flex; justify-content: flex-end;">
-                            <button class="btn-sm send_mails" name="send_mails[]" style="display:none;background-color: green; color: white; height:48px; width:100px">Send Mails</button>
+                            <button class="btn-sm send_mails" name="send_mails[]" style="display:none;background-color: green; color: white; height:47.5px; width:100px">Send Mails</button>
                             <input type="hidden" class="form-control idss" name="idss" id="idss" >
                         </div>
                     </form>
                     <form method="POST" action="{{ route('save.group') }}">
                         @csrf
                         <div style="display: flex; justify-content: flex-end;">
-                            <label class="totalAmountLabel" style="display:none; height:30px;" ><b>Total Amount:</b></label>
+                            <label class="totalAmountLabel" style="display:none; height:30px;" ><b> Amount:</b></label>
                             <input style="display:none; vertical-align:center; width:150px" class="form-control group_amountT" name="group_amountT" id="group_amountT" readonly>
                             <button class=" btn-sm group-btn" style="display:none;background-color: green; color: white; height:48px; width:100px">Group</button>
                             <input type="hidden" class="form-control group_facility" name="group_facility" id="group_facility" >
@@ -91,7 +116,7 @@
             </span>
             
             @if(count($patients) > 0)
-            <div class="table-responsive">
+            <div class="table-responsive" id ="patient_table_container">
                 <table class="table table-striped" id="patient_table">
                 <thead>
                     <tr>
@@ -110,21 +135,154 @@
                         <th>Status</th>
                         <th>Remarks</th>
                         <th style="min-width:10px; text-align:center;">Group</th>
-                        <th style="min-width:150px">Actual Amount</th>
+                        <th style="min-width:140px">Actual Amount</th>
                         <th style="min-width:100px">Guaranteed </th>
-                        <th style="min-width:120px; text-align:center;">Date </th>
-                        <th style="min-width:90px; text-align:center;">Firstname </th>
-                        <th style="min-width:100px; text-align:center;">Middlename </th>
-                        <th style="min-width:100px; text-align:center;">Lastname </th>
-                        <th style="min-width:120px; text-align:center;">Facility </th>
-                        <th style="min-width:120px; text-align:center;">Proponent </th>
-                        <th>Code </th>
-                        <th style="min-width:100px;">Region </th>
-                        <th style="min-width:100px; text-align:center;">Province </th>
-                        <th style="min-width:100px; text-align:center;">Municipality </th>
-                        <th style="min-width:100px; text-align:center;">Barangay </th>
-                        <th style="min-width:120px">Created On </th>
-                        <th style="min-width:190px">Created By </th>
+                        <th style="min-width:120px; text-align:center;">@sortablelink('date_guarantee_letter', 'Date') <i id="date_i" class="typcn typcn-filter menu-icon"></i>
+                            <div class="filter" id="date_div" style="display:none;">
+                                <select style="width: 120px;" id="date_select" name="date_select" multiple>
+                                @foreach($date as $d)
+                                    <option value="{{$d}}" {{ is_array($filter_date) && in_array($d, $filter_date) ? 'selected' : '' }}>
+                                        {{ date('F j, Y', strtotime($d)) }}
+                                    </option>
+                                @endforeach
+
+                                </select>
+                            </div>
+                        </th>
+                        <th style="min-width:150px; text-align:center;">@sortablelink('fname', 'Firstname')<i id="fname_i" class="typcn typcn-filter menu-icon"></i>
+                            <div class="filter" id="fname_div" style="display:none;">
+                                <select style="width: 120px;" id="fname_select" name="fname_select" multiple>
+                                    @foreach($fname as $l)
+                                        <option value="{{$l}}" {{ is_array($filter_fname) && in_array($l, $filter_fname) ? 'selected' : '' }}>{{$l}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </th>
+                        <th style="min-width:150px; text-align:center;">@sortablelink('mname', 'Middlename')<i id="mname_i" class="typcn typcn-filter menu-icon"></i>
+                            <div class="filter" id="mname_div" style="display:none;">
+                                <select style="width: 120px;" id="mname_select" name="mname_select" multiple>
+                                    @foreach($mname as $l)
+                                        <option value="{{$l}}" {{ is_array($filter_mname) && in_array($l, $filter_mname) ? 'selected' : '' }}>{{$l}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </th>
+                        <th style="min-width:150px; text-align:center;">@sortablelink('lname', 'Lastname')<i id="lname_i" class="typcn typcn-filter menu-icon"></i>
+                            <div class="filter" id="lname_div" style="display:none;">
+                                <select style="width: 120px;" id="lname_select" name="lname_select" multiple>
+                                    @foreach($lname as $l)
+                                        <option value="{{$l}}" {{ is_array($filter_lname) && in_array($l, $filter_lname) ? 'selected' : '' }}>{{$l}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </th>
+                        <th style="min-width:150px; text-align:center;">
+                            <a href="{{ route('home', ['sort' => 'facility']) }}">Facility</a><i id="facility_i" class="typcn typcn-filter menu-icon"></i>
+                            <div class="filter" id="facility_div" style="display:none;">
+                                <select style="width: 120px;" id="facility_select" name="facility_select" multiple>
+                                    @foreach($fc_list as $l)
+                                        <option value="{{$l->id}}" {{ is_array($filter_facility) && in_array($l->id, $filter_facility) ? 'selected' : '' }}>{{$l->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </th>
+                        <th style="min-width:150px; text-align:center;">
+                            <a href="{{ route('home', ['sort' => 'proponent']) }}">Proponent</a><i id="proponent_i" class="typcn typcn-filter menu-icon"></i>
+                            <div class="filter" id="proponent_div" style="display:none;">
+                                <select style="width: 120px;" id="proponent_select" name="proponent_select" multiple>
+                                    @foreach($pros as $l)
+                                        <option value="{{$l->id}}" {{ is_array($filter_proponent) && in_array($l->id, $filter_proponent) ? 'selected' : '' }}>{{$l->proponent}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </th>
+                        <th>@sortablelink('patient_code', 'Code') <i id="code_i" class="typcn typcn-filter menu-icon"></i>
+                            <div class="filter" id="code_div" style="display:none;">
+                                <select style="width: 120px;" id="code_select" name="code_select" multiple>
+                                    @foreach($code as $l)
+                                        <option value="{{$l}}" {{ is_array($filter_code) && in_array($l, $filter_code) ? 'selected' : '' }}>{{$l}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </th>
+                        <th style="min-width:150px;">@sortablelink('region', 'Region') <i id="region_i" class="typcn typcn-filter menu-icon"></i>
+                            <div class="filter" id="region_div" style="display:none;">
+                                <select style="width: 120px;" id="region_select" name="region_select" multiple>
+                                    @foreach($region as $l)
+                                        <option value="{{$l}}" {{ is_array($filter_region) && in_array($l, $filter_region) ? 'selected' : '' }}>{{$l}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </th>
+                        <th style="min-width:150px; text-align:center;">
+                            <a href="{{ route('home', ['sort' => 'province', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">Province</a>
+                            <i id="province_i" class="typcn typcn-filter menu-icon"></i>
+                            <div class="filter" id="province_div" style="display:none;">
+                                <select style="width: 120px;" id="province_select" name="province_select" multiple>
+                                    @foreach($prvnc as $l)
+                                        <option value="{{$l->id}}" {{ is_array($filter_province) && in_array($l->id, $filter_province) ? 'selected' : '' }}>{{$l->description}}</option>
+                                    @endforeach
+                                    @foreach($pro1 as $l)
+                                        <option value="{{$l}}" {{ is_array($filter_province) && in_array($l, $filter_province) && $l != null ? 'selected' : '' }}>{{$l}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </th>
+                        <th style="min-width:150px; text-align:center;">
+                            <a href="{{ route('home', ['sort' => 'municipality', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">Municipality</a>
+                            <i id="muncity_i" class="typcn typcn-filter menu-icon"></i>
+                            <div class="filter" id="muncity_div" style="display:none;">
+                                <select style="width: 120px;" id="muncity_select" name="muncity_select" multiple>
+                                    @foreach($mncty as $l)
+                                        <option value="{{$l->id}}" {{ is_array($filter_municipality) && in_array($l->id, $filter_municipality) ? 'selected' : '' }}>{{$l->description}}</option>
+                                    @endforeach
+                                    @foreach($pro1 as $l)
+                                        <option value="{{$l}}" {{ is_array($filter_municipality) && in_array($l, $filter_municipality) && $l != null ? 'selected' : '' }}>{{$l}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </th>
+                        <th style="min-width:150px; text-align:center;">
+                            <a href="{{ route('home', ['sort' => 'barangay', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">Barangay</a>
+                            <i id="barangay_i" class="typcn typcn-filter menu-icon"></i>
+                            <div class="filter" id="barangay_div" style="display:none;">
+                                <select style="width: 120px;" id="barangay_select" name="barangay_select" multiple>
+                                    @foreach($brgy as $l)
+                                        <?php $id = $l->id;?>
+                                        <option value="{{$l->id}}" {{ is_array($filter_barangay) && in_array($id, $filter_barangay) ? 'selected' : '' }}>{{$l->description}}</option>
+                                    @endforeach
+                                    @foreach($barangay as $l)
+                                        <option value="{{$l}}" {{ is_array($filter_barangay) && in_array($l, $filter_barangay) && $l != null? 'selected' : '' }}>{{$l}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </th>
+                        <th style="min-width:150px">@sortablelink('created_at', 'Created On') <i id="on_i" class="typcn typcn-filter menu-icon"></i>
+                            <div class="filter" id="on_div" style="display:none;">
+                                <select style="width: 120px;" id="on_select" name="on_select" multiple>
+                                    @foreach($on as $d)
+                                        <option value="{{ date('Y-m-d', strtotime($d)) }}" 
+                                                {{ is_array($filter_on) && in_array(date('Y-m-d', strtotime($d)), $filter_on) ? 'selected' : '' }}>
+                                            {{ date('F j, Y', strtotime($d)) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </th>
+                        <th style="min-width:190px">
+                            <a href="{{ route('home', ['sort' => 'encoded_by', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">Created By</a>
+                            <i id="by_i" class="typcn typcn-filter menu-icon"></i>
+                            <div class="filter" id="by_div" style="display:none;">
+                                <select style="width: 120px;" id="by_select" name="by_select" multiple>
+                                    @foreach($by as $d)
+                                        <option value="{{ $d->userid }}" 
+                                                {{ is_array($filter_by) && in_array($d->userid, $filter_by) ? 'selected' : '' }}>
+                                            {{ $d->lname }}, {{ $d->fname }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </th>
                     </tr>
                 </thead>
                 <tbody id="list_body">
@@ -140,7 +298,7 @@
                             </td>
                             <td style="text-align:center;" class="group-email" data-patient-id="{{ $patient->id }}" >
                                 <input class="sent_mails[] " id="mail_ids[]" name="mail_ids[]" type="hidden">
-                                <input type="checkbox" style="width: 60px; height: 20px;" name="mailCheckbox[]" id="mailCheckboxId_{{ $index }}" 
+                                <input type="checkbox" style="width: 60px; height: 20px;" name="mailCheckbox[]" id="mailCheckboxId_{{ $patient->id }}" 
                                     class="group-mailCheckBox" onclick="itemChecked($(this))">
                             </td>
                             <td style="text-align:center">
@@ -152,7 +310,7 @@
                             <td style="text-align:center;" class="group-amount" data-patient-id="{{ $patient->id }}" data-proponent-id="{{$patient->proponent_id}}" 
                                 data-amount="{{$patient->actual_amount}}" data-facility-id="{{$patient->facility_id}}" >
                                 @if($patient->group_id == null)
-                                <input type="checkbox" style="width: 60px; height: 20px;" name="someCheckbox[]" id="someCheckboxId_{{ $index }}" 
+                                <input type="checkbox" style="width: 60px; height: 20px;" name="someCheckbox[]" id="someCheckboxId_{{ $patient->id }}" 
                                     class="group-checkbox" onclick="groupItem($(this))">
                                 @else
                                     w/group
@@ -164,7 +322,7 @@
                             <td class="td">{{ number_format((float) str_replace(',', '', $patient->guaranteed_amount), 2, '.', ',') }}</td>
                             <td>{{date('F j, Y', strtotime($patient->date_guarantee_letter))}}</td>
                             <td class="td">
-                                <a href="#create_patient"   onclick="editPatient('{{ $patient->id }}')" data-backdrop="static" data-toggle="modal">
+                                <a href="#create_patient" onclick="editPatient('{{ $patient->id }}')" data-backdrop="static" data-toggle="modal">
                                     {{ $patient->fname }}
                                 </a>
                             </td>   
@@ -215,8 +373,10 @@
                     <strong>No patient found!</strong>
                 </div>
             @endif
+            <div class="pl-5 pr-5 mt-5" id ="pagination_links">
+                {!! $patients->appends(request()->query())->links('pagination::bootstrap-5') !!}
+            </div>
         </div>
-        
     </div>
 </div>
 
@@ -465,35 +625,94 @@
 <script src="{{ asset('admin/vendors/x-editable/bootstrap-editable.min.js?v=1') }}"></script>
 <script src="{{ asset('admin/vendors/daterangepicker-master/moment.min.js?v=1') }}"></script>
 <script src="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.js?v=1') }}"></script>
-<script src="{{ asset('admin/vendors/datatables.net/jquery.dataTables.js') }}"></script>
-<script src="{{ asset('admin/vendors/datatables.net-bs4/dataTables.bootstrap4.js') }}"></script>
+<!-- <script src="{{ asset('admin/vendors/datatables.net/jquery.dataTables.js') }}"></script>
+<script src="{{ asset('admin/vendors/datatables.net-bs4/dataTables.bootstrap4.js') }}"></script> -->
 
 @include('maif.editable_js')
 
 <script>
-    $(document).ready(function () {
-    function loadPaginatedData(url) {
-        $.ajax({
-            url: url,
-            method: 'GET',
-            success: function(response) {
-                $('#patient_table_container').html($(response).find('#patient_table_container').html());
-                $('#pagination_links').html($(response).find('#pagination_links').html());
-            }
-        });
-    }
-
-    $(document).on('click', '#pagination_links a', function(e) {
-        e.preventDefault();
-        var url = $(this).attr('href');
-        loadPaginatedData(url);
-    });
-});
-
-
     $(function() {
         $('#filter_dates').daterangepicker();
     });
+
+    $('.filter').on('click', function(){
+        $('#filter_col').css('display', 'block');
+    })
+    $('#filter_col').on('click', function(){
+        $('#filter_date').val($('#date_select').val());
+        $('#filter_fname').val($('#fname_select').val());
+        $('#filter_mname').val($('#mname_select').val());
+        $('#filter_lname').val($('#lname_select').val());
+        $('#filter_facility').val($('#facility_select').val());
+        $('#filter_proponent').val($('#proponent_select').val());
+        $('#filter_code').val($('#code_select').val());
+        $('#filter_region').val($('#region_select').val());
+        $('#filter_province').val($('#province_select').val());
+        $('#filter_municipality').val($('#muncity_select').val());
+        $('#filter_barangay').val($('#barangay_select').val());
+        $('#filter_on').val($('#on_select').val());
+        $('#filter_by').val($('#by_select').val());
+
+    });
+    $('#date_i').on('click', function(){
+        $('#date_div').css('display', 'block');
+    });
+    $('#fname_i').on('click', function(){
+        $('#fname_div').css('display', 'block');
+    });
+    $('#mname_i').on('click', function(){
+        $('#mname_div').css('display', 'block');
+    });
+    $('#lname_i').on('click', function(){
+        $('#lname_div').css('display', 'block');
+    });
+    $('#facility_i').on('click', function(){
+        $('#facility_div').css('display', 'block');
+    });
+    $('#proponent_i').on('click', function(){
+        $('#proponent_div').css('display', 'block');
+    });
+    $('#code_i').on('click', function(){
+        $('#code_div').css('display', 'block');
+    });
+    $('#region_i').on('click', function(){
+        $('#region_div').css('display', 'block');
+    });
+    $('#province_i').on('click', function(){
+        $('#province_div').css('display', 'block');
+    });
+    $('#muncity_i').on('click', function(){
+        $('#muncity_div').css('display', 'block');
+    });
+    $('#barangay_i').on('click', function(){
+        $('#barangay_div').css('display', 'block');
+    });
+    $('#on_i').on('click', function(){
+        $('#on_div').css('display', 'block');
+    });
+    $('#by_i').on('click', function(){
+        $('#by_div').css('display', 'block');
+    });
+    $('#date_select').select2();
+    $('#fname_select').select2();
+    $('#mname_select').select2();
+    $('#lname_select').select2();
+    $('#facility_select').select2();
+    $('#proponent_select').select2();
+    $('#code_select').select2();
+    $('#region_select').select2();
+    $('#province_select').select2();
+    $('#muncity_select').select2();
+    $('#barangay_select').select2();
+    $('#on_select').select2();
+    $('#by_select').select2();
+
+    $('#fname_select').change(function() {
+        var selectedValues = $(this).val(); // Get the selected values
+        console.log(selectedValues); // Do something with the selected values
+        // Add your custom logic here
+    });
+
 
     var proponents,all_patients;
 
@@ -537,19 +756,25 @@
 
     var all_ids = [];
     var id_list = [];
+    var mail_ids = [];
+    var selectedProponentId = 0, selectedFacilityId = 0;
     
     function itemChecked(element){
         var parentTd = $(element).closest('td');   
         var patientId = parentTd.attr('data-patient-id');
-        console.log('id', patientId);
+        var checkboxId = element.attr("id");
+
         if(id_list.includes(patientId)){
             console.log("Patient ID already exists in the array.");
             id_list = id_list.filter(id => id !== patientId);
-            console.log("Id_list:", id_list);
+            mail_ids = mail_ids.filter(id => id !== checkboxId);
+
+            console.log("Id_list:", mail_ids);
         } else {
             console.log("Patient ID does not exist in the array.");
             id_list.push(patientId);
-            console.log("Added Patient ID to the array:", id_list);
+            mail_ids.push(checkboxId);
+            console.log("Added Patient ID to the array:", mail_ids);
         }
 
         if(id_list.length != 0){
@@ -562,12 +787,16 @@
     var group_a = [];
     var group_i = [];
     var g_fac, g_pro;
+
     function groupItem(element){
 
         var parentTd = $(element).closest('td');   
         var patientId = parentTd.attr('data-patient-id');
-        var amount = parentTd.attr('data-amount');
-        amount = amount.replace(/,/g,'');
+        // var amount = parentTd.attr('data-amount');
+        var row = $(element).closest('tr');   
+        var edit = row.find('td.editable-amount');
+        var val = edit.attr('data-actual-amount');
+        amount = val.replace(/,/g,'');
         if(group_i.includes(patientId)){
             var r_index = group_i.indexOf(patientId); 
             group_i = group_i.filter(id => id !== patientId);
@@ -594,6 +823,7 @@
                 }
             }
         }
+        console.log('grouped', group_i);
         
         var sum = group_a.reduce((accumulator, currentValue)  => accumulator + parseFloat(currentValue), 0);
         if(group_a.length != 0){
@@ -610,87 +840,53 @@
             $('.group-btn').hide();
         }
     }
-    
-    function calGroup(){
-        
-    }
 
     $(document).ready(function () {
-        // console.log(jQuery.fn.jquery);
-        // function combineData() {
-        //     var combinedData = [];
-        //     $('.pagination').find('a').each(function() {
-        //         var url = $(this).attr('href');
-        //         $.ajax({
-        //             url: url,
-        //             type: 'GET',
-        //             async: false, // Ensures synchronous execution
-        //             success: function(data) {
-        //                 $(data).find('#patient_table tbody tr').each(function() {
-        //                     combinedData.push($(this).html());
-        //                 });
-        //             }
-        //         });
-        //     });
-        //     return combinedData;
-        // }
-        function initializeDataTable() {
-            var table = $('#patient_table').DataTable({
-                // data: combineData(),
-                paging: true,
-                deferRender: true,
-                pageLength: 50,
-                drawCallback: function() {
-                    initializeEditable();
-                    initializeGroupFunctions();
-                    initializeMailboxes();
-                },
-                initComplete: function () {
-                    var api = this.api();
-                    api.columns().every(function (index) {
-                        if(index < 9 ) return;
-                        var column = this;
-                        var header = $(column.header());
-                        var headerText = header.text().trim();
-                        var filterDiv = $('<div class="filter"></div>').appendTo(header);
-                        
-                        var select = $('<select style="width: 120px;" multiple><option value="">' + headerText + '</option></select>')
-                            .appendTo(filterDiv)
-                            .on('change', function () {
-                                var selectedValues = $(this).val();
-                                if(index == 9){
-                                    var val = selectedValues ? selectedValues.join('|') : '';
-                                    column.search(val, true, false).draw();
-                                }else{
-                                    var val = selectedValues ? selectedValues.map(function(value) {
-                                            return $.fn.dataTable.util.escapeRegex(value);
-                                        }).join('|') : '';
-                                    column.search(val ? '^(' + val + ')$' : '', true, false).draw();
-                                }
-                            }).select2();
+        
 
-                        column.data().unique().sort().each(function (d, j) {
-                            if(index == 9){
-                                var text = $(d).text().trim(); 
-                                select.append('<option value="' + text + '">' + text + '</option>');
-                            }else{
-                                select.append('<option value="' + d + '">' + d + '</option>');
-                            } 
-                        });
-                    
-                        filterDiv.hide();
-                        header.click(function() {
-                            $('.filter').hide();
-                            $(this).find('.filter').show();
-                        });
+        function loadPaginatedData(url) {
+            $.ajax({
+                url: url,
+                method: 'GET',
+                success: function(response) {
+                    $('#patient_table_container').html($(response).find('#patient_table_container').html());
+                    $('#pagination_links').html($(response).find('#pagination_links').html());
+
+                    $.each(mail_ids, function(index, id) {
+                        $('#' + id).prop('checked', true);
                     });
+
+                    $.each(group_i, function(index, id) {
+                        $('#someCheckboxId_' + id).prop('checked', true);
+                    });
+                    
+                    console.log('chakchak', selectedProponentId);
+
+                    if(selectedProponentId != 0){
+                        $('#patient_table tbody tr').each(function() {
+                            var row = $(this);
+                            var proponentId = $(row).find('.group-amount').data('proponent-id');
+                            var facilityId = $(row).find('.group-amount').data('facility-id');
+
+                            if (proponentId !== selectedProponentId || facilityId !== selectedFacilityId) {
+                                $(row).find('.group-checkbox').prop('disabled', true);
+                                $(row).find('.group-checkbox').prop('checked', false);
+                            } else {
+                                $(row).find('.group-checkbox').prop('disabled', false);
+                            }
+                        });
+                    }
+                    initializeEditable();
                 }
             });
-
-            $('#search_patient').on('keyup', function() {
-                table.search(this.value).draw();
-            });
         }
+
+        $(document).on('click', '#pagination_links a', function(e) {
+            e.preventDefault();
+            var url = $(this).attr('href');
+            loadPaginatedData(url);
+          
+        });
 
         function initializeEditable() {
             $.fn.editable.defaults.mode = 'popup';
@@ -705,6 +901,7 @@
                     var patientId = cell.data('patient-id');
                     var guaranteed_amount = cell.data('guaranteed-amount');
                     var actual_amount = cell.data('actual-amount');
+                    var editableField = this;
                     var url = "{{ url('update/amount').'/' }}" + patientId + '/' + newValue;
                     var json = {
                         "_token" : "<?php echo csrf_token(); ?>",
@@ -716,8 +913,10 @@
                             size: 'mini',
                             msg: "Actual amount accepts number only!"
                         }); 
-                        newValue = 0;
-                        location.reload();
+                        $(editableField).text(actual_amount);
+                        $(editableField).value(actual_amount);
+                        cell.attr('data-actual-amount', actual_amount);
+                        // location.reload();
                         return;  
                     }
                     var c_amount = newValue.replace(/,/g,'');
@@ -728,7 +927,10 @@
                             size: 'mini',
                             msg: "Inputted actual amount if greater than guaranteed amount!"
                         }); 
-                        location.reload();
+                        cell.attr('data-actual-amount', actual_amount);
+                        $(editableField).text(actual_amount);
+                        $(editableField).value(actual_amount);
+                        // location.reload();
                         return;           
                     }
 
@@ -739,7 +941,8 @@
                             size: 'mini',
                             rounded: true
                         });
-                        location.reload();
+                        cell.attr('data-actual-amount', newValue);
+                        // location.reload();
                     });
                 }
             });
@@ -749,11 +952,10 @@
 
             $('#patient_table').on('change', '.group-checkbox', function() {
                 if ($(this).prop('checked')) {
-                    var selectedProponentId = $(this).closest('.group-amount').data('proponent-id');
-                    var selectedFacilityId = $(this).closest('.group-amount').data('facility-id');
-
-                    $('#patient_table').DataTable().rows().every(function() {
-                        var row = this.node();
+                    selectedProponentId = $(this).closest('.group-amount').data('proponent-id');
+                    selectedFacilityId = $(this).closest('.group-amount').data('facility-id');
+                    $('#patient_table tbody tr').each(function() {
+                        var row = $(this);
                         var proponentId = $(row).find('.group-amount').data('proponent-id');
                         var facilityId = $(row).find('.group-amount').data('facility-id');
 
@@ -764,7 +966,6 @@
                             $(row).find('.group-checkbox').prop('disabled', false);
                         }
                     });
-
                 } else {
                     $('#patient_table').find('.group-checkbox').prop('disabled', false);
                 }
@@ -787,15 +988,10 @@
 
         }
 
-        // Initialize on document ready
-        initializeDataTable();
+        initializeEditable();
+        initializeGroupFunctions();
+        initializeMailboxes();
 
-        // Reinitialize on DataTable draw
-        $('#patient_table').on('draw.dt', function() {
-            initializeEditable();
-            initializeGroupFunctions();
-            initializeMailboxes();
-        });
     });
 
     function validateAmount(element) {

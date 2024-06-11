@@ -10,7 +10,12 @@ use App\Models\User;
 use PDF;
 
 class UtilizationController extends Controller{
-    //
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+    
     public function tracking($info_id){
         
         $utilization = Utilization::where('proponentinfo_id', $info_id)

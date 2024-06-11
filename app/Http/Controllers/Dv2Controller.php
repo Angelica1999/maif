@@ -19,7 +19,10 @@ use App\Models\ProponentInfo;
 
 class Dv2Controller extends Controller
 {
-    //
+    public function __construct(){
+       $this->middleware('auth');
+    }
+
     public function dv2(Request $request) {
         $dv2_list = Dv2::whereIn('id', function ($query) {
             $query->select(\DB::raw('MAX(id)'))
