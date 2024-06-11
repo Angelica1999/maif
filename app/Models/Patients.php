@@ -4,13 +4,33 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Kyslik\ColumnSortable\Sortable;
 
 class Patients extends Model
 {
     use HasFactory;
+    use Sortable;
 
     protected $table = 'patients';
     protected $guarded = array();
+    public $sortable = [
+        'id',
+        'lname', 
+        'fname', 
+        'mname', 
+        'facility.name', 
+        'proponentData.proponent',
+        'patient_code',
+        'region',
+        'province.description',
+        'other_province',
+        'created_at',
+        'encoded_by.lname',
+        'date_guarantee_letter',
+        'guaranteed_amount',
+        'actual_amount'
+
+    ];
     
     public function group() {
         return $this->belongsTo(Group::class, 'group_id', 'id');
