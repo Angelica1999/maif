@@ -55,7 +55,7 @@ class DvController extends Controller
                 $query->select('userid', 'fname', 'lname', 'mname');
             },
             'master', 'dv2'
-        ])->get();
+        ])->orderBy('id', 'desc')->get();
 
         $results->each(function ($dv) {
             $proponentIds = json_decode($dv->info_id, true);
