@@ -32,229 +32,196 @@ class DvController extends Controller
        $this->middleware('auth');
     }
 
-    public function dv(Request $request){
-        
-        $order = $request->input('order');
-        $dv= Dv::whereNull('dv_no')->orWhere('dv_no', '')->get();
-        foreach($dv as $d){
-            $master = TrackingMaster::where('route_no', $d->route_no)->first();
-            $dv_here = Dv::where('route_no',  $d->route_no)->first();
-            if($master){
-                if($master->dv_no !== null){
-                    $dv_here->dv_no = $master->dv_no;
-                    $dv_here->save();
+    public function dv(Request $request)
+    {
+        $order = $request->input('order', 'asc');
+
+        Dv::whereNull('dv_no')
+            ->orWhere('dv_no', '')
+            ->with('master')
+            ->get()
+            ->each(function ($dv) {
+                if ($dv->master && $dv->master->dv_no) {
+                    $dv->dv_no = $dv->master->dv_no;
+                    $dv->save();
+                }
+            });
+
+        $query = Dv::with([
+            'facility:id,name',
+            'user:userid,fname,lname,mname',
+            'master', 
+            'dv2',
+        ]);
+
+        // Handle keyword searching
+        $saa_cl = clone($query);
+        $pro_cl = clone($query);
+        $user_cl = clone($query);
+
+        if ($request->viewAll) {
+            $request->merge([
+                'keyword' => '',
+                'filter_rem' => '',
+                'filter_saa' => '',
+                'filter_fac' => '',
+                'filter_pro' => '',
+                'filter_date' => '',
+                'filter_created' => '',
+            ]);
+        }
+
+        $keyword = $request->keyword;
+        if ($keyword) {
+            
+            $query->where(function ($query) use ($keyword) {
+                $query->where('route_no', 'LIKE', "%$keyword%")
+                        ->orWhereHas('facility', fn($q) => $q->where('name', 'LIKE', "%$keyword%"));
+            });
+            if ($query->count() === 0) {
+                $saa = Fundsource::where('saa', 'LIKE', "%$keyword%")->pluck('id')->map(function ($item) {
+                    return (string) $item;
+                })->toArray();
+                if($saa != null){
+                    $query = $saa_cl;
+                    $query->where(function($subQuery) use ($saa) {
+                        foreach ($saa as $id) {
+                            $subQuery->orWhereJsonContains('fundsource_id', $id);
+                        }
+                    });
+                }
+                
+                if ($query->count() === 0) {
+                    $pros = ProponentInfo::whereIn('proponent_id',Proponent::where('proponent', 'LIKE', "%$keyword%")->pluck('id'))->pluck('id')->map(function ($item) {
+                        return (string) $item;
+                    })->toArray();
+                    if($pros != null){
+                        $query = $pro_cl;
+                        $query->where(function($subQuery) use ($pros) {
+                            foreach ($pros as $id) {
+                                $subQuery->orWhereJsonContains('info_id', $id);
+                            }
+                        });
+                    }
+
+                    if ($query->count() === 0) {
+                        $user = User::where('lname', 'LIKE', "%$keyword%")->orWhere('fname', 'LIKE', "%$keyword%")->pluck('userid');
+                        if($user != null){
+                            $query = $user_cl;
+                            $query->whereIn('created_by',$user);
+                        }
+                    }
                 }
             }
         }
-          
-        $results = Dv::with([
-            'facility' => function ($query){
-                $query->select('id', 'name');
-            },
-            'user' => function ($query){
-                $query->select('userid', 'fname', 'lname', 'mname');
-            },
-            'master', 'dv2'
-        ])->orderBy('id', 'desc')->get();
 
-        $results->each(function ($dv) {
-            $proponentIds = json_decode($dv->info_id, true);
-            $saa = json_decode($dv->fundsource_id, true);
-            $ids = ProponentInfo::whereIn('id', $proponentIds)->pluck('proponent_id');
-            $dv->proponents = Proponent::whereIn('id', $ids)->select('id', 'proponent')->get();
-            $dv->fundsources = Fundsource::whereIn('id', $saa)->select('id', 'saa')->get();
-            if($dv->paid == 1){
-                $dv->remarks = "processed";
-            }else if($dv->obligated === null && $dv->paid === null){
-                $dv->remarks = "pending";
-            }else if($dv->obligated == 1 && $dv->paid === null){
-                $dv->remarks = "obligated";
-            }
-        });
-
-        // searching
-        if($request->viewAll){
-            $request->keyword = '';
-            $request->filter_rem = '';
-            $request->filter_saa = '';
-            $request->filter_fac = '';
-            $request->filter_pro = '';
-            $request->filter_date = '';
-            $request->filter_created = '';
+        // Date filtering
+        if ($filter_dates = $request->input('dates_filter')) {
+            [$start_date, $end_date] = explode(' - ', $filter_dates);
+            $query->whereBetween('created_at', [
+                date('Y-m-d', strtotime($start_date)),
+                date('Y-m-d', strtotime("$end_date 23:59:59"))
+            ]);
         }
-        else if ($request->keyword) {
-            $keyword = $request->keyword;
-            if($keyword == "process" || $keyword == "processed"){
-                $results = $results->filter(function ($dv) use ($keyword) {
-                    return stripos($dv->paid, 1) !== false;
-                });
-            }else if($keyword == "pending"){
-                $results = $results->filter(function ($dv) use ($keyword) {
-                    return $dv->obligated === null && $dv->paid === null;
-                });
-            }else if($keyword == "obligate" || $keyword == "obligated"){
-                $results = $results->filter(function ($dv) use ($keyword) {
-                    return stripos($dv->obligated, 1) !== false && $dv->paid === null;
-                });
-            }else{
-                $results = $results->filter(function ($dv) use ($keyword) {
-                    return stripos($dv->route_no, $keyword) !== false
-                        || stripos($dv->facility->name, $keyword) !== false
-                        || $dv->proponents->contains(function ($proponent) use ($keyword) {
-                            return stripos($proponent->proponent, $keyword) !== false;
+
+        // Sorting
+        if ($sort = $request->sort) {
+            if($sort == 'facility'){
+                $query->leftJoin('facility', 'facility.id', '=', 'dv.facility_id')
+                    ->orderBy('facility.name', $request->input('order')) 
+                    ->select('dv.*');
+            }else if($sort == 'saa'){
+                $query = Dv::leftJoin('fundsource', 'fundsource.id', '=', DB::raw("JSON_UNQUOTE(JSON_EXTRACT(dv.fundsource_id, '$[0]'))"))
+                    ->orderBy('fundsource.saa', $request->input('order'))
+                    ->select('dv.*');
+            }else if($sort == 'proponent'){
+                $query = Dv::leftJoin('proponent_info', function($join) {
+                            $join->on('proponent_info.id', '=', DB::raw("JSON_UNQUOTE(JSON_EXTRACT(dv.info_id, '$[0]'))"));
                         })
-                        || $dv->fundsources->contains(function ($saa) use ($keyword) {
-                            return stripos($saa->saa, $keyword) !== false;
-                        })
-                        || stripos($dv->user->lname, $keyword) !== false
-                        || stripos($dv->user->fname, $keyword) !== false
-                        ;
-                });
+                        ->leftJoin('proponent', 'proponent_info.proponent_id', '=', 'proponent.id')
+                        ->orderBy('proponent.proponent', $request->input('order'))
+                        ->select('dv.*');
+            }else if($sort == 'date'){
+                $query->orderBy(DB::raw('DATE(created_at)'), $request->input('order'));
+            }else if($sort == 'user'){
+                $query->orderBy(
+                        \DB::connection('dohdtr')->table('users')->select('lname')
+                            ->whereColumn('users.userid', 'dv.created_by'),$request->input('order'));
             }
         }
 
-        $filter_dates = $request->input('dates_filter');
-
-        if($filter_dates){
-            $dateRange = explode(' - ', $filter_dates);
-            $start_date = date('Y-m-d', strtotime($dateRange[0]));
-            $end_date = date('Y-m-d', strtotime($dateRange[1]));
-            $results = $results ->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59']);
-        }else{
-            $results = $results;
-        }
-        // table header sorting
-        if ($request->sort && $request->input('sort') == 'facility') {
-            $results = $order === 'asc' ? 
-                $results->sortBy(function ($dv) {
-                    return optional($dv->facility)->name;
-                }) : 
-                $results->sortByDesc(function ($dv) {
-                    return optional($dv->facility)->name;
-                });
-        }else if ($request->sort && $request->input('sort') == 'saa') {
-            $results = $order === 'asc' ? 
-                $results->sortBy(function ($dv) {
-                    return optional($dv->fundsources->first())->saa;
-                }) : 
-                $results->sortByDesc(function ($dv) {
-                    return optional($dv->fundsources->first())->saa;
-                });
-        }else if ($request->sort && $request->input('sort') == 'proponent') {
-            $results = $order === 'asc' ? 
-                $results->sortBy(function ($dv) {
-                    return optional($dv->proponents->first())->proponent;
-                }) : 
-                $results->sortByDesc(function ($dv) {
-                    return optional($dv->proponents->first())->proponent;
-                });
-        }else if ($request->sort && $request->input('sort') == 'date') {
-            $results = $order === 'asc' ? 
-                $results->sortBy(function ($dv) {
-                    return optional($dv->date);
-                }) : 
-                $results->sortByDesc(function ($dv) {
-                    return optional($dv->date);
-                });
-        }else if ($request->sort && $request->input('sort') == 'user') {
-            $results = $order === 'asc' ? 
-                $results->sortBy(function ($dv) {
-                    return optional($dv->user)->lname;
-                }) : 
-                $results->sortByDesc(function ($dv) {
-                    return optional($dv->user)->lname;
-                });
-        }
-
-        //filtering table header column
-
+        // // Filtering table header column
         if($request->filt_dv){
             if($request->filter_rem){
                 $rem = explode(',',$request->filter_rem);
-                $results = $results->filter(function ($dv) use ($rem) {
-                    return in_array($dv->remarks, $rem);
-                });
-            }if($request->filter_saa){
-                $rem = explode(',',$request->filter_saa);
-                $results = $results->filter(function ($dv) use ($rem) {
-                    $fundsources = $dv->fundsources ?? [];
-                    foreach ($fundsources as $fundsource) {
-                        if (isset($fundsource->saa) && in_array($fundsource->saa, $rem)) {
-                            return true; 
-                        }
+                if(in_array('pending', $rem)){
+                    $query->where('obligated', null);
+                }
+                if(in_array('obligated', $rem)){
+                    $query->where('obligated', 1)->where('paid', null);
+                }
+                if(in_array('processed', $rem)){
+                    $query->where('paid', 1);
+                }
+            }
+            if($request->filter_saa){
+                $saa_l = explode(',',$request->filter_saa);
+                $query->where(function($subQuery) use ($saa_l) {
+                    foreach ($saa_l as $id) {
+                        $subQuery->orWhereJsonContains('fundsource_id', $id);
                     }
-                    return false; 
-                });
+                }); 
             }
             if($request->filter_fac){
-                $rem = explode(',',$request->filter_fac);
-                $results = $results->filter(function ($dv) use ($rem) {
-                    return in_array($dv->facility_id, $rem);
-                });
-            }if($request->filter_pro){
-                $rem = explode(',',$request->filter_pro);
-                $results = $results->filter(function ($dv) use ($rem) {
-                    if($dv->proponents != null && $dv->proponents->isNotEmpty()){ 
-                        return in_array(($dv->proponents->first())->proponent, $rem);
-                    }
-                    return false; 
-                });
-            }if($request->filter_date){
-                $rem = explode(',',$request->filter_date);
-                $results = $results->filter(function ($dv) use ($rem) {
-                    return in_array(date('Y-m-d', strtotime($dv->date)), $rem);
-                });
-            }if($request->filter_created){
-                $rem = explode(',',$request->filter_created);
-                $results = $results->filter(function ($dv) use ($rem) {
-                    return in_array($dv->created_by, $rem);
-                });
+                $query->whereIn('facility_id', explode(',',$request->filter_fac));
             }
-        }
-        // return $request->filter_created;
-        $fac = clone ($results);
-        $users = clone ($results);
+            if($request->filter_pro){
+                $query = Dv::leftJoin('proponent_info', function($join) {
+                    $join->on('proponent_info.id', '=', DB::raw("JSON_UNQUOTE(JSON_EXTRACT(dv.info_id, '$[0]'))"));
+                })
+                ->leftJoin('proponent', 'proponent_info.proponent_id', '=', 'proponent.id')
+                ->whereIn('proponent.proponent', explode(',',$request->filter_pro))
+                ->select('dv.*');
+            }
+            if($request->filter_created){
+                $query->whereIn('created_by', explode(',',$request->filter_created));
+            }
+        }            
+
+        $results = $query->paginate(50);
+
         $date = Dv::groupBy(DB::raw('DATE(date)'))->pluck(DB::raw('MAX(date)'));
-        $pros = Proponent::groupBy('pro_group')->pluck(DB::raw('MAX(proponent) as proponent')); 
+        $pros = Proponent::groupBy('pro_group')->pluck(DB::raw('MAX(proponent) as proponent'));
         $ids = Dv::groupBy('created_by')->pluck(DB::raw('MAX(created_by)'));
         $users = User::whereIn('userid', $ids)->select('userid', 'fname', 'lname')->get();
-        $facility = Facility::whereIn('id', $fac->pluck('facility_id'))->select('id', 'name')->get();
-        //pagination for collection
-        $perPage = 50; 
-        $page = Paginator::resolveCurrentPage() ?: 1; 
-        $slicedResults = $results->slice(($page - 1) * $perPage, $perPage)->values();
-        $paginatedResults = new LengthAwarePaginator($slicedResults, $results->count(), $perPage, $page, [
-            'path' => LengthAwarePaginator::resolveCurrentPath(),
-            'query' => request()->query(),
-        ]);
-        
-        if(Auth::user()->userid == 1027 || Auth::user()->userid == 2660){
-            
+        $facility = Facility::whereIn('id', Dv::pluck('facility_id'))->select('id', 'name')->get();
+
+        if (in_array(Auth::user()->userid, [1027, 2660])) {
             return view('dv.acc_dv', [
-                'disbursement' => $paginatedResults,
+                'disbursement' => $results,
                 'keyword' => $request->keyword ?: '',
                 'user' => Auth::user()->userid,
                 'order' => $order
             ]);
-        }else{
+        } else {
             return view('dv.dv', [
-                'disbursement' => $paginatedResults,
+                'disbursement' => $results,
                 'keyword' => $request->keyword ?: '',
                 'user' => Auth::user()->userid,
                 'proponents' => Proponent::get(),
                 'proponentInfo' => ProponentInfo::get(),
                 'order' => $order,
-                'filter_rem' =>explode(',',$request->filter_rem),
-                'filter_fac' =>explode(',',$request->filter_fac),
-                'filter_saa' =>explode(',',$request->filter_saa),
-                'filter_pro' =>explode(',',$request->filter_pro),
-                'filter_date' =>explode(',',$request->filter_date),
-                'filter_created' =>explode(',',$request->filter_created),
+                'filter_rem' => explode(',', $request->filter_rem),
+                'filter_fac' => explode(',', $request->filter_fac),
+                'filter_saa' => explode(',', $request->filter_saa),
+                'filter_pro' => explode(',', $request->filter_pro),
+                'filter_date' => explode(',', $request->filter_date),
+                'filter_created' => explode(',', $request->filter_created),
                 'pros' => $pros,
                 'date' => $date,
                 'users' => $users,
                 'facility' => $facility,
-                'fundsources' => Fundsource::pluck('saa')
+                'fundsources' => Fundsource::select('saa', 'id')->get()
             ]);
         }
     }

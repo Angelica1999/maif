@@ -28,6 +28,7 @@ class Dv extends Model
         'deduction_amount2',
         'total_deduction_amount',
         'overall_total_amount',
+        'info_id'
     ];
 
     public $sortable = ['facility.name'];
@@ -64,5 +65,9 @@ class Dv extends Model
     }
     public function dv2(){
         return $this->hasMany(Dv2::class, 'route_no', 'route_no');
+    }
+    public function pro()
+    {
+        return $this->hasMany(Proponent::class, 'proponent_id', 'id');
     }
 }
