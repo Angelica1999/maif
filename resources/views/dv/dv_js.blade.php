@@ -12,57 +12,93 @@
     $(function() {
         $('#dates_filter').daterangepicker();
     });
+    $('#rem_select').select2();
+    $('#fac_select').select2();
+    $('#saa_select').select2();
+    $('#pro_select').select2();
+    $('#date_select').select2();
+    $('#created_select').select2();
+
+    $('#rem_i').on('click', function(){
+        $('#rem_div').css('display', 'block');
+    });
+    $('#fac_i').on('click', function(){
+        $('#fac_div').css('display', 'block');
+    });
+    $('#saa_i').on('click', function(){
+        $('#saa_div').css('display', 'block');
+    });
+    $('#pro_i').on('click', function(){
+        $('#pro_div').css('display', 'block');
+    });
+    $('#date_i').on('click', function(){
+        $('#date_div').css('display', 'block');
+    });
+    $('#created_i').on('click', function(){
+        $('#created_div').css('display', 'block');
+    });
+    $('.filter').on('click', function(){
+        $('#filt_dv').css('display', 'block');
+    });
+    $('#filt_dv').on('click', function(){
+        $('#filter_rem').val($('#rem_select').val());
+        $('#filter_fac').val($('#fac_select').val());
+        $('#filter_pro').val($('#pro_select').val());
+        $('#filter_date').val($('#date_select').val());
+        $('#filter_created').val($('#created_select').val());
+        $('#filter_saa').val($('#saa_select').val());
+    });
     $(document).ready(function() {
         
-        var table = $('#dv_table').DataTable({
-            paging: true,
-            deferRender: true,
-            pageLength: 50 ,
-            initComplete: function () {
-                var api = this.api();
-                api.columns().every(function (index) {
-                    if(index < 6 ) return;
-                    var column = this;
-                    var header = $(column.header());
-                    var headerText = header.text().trim();
-                    var filterDiv = $('<div class="filter_dates"></div>').appendTo(header);
+        // var table = $('#dv_table').DataTable({
+        //     paging: true,
+        //     deferRender: true,
+        //     pageLength: 50 ,
+        //     initComplete: function () {
+        //         var api = this.api();
+        //         api.columns().every(function (index) {
+        //             if(index < 6 ) return;
+        //             var column = this;
+        //             var header = $(column.header());
+        //             var headerText = header.text().trim();
+        //             var filterDiv = $('<div class="filter_dates"></div>').appendTo(header);
                     
-                    var select = $('<select style="width: 120px;" multiple><option value="">' + headerText + '</option></select>')
-                        .appendTo(filterDiv)
-                        .on('change', function () {
-                            var selectedValues = $(this).val();
-                            if(index == 8){
-                                var val = selectedValues ? selectedValues.join('|') : '';
-                                column.search(val, true, false).draw();
-                            }else{
-                                var val = selectedValues ? selectedValues.map(function(value) {
-                                        return $.fn.dataTable.util.escapeRegex(value);
-                                    }).join('|') : '';
-                                column.search(val ? '^(' + val + ')$' : '', true, false).draw();
-                            }
-                        }).select2();
+        //             var select = $('<select style="width: 120px;" multiple><option value="">' + headerText + '</option></select>')
+        //                 .appendTo(filterDiv)
+        //                 .on('change', function () {
+        //                     var selectedValues = $(this).val();
+        //                     if(index == 8){
+        //                         var val = selectedValues ? selectedValues.join('|') : '';
+        //                         column.search(val, true, false).draw();
+        //                     }else{
+        //                         var val = selectedValues ? selectedValues.map(function(value) {
+        //                                 return $.fn.dataTable.util.escapeRegex(value);
+        //                             }).join('|') : '';
+        //                         column.search(val ? '^(' + val + ')$' : '', true, false).draw();
+        //                     }
+        //                 }).select2();
 
-                    column.data().unique().sort().each(function (d, j) {
-                        if(index == 8){
-                            var text = $(d).text().trim(); 
-                            select.append('<option value="' + text + '">' + text + '</option>');
-                        }else{
-                            select.append('<option value="' + d + '">' + d + '</option>');
-                        }
-                    });
+        //             column.data().unique().sort().each(function (d, j) {
+        //                 if(index == 8){
+        //                     var text = $(d).text().trim(); 
+        //                     select.append('<option value="' + text + '">' + text + '</option>');
+        //                 }else{
+        //                     select.append('<option value="' + d + '">' + d + '</option>');
+        //                 }
+        //             });
 
-                    filterDiv.hide();
-                    header.click(function() {
-                        $('.filter_dates').hide();
-                        $(this).find('.filter_dates').show();
-                    });
-                });
-            }
-        });
+        //             filterDiv.hide();
+        //             header.click(function() {
+        //                 $('.filter_dates').hide();
+        //                 $(this).find('.filter_dates').show();
+        //             });
+        //         });
+        //     }
+        // });
 
-        $('#search-input').on('keyup', function() {
-            table.search(this.value).draw();
-        });
+        // $('#search-input').on('keyup', function() {
+        //     table.search(this.value).draw();
+        // });
         
         $('#dv_table_length').hide();
         $('#dv_table_filter').hide();
