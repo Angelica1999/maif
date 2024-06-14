@@ -40,6 +40,9 @@
     $('.filter').on('click', function(){
         $('#filt_dv').css('display', 'block');
     });
+    $('#t_bod').on('click', function(){
+        $('.filter').css('display', 'none');
+    });
     $('#filt_dv').on('click', function(){
         $('#filter_rem').val($('#rem_select').val());
         $('#filter_fac').val($('#fac_select').val());

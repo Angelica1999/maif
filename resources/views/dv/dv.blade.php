@@ -77,8 +77,9 @@
                             </th>
                             <th style="min-width: 170px;">Remarks <i id="rem_i" class="typcn typcn-filter menu-icon"><i>
                                 <div class="filter" id="rem_div" style="display:none;">
-                                    <select style="width: 120px;" id="rem_select" name="rem_select" multiple>
+                                    <select style="width: 120px;" id="rem_select" name="rem_select">
                                         <?php $rem=['pending', 'obligated', 'processed']; ?>
+                                        <option value=''>Select</option>
                                         @foreach($rem as $d)
                                             <option value="{{$d}}"  {{ is_array($filter_rem) && in_array($d, $filter_rem) ? 'selected' : '' }}>
                                                 {{ $d }}
@@ -104,8 +105,8 @@
                                 <div class="filter" id="saa_div" style="display:none;">
                                     <select style="width: 120px;" id="saa_select" name="saa_select" multiple>
                                         @foreach($fundsources as $d)
-                                            <option value="{{$d}}"  {{ is_array($filter_saa) && in_array($d, $filter_saa) ? 'selected' : '' }}>
-                                                {{ $d}}
+                                            <option value="{{$d->id}}"  {{ is_array($filter_saa) && in_array($d->id, $filter_saa) ? 'selected' : '' }}>
+                                                {{ $d->saa}}
                                             </option>
                                         @endforeach
                                     </select>
@@ -154,7 +155,7 @@
                             </th>
                         </tr>
                     </thead>
-                    <tbody class="table_body">
+                    <tbody class="table_body" id="t_bod">
                         @foreach($disbursement as $index=> $dvs)
                             <tr> 
                                 <td>                 
@@ -207,21 +208,51 @@
                                     <input type="checkbox" style="width: 60px; height: 20px;" name="release_dv[]" id="releaseDvId_{{ $index }}" 
                                         class="group-releaseDv" >
                                 </td>
-                                <td class="td">{{$dvs->remarks}}</td> 
+                                <td class="td">
+                                    @if($dvs->obligated !== null && $dvs->paid !== null)
+                                        processed
+                                    @elseif($dvs->obligated == null && $dvs->paid == null)
+                                        pending
+                                    @elseif($dvs->obligated !== null && $dvs->paid == null)
+                                        obligated
+                                    @endif
+                                </td> 
                                 <td class="td">{{ $dvs->facility->name }}</td> 
                                 <td class="td">
-                                    @if($dvs->fundsources)
-                                        @foreach($dvs->fundsources as $f) 
-                                            <?php $path = Fundsource_Files::where('saa_no', $f->saa)->value('path');?>
-                                            <a data-toggle="modal" onclick="displayImage('{{ $path }}')">{{$f->saa}}</a>
-                                            <br>
-                                        @endforeach
+                                    @if($dvs->fundsource_id)
+                                        <?php $all= array_map('intval', json_decode($dvs->fundsource_id)); ?>
+                                            @foreach($all as $fundsourceId) 
+                                                <?php $saa = Fundsource::where('id', $fundsourceId)->value('saa');
+                                                    $path = Fundsource_Files::where('saa_no', $saa)->value('path');
+                                                ?>
+                                                <a data-toggle="modal" onclick="displayImage('{{ $path }}')">{{$saa}}</a>
+                                                <br>
+                                            @endforeach
                                     @endif
                                 </td> 
                                 <td>
-                                    @if($dvs->proponents != null && $dvs->proponents->isNotEmpty())
-                                        {{$dvs->proponents[0]->proponent}}
-                                    @endif
+                                    <?php
+                                        $intArray = array_map('intval', json_decode($dvs->proponent_id));
+                                        if (!empty($intArray)) {
+                                            $pro_name = $proponents->where('id', $intArray[0])->value('proponent');
+                                            if($pro_name){
+                                                echo $pro_name;
+                                            }else{
+                                                $ids = array_map('intval', json_decode($dvs->info_id));
+                                                if($ids){
+                                                    $id = $proponentInfo->where('id', $ids[0])->value('proponent_id');
+                                                    echo $proponents->where('id', $id)->value('proponent');
+                                                }
+                                            }
+                                        } else {
+                                            $ids = array_map('intval', json_decode($dvs->info_id));
+                                            if($ids){
+                                                $id = $proponentInfo->where('id', $ids[0])->value('proponent_id');
+                                                echo $proponents->where('id', $id)->value('proponent');
+                                            }
+
+                                        }
+                                    ?>
                                 </td>
                                 <td class="td">{{date('F j, Y', strtotime($dvs->date))}}</td>
                                 <td class="td"> @if($dvs->month_year_to !== null)
@@ -250,7 +281,7 @@
                 </div>
             @endif
             <div class="pl-5 pr-5 mt-5" id ="pagination_links">
-                {!! $disbursement->links('pagination::bootstrap-5') !!}
+                {!! $disbursement->appends(request()->query())->links('pagination::bootstrap-5') !!}
             </div>
             
         </div>
