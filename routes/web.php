@@ -169,13 +169,12 @@ Route::get('fundsource/transfer/facility/{facility_id}',[App\Http\Controllers\Fu
 Route::get('/proponents', [App\Http\Controllers\FundSourceController::class, 'proponentList'])->name('proponents');
 Route::match(['get', 'post'],'proponent/update', [App\Http\Controllers\FundSourceController::class, 'updateProponent'])->name('proponent.update');
 Route::match(['get', 'post'],'/proponents/excel/', [App\Http\Controllers\FundSourceController::class, 'generateExcel'])->name('proponent.excel');
-
 Route::match(['get', 'post'],'/data/update/', [App\Http\Controllers\FacilityController::class, 'updateData'])->name('update.data');
-
 Route::match(['get', 'post'],'/test/sample/', [App\Http\Controllers\UtilizationController::class, 'test'])->name('test.test');
-
 Route::get('report/saa', [App\Http\Controllers\ReportController::class, 'reportSaa'])->name('report.saa');
 
+Route::get('/dv3', [App\Http\Controllers\Dv3Controller::class, 'dv3'])->name('dv3');
+Route::match(['get', 'post'],'/dv3/create', [App\Http\Controllers\Dv3Controller::class, 'createDv3'])->name('dv3.create');
 
 
 

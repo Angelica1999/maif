@@ -20,6 +20,10 @@ use App\Models\Group;
 use App\Models\Section;
 use App\Models\Tracking_Releasev2;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Kyslik\ColumnSortable\Sortable;
+
 
 class DvController extends Controller
 {
@@ -29,7 +33,8 @@ class DvController extends Controller
     }
 
     public function dv(Request $request){
-
+        
+        $order = $request->input('order');
         $dv= Dv::whereNull('dv_no')->orWhere('dv_no', '')->get();
         foreach($dv as $d){
             $master = TrackingMaster::where('route_no', $d->route_no)->first();
@@ -42,10 +47,71 @@ class DvController extends Controller
             }
         }
           
-        $results = Dv::with(['fundsource', 'facility', 'user', 'master', 'dv2'])
-                    ->when($request->keyword, function ($query) use ($request) {
-                        $query->where('route_no', 'LIKE', "%$request->keyword%");
-                    });
+        $results = Dv::with([
+            'facility' => function ($query){
+                $query->select('id', 'name');
+            },
+            'user' => function ($query){
+                $query->select('userid', 'fname', 'lname', 'mname');
+            },
+            'master', 'dv2'
+        ])->get();
+
+        $results->each(function ($dv) {
+            $proponentIds = json_decode($dv->info_id, true);
+            $saa = json_decode($dv->fundsource_id, true);
+            $ids = ProponentInfo::whereIn('id', $proponentIds)->pluck('proponent_id');
+            $dv->proponents = Proponent::whereIn('id', $ids)->select('id', 'proponent')->get();
+            $dv->fundsources = Fundsource::whereIn('id', $saa)->select('id', 'saa')->get();
+            if($dv->paid == 1){
+                $dv->remarks = "processed";
+            }else if($dv->obligated === null && $dv->paid === null){
+                $dv->remarks = "pending";
+            }else if($dv->obligated == 1 && $dv->paid === null){
+                $dv->remarks = "obligated";
+            }
+        });
+
+        // searching
+        if($request->viewAll){
+            $request->keyword = '';
+            $request->filter_rem = '';
+            $request->filter_saa = '';
+            $request->filter_fac = '';
+            $request->filter_pro = '';
+            $request->filter_date = '';
+            $request->filter_created = '';
+        }
+        else if ($request->keyword) {
+            $keyword = $request->keyword;
+            if($keyword == "process" || $keyword == "processed"){
+                $results = $results->filter(function ($dv) use ($keyword) {
+                    return stripos($dv->paid, 1) !== false;
+                });
+            }else if($keyword == "pending"){
+                $results = $results->filter(function ($dv) use ($keyword) {
+                    return $dv->obligated === null && $dv->paid === null;
+                });
+            }else if($keyword == "obligate" || $keyword == "obligated"){
+                $results = $results->filter(function ($dv) use ($keyword) {
+                    return stripos($dv->obligated, 1) !== false && $dv->paid === null;
+                });
+            }else{
+                $results = $results->filter(function ($dv) use ($keyword) {
+                    return stripos($dv->route_no, $keyword) !== false
+                        || stripos($dv->facility->name, $keyword) !== false
+                        || $dv->proponents->contains(function ($proponent) use ($keyword) {
+                            return stripos($proponent->proponent, $keyword) !== false;
+                        })
+                        || $dv->fundsources->contains(function ($saa) use ($keyword) {
+                            return stripos($saa->saa, $keyword) !== false;
+                        })
+                        || stripos($dv->user->lname, $keyword) !== false
+                        || stripos($dv->user->fname, $keyword) !== false
+                        ;
+                });
+            }
+        }
 
         $filter_dates = $request->input('dates_filter');
 
@@ -53,25 +119,142 @@ class DvController extends Controller
             $dateRange = explode(' - ', $filter_dates);
             $start_date = date('Y-m-d', strtotime($dateRange[0]));
             $end_date = date('Y-m-d', strtotime($dateRange[1]));
-            $results = $results ->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59'])->orderBy('id', 'desc')->get();
+            $results = $results ->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59']);
         }else{
-            $results = $results->orderby('id', 'desc')->get();
+            $results = $results;
+        }
+        // table header sorting
+        if ($request->sort && $request->input('sort') == 'facility') {
+            $results = $order === 'asc' ? 
+                $results->sortBy(function ($dv) {
+                    return optional($dv->facility)->name;
+                }) : 
+                $results->sortByDesc(function ($dv) {
+                    return optional($dv->facility)->name;
+                });
+        }else if ($request->sort && $request->input('sort') == 'saa') {
+            $results = $order === 'asc' ? 
+                $results->sortBy(function ($dv) {
+                    return optional($dv->fundsources->first())->saa;
+                }) : 
+                $results->sortByDesc(function ($dv) {
+                    return optional($dv->fundsources->first())->saa;
+                });
+        }else if ($request->sort && $request->input('sort') == 'proponent') {
+            $results = $order === 'asc' ? 
+                $results->sortBy(function ($dv) {
+                    return optional($dv->proponents->first())->proponent;
+                }) : 
+                $results->sortByDesc(function ($dv) {
+                    return optional($dv->proponents->first())->proponent;
+                });
+        }else if ($request->sort && $request->input('sort') == 'date') {
+            $results = $order === 'asc' ? 
+                $results->sortBy(function ($dv) {
+                    return optional($dv->date);
+                }) : 
+                $results->sortByDesc(function ($dv) {
+                    return optional($dv->date);
+                });
+        }else if ($request->sort && $request->input('sort') == 'user') {
+            $results = $order === 'asc' ? 
+                $results->sortBy(function ($dv) {
+                    return optional($dv->user)->lname;
+                }) : 
+                $results->sortByDesc(function ($dv) {
+                    return optional($dv->user)->lname;
+                });
         }
 
+        //filtering table header column
+
+        if($request->filt_dv){
+            if($request->filter_rem){
+                $rem = explode(',',$request->filter_rem);
+                $results = $results->filter(function ($dv) use ($rem) {
+                    return in_array($dv->remarks, $rem);
+                });
+            }if($request->filter_saa){
+                $rem = explode(',',$request->filter_saa);
+                $results = $results->filter(function ($dv) use ($rem) {
+                    $fundsources = $dv->fundsources ?? [];
+                    foreach ($fundsources as $fundsource) {
+                        if (isset($fundsource->saa) && in_array($fundsource->saa, $rem)) {
+                            return true; 
+                        }
+                    }
+                    return false; 
+                });
+            }
+            if($request->filter_fac){
+                $rem = explode(',',$request->filter_fac);
+                $results = $results->filter(function ($dv) use ($rem) {
+                    return in_array($dv->facility_id, $rem);
+                });
+            }if($request->filter_pro){
+                $rem = explode(',',$request->filter_pro);
+                $results = $results->filter(function ($dv) use ($rem) {
+                    if($dv->proponents != null && $dv->proponents->isNotEmpty()){ 
+                        return in_array(($dv->proponents->first())->proponent, $rem);
+                    }
+                    return false; 
+                });
+            }if($request->filter_date){
+                $rem = explode(',',$request->filter_date);
+                $results = $results->filter(function ($dv) use ($rem) {
+                    return in_array(date('Y-m-d', strtotime($dv->date)), $rem);
+                });
+            }if($request->filter_created){
+                $rem = explode(',',$request->filter_created);
+                $results = $results->filter(function ($dv) use ($rem) {
+                    return in_array($dv->created_by, $rem);
+                });
+            }
+        }
+        // return $request->filter_created;
+        $fac = clone ($results);
+        $users = clone ($results);
+        $date = Dv::groupBy(DB::raw('DATE(date)'))->pluck(DB::raw('MAX(date)'));
+        $pros = Proponent::groupBy('pro_group')->pluck(DB::raw('MAX(proponent) as proponent')); 
+        $ids = Dv::groupBy('created_by')->pluck(DB::raw('MAX(created_by)'));
+        $users = User::whereIn('userid', $ids)->select('userid', 'fname', 'lname')->get();
+        $facility = Facility::whereIn('id', $fac->pluck('facility_id'))->select('id', 'name')->get();
+        //pagination for collection
+        $perPage = 50; 
+        $page = Paginator::resolveCurrentPage() ?: 1; 
+        $slicedResults = $results->slice(($page - 1) * $perPage, $perPage)->values();
+        $paginatedResults = new LengthAwarePaginator($slicedResults, $results->count(), $perPage, $page, [
+            'path' => LengthAwarePaginator::resolveCurrentPath(),
+            'query' => request()->query(),
+        ]);
+        
         if(Auth::user()->userid == 1027 || Auth::user()->userid == 2660){
             
             return view('dv.acc_dv', [
-                'disbursement' => $results,
+                'disbursement' => $paginatedResults,
                 'keyword' => $request->keyword ?: '',
-                'user' => Auth::user()->userid
+                'user' => Auth::user()->userid,
+                'order' => $order
             ]);
         }else{
             return view('dv.dv', [
-                'disbursement' => $results,
+                'disbursement' => $paginatedResults,
                 'keyword' => $request->keyword ?: '',
                 'user' => Auth::user()->userid,
                 'proponents' => Proponent::get(),
-                'proponentInfo' => ProponentInfo::get()
+                'proponentInfo' => ProponentInfo::get(),
+                'order' => $order,
+                'filter_rem' =>explode(',',$request->filter_rem),
+                'filter_fac' =>explode(',',$request->filter_fac),
+                'filter_saa' =>explode(',',$request->filter_saa),
+                'filter_pro' =>explode(',',$request->filter_pro),
+                'filter_date' =>explode(',',$request->filter_date),
+                'filter_created' =>explode(',',$request->filter_created),
+                'pros' => $pros,
+                'date' => $date,
+                'users' => $users,
+                'facility' => $facility,
+                'fundsources' => Fundsource::pluck('saa')
             ]);
         }
     }

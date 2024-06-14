@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Kyslik\ColumnSortable\Sortable;
 
 class Dv extends Model
 {
+    use Sortable;
+
     protected $connection = 'mysql';
     protected $table = 'Dv'; // Adjust the table name as needed
     protected $fillable = [
@@ -27,6 +30,8 @@ class Dv extends Model
         'overall_total_amount',
     ];
 
+    public $sortable = ['facility.name'];
+    
     protected $casts = [
         'date' => 'datetime',
         'month_year_from' => 'datetime',
@@ -36,7 +41,6 @@ class Dv extends Model
     public function facility() {   
         return $this->belongsTo(Facility::class, 'facility_id','id');
     }
-    
     public function proponents() {   
         return $this->hasMany(Proponent::class);
     }
