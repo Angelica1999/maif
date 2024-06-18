@@ -70,7 +70,7 @@
                                 <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
                                 <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
                                 <button type="button" href="#generate_filter" data-backdrop="static" data-toggle="modal" style="background-color:teal; color:white; width:100px" class=""><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
-                                <button type="button" href="#create_patient" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
+                                <button type="button" href="#create_patient" id="crt_pnt" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
                                 <button type="submit" value="filt" style="display:none; background-color:00563B; color:white;" name="filter_col" id="filter_col" class="btn btn-success btn-md"><i class="typcn typcn-filter menu-icon"></i>Filter</button>
                             </div>  
                         </div>
@@ -552,9 +552,10 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" id="close_modal" data-dismiss="modal">Close</button>
                         <button type="submit" id="create_pat_btn" class="btn btn-primary">Create Patient</button>
-                        <a type="button" class="btn btn-danger" onclick="removePatient()"style="display:none; color:white">Remove</a>
+                        <button type="submit" id="update_send" name="update_send" value="upsend" class="btn btn-success" style="display:none; color:white" >Update & Send</button>
+                        <a type="button" class="btn btn-danger" onclick="removePatient()" style="display:none; color:white">Remove</a>
                     </div>
                 </form>
             </div>
@@ -1008,6 +1009,14 @@
         }
     }
 
+    $('#close_modal').on('click', function(){
+        location.reload();
+    });
+
+    $('#update_send').on('click', function(){
+        $('.loading-container').show();
+    });
+
     var edit_c = 0;
 
     function editPatient(id) {
@@ -1015,7 +1024,8 @@
         var editRoute = `{{ route('patient.update', ['id' => ':id']) }}`;
         editRoute = editRoute.replace(':id', id);
         $('#contractForm').attr('action', editRoute);
-        $('#create_pat_btn').text('Update Patient');
+        $('#create_pat_btn').text('Update');
+        $('#update_send').css('display', 'block');
         console.log('proponents', proponents);
         proponents.forEach(function(optionData) {
             $('.proponent_id1').append($('<option>', {
