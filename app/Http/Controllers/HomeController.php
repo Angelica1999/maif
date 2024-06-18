@@ -745,7 +745,8 @@ class HomeController extends Controller
     }
  
     public function updatePatient($id, Request $request){
-        // $patient_id = $request->input('patient_id');
+        $val = $request->input('update_send');
+        
         $patient_id = $id;
         $patient = Patients::where('id', $patient_id)->first();
 
@@ -785,7 +786,11 @@ class HomeController extends Controller
         $patient->pat_rem = $request->input('pat_rem');
 
         $patient->save();
-        return redirect()->back();
+        if($val =="upsend"){
+            return redirect()->route('patient.sendpdf', ['patientid' => $patient->id]);
+        }else{
+            return redirect()->back();
+        }
     }
 
     public function removePatient($id){
