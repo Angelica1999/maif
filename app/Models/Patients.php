@@ -28,7 +28,8 @@ class Patients extends Model
         'encoded_by.lname',
         'date_guarantee_letter',
         'guaranteed_amount',
-        'actual_amount'
+        'actual_amount',
+        'remarks'
 
     ];
     

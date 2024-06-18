@@ -131,7 +131,7 @@
                                 </button>
                             </div>
                         </th>
-                        <th>Status</th>
+                        <th>@sortablelink('remarks', 'Status')</th>
                         <th>Remarks</th>
                         <th style="min-width:10px; text-align:center;">Group</th>
                         <th style="min-width:140px">Actual Amount</th>
