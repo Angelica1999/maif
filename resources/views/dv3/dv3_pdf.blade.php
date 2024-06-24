@@ -141,7 +141,7 @@
                           <td style="width:14%; border-left: 0 " ></td>
                           <td style="width:14%; border-left: 0; vertical-align: top; text-align:center; ">
                             <br><br><br>
-                            <label>{{ number_format(floatval(str_replace(',','',$dv3->total)), 2, '.', ',') }}</label>
+                            <label>{{ number_format(floatval(str_replace(',','',$dv3->total)), 2, '.', ',') }}</label><br>
                             @for ($i = 1; $i <= $all; $i++)
                               <br> 
                             @endfor

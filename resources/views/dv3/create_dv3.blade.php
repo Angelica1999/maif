@@ -377,7 +377,8 @@
             var info_id = row.find('select.dv3_saa option:selected').attr('dataproponentInfo_id');
             console.log('Selected Proponent inside validateAmount:', info_id);
             $.get("{{ url('/balance')}}", function(result) {
-                var allocated_funds = Number((result.allocated_funds.find(item =>item.id == info_id)|| {}).remaining_balance|| 0);
+                var allocated_funds = (result.allocated_funds.find(item =>item.id == info_id)|| {}).remaining_balance|| 0;
+                allocated_funds = Number(allocated_funds.replace(/[^\d.]/g, ''));
                 console.log('allocated_funds:', allocated_funds);
                 console.log('value:', value);
                 if(value > allocated_funds){
@@ -413,14 +414,18 @@
             }
         });
         if(vat> 3){
-            $('.deduction').text((total/1.12 * (Number(vat) + Number(ewt)) / 100). toFixed(2));
-            $('.remaining').text(total- (total/1.12 * (Number(vat) + Number(ewt)) / 100). toFixed(2));
+            $('.deduction').text(formatToLocaleString(total/1.12 * (Number(vat) + Number(ewt)) / 100));
+            $('.remaining').text(formatToLocaleString(total- (total/1.12 * (Number(vat) + Number(ewt)) / 100)));
         }else{
-            $('.deduction').text((total * (Number(vat) + Number(ewt)) / 100). toFixed(2));
-            $('.remaining').text(total- (total * (Number(vat) + Number(ewt)) / 100). toFixed(2));
+            $('.deduction').text(formatToLocaleString((total * (Number(vat) + Number(ewt)) / 100). toFixed(2)));
+            $('.remaining').text(formatToLocaleString(total- (total * (Number(vat) + Number(ewt)) / 100)));
         }
-        $('.total_amount').text(total);
+        $('.total_amount').text(formatToLocaleString(total));
         $('.total_amount').val(total);
+    }
+
+    function formatToLocaleString(value, locale = 'en-US', options = { minimumFractionDigits: 2, maximumFractionDigits: 2 }) {
+        return value.toLocaleString(locale, options);
     }
 
     function validateAmount(element) {

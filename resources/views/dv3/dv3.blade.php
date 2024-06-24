@@ -15,7 +15,7 @@
         <div class="card-body">
             <form method="GET" action="{{ route('dv3') }}">
                 <div class="input-group float-right w-50" style="min-width: 600px;">
-                    <input type="text" class="form-control" name="keyword" placeholder="" value="">
+                    <input type="text" class="form-control" name="keyword" placeholder="search is still under development" value="">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
@@ -27,7 +27,7 @@
                 <input type="hidden" class="all_route" id="all_route" name="all_route">
 
             </form>
-            <h4 class="card-title">Disbursement Voucher V2</h4>
+            <h4 class="card-title">Disbursement Voucher V3</h4>
             <p class="card-description">
                 MAIF-IPP
             </p>
@@ -56,8 +56,8 @@
                             <th>Proponent</th>
                             <th>Date</th>
                             <th>Total</th>
-                            <th>Created On</th>
-                            <th>Created By</th>
+                            <th style="min-width:150px;">Created On</th>
+                            <th style="min-width:150px;">Created By</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -118,10 +118,15 @@
                                 </tr>
                             @endforeach
                         @else
-                            <div class="alert alert-danger" role="alert" style="width: 100%;">
-                                <i class="typcn typcn-times menu-icon"></i>
-                                <strong>No disbursement voucher version 3 found!</strong>
-                            </div>
+                            <tr>
+                                <td colspan="14">
+                                    <div class="alert alert-danger" role="alert" style="width: 100%;">
+                                        <i class="typcn typcn-times menu-icon"></i>
+                                        <strong>No disbursement voucher version 3 found!</strong>
+                                    </div>
+                                </td>
+                            </tr>
+                            
                         @endif
                     </tbody>
                     </table>
