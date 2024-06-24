@@ -34,7 +34,7 @@
                             <div class="card">
                                 <div class="card-body">
                                     <div style="display: flex; justify-content: space-between;">
-                                        @if($fund->remaining_balance == 0)
+                                        @if($fund->remaining_balance <= 0)
                                             <h4 class="card-title" style="text-align: left; margin: 0; color:red">{{ $fund->saa }}</h4>
                                         @else
                                             <h4 class="card-title" style="text-align: left; margin: 0;">{{ $fund->saa }}</h4>
