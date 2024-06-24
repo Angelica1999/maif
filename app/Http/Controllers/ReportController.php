@@ -66,14 +66,17 @@ class ReportController extends Controller
             }
         }
 
-        // $info = Utilization::where('proponentinfo_id',179)->where('status', 0)->get();
-        // $bal = 9900000;
+
+        // $info = Utilization::where('proponentinfo_id',398)->where('status', 0)->get();
+        // $bal = 964534.78;
+
         // // return $info;
         // foreach($info as $info){
         //     $info->beginning_balance = $bal;
         //     $info->save();
         //     $bal =  $info->beginning_balance - $info->utilize_amount ;
         // }
+       
         // $inf = ProponentInfo::where('id', 179)->first();
         // $inf->remaining_balance = number_format((double) str_replace(',', '',$bal), 2,'.',',');
         // $inf->save();

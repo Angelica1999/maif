@@ -53,7 +53,8 @@ class DvController extends Controller
             'user:userid,fname,lname,mname',
             'master', 
             'dv2',
-        ])->orderBy('id', 'desc');
+        ])->orderBy('created_at', 'desc');
+
 
         // Handle keyword searching
         $saa_cl = clone($query);
