@@ -42,16 +42,39 @@ class ReportController extends Controller
 
 
      public function reportSaa(){
+        
+        if(Auth::user()->userid == 2760){
+            $info = ProponentInfo::get();
+            foreach($info as $item){
+                $get = Utilization::where('proponentinfo_id', $item->id)->first();
+                $check = (float)str_replace(',','', $item->alocated_funds)- (float)(($item->admin_cost != null)?(float)str_replace(',','', $item->admin_cost):0);
+                // return $get;
+                if($get){
+                    $bal = ($get->beginning_balance != null )? (float)str_replace(',','', $get->beginning_balance):0;
+                    if($check != $bal && !in_array($item->id, [56, 57,176,181,186, 194,291,299,332,333,334,335, 369,393,394, 406, 427,432,433,434,435,437,
+                    438,439,440,441,447,448,449,450,451,452,454,455,456,457,458,472, 481,482,506,507,509,510,520,521,522,537,543,548,549,550,551,590,
+                    595,601,602,603,604,605,606,607,608,609,632,636,645,646,647,648,649,666,667,668,669,690])){
+                        // return $get->beginning_balance;
+                        // return $check; 2,493,092.02
+                        return $item->id;
+                    }
+                }else{
+                    // return 'else';
+                    // return $get; 359686.09
+                }
+               
+            }
+        }
 
-        // $info = Utilization::where('proponentinfo_id',638)->where('status', 0)->get();
-        // $bal = 1485000;
+        // $info = Utilization::where('proponentinfo_id',179)->where('status', 0)->get();
+        // $bal = 9900000;
         // // return $info;
         // foreach($info as $info){
         //     $info->beginning_balance = $bal;
         //     $info->save();
         //     $bal =  $info->beginning_balance - $info->utilize_amount ;
         // }
-        // $inf = ProponentInfo::where('id', 638)->first();
+        // $inf = ProponentInfo::where('id', 179)->first();
         // $inf->remaining_balance = number_format((double) str_replace(',', '',$bal), 2,'.',',');
         // $inf->save();
 

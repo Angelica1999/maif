@@ -19,6 +19,7 @@ use App\Models\AddFacilityInfo;
 use App\Models\Group;
 use App\Models\Section;
 use App\Models\Tracking_Releasev2;
+use App\Models\Dv3;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -52,7 +53,7 @@ class DvController extends Controller
             'user:userid,fname,lname,mname',
             'master', 
             'dv2',
-        ]);
+        ])->orderBy('id', 'desc');
 
         // Handle keyword searching
         $saa_cl = clone($query);
@@ -235,6 +236,7 @@ class DvController extends Controller
                     })
                     ->orWhereIn('proponent_info.facility_id', [$request->facility_id, '702'])
                     ->get();
+        // return count($info);
                     
         $facility = Facility::where('id', $request->facility_id)->first();
         return response()->json(['info' => $info, 'facility' => $facility]);
@@ -359,7 +361,15 @@ class DvController extends Controller
                 //     "status" => "released"
                 // ]);
             }
+
+            $dv3 = Dv3::where('route_no', $route_no)->first();
+            if($dv3){
+                $dv3->status = 1;
+                $dv3->save();
+            }
+
         }
+
         return redirect()->back()->with('releaseAdded', true);
     }
 
@@ -405,6 +415,11 @@ class DvController extends Controller
     }
 
     function createDvSave(Request $request){
+
+        // if(Auth::user()->userid != 2760){
+        //     return 'Please come back later, still fixing the update! Thank you!';
+        // }
+
         $check = $request->input('dv');       
         $facility_used = array_values(array_filter([$request->input('fac_id1'), $request->input('fac_id2'), $request->input('fac_id3')],
                             function($value){return $value !== '0' && $value !==null;}));
@@ -422,9 +437,7 @@ class DvController extends Controller
         }
 
         if($dv) {
-            $util_up = Utilization::where('div_id', $dv->route_no)->where('status', 0)->first();
-            $util_up->status = 1;
-            $util_up->save();
+            
             // Utilization::where('div_id', $dv->route_no)->update(['status'=>1]);
             $dv->modified_by = Auth::user()->userid;
             $dv->dv_no = $request->input('dv_no');
@@ -443,12 +456,23 @@ class DvController extends Controller
                 }else{
                     $total =((double)str_replace(',', '',$amount[$index]));
                 }
+
+                Utilization::where('div_id', $dv->route_no)->where('proponentinfo_id', $p_if->id)->update(['status' => 1]);
+                $get = Utilization::where('div_id', $dv->route_no)->where('proponentinfo_id', $p_if->id)->orderBy('id', 'desc')->first();
+                $all = Utilization::where('proponentinfo_id', $p_if->id)->where('id', '>', $get->id)->orderBy('id', 'asc')->get();
+                // return $get;
+                foreach($all as $row){
+                    // return (float)str_replace(',','',$row->beginning_balance) + (float)str_replace(',','',$amount[$index]);
+                    $row->beginning_balance = (float)str_replace(',','',$row->beginning_balance) + (float)str_replace(',','',$amount[$index]);
+                    $row->save();
+                }
                 
-                $return = (double)str_replace(',','',$p_if -> remaining_balance) + (double)str_replace(',', '',$util_up->utilize_amount);
+                $return = (double)str_replace(',','',$p_if -> remaining_balance) + (double)str_replace(',', '',$amount[$index]);
                 $p_if->remaining_balance = $return;
                 $index = $index + 1;
                 $p_if->save();
             }
+
             $utilization = Utilization::where('div_id', $dv->route_no)->get();
             $util = $utilization->sortByDesc('id')->first();
             // $get_util = $util->where('id', '>', $util->id)->get();
@@ -562,18 +586,17 @@ class DvController extends Controller
             // return $proponent_id;
 
                 foreach ($saaNumbersArray as $index=>$saa) {
-                    
+
+                    $proponent_info = ProponentInfo::where('id', $info[$index])->first();
+
                     $cleanedSaa = str_replace(['[', ']', '"'], '', $saa);
                     $utilize = new Utilization();
                     $utilize->status = 0;
                     $utilize->fundsource_id = trim($cleanedSaa);
                     $utilize->proponentinfo_id = $info[$index];
                     $utilize->proponent_id = $all_pro[$index];
-                    $utilize->facility_id = $facility_used[$index];
+                    $utilize->facility_used = $facility_used[$index];
                     $utilize->facility_id = $dv->facility_id;
-
-                    $proponent_info = ProponentInfo::where('id', $info[$index])->first();
-
                     $utilize->div_id = $dv->route_no;
                     $utilize->beginning_balance = $proponent_info->remaining_balance;
                     $utilize->discount = $discount[$index];

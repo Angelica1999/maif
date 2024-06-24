@@ -174,7 +174,15 @@ Route::match(['get', 'post'],'/test/sample/', [App\Http\Controllers\UtilizationC
 Route::get('report/saa', [App\Http\Controllers\ReportController::class, 'reportSaa'])->name('report.saa');
 
 Route::get('/dv3', [App\Http\Controllers\Dv3Controller::class, 'dv3'])->name('dv3');
-Route::match(['get', 'post'],'/dv3/create', [App\Http\Controllers\Dv3Controller::class, 'createDv3'])->name('dv3.create');
+Route::match(['get', 'post'],'/dv3/save', [App\Http\Controllers\Dv3Controller::class, 'dv3Save'])->name('dv3.save.create');
+Route::get('/dv3/create', [App\Http\Controllers\Dv3Controller::class, 'createDv3'])->name('dv3.create');
+Route::get('clone/saa/{id}', [App\Http\Controllers\Dv3Controller::class, 'cloneSaa'])->name('saa.get');
+Route::get('dv3/pdf/{route_no}', [App\Http\Controllers\PrintController::class, 'dv3Pdf'])->name('dv3.pdf');
+Route::match(['get', 'post'],'/dv3/update/{route_no}', [App\Http\Controllers\Dv3Controller::class, 'dv3Update'])->name('dv3.update');
+Route::match(['get', 'post'],'/dv3/save/{route_no}', [App\Http\Controllers\Dv3Controller::class, 'saveUpdate'])->name('dv3.update.save');
+// Route::get('clone/saa/{type}', [App\Http\Controllers\Dv3Controller::class, 'pendingDv3'])->name('budget.dv3');
+
+// Route::match(['get', 'post'],'/dv3/create/save', [App\Http\Controllers\DvController::class, 'created'])->name('dv.create.save');
 
 
 

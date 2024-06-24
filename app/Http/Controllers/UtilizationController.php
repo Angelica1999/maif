@@ -31,8 +31,14 @@ class UtilizationController extends Controller{
    
     public function trackingBudget($fundsourceId, $type){
 
-        $utilization = Utilization::whereNotNull('obligated')->where('fundsource_id', $fundsourceId)
-            ->with('proponentdata', 'fundSourcedata', 'facilitydata', 'user_budget')->orderBy('id', 'desc')->get();
+        // $utilization = Utilization::whereNotNull('obligated')->where('fundsource_id', $fundsourceId)
+        //     ->with('proponentdata', 'fundSourcedata', 'facilitydata', 'user_budget')->orderBy('id', 'desc')->get();
+        $utilization = Utilization::whereNotNull('obligated')
+            ->where('fundsource_id', $fundsourceId)
+            ->with('proponentdata', 'fundSourcedata', 'facilitydata', 'user_budget')
+            ->orderByRaw("CAST(REPLACE(budget_bbalance, ',', '') AS DECIMAL(15,2)) DESC")
+            ->get();
+
         if($type == 'for_modal'){
             return $utilization;
         }else if ($type == 'pdf'){
