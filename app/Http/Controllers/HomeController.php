@@ -699,6 +699,7 @@ class HomeController extends Controller
         ];        
     }
 
+    //sir jondy unused
     public function editPatient(Request $request) {
         $patient =  Patients::where('id',$request->patient_id)
                         ->with(

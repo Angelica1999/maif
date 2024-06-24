@@ -19,6 +19,7 @@ use App\Models\AddFacilityInfo;
 use App\Models\Group;
 use App\Models\Section;
 use App\Models\Tracking_Releasev2;
+use App\Models\Dv3;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -53,6 +54,7 @@ class DvController extends Controller
             'master', 
             'dv2',
         ])->orderBy('created_at', 'desc');
+
 
         // Handle keyword searching
         $saa_cl = clone($query);
@@ -235,6 +237,7 @@ class DvController extends Controller
                     })
                     ->orWhereIn('proponent_info.facility_id', [$request->facility_id, '702'])
                     ->get();
+        // return count($info);
                     
         $facility = Facility::where('id', $request->facility_id)->first();
         return response()->json(['info' => $info, 'facility' => $facility]);
@@ -359,7 +362,15 @@ class DvController extends Controller
                 //     "status" => "released"
                 // ]);
             }
+
+            $dv3 = Dv3::where('route_no', $route_no)->first();
+            if($dv3){
+                $dv3->status = 1;
+                $dv3->save();
+            }
+
         }
+
         return redirect()->back()->with('releaseAdded', true);
     }
 

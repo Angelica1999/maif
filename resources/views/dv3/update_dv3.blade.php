@@ -68,7 +68,7 @@
    
 </style>
 
-<form  method="post" action="{{ route('dv3.save.create') }}" id ="dv_form"> 
+<form  method="post" action="{{ route('dv3.update.save', ['route_no' => $dv3->route_no]) }}"> 
     @csrf   
     <input type="hidden" name="dv" id ="dv" value="">
     <input type="hidden" name="dv_id" id="dv_id" value="">
@@ -137,7 +137,7 @@
                                 <select id="dv3_facility" class="dv3_facility" name="dv3_facility" onchange="getFacility($(this))" style="margin-left:5px;width:260px;" required>
                                   <option value="">- Select Facility -</option>
                                   @foreach($facilities as $facility)
-                                    <option value="{{$facility->id}}">{{$facility->name}}</option>
+                                    <option value="{{$facility->id}}" {{($facility->id == $dv3->facility->id)?'selected':''}}>{{$facility->name}}</option>
                                   @endforeach  
                                 </select>
                             </td>
@@ -152,9 +152,7 @@
                     <table border="2" style="width: 100%;" >
                         <tr>
                             <td style="height:30px;"width =12.3% ><b>Address</td>
-                            <td style="width:88%; border-left: 0 "><b> 
-                              <p style="color:red;" id="facilityAddress"  class="ft15"></p>
-                              <input type="hidden" name="facilityAddress" id="facilitaddress"></td>
+                            <td style="width:88%; border-left: 0 "><b> {{$dv3->facility->address}}</td>
                         </tr>
                     </table>
                     <table border="2" style="width: 100%;border-top: 0px;" >
@@ -165,37 +163,80 @@
                             <td style="width:15%; border-left: 0 " >Amount</td>
                         </tr>
                         <tr style="text-align:left;" >
+                            <?php $all = floor(count($dv3->extension)/2) ?>
                             <td height="" width="58%" style="vertical-align: top; border: 1px solid #000;">
                                 <p style="text-align:justify;vertical-align:top;">To transfer medical assistance program funds for 
                                 <span id="hospitalAddress" name="hospitalname" style="color:red;"></span>
                                  in the amount of:</p><br>
                                 <div class="container">
-                                    <div style="display: flex; align-items: center;" class="clone_saa">
-                                        &nbsp;&nbsp;&nbsp;&nbsp;
-                                        <select name="fundsource_id[]" id="dv3_saa1" style="width:150px;" class="dv3_saa" onchange="saaValue($(this))" disabled required>
-                                            <option value="" data-facilities="" style="background-color:green">- Select SAA -</option> 
-                                        </select> 
-                                        <input type="hidden" name="info_id[]" id="info_id" class="info_id">
-                                        <div class="custom-dropdown" style="margin-left: 8px;">
-                                            <input type="text" name="amount[]" id="amount[]" style="width:120px; height: 42px;" onkeyup="validateAmount(this)" oninput="checkedAmount($(this))" class="amount" required autocomplete="off" disabled>
+                                    
+                                    @foreach($dv3->extension as $row)
+                                        <div style="display: flex; align-items: center;" class="clone_saa">
+                                            &nbsp;&nbsp;&nbsp;&nbsp;
+                                            <select name="fundsource_id[]" id="dv3_saa1{{$row->id}}" style="width:150px;" class="dv3_saa" onchange="saaValue($(this))" disabled required>
+                                                <option value="" data-facilities="" style="background-color:green">- Select SAA -</option>
+                                                @foreach($info as $item)
+                                                    <?php
+                                                        $rem_balance = number_format(str_replace(',','',$item->remaining_balance),2,'.',',');
+
+                                                        if($item->facility !== null){
+                                                            if($item->facility->id == $dv3->facility_id){
+                                                                $text_display = $item->fundsource->saa . ' - ' . $item->proponent->proponent . ' - SF - ' . $rem_balance;
+                                                            }else{
+                                                                $text_display = $item->fundsource->saa . ' - ' . $item->proponent->proponent . ' - ' . $item->facility->name . ' - ' . $rem_balance;
+                                                            } 
+                                                        }else{
+                                                            if (str_contains($item->facility_id, '702')) {
+                                                                $text_display = $item->fundsource->saa . ' - ' . $item->proponent->proponent . ' - ' . 'DOH CVCHD' . ' - ' . $rem_balance;
+                                                            }else{
+                                                                $text_display = $item->fundsource->saa . ' - ' . $item->proponent->proponent . ' - SF - ' . $rem_balance;
+                                                            }
+                                                        }
+                                                    ?>
+                                                    <option value="{{$item->fundsource_id}}" dataproponentInfo_id="{{$item->id}}" dataprogroup="{{$item->proponent->pro_group}}" data-facilities=""
+                                                        dataproponent="{{$item->proponent->id}}" d_color="{{($rem_balance == 0)?'red':'normal'}}" style="background-color:green"
+                                                        {{($row->info_id == $item->id)?'selected':''}}>{{$text_display}}</option>
+                                                @endforeach
+                                            </select> 
+                                            <input type="hidden" name="info_id[]" id="info_id" class="info_id" value="{{$row->info_id}}">
+                                            <input type="hidden" name="existing[]" id="existing" class="existing" value="{{$row->amount}}">
+                                            <div class="custom-dropdown" style="margin-left: 8px;">
+                                                <input type="text" name="amount[]" id="amount[]" value="{{$row->amount}}" style="width:120px; height: 42px;" onkeyup="validateAmount(this)" oninput="checkedAmount($(this))" class="amount" required autocomplete="off" disabled>
+                                            </div>
+                                            <input type="text" name="vat_amount[]" id="vat_amount" class="vat_amount" value="{{$row->vat}}" style="margin-left: 8px; width: 80px; height: 42px;" class="ft15" readonly required>
+                                            <input type="text" name="ewt_amount[]" id="ewt_amount" class="ewt_amount" value="{{$row->ewt}}" style="width: 80px; height: 42px;" class="ft15" readonly required>
+                                            <button type="button" id="add_more" class="add_more" class="fa fa-plus" style="border: none; width: 20px; height: 42px; font-size: 11px; cursor: pointer; width: 30px;" disabled>+</button>
                                         </div>
-                                        <input type="text" name="vat_amount[]" id="vat_amount" class="vat_amount" style="margin-left: 8px; width: 80px; height: 42px;" class="ft15" readonly required>
-                                        <input type="text" name="ewt_amount[]" id="ewt_amount" class="ewt_amount" style="width: 80px; height: 42px;" class="ft15" readonly required>
-                                        <button type="button" id="add_more" class="add_more" class="fa fa-plus" style="border: none; width: 20px; height: 42px; font-size: 11px; cursor: pointer; width: 30px;" disabled>+</button>
-                                    </div>
+                                        <script>
+                                            $('#dv3_saa1{{$row->id}}').select2();
+                                            var lists = @json($dv3);
+                                        </script>
+                                    @endforeach
                                 </div>
-                                <br><br>
+                                @if($all < 3)
+                                  <br><br>
+                                @endif
                                 <span style="margin-left:50px; font-weight:bold;font-size:12px">Amount Due</span>
                             </td>
                             <td style="width:14%; border-left: 0 " ></td>
                             <td style="width:14%; border-left: 0 " ></td>
                             <td style="width:14%; border-left: 0; vertical-align: top; text-align:center; ">
                                 <br><br><br><br>
-                                <label class="total_amount"></label>
-                                <input type="hidden" class="total_amount" name="total_amount" id="total_amount"><br>
-                                <label class="deduction"></label><br><br>
-                                <label>____________</label><br>
-                                <label class="remaining"></label>
+                                <label class="total_amount">{{$dv3->total}}</label>
+                                <input type="hidden" class="total_amount" name="total_amount" id="total_amount" value="{{$dv3->total}}">
+                                @for ($i = 1; $i <= $all + 3; $i++)
+                                    <br> 
+                                @endfor
+                                
+                                @if($f_info->vat > 3)
+                                    <label class="deduction">{{number_format($dv3->total/1.12 * ($f_info->vat + $f_info->ewt)/100, 2,'.', ',')}}</label><br>
+                                    <label>____________</label><br>
+                                    <label class="remaining">{{number_format($dv3->total - ($dv3->total/1.12 * ($f_info->vat + $f_info->ewt)/100) , 2,'.', ',')}}</label>
+                                @else
+                                    <label class="deduction">{{number_format($dv3->total * ($f_info->vat + $f_info->ewt)/100, 2, '.',',')}}</label><br>
+                                    <label>____________</label><br>
+                                    <label class="remaining">{{number_format($dv3->total - ($dv3->total * ($f_info->vat + $f_info->ewt)/100) , 2,'.', ',')}}</label>
+                                @endif
                             </td>
                           </tr>
                     </table>
@@ -324,7 +365,7 @@
             </div>
             <div class="modal-footer" id="dv_footer"> 
                 <button  style = "background-color:lightgray" type="button" class="btn btn-sm btn" data-dismiss="modal"><i class="typcn typcn-times"></i>Close</button>
-                <button type="submit" id="submitBtn" class="btn btn-sm btn-success"><i class="typcn typcn-tick menu-icon"></i>Submit</button>
+                <button type="submit" id="submitBtn" class="btn btn-sm btn-success"><i class="typcn typcn-tick menu-icon"></i>Update</button>
                 <input type="hidden" name="group_id" id="group_id" >
 
             </div>
@@ -338,9 +379,18 @@
 
     $('.dv3_facility').select2();
     $('.dv3_saa').select2();
+    
+    var check = 0;
+    var vat = {{$f_info->vat}}, ewt = {{$f_info->ewt}};
+
     $(document).ready(function() {
+     
+        $('.add_more').removeAttr('disabled');
+        $('.dv3_saa').removeAttr('disabled');
+        $('.amount').removeAttr('disabled');
+
         $(document).off('click', '.container .clone_saa .add_more').on('click', '.container .clone_saa .add_more', function () {
-            console.log('chaki');
+            check = check + 1;
             $('.loading-container').show();
             var $this = $(this);
             setTimeout(function () {
@@ -355,9 +405,10 @@
         $(document).on('click', '.container .remove_saa', function () {
             $(this).closest('.clone_saa').remove();
             cal();
+            console.log('remove');
         });
     });
-
+    
     function saaValue(element){
         var row = $(element).closest('div.clone_saa');   
         var amountInput = row.find('input.amount').val('');
@@ -367,21 +418,21 @@
     }
 
     var timer;
-    var vat = 0, ewt = 0;
 
     function checkedAmount(element){
         clearTimeout(timer);
         value = Number(element.val().replace(/[^\d.]/g, ''));
         timer = setTimeout(function () {
             var row = $(element).closest('div.clone_saa');
+            var existing = row.find('input.existing');
             var info_id = row.find('select.dv3_saa option:selected').attr('dataproponentInfo_id');
-            console.log('Selected Proponent inside validateAmount:', info_id);
+            console.log('info_id:', info_id);
             $.get("{{ url('/balance')}}", function(result) {
                 var allocated_funds = Number((result.allocated_funds.find(item =>item.id == info_id)|| {}).remaining_balance|| 0);
-                console.log('allocated_funds:', allocated_funds);
-                console.log('value:', value);
+                if(existing != 0){
+                    allocated_funds = allocated_funds + Number(existing);
+                }
                 if(value > allocated_funds){
-                    console.log('asdsadsd:', value);
                     Lobibox.alert('error',{
                         size : 'mini',
                         msg : 'Make sure inputted amount is not greater than allocated balance!'
@@ -396,9 +447,7 @@
                         row.find('input.ewt_amount').val((value * ewt / 100). toFixed(2));
                     }
                 }
-
-            cal();
-
+                cal();
             });
         },500);
     }
@@ -409,18 +458,23 @@
         $('.amount').each(function() {
             if($(this).val() != ''){
                 allValues.push($(this).val());
-                total = total + Number($(this).val().replace(/[^\d.]/g, ''));
             }
         });
+        var count = <?php echo count($dv3->extension) ?> + check;
+        var cut_off = allValues.slice(-(count));
+        total = cut_off.reduce(function(prev, current){
+            return Number(prev) + Number(current);
+        }); 
         if(vat> 3){
-            $('.deduction').text((total/1.12 * (Number(vat) + Number(ewt)) / 100). toFixed(2));
-            $('.remaining').text(total- (total/1.12 * (Number(vat) + Number(ewt)) / 100). toFixed(2));
+            $('.deduction').text((total/1.12 * (vat + ewt) / 100). toFixed(2));
+            $('.remaining').text(total- (total/1.12 * (vat + ewt) / 100). toFixed(2));
         }else{
-            $('.deduction').text((total * (Number(vat) + Number(ewt)) / 100). toFixed(2));
-            $('.remaining').text(total- (total * (Number(vat) + Number(ewt)) / 100). toFixed(2));
+            $('.deduction').text((total * (vat + ewt) / 100). toFixed(2));
+            $('.remaining').text(total- (total * (vat + ewt) / 100). toFixed(2));
         }
         $('.total_amount').text(total);
         $('.total_amount').val(total);
+      
     }
 
     function validateAmount(element) {

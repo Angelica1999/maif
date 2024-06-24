@@ -11,6 +11,7 @@ use App\Models\Dv2;
 use App\Models\Facility;
 use App\Models\Fundsource;
 use App\Models\Proponent;
+use App\Models\Dv3;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PdfEmail;
 use Illuminate\Support\Facades\DB;
@@ -294,6 +295,50 @@ class PrintController extends Controller
         } catch (\Exception $e) {
             echo 'Error: ' . $e->getMessage();
         }
+    }
+
+    public function  dv3Pdf($route_no){
+        $dv3 = Dv3::where('route_no', $route_no)             
+                ->with([
+                    'extension' => function ($query) {
+                        $query->with([
+                            'proponentInfo' => function ($query) {
+                                $query->with(['proponent', 
+                                'fundsource' => function ($query){
+                                    $query->with('image');
+                                }
+                            ]);
+                            }
+                        ]);
+                    },
+                    'facility' => function ($query) {
+                        $query->select(
+                            'id',
+                            'name',
+                            'address'
+                        );
+                    },
+                    'user' => function ($query) {
+                        $query->select(
+                            'userid',
+                            'fname',
+                            'lname'
+                        );
+                    }
+                ])->first();
+        $info = AddFacilityInfo::where('facility_id', $dv3->facility_id)->first();
+        if($info->vat > 3){
+            $total = ($dv3->total/ 1.12 * $info->vat / 100) + ($dv3->total/ 1.12 * $info->ewt / 100);
+        }else{
+            $total = ($dv3->total * $info->vat / 100) + ($dv3->total * $info->ewt / 100);
+        }
+        $data = [
+            'dv3'=> $dv3,
+            'total' => $total
+        ];
+        $pdf = PDF::loadView('dv3.dv3_pdf', $data);
+        $pdf->setPaper('Folio');
+        return $pdf->stream('dv3.pdf');
     }
         
 }

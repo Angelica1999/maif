@@ -25,4 +25,8 @@ class ProponentInfo extends Model
     public function fundsource() {
         return $this->belongsTo(Fundsource::class,'fundsource_id','id');
     }
+    public function extension()
+    {
+        return $this->belongsTo(Extension::class);
+    }
 }

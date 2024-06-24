@@ -59,13 +59,12 @@
                 </ul>
             </li>
         </ul>
-       
 
         <ul class="nav flex-column" style=" margin-bottom: 0;">
             <li class="nav-item">
                 <a class="nav-link" href="#">
                 <i class="typcn typcn-group menu-icon"></i>
-                    <span class="menu-title">Disbursement Voucher</span>
+                    <span class="menu-title">Disbursement Voucher (1)</span>
                     &nbsp;&nbsp;<i class="typcn typcn-arrow-sorted-down menu-icon"></i>
                 </a>
                 <ul class="nav flex-column sub-menu">
@@ -84,6 +83,8 @@
                 </ul>
             </li>
         </ul>
+
+        
     @endif
     @if($joinedData->section == 105 || $id == 2760 || $id == 201400208 || $joinedData->section == 36 || $joinedData->section == 31)
 
@@ -173,12 +174,12 @@
                             <span class="menu-title">Disbursement V2</span>
                         </a>
                     </li>
-                    <!-- <li class="nav-item">
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ route('dv3') }}">
                             <i class="typcn typcn-document-add menu-icon"></i>
                             <span class="menu-title">Disbursement V3</span>
                         </a>
-                    </li> -->
+                    </li>
                 </ul>
             </li>
         </ul>
@@ -249,7 +250,7 @@
             <li class="nav-item">
                 <a class="nav-link" href="#">
                 <i class="typcn typcn-group menu-icon"></i>
-                    <span class="menu-title">Disbursement Voucher</span>
+                    <span class="menu-title">Disbursement Voucher (1)</span>
                     &nbsp;&nbsp;<i class="typcn typcn-arrow-sorted-down menu-icon"></i>
                 </a>
                 <ul class="nav flex-column sub-menu">

@@ -64,7 +64,7 @@
                             <th>Route No</th>
                             <th></th>
                             <th>Modified</th>
-                            <th style="min-width: 50px;">Status</th>
+                            <th style="min-width: 50px;"><a href="{{ route('dv', ['sort' => 'status', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">Status</a></th>
                             <th style="text-align:center">
                                 <div style="display: flex; gap: 1px;">
                                     <button class="btn-info select_all" style="width: 25px; display: flex; justify-content: center; align-items: center;">
