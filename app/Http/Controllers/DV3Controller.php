@@ -173,6 +173,12 @@ class Dv3Controller extends Controller
     }
 
     public function saveUpdate($route_no, Request $request){
+        // return $request->info_id;
+        $userid = Auth::user()->userid;
+        $amount = $request->amount;
+        $saa = $request->fundsource_id;
+        $vat = $request->vat_amount;
+        $ewt = $request->ewt_amount;
       
         $dv3 = Dv3::where('route_no',$route_no)->with('extension')->first();
         foreach($dv3->extension as $item){
@@ -184,8 +190,8 @@ class Dv3Controller extends Controller
             $all = Utilization::where('proponentinfo_id', $item->info_id)->where('id', '>', $get->id)->orderBy('id', 'asc')->get();
 
             foreach($all as $row){
-                return str_replace(',','',$row->beginning_balance) + $item->amount;
-                $row->beginning_balance = str_replace(',','',$row->remaining_balance) + $item->amount;
+                // return str_replace(',','',$row->beginning_balance) + $item->amount;
+                $row->beginning_balance = str_replace(',','',$row->beginning_balance) + $item->amount;
                 $row->save();
             }
         }
@@ -195,10 +201,14 @@ class Dv3Controller extends Controller
         $dv3->total = (float)str_replace(',','',$request->total_amount);
         $dv3->created_by = Auth::user()->userid;
         $dv3->save();        
+        $i =0;
+
+        Dv3Fundsource::where('route_no', $route_no)->delete();
 
         foreach($request->info_id as $index => $id){
-            
+      
             $each = (float)str_replace(',','',$amount[$index]);
+
             $info = ProponentInfo::where('id', $id)->first();
 
             $util = new Utilization();
@@ -214,11 +224,9 @@ class Dv3Controller extends Controller
             $util->status = 0;
             $util->created_by = $userid;
             $util->save();
-
+            
             $info->remaining_balance = (float)str_replace(',','',$info->remaining_balance) - $each;
             $info->save();
-
-            Dv3Fundsource::where('route_no', $route_no)->delete();
 
             $dv3_funds = new Dv3Fundsource();
             $dv3_funds->route_no = $dv3->route_no;
@@ -228,8 +236,8 @@ class Dv3Controller extends Controller
             $dv3_funds->vat = (float)str_replace(',','',$vat[$index]);
             $dv3_funds->ewt = (float)str_replace(',','',$ewt[$index]);
             $dv3_funds->save();
-
         }
+        // return $i;
 
         $desc = "Disbursement voucher for " . Facility::where('id', $request->dv3_facility)->value('name') . " amounting to Php " . number_format(str_replace(',', '', $request->total_amount), 2, '.', ',');
         $tracking = TrackingMaster::where('route_no', $route_no)->first();
@@ -238,6 +246,9 @@ class Dv3Controller extends Controller
         $details = TrackingDetails::where('route_no', $route_no)->first();
         $details->action = $desc;
         $details->save();
+
+        return redirect()->back()->with('dv3_update', true);
+
     }
 
     public function createDv3(Request $request)
