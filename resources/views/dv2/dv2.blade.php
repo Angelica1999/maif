@@ -26,7 +26,7 @@
                     <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>
+                            <th >
                                 Option
                             </th>
                             <th>
@@ -43,7 +43,7 @@
                     <tbody>
                         @foreach($dv2_list as $dv2)
                             <tr>
-                                <td class="td">
+                                <td class="td" style="max-width:300px">
                                     <a type="button" class="btn btn-xs" style="background-color:#165A54;color:white;" data-toggle="modal"
                                         href="#iframeModal" data-routeId="{{$dv2->route_no}}" id="track_load" onclick="openModal()">Track</a>
                                     <a href="{{ route('dv2.pdf', ['route_no' => $dv2->route_no]) }}" target="_blank" type="button" class="btn btn-info btn-xs">Print</a>
@@ -53,7 +53,7 @@
                                     @endif
                                 </td> 
                                 <td class="td">{{ $dv2->route_no }}</td>   
-                                <td class="td">{{$dv2->facility }}</td>
+                                <td class="td" style="max-width:400px">{{$dv2->facility }}</td>
                                 <td class="td">{{$dv2->user->lname.', '. $dv2->user->fname}}</td>
                             </tr>
                         @endforeach
