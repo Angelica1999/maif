@@ -153,8 +153,8 @@
                         <tr>
                             <td style="height:30px;"width =12.3% ><b>Address</td>
                             <td style="width:88%; border-left: 0 "><b> 
-                              <p style="color:red;" id="facilityAddress"  class="ft15"></p>
-                              <input type="hidden" name="facilityAddress" id="facilitaddress"></td>
+                              <p style="color:red;" class="dv3_address"></p>
+                            </td> 
                         </tr>
                     </table>
                     <table border="2" style="width: 100%;border-top: 0px;" >
@@ -167,7 +167,7 @@
                         <tr style="text-align:left;" >
                             <td height="" width="58%" style="vertical-align: top; border: 1px solid #000;">
                                 <p style="text-align:justify;vertical-align:top;">To transfer medical assistance program funds for 
-                                <span id="hospitalAddress" name="hospitalname" style="color:red;"></span>
+                                <span class="hospitalAddress" name="hospitalname" style="color:red;"></span>
                                  in the amount of:</p><br>
                                 <div class="container">
                                     <div style="display: flex; align-items: center;" class="clone_saa">
@@ -486,10 +486,9 @@
 
     function handleChangesF(facility_id){
         $.get("{{ url('fetch/fundsource').'/' }}"+facility_id, function(result) {
-
-            $('#facilityAddress').text(result.facility.address);
-            $("#facilitaddress").val(result.facility.address);
-            $('#hospitalAddress').text(result.facility.name);
+            console.log('facility', result.facility.name);
+            $('.dv3_address').text(result.facility.address);
+            $('.hospitalAddress').text(result.facility.name);
             $('#for_facility_id').val(facility_id);
 
             var data_result = result.info;

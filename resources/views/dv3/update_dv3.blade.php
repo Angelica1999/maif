@@ -152,7 +152,9 @@
                     <table border="2" style="width: 100%;" >
                         <tr>
                             <td style="height:30px;"width =12.3% ><b>Address</td>
-                            <td style="width:88%; border-left: 0 "><b> {{$dv3->facility->address}}</td>
+                            <td style="width:88%; border-left: 0 "><b> 
+                              <p style="color:red;" class="dv3_address">{{$dv3->facility->address}}</p>
+                            </td> 
                         </tr>
                     </table>
                     <table border="2" style="width: 100%;border-top: 0px;" >
@@ -166,7 +168,7 @@
                             <?php $all = floor(count($dv3->extension)/2) ?>
                             <td height="" width="58%" style="vertical-align: top; border: 1px solid #000;">
                                 <p style="text-align:justify;vertical-align:top;">To transfer medical assistance program funds for 
-                                <span id="hospitalAddress" name="hospitalname" style="color:red;"></span>
+                                <span id="hospitalAddress" class="hospitalname" style="color:red;">{{$dv3->facility->name}}</span>
                                  in the amount of:</p><br>
                                 <div class="container">
                                     
@@ -536,9 +538,9 @@
     function handleChangesF(facility_id){
         $.get("{{ url('fetch/fundsource').'/' }}"+facility_id, function(result) {
 
-            $('#facilityAddress').text(result.facility.address);
-            $("#facilitaddress").val(result.facility.address);
-            $('#hospitalAddress').text(result.facility.name);
+            $('.dv3_address').text(result.facility.address);
+            $('.hospitalname').text(result.facility.name);
+            console.log('sfdsf', result.facility.name);
             $('#for_facility_id').val(facility_id);
 
             var data_result = result.info;

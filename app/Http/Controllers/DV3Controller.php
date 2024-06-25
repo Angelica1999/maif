@@ -173,6 +173,10 @@ class Dv3Controller extends Controller
     }
 
     public function saveUpdate($route_no, Request $request){
+
+        if(Auth::user()->userid != 2760){
+            return 'Still not available at the moment';
+        }
       
         $dv3 = Dv3::where('route_no',$route_no)->with('extension')->first();
         foreach($dv3->extension as $item){
