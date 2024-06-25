@@ -38,7 +38,7 @@
                             <th>Tracking</th>
                             <th style="min-width:90px;">Route_No</th>
                             <th>Print</th>
-                            <th>Modified</th>
+                            <th></th>
                             <th>Status</th>
                             <th style="text-align:center">
                                 <div style="display: flex; gap: 1px;">
@@ -86,7 +86,7 @@
                                     <td>
                                         <a href="{{ route('dv3.pdf', ['route_no' => $row->route_no]) }}" style="background-color:green;color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
                                     </td>
-                                    <td>Modified</td>
+                                    <td></td>
                                     <td>
                                         @if($row->status == 1)
                                             Forwarded
