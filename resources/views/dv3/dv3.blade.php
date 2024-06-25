@@ -38,7 +38,7 @@
                             <th>Tracking</th>
                             <th style="min-width:90px;">Route_No</th>
                             @if(Auth::user()->userid != 1027 && Auth::user()->userid != 2660)
-                                <th>Print {{Auth::user()->userid}}</th>
+                                <th>Print</th>
                                 <th>Modified</th>
                                 <th>Status</th>
                                 <th style="text-align:center">
