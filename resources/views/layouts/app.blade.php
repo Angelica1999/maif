@@ -277,6 +277,18 @@
               msg: 'Successfully updated this disbursement voucher version 3!'
            });
         @endif
+        @if(session('dv3_obligate'))
+           <?php session()->forget('dv3_obligate'); ?>
+           Lobibox.notify('success', {
+              msg: 'Successfully obligated this disbursement voucher version 3!'
+           });
+        @endif
+        @if(session('dv3_paid'))
+           <?php session()->forget('dv3_paid'); ?>
+           Lobibox.notify('success', {
+              msg: 'Successfully paid this disbursement voucher version 3!'
+           });
+        @endif
     </script>
     @yield('js')
 </body>

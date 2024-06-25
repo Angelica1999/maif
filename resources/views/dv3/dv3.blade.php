@@ -37,19 +37,21 @@
                         <tr>
                             <th>Tracking</th>
                             <th style="min-width:90px;">Route_No</th>
-                            <th>Print</th>
-                            <th></th>
-                            <th>Status</th>
-                            <th style="text-align:center">
-                                <div style="display: flex; gap: 1px;">
-                                    <button class="btn-info select_all" style="width: 25px; display: flex; justify-content: center; align-items: center;">
-                                        <i class="typcn typcn-input-checked"></i>
-                                    </button>
-                                    <button class="btn-danger unselect_all" style="width: 25px; display: flex; justify-content: center; align-items: center;">
-                                        <i class="typcn typcn-times menu-icon"></i>
-                                    </button>
-                                </div>
-                            </th>
+                            @if(Auth::user()->userid != 1027 && Auth::user()->userid != 2660)
+                                <th>Print {{Auth::user()->userid}}</th>
+                                <th>Modified</th>
+                                <th>Status</th>
+                                <th style="text-align:center">
+                                    <div style="display: flex; gap: 1px;">
+                                        <button class="btn-info select_all" style="width: 25px; display: flex; justify-content: center; align-items: center;">
+                                            <i class="typcn typcn-input-checked"></i>
+                                        </button>
+                                        <button class="btn-danger unselect_all" style="width: 25px; display: flex; justify-content: center; align-items: center;">
+                                            <i class="typcn typcn-times menu-icon"></i>
+                                        </button>
+                                    </div>
+                                </th>
+                            @endif
                             <th>Remarks</th>
                             <th>Facility</th>
                             <th style="min-width:150px;">SAA</th>
@@ -81,26 +83,32 @@
                                             }
                                         ?>
                                         <a data-dvId="{{$row->id}}" href="#create_dv3" onclick="updateDv3('{{$row->route_no}}')" style="background-color:teal;color:white;width:90px;" type="button" class="btn btn-xs" data-backdrop="static" data-toggle="modal">{{ $row->route_no }}</a>
-                                        <button data-toggle="modal" data-target="#releaseTo" data-id="{{ $doc_id }}" data-route_no="{{ $row->route_no }}" onclick="putRoute($(this))" style="background-color:#1E90FF;color:white; width:90px;" type="button" class="btn btn-xs">Release To</button>
-                                    </td>
-                                    <td>
-                                        <a href="{{ route('dv3.pdf', ['route_no' => $row->route_no]) }}" style="background-color:green;color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
-                                    </td>
-                                    <td></td>
-                                    <td>
-                                        @if($row->status == 1)
-                                            Forwarded
+                                        @if(Auth::user()->userid != 1027 && Auth::user()->userid != 2660)
+                                            <button data-toggle="modal" data-target="#releaseTo" data-id="{{ $doc_id }}" data-route_no="{{ $row->route_no }}" onclick="putRoute($(this))" style="background-color:#1E90FF;color:white; width:90px;" type="button" class="btn btn-xs">Release To</button>
                                         @endif
                                     </td>
-                                    <td style="text-align:center;" class="group-release" data-route_no="{{ $row->route_no }}" data-id="{{ $doc_id }}" >
-                                        <input type="checkbox" style="width: 60px; height: 20px;" name="release_dv[]" id="releaseDvId_{{ $index }}" 
-                                            class="group-releaseDv" >
-                                    </td>
+                                    @if(Auth::user()->userid != 1027 && Auth::user()->userid != 2660)
+                                        <td>
+                                            <a href="{{ route('dv3.pdf', ['route_no' => $row->route_no]) }}" style="background-color:green;color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
+                                        </td>
+                                        <td>Modified</td>
+                                        <td>
+                                            @if($row->status == 1)
+                                                Forwarded
+                                            @endif
+                                        </td>
+                                        <td style="text-align:center;" class="group-release" data-route_no="{{ $row->route_no }}" data-id="{{ $doc_id }}" >
+                                            <input type="checkbox" style="width: 60px; height: 20px;" name="release_dv[]" id="releaseDvId_{{ $index }}" 
+                                                class="group-releaseDv" >
+                                        </td>
+                                    @endif
                                     <td>
                                         @if($row->remarks == 0)
                                             Pending
-                                        @else
-                                            Modify this
+                                        @elseif($row->remarks == 1)
+                                            Obligated
+                                        @elseif($row->remarks == 2)
+                                            Processed
                                         @endif
                                     </td>
                                     <td>{{$row->facility->name}}</td>

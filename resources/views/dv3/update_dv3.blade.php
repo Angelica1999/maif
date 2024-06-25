@@ -67,11 +67,15 @@
     }
    
 </style>
-
-<form  method="post" action="{{ route('dv3.update.save', ['route_no' => $dv3->route_no]) }}"> 
+@if($section == '6')
+    <form  method="post" action="{{ route('process.dv3', ['type' => 'obligate']) }}"> 
+@elseif($section == '7')
+    <form  method="post" action="{{ route('process.dv3', ['type' => 'pay']) }}">
+@else
+    <form  method="post" action="{{ route('dv3.update.save', ['route_no' => $dv3->route_no]) }}"> 
+@endif
     @csrf   
-    <input type="hidden" name="dv" id ="dv" value="">
-    <input type="hidden" name="dv_id" id="dv_id" value="">
+    <input type="hidden" name="route_no" value="{{$dv3->route_no}}">
     <div class="clearfix"></div>
         <div class="new-times-roman table-responsive">
           <div class="container-fluid">
@@ -107,7 +111,7 @@
                                 <div>
                                     <span>DV No:</span>
                                     @if(Auth::user()->userid == 1027 || Auth::user()->userid == 2660)
-                                      &nbsp;<input type="text" name="dv_no" id="dv_no" style="width:150px; height: 28px;" class="ft15" required>
+                                        &nbsp;<input type="text" value="{{$dv3->dv_no}}" name="dv_no" id="dv_no" style="width:150px; height: 28px;" class="ft15" required>
                                     @endif
                                 </div>
                             </td>
@@ -145,7 +149,10 @@
                                 <span?>Tin/Employee No. :</span>
                             </td>
                             <td style="width:27%; border-left: 0 " >
-                                <span>ORS/BURS No. :</span>
+                                <span>ORS/BURS No. :{{$dv3->ors_no}}</span>
+                                @if($section == '6')
+                                    <input name="ors_no" class="ors_no" id="ors_no" required>
+                                @endif
                             </td>
                           </tr>
                     </table>
@@ -211,7 +218,6 @@
                                         </div>
                                         <script>
                                             $('#dv3_saa1{{$row->id}}').select2();
-                                            var lists = @json($dv3);
                                         </script>
                                     @endforeach
                                 </div>
@@ -386,11 +392,26 @@
     var vat = {{$f_info->vat}}, ewt = {{$f_info->ewt}};
 
     $(document).ready(function() {
-     
-        $('.add_more').removeAttr('disabled');
-        $('.dv3_saa').removeAttr('disabled');
-        $('.amount').removeAttr('disabled');
+        var type = $('.identifier').val();
+        console.log('chaki', type);
+        if(type == "processed" || type == "done"){
+            $('.ors_no').css('display', 'none');
+            $('.btn-success').css('display', 'none');
+        }
 
+        var section = {{$section}};
+        if(section == 6 || section == 7){
+            $('.dv3_facility').prop('disabled', true);
+            $('.dv3_saa').prop('disabled', true);
+            $('#dv3_date').prop('disabled', true);
+        }else{
+            $('.add_more').removeAttr('disabled');
+            $('.dv3_saa').removeAttr('disabled');
+            $('.amount').removeAttr('disabled');
+
+        }
+
+        
         $(document).off('click', '.container .clone_saa .add_more').on('click', '.container .clone_saa .add_more', function () {
             check = check + 1;
             $('.loading-container').show();
