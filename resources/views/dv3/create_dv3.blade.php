@@ -154,7 +154,7 @@
                             <td style="height:30px;"width =12.3% ><b>Address</td>
                             <td style="width:88%; border-left: 0 "><b> 
                               <p style="color:red;" class="dv3_address"></p>
-                            </td> 
+                            </td>
                         </tr>
                     </table>
                     <table border="2" style="width: 100%;border-top: 0px;" >
@@ -326,7 +326,6 @@
                 <button  style = "background-color:lightgray" type="button" class="btn btn-sm btn" data-dismiss="modal"><i class="typcn typcn-times"></i>Close</button>
                 <button type="submit" id="submitBtn" class="btn btn-sm btn-success"><i class="typcn typcn-tick menu-icon"></i>Submit</button>
                 <input type="hidden" name="group_id" id="group_id" >
-
             </div>
           </div>
       </div>
@@ -486,6 +485,7 @@
 
     function handleChangesF(facility_id){
         $.get("{{ url('fetch/fundsource').'/' }}"+facility_id, function(result) {
+
             console.log('facility', result.facility.name);
             $('.dv3_address').text(result.facility.address);
             $('.hospitalAddress').text(result.facility.name);

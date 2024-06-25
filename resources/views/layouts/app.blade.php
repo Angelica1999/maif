@@ -271,6 +271,12 @@
               msg: 'Successfully created disbursement voucher version 3!'
            });
         @endif
+        @if(session('dv3_update'))
+           <?php session()->forget('dv3_update'); ?>
+           Lobibox.notify('success', {
+              msg: 'Successfully updated this disbursement voucher version 3!'
+           });
+        @endif
     </script>
     @yield('js')
 </body>

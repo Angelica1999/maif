@@ -833,6 +833,8 @@ class DvController extends Controller
         $info_list = ProponentInfo::whereIn('id', $int_list)->orderByRaw("FIELD(id, $string_list)")->get();
         $amount_list = array_values(array_filter([$dv->amount1, !Empty($dv->amount2)?$dv->amount2 : 0,  
                         !Empty($dv->amount3)?$dv->amount3: 0], function($value){ return $value !== 0 && $value!== null;}));
+                        // return $info_list;
+
         foreach($info_list as $index => $info){
             $rem = (double) str_replace(',','',$info->remaining_balance) + (double) str_replace(',','', $amount_list[$index]);
             $info->remaining_balance = $rem;
