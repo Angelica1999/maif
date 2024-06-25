@@ -26,4 +26,7 @@ class Dv3 extends Model{
     public function user(){
         return $this->belongsTo(User::class, 'created_by', 'userid');
     }
+    public function master(){
+        return $this->belongsTo(TrackingMaster::class, 'route_no','route_no');
+    }
 }

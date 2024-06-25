@@ -28,7 +28,16 @@ class Dv3Controller extends Controller
     }
 
     public function dv3(Request $request) {
-        $user = Auth::user();
+        Dv3::whereNull('dv_no')
+            ->orWhere('dv_no', '')
+            ->with('master')
+            ->get()
+            ->each(function ($dv) {
+                if ($dv->master && $dv->master->dv_no) {
+                    $dv->dv_no = $dv->master->dv_no;
+                    $dv->save();
+                }
+            });
         $dv3 = Dv3::              
                 with([
                     'extension' => function ($query) {
@@ -163,17 +172,24 @@ class Dv3Controller extends Controller
                 ->get();
             $f_info = AddFacilityInfo::where('id', $facility_id)->select('vat', 'ewt')->first();
 
+            $section = DB::connection('dohdtr')
+                ->table('users')
+                ->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
+                ->where('users.userid', '=', Auth::user()->userid)
+                ->value('users.section');
+
             return view('dv3.update_dv3', [
                 'facilities' => Facility::get(),
                 'info' => $info,
                 'dv3' => $dv3,
-                'f_info' => $f_info
+                'f_info' => $f_info,
+                'section' => $section
             ]);
         }
     }
 
     public function saveUpdate($route_no, Request $request){
-        // return $request->info_id;
+
         $userid = Auth::user()->userid;
         $amount = $request->amount;
         $saa = $request->fundsource_id;
@@ -199,9 +215,12 @@ class Dv3Controller extends Controller
         $dv3->date = $request->dv3_date;
         $dv3->facility_id = $request->dv3_facility;
         $dv3->total = (float)str_replace(',','',$request->total_amount);
-        $dv3->created_by = Auth::user()->userid;
+        $dv3->modified_by = $userid;
+        if($userid == 1027 || $userid == 2660){
+            $dv3->dv_no = $request->dv_no;
+            TrackingMaster::where('route_no',$route_no)->update(['dv_no'=>$request->dv_no]);
+        }
         $dv3->save();        
-        $i =0;
 
         Dv3Fundsource::where('route_no', $route_no)->delete();
 
@@ -266,32 +285,135 @@ class Dv3Controller extends Controller
         ]);
     }
 
-    public function pendingDv3(Request $request, $type){
+    public function pendingDv3(Request $request, $type){ 
+        if($type == 'unsettled'){
+            $dv3 = Dv3::              
+            with([
+                'extension' => function ($query) {
+                    $query->with([
+                        'proponentInfo' => function ($query) {
+                            $query->with('proponent', 'fundsource');
+                        }
+                    ]);
+                },
+                'facility' => function ($query) {
+                    $query->select('id','name');},
+                'user' => function ($query) {
+                    $query->select('userid','fname','lname');}
+            ])
+            ->whereNull('ors_no')
+            ->orderBy('created_at', 'desc');
 
-        // if($type == 'pending'){
-        //   $result = Dv3::whereNull('obligated')->with(['fundsource','facility', 'master'])->orderby('id', 'desc');
-        //   // $result = Dv::whereNull('obligated')->whereNotNull('dv_no')->where('dv_no', '!=', '')->with(['fundsource','facility', 'master'])->orderby('id', 'desc');
-        // }else if($type == 'obligated'){
-        //   $result = Dv3::whereNotNull('obligated')->with(['fundsource','facility', 'master'])->orderby('id', 'desc');
-        //   // $result = Dv::whereNotNull('obligated')->whereNotNull('dv_no')->with(['fundsource','facility', 'master'])->orderby('id', 'desc');
-        // }
+        }else if($type == 'processed'){
+            $dv3 = Dv3::              
+            with([
+                'extension' => function ($query) {
+                    $query->with([
+                        'proponentInfo' => function ($query) {
+                            $query->with('proponent', 'fundsource');
+                        }
+                    ]);
+                },
+                'facility' => function ($query) {
+                    $query->select('id','name');},
+                'user' => function ($query) {
+                    $query->select('userid','fname','lname');}
+            ])
+            ->whereNotNull('ors_no')
+            ->orderBy('created_at', 'desc');
 
-        // if($request->viewAll){
-        //     $request->keyword = '';
-        // }else if($request->keyword){
-        //     $result->where('route_no', 'LIKE', "%$request->keyword%");
-        // }
-        // $id = $result->pluck('created_by')->unique();
-        // $name = User::whereIn('userid', $id)->get()->keyBy('userid'); 
-        // $results = $result->paginate(50);
+        }else if($type == 'unpaid'){
+
+            $dv3 = Dv3::              
+            with([
+                'extension' => function ($query) {
+                    $query->with([
+                        'proponentInfo' => function ($query) {
+                            $query->with('proponent', 'fundsource');
+                        }
+                    ]);
+                },
+                'facility' => function ($query) {
+                    $query->select('id','name');},
+                'user' => function ($query) {
+                    $query->select('userid','fname','lname');}
+            ])
+            ->whereNotNull('ors_no')
+            ->whereNull('paid_by')
+            ->orderBy('created_at', 'desc');
+
+        }else if($type == 'done'){
+
+            $dv3 = Dv3::              
+            with([
+                'extension' => function ($query) {
+                    $query->with([
+                        'proponentInfo' => function ($query) {
+                            $query->with('proponent', 'fundsource');
+                        }
+                    ]);
+                },
+                'facility' => function ($query) {
+                    $query->select('id','name');},
+                'user' => function ($query) {
+                    $query->select('userid','fname','lname');}
+            ])
+            ->whereNotNull('paid_by')
+            ->orderBy('created_at', 'desc');
+
+        }
         
         return view('fundsource_budget.dv3_list', [
-        //   'disbursement' => $results,
-        //   'name'=> $name,
-        //   'type' => $type,
-        //   'keyword' => $request->keyword,
-        //   'proponents' => Proponent::get(),
-        //   'proponentInfo' => ProponentInfo::get()
+          'dv3' => $dv3->paginate(50),
+          'type' => $type
         ]);
+    }
+
+    public function processDv3($type, Request $request){
+
+        $route_no = $request->route_no;
+        $user = Auth::user()->userid;
+
+        if($type == 'obligate'){
+
+            $ors_no = $request->ors_no;
+
+            $dv3 = Dv3::where('route_no', $route_no)->first();
+            $dv3->obligated_by = $user;
+            $dv3->ors_no = $ors_no;
+            $dv3->remarks = 1;
+            $dv3->save();
+
+            $util = Utilization::where('div_id', $route_no)->where('status', 0)->get();
+            foreach($util as $u){
+                $amount = (float) str_replace(',','', $u->utilize_amount);
+                $id = $u->fundsource_id;
+                $fundsource = Fundsource::where('id', $id)->first();
+                $u->budget_bbalance = $fundsource->remaining_balance;
+                $u->budget_utilize = $amount;
+                $u->obligated = 1;
+                $u->obligated_by = Auth::user()->userid;
+                $u->obligated_on = date('Y-m-d');
+                $u->save();
+                $fundsource->remaining_balance = (float) str_replace(',','', $fundsource->remaining_balance) - $amount;
+                $fundsource->save();
+            }
+            return redirect()->back()->with('dv3_obligate', true);
+        }else if($type == 'pay'){
+
+            $dv3 = Dv3::where('route_no', $route_no)->first();
+            $dv3->paid_by = $user;
+            $dv3->remarks = 2;
+            $dv3->save();
+
+            $util = Utilization::where('div_id', $route_no)->where('status', 0)->get();
+            foreach($util as $u){    
+                $u->paid = 1;
+                $u->paid_by = Auth::user()->userid;
+                $u->paid_on = date('Y-m-d');
+                $u->save();
+            }
+            return redirect()->back()->with('dv3_paid', true);
+        }
     }
 }
