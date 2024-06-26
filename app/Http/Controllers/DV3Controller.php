@@ -28,6 +28,8 @@ class Dv3Controller extends Controller
     }
 
     public function dv3(Request $request) {
+
+        $filter_date = $request->input('filter_dates');
         Dv3::whereNull('dv_no')
             ->orWhere('dv_no', '')
             ->with('master')
@@ -60,11 +62,144 @@ class Dv3Controller extends Controller
                             'lname'
                         );
                     }
-                ])->orderBy('created_at', 'desc');
+                ]);
+
+        if($filter_date){
+            $dateRange = explode(' - ', $filter_date);
+            $start_date = date('Y-m-d', strtotime($dateRange[0]));
+            $end_date = date('Y-m-d', strtotime($dateRange[1]));
+            $dv3->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59']);
+        }
+
+        $user_clone = clone($dv3);
+        $pro_clone = clone($dv3);
+
+        if($request->viewAll){
+            $request->keyword = '';
+        }else if($request->keyword){
+            $keyword = $request->keyword;
+            $dv3->where(function ($query) use ($keyword) {
+                $query->where('route_no', 'LIKE', "%$keyword%")
+                    ->orWhereHas('facility', function ($q) use ($keyword) {
+                        $q->where('name', 'LIKE', "%$keyword%");
+                    })
+                    ->orWhereHas('extension.proponentInfo.fundsource', function ($q) use ($keyword) {
+                        $q->where('saa', 'LIKE', "%$keyword%");
+                    })
+                    ->orWhereHas('extension.proponentInfo.proponent', function ($q) use ($keyword) {
+                        $q->where('proponent', 'LIKE', "%$keyword%"); 
+                    });
+            });
+            if ($dv3->count() === 0) {
+                $user = User::where('lname', 'LIKE', "%$keyword%")->orWhere('fname', 'LIKE', "%$keyword%")->pluck('userid');
+                if($user != null){
+                    $query = $user_clone;
+                    $query->whereIn('created_by',$user);
+                }
+            }
+        }
+
+        //header sorting
+        if ($sort = $request->sort) {
+            if($sort == 'status'){
+                $dv3->orderBy('status', $request->input('order'));
+            }else if($sort == 'remarks'){
+                $dv3->orderBy('remarks', $request->input('order'));
+            }else if($sort == 'facility'){
+                $dv3->leftJoin('facility', 'facility.id', '=', 'dv3.facility_id')
+                    ->orderBy('facility.name', $request->input('order')) 
+                    ->select('dv3.*');
+            }else if($sort == 'saa'){
+                $dv3 ->leftJoin('dv3_fundsources', function($join) {
+                    $join->on('dv3.route_no', '=', 'dv3_fundsources.route_no')
+                         ->whereRaw('dv3_fundsources.id = (SELECT MIN(id) FROM dv3_fundsources WHERE dv3_fundsources.route_no = dv3.route_no)');
+                })
+                ->leftJoin('fundsource', 'fundsource.id', '=', 'dv3_fundsources.fundsource_id')
+                ->orderBy('fundsource.saa', $request->input('order', 'asc'))
+                ->select('dv3.*');
+            }else if($sort == 'proponent'){
+                $dv3 ->leftJoin('dv3_fundsources', function($join) {
+                    $join->on('dv3.route_no', '=', 'dv3_fundsources.route_no')
+                         ->whereRaw('dv3_fundsources.id = (SELECT MIN(id) FROM dv3_fundsources WHERE dv3_fundsources.route_no = dv3.route_no)');
+                })
+                ->leftJoin('proponent_info', 'proponent_info.id', '=', 'dv3_fundsources.info_id')
+                ->leftJoin('proponent', 'proponent.id', '=', 'proponent_info.proponent_id')
+                ->orderBy('proponent.proponent', $request->input('order', 'asc'))
+                ->select('dv3.*');
+            }else if($sort == 'date'){
+                $dv3->orderBy('date', $request->input('order'));
+            }else if($sort == 'total'){
+                $dv3->orderBy('total', $request->input('order'));
+            }else if($sort == 'on'){
+                $dv3->orderBy(
+                    \DB::connection('dohdtr')->table('users')->select('lname')
+                        ->whereColumn('users.userid', 'dv3.created_by'),$request->input('order'));
+            }
+        }else{
+            $dv3->orderBy('created_at', 'desc');
+        }
+
+        $facility = Facility::whereIn('id', Dv3::pluck('facility_id'))->select('id', 'name')->get();
+        $saa = Fundsource::whereIn('id', Dv3Fundsource::pluck('fundsource_id'))->select('id', 'saa')->get();
+        $proponents = Dv3Fundsource::leftJoin('proponent_info', 'proponent_info.id', '=', 'dv3_fundsources.info_id')->pluck('proponent_info.proponent_id');
+        $proponents = Proponent::whereIn('id', $proponents)->select('id', 'proponent')->get();
+        $dates = Dv3::groupBy(DB::raw('DATE(date)'))->pluck(DB::raw('MAX(date)'));
+        $on =  Dv3::groupBy(DB::raw('DATE(created_at)'))->pluck(DB::raw('MAX(created_at)'));
+        $by =  User::whereIn('userid', Dv3::pluck('created_by'))->select('userid', 'lname', 'fname')->get();
+
+        //header filtering 
+        if($request->filt3_dv){
+            if($request->filter_rem3 != null){
+                $dv3->whereIn('remarks', explode(',', $request->filter_rem3));
+            }
+            if($request->filter_fac3 != null){
+                $dv3->whereIn('facility_id', explode(',', $request->filter_fac3));
+            }
+            if($request->filter_saa3 != null){
+                $dv3->where(function ($query) use ($request) {
+                    $query->orWhereHas('extension.proponentInfo.fundsource', function ($q) use ($request) {
+                        $q->whereIn('id', explode(',', $request->filter_saa3)); 
+                    });
+                });
+            }
+            if($request->filter_pro3 != null){
+                $dv3->where(function ($query) use ($request) {
+                    $query->orWhereHas('extension.proponentInfo.proponent', function ($q) use ($request) {
+                        $q->whereIn('id', explode(',', $request->filter_pro3)); 
+                    });
+                });
+            }
+            if($request->filter_date3 != null){
+                $dv3->whereIn('date', explode(',', $request->filter_date3));
+            }
+            if($request->filter_on3 != null){
+                $dv3->whereIn(DB::raw('DATE(created_at)'), explode(',',$request->filter_on3));
+            }
+            if($request->filter_by3 != null){
+                $dv3->whereIn('created_by', explode(',', $request->filter_by3));
+            }
+        }
+
         return view('dv3.dv3',[
-            'dv3' => $dv3->paginate(50)
+            'dv3' => $dv3->paginate(50),
+            'keyword' => $request->keyword,
+            'order' => $request->input('order'),
+            'filter_rem3' =>  explode(',', $request->filter_rem3),
+            'filter_fac3' =>  explode(',', $request->filter_fac3),
+            'filter_saa3' =>  explode(',', $request->filter_saa3),
+            'filter_pro3' =>  explode(',', $request->filter_pro3),
+            'filter_date3' =>  explode(',', $request->filter_date3),
+            'filter_on3' =>  explode(',', $request->filter_on3),
+            'filter_by3' =>  explode(',', $request->filter_by3),
+            'facilities' => $facility,
+            'saa' => $saa,
+            'proponents' => $proponents,
+            'dates' => $dates,
+            'on' => $on,
+            'by' => $by
             ]);
     }
+
     function dv3Save(Request $request){
 
         $userid = Auth::user()->userid;
@@ -136,7 +271,6 @@ class Dv3Controller extends Controller
             $dv3_funds->vat = (float)str_replace(',','',$vat[$index]);
             $dv3_funds->ewt = (float)str_replace(',','',$ewt[$index]);
             $dv3_funds->save();
-            // $
         }
         return redirect()->back()->with('dv3', true);
     }

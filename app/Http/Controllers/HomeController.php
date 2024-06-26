@@ -236,6 +236,7 @@ class HomeController extends Controller
         $mncty = Muncity::whereIn('id', $muncity->groupBy('muncity_id')->pluck('muncity_id'))->select('id','description')->get();
         $prvnc = Province::whereIn('id', $province->groupBy('province_id')->pluck('province_id'))->select('id','description')->get();
         $on =  $on->groupBy(DB::raw('DATE(created_at)'))->pluck(DB::raw('MAX(created_at)'));
+        
         return view('home', [
             'patients' => $patients->paginate(50),
             'keyword' => $request->keyword,
