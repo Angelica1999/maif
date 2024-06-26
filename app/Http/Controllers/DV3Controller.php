@@ -75,7 +75,16 @@ class Dv3Controller extends Controller
         $pro_clone = clone($dv3);
 
         if($request->viewAll){
+            
             $request->keyword = '';
+            $request->filter_rem3 = '';
+            $request->filter_fac3 = '';
+            $request->filter_saa3 = '';
+            $request->filter_pro3 = '';
+            $request->filter_date3 = '';
+            $request->filter_on3 = '';
+            $request->filter_by3 = '';
+
         }else if($request->keyword){
             $keyword = $request->keyword;
             $dv3->where(function ($query) use ($keyword) {
