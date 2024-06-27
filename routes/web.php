@@ -183,6 +183,9 @@ Route::match(['get', 'post'],'/dv3/save/{route_no}', [App\Http\Controllers\Dv3Co
 Route::get('disbursement3/lists/{type}', [App\Http\Controllers\Dv3Controller::class, 'pendingDv3'])->name('budget.dv3');
 Route::match(['get','post'],'disbursement3/process/{type}', [App\Http\Controllers\Dv3Controller::class, 'processDv3'])->name('process.dv3');
 
+//modified utilization dv tracking
+Route::get('checkdv/{route_no}', [App\Http\Controllers\UtilizationController::class, 'getDv'])->name('assigned.dv');
+
 // Route::match(['get', 'post'],'/dv3/create/save', [App\Http\Controllers\DvController::class, 'created'])->name('dv.create.save');
 
 
