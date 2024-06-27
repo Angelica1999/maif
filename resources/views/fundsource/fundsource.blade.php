@@ -342,7 +342,8 @@
                             '<td>' + number_format(parseFloat(beg_balance.replace(',', '')), 2, '.', ',') + '</td>' +
                             '<td>' + discount + '</td>' +
                             '<td>' +(item.div_id != 0 ?'<a class="modal-link" href="#i_frame" data-routeId="'+route+'" onclick="openModal(this)">' + utilize + '</a>' :utilize) +'</td>' +
-                            '<td>' + (item.div_id != 0 ? '<a href="{{ route("dv", ["keyword" => ""]) }}' + encodeURIComponent(route) + '">' + route + '</a>' : '') + '</td>' +
+                            // '<td>' + (item.div_id != 0 ? '<a href="{{ route("dv", ["keyword" => ""]) }}' + encodeURIComponent(route) + '">' + route + '</a>' : '') + '</td>' +
+                            '<td>' + (item.div_id != 0 ? '<a href="{{ url("checkdv").'/' }}' + encodeURIComponent(route) + '">' + route + '</a>' : '') +'</td>'+
                             '<td>' + user + '</td>' +
                             '<td>' + formattedDate+'<br>'+ formattedTime + '</td>' +
                             '<td>' + (item.obligated == 1 ? '<i class="typcn typcn-tick menu-icon"></i>' : '') + '</td>' +

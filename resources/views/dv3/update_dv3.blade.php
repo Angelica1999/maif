@@ -404,6 +404,13 @@
             $('.dv3_facility').prop('disabled', true);
             $('.dv3_saa').prop('disabled', true);
             $('#dv3_date').prop('disabled', true);
+        }else if(type == undefined){
+            console.log('undefined also');
+            $('.ors_no').css('display', 'none');
+            $('.btn-success').css('display', 'none');
+            $('.dv3_facility').prop('disabled', true);
+            $('.dv3_saa').prop('disabled', true);
+            $('#dv3_date').prop('disabled', true);
         }else{
             $('.add_more').removeAttr('disabled');
             $('.dv3_saa').removeAttr('disabled');

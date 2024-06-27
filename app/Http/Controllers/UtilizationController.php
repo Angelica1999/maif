@@ -7,6 +7,7 @@ use App\Models\Utilization;
 use App\Models\Proponent;
 use App\Models\Fundsource;
 use App\Models\User;
+use App\Models\Dv;
 use PDF;
 
 class UtilizationController extends Controller{
@@ -45,6 +46,15 @@ class UtilizationController extends Controller{
             $pdf = PDF::loadView('fundsource_budget.budget_pdf', $data=['utilization'=>$utilization->sortBy('id')]);
             $pdf->setPaper('A4');
             return $pdf->stream('fundsource_budget.budget_pdf');
+        }
+    }
+
+    public function getDv($route_no){
+        $dv = Dv::where('route_no', $route_no)->first();
+        if($dv){
+            return redirect()->route('dv', ['keyword' => $route_no]);
+        }else{
+            return redirect()->route('dv3', ['keyword' => $route_no]);
         }
     }
 }

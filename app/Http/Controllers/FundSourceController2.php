@@ -167,24 +167,26 @@ class FundSourceController2 extends Controller{
       $dv = Dv::where('route_no', $route_no)->with('facility')->first();
       
       if($dv){
-        if($type == 'obligate'){
-          // $dv->dv_no = $dv_no;
-          // $dv->save();
-          // Utilization::where('div_id', $route_no)->update(['dv_no' => $dv_no]);
-        }
-        
+
         $all= array_map('intval', json_decode($dv->fundsource_id));
         $fund_source = [];
         foreach($all as $id){
             $fund_source []= Fundsource::where('id', $id)->first();
         }
-        // $fund_source = Fundsource::whereIn('id', $all)->get();
+
+        return view('fundsource_budget.obligate_dv', [ 
+          'dv' =>$dv, 
+          'section' => $section,
+          'fund_source' => $fund_source,
+          'type' => $type
+        ]);
+
+      }else{
+
+        return redirect()->route('dv3.update', ['route_no' => $route_no]);
+
       }
-      return view('fundsource_budget.obligate_dv', [ 
-        'dv' =>$dv, 
-        'section' => $section,
-        'fund_source' => $fund_source,
-        'type' => $type]);
+      
     }
 
 }

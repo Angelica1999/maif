@@ -300,11 +300,11 @@
             var route_no = $(link).data('routeid');
             var dv_no = $(link).data('dvNo');
 
-            console.log('check', route_no);
+            console.log('check', dv_no);
 
             $('.modal_body').html(loading);
             $('.modal-title').html("Disbursement Voucher");
-            var url = "{{ url('dv').'/' }}"+route_no + '/' + dv_no+ '/' +'view';
+            var url = "{{ url('dv').'/' }}"+route_no + '/' +'view';
             setTimeout(function(){
                 $.ajax({
                     url: url,

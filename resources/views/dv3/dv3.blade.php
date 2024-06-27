@@ -259,6 +259,7 @@
     </div>
 </div>
 <div class="modal fade" id="create_dv3" role="dialog" style="overflow-y:scroll;">
+    <input type="hidden" class="identifier" id="identifier" value="none">
     <div class="modal-dialog modal-lg" role="document" style="width:900px">
     <div class="modal-content">
             <div class="modal-header" style="background-color:#17c964;padding:15px; color:white">

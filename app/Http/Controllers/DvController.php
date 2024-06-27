@@ -665,7 +665,6 @@ class DvController extends Controller
 
     function obligate(Request $request){
         $dv= Dv::where('id', $request->input('dv_id'))->first();
-        $gg = [];
         if($dv){
             $saa= array_map('intval', json_decode($dv->fundsource_id));
             $proponent= array_map('intval', json_decode($dv->proponent_id));
@@ -675,27 +674,22 @@ class DvController extends Controller
                 $info = Fundsource::where('id', $saa_list)->first();
                 $info->remaining_balance = $info->remaining_balance - floatval(str_replace(',','', $amount[$index]));
                 $info->save();
-                $utilization = Utilization::where('div_id', $dv->route_no)->where('fundsource_id', $saa_list)
-                    ->where('proponent_id', $proponent[$index])->orderBy('id', 'desc')->latest()->first();
-                    $gg[]=$utilization;
 
-                $utilization->budget_bbalance = $info->remaining_balance + floatval(str_replace(',','', $amount[$index]));
-                $utilization->budget_utilize = $amount[$index];
-                $utilization->obligated = 1;
-                $utilization->obligated_by = Auth::user()->userid;
-                $utilization->save();
+                $utilization = Utilization::where('div_id', $dv->route_no)->where('fundsource_id', $saa_list)
+                    ->where('proponent_id', $proponent[$index])->where('status', 0)->whereNull('obligated')->orderBy('id', 'desc')->first();
+                if($utilization != null){
+                    $utilization->budget_bbalance = $info->remaining_balance + floatval(str_replace(',','', $amount[$index]));
+                    $utilization->budget_utilize = $amount[$index];
+                    $utilization->obligated = 1;
+                    $utilization->obligated_by = Auth::user()->userid;
+                    $utilization->save();
+                }else{
+                    return 'Please contact System Administrator!';
+                }
             }
             $dv->ors_no = $request->ors_no;
             $dv->obligated = 1;
             $dv->save();
-            // $response = Http::withoutVerifying()->get('https://mis.cvchd7.com/dts/document/ors_no/' . $dv->ors_no . '/' . $dv->route_no . '/' .Auth::user()->userid);
-            // if($response){
-            //     if($response == '0'){
-            //          return redirect()->route('fundsource_budget.pendingDv', ['type' => 'pending'])->with('', true);
-            //     }
-            // }else{
-            //     return redirect()->route('fundsource_budget.pendingDv', ['type' => 'pending'])->with('', true);
-            // }
         }
         return redirect()->route('fundsource_budget.pendingDv', ['type' => 'pending'])->with('', true);
 
@@ -715,21 +709,18 @@ class DvController extends Controller
             $dv->paid_by = Auth::user()->userid;
             $dv->save();
 
-            $response = Http::withoutVerifying()->get('https://mis.cvchd7.com/dts/document/paid/'. $dv->route_no . '/' .Auth::user()->userid);
-            if($response){
-                if($response == '0'){
-                    return redirect()->back()->with(
-                        'pay_dv', true        
-                        );
-                }
-            }else{
-                return redirect()->back()->with([
-                    'pay_dv' => true        
-                ]);
-            }
+            // $response = Http::withoutVerifying()->get('https://mis.cvchd7.com/dts/document/paid/'. $dv->route_no . '/' .Auth::user()->userid);
+            // if($response){
+            //     if($response == '0'){
+            //         return redirect()->back()->with(
+            //             'pay_dv', true        
+            //             );
+            //     }
+            // }else{
+            //  return redirect()->back()->with(['pay_dv' => true]);
+            // }
         }
         return redirect()->back()->with('pay_dv', true);
-
     }
 
     function addDvNo(Request $request){
