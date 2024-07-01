@@ -65,8 +65,6 @@ class ReportController extends Controller
                
             }
         }
-
-
         // $info = Utilization::where('proponentinfo_id',398)->where('status', 0)->get();
         // $bal = 964534.78;
 
