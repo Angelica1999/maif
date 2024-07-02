@@ -63,10 +63,31 @@
     <script src="{{ asset('admin/vendors/select2/select2.min.js') }}"></script>
     <script src="{{ asset('Lobibox/lobibox.js?v=').date('His') }}"></script>
     
+    <!-- <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+      <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+      <script>
+         Pusher.logToConsole = true;
+         var pusher = new Pusher('f19cadb6835e985350a0', {
+            cluster: 'ap1'
+         });
+         var channel = pusher.subscribe('my-channel');
+         channel.bind('form-submitted', function(data) {
+            if (data && data.post && data.post.author && data.post.title) {
+            toastr.success('New Post Created', 'Author: ' + data.post.author + '<br>Title: ' + data.post.title, {
+               timeOut: 0,  
+               extendedTimeOut: 0,  
+            });
+            } else {
+            console.error('Invalid data structure received:', data);
+            }
+         });
+    </script> -->
+
     <script>
         var path_gif = "{{ asset('images/loading.gif') }}";
         var loading = '<center><img src="'+path_gif+'" alt=""></center>';
-        
       
         @if(session('facility_save'))
              <?php session()->forget('facility_save'); ?>
@@ -287,6 +308,12 @@
            <?php session()->forget('dv3_paid'); ?>
            Lobibox.notify('success', {
               msg: 'Successfully paid this disbursement voucher version 3!'
+           });
+        @endif
+        @if(session('note'))
+           <?php session()->forget('note'); ?>
+           Lobibox.notify('success', {
+              msg: 'Successfully created a note!'
            });
         @endif
     </script>

@@ -36,7 +36,6 @@ class DvController extends Controller
     public function dv(Request $request)
     {
         $order = $request->input('order', 'asc');
-
         Dv::whereNull('dv_no')
             ->orWhere('dv_no', '')
             ->with('master')
@@ -55,7 +54,6 @@ class DvController extends Controller
             'dv2',
         ])->orderBy('created_at', 'desc');
 
-
         // Handle keyword searching
         $saa_cl = clone($query);
         $pro_cl = clone($query);
@@ -70,8 +68,12 @@ class DvController extends Controller
                 'filter_pro' => '',
                 'filter_date' => '',
                 'filter_created' => '',
+                'generate' => '',
+                'dates_filter' => ''
             ]);
         }
+
+        $filter_dates = $request->input('dates_filter');
 
         $keyword = $request->keyword;
         if ($keyword) {
@@ -118,12 +120,13 @@ class DvController extends Controller
         }
 
         // Date filtering
-        if ($filter_dates = $request->input('dates_filter')) {
-            [$start_date, $end_date] = explode(' - ', $filter_dates);
-            $query->whereBetween('created_at', [
-                date('Y-m-d', strtotime($start_date)),
-                date('Y-m-d', strtotime("$end_date 23:59:59"))
-            ]);
+        if ($request->generate) {
+
+            $dateRange = explode(' - ', $filter_dates);
+            $start_date = date('Y-m-d', strtotime($dateRange[0]));
+            $end_date = date('Y-m-d', strtotime($dateRange[1]));
+            $query ->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59']);
+     
         }
 
         // Sorting
@@ -153,7 +156,7 @@ class DvController extends Controller
         }
 
         // // Filtering table header column
-        if($request->filt_dv){
+        // if($request->filt_dv){
             if($request->filter_rem){
                 $rem = explode(',',$request->filter_rem);
                 if(in_array('pending', $rem)){
@@ -186,9 +189,10 @@ class DvController extends Controller
                 ->select('dv.*');
             }
             if($request->filter_created){
+                // return $query->get();
                 $query->whereIn('created_by', explode(',',$request->filter_created));
             }
-        }            
+        // }            
 
         $results = $query->paginate(50);
 
@@ -219,6 +223,8 @@ class DvController extends Controller
                 'filter_pro' => explode(',', $request->filter_pro),
                 'filter_date' => explode(',', $request->filter_date),
                 'filter_created' => explode(',', $request->filter_created),
+                'generate' => $request->generate,
+                'dates_generated' => $filter_dates,
                 'pros' => $pros,
                 'date' => $date,
                 'users' => $users,

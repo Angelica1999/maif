@@ -13,27 +13,35 @@
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-            <form method="GET" action="{{ route('dv3') }}">
-                <div class="input-group float-right w-50" style="min-width: 600px;">
-                    <input type="text" class="form-control" name="keyword" value="{{$keyword}}">
-                    <div class="input-group-append">
-                        <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
-                        <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
-                        <button type="button" href="#filter_dv3" data-backdrop="static" data-toggle="modal" style="background-color:teal; color:white; width:100px" class=""><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
-                        <button type="button" href="#create_dv3" onclick="createDv3()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
-                        <button type="button" id="release_btn" data-target="#releaseTo" style="display:none; background:teal; color:white" onclick="putRoutes($(this))" data-target="#releaseTo" data-backdrop="static" data-toggle="modal" class="btn btn-md">Release All</button>
-                        <button type="submit" value="filt3" style="display:none; background-color:00563B; color:white;" name="filt3_dv" id="filt3_dv" class="btn btn-success btn-md"><i class="typcn typcn-filter menu-icon"></i>Filter</button>
-                    </div>
+            <div class="float-right" >
+                <div class="input-group">
+                    <form method="GET" action="{{ route('dv3') }}">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="keyword" value="{{$keyword}}" style="width:350px;" placeholder="Search...">
+                            <div class="input-group-append">
+                                <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
+                                <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
+                                <button type="button" href="#create_dv3" onclick="createDv3()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
+                                <button type="button" id="release_btn" data-target="#releaseTo" style="display:none; background:teal; color:white" onclick="putRoutes($(this))" data-target="#releaseTo" data-backdrop="static" data-toggle="modal" class="btn btn-md">Release All</button>
+                                <button type="submit" value="filt3" style="display:none; background-color:00563B; color:white;" name="filt3_dv" id="filt3_dv" class="btn btn-success btn-md"><i class="typcn typcn-filter menu-icon"></i>Filter</button>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" style="text-align:center" style="width:100px" class="form-control" id="filter_dates" value="{{($generated_dates)?$generated_dates:''}}" name="filter_dates" />
+                            <button type="submit" id="gen3_btn" style="background-color:teal; color:white; width:107px" class=""><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
+                        </div>
+                        <input type="hidden" class="all_route" id="all_route" name="all_route">
+                        <input type="hidden" id="filter_rem3" name="filter_rem3" value="{{implode(',', $filter_rem3)}}"></input>
+                        <input type="hidden" id="filter_fac3" name="filter_fac3" value="{{implode(',', $filter_fac3)}}"></input>
+                        <input type="hidden" id="filter_saa3" name="filter_saa3" value="{{implode(',', $filter_saa3)}}"></input>
+                        <input type="hidden" id="filter_pro3" name="filter_pro3" value="{{implode(',', $filter_pro3)}}"></input>
+                        <input type="hidden" id="filter_date3" name="filter_date3" value="{{implode(',', $filter_date3)}}"></input>
+                        <input type="hidden" id="filter_on3" name="filter_on3" value="{{implode(',', $filter_on3)}}"></input>
+                        <input type="hidden" id="filter_by3" name="filter_by3" value="{{implode(',', $filter_by3)}}"></input>
+                        <input type="hidden" id="gen_key" name="gen_key" value="{{$gen_key}}"></input>
+                    </form>
                 </div>
-                <input type="hidden" class="all_route" id="all_route" name="all_route">
-                <input type="hidden" id="filter_rem3" name="filter_rem3"></input>
-                <input type="hidden" id="filter_fac3" name="filter_fac3"></input>
-                <input type="hidden" id="filter_saa3" name="filter_saa3"></input>
-                <input type="hidden" id="filter_pro3" name="filter_pro3"></input>
-                <input type="hidden" id="filter_date3" name="filter_date3"></input>
-                <input type="hidden" id="filter_on3" name="filter_on3"></input>
-                <input type="hidden" id="filter_by3" name="filter_by3"></input>
-            </form>
+            </div>
             <h4 class="card-title">Disbursement Voucher V3</h4>
             <p class="card-description">
                 MAIF-IPP
@@ -298,6 +306,9 @@
 
         $(function() {
             $('#filter_dates').daterangepicker();
+        });
+        $('#gen3_btn').on('click', function(){
+            $('#gen_key').val(1);
         });
         $('.filter-division').select2();
         $('.filter-section').select2();

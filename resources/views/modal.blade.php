@@ -196,8 +196,6 @@
     </div>
 </div>
 <!--end-->
-
-<!--end-->
 <div class="modal fade" id="releaseTo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content"> 
@@ -244,9 +242,35 @@
         </div>
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+<!--end-->
+<div class="modal fade" id="new_note" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <form action="{{ route('save.note') }}" method="POST" style="background-color: #fff3cd;">
+                @csrf
+                <div class="" style="padding:10px">
+                    <h4 class="text-success">
+                        <i style="font-size:30px" class="typcn typcn-document-text menu-icon"></i> New Note
+                    </h4>
+                    <hr />
+                    <div class="form-group">
+                        <textarea name="note" class="form-control" rows="15" style="resize: vertical;" placeholder="~a treasure chest for the curious mind - unknown"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button style="background-color:lightgray" class="btn btn-default" data-dismiss="modal">
+                        <i class="typcn typcn-times menu-icon"></i> Close
+                    </button>
+                    <button type="submit" class="btn btn-success btn-submit">
+                        <i class="typcn typcn-location-arrow menu-icon"></i> Submit
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!--empty-->
-
-
 
 
 

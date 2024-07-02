@@ -6,8 +6,26 @@
     .nav-item:hover .sub-menu {
         display: block;
     }
+    .sidebar-note {
+        width: 90%;
+        background-color: #fff3cd;
+        padding: 10px;
+        margin: 5px 0 0 15px;
+        border: 1px solid #ffeeba; 
+        border-radius: 4px;
+        font-size: 14px; 
+        color: #856404; 
+        text-align: justify;
+    }
+    .nav-item label {
+      font-weight: bold;
+      display: block;
+      margin: 0 0 5px 10px;
+      color:green;
+    }
 </style>
 <?php 
+    use App\Models\Notes;
     $id = Auth::user()->userid;
     $joinedData = DB::connection('dohdtr')
                     ->table('users')
@@ -15,6 +33,7 @@
                     ->where('users.userid', '=', $id)
                     ->select('users.section', 'users.division')
                     ->first();
+    $notes = Notes::with('user')->get();
 ?>
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
   <ul class="nav">
@@ -240,6 +259,12 @@
             <span class="menu-title">Facility</span>
           </a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ route('tasks') }}">
+            <i class="typcn typcn-pin menu-icon"></i>
+            <span class="menu-title">Tasks</span>
+          </a>
+        </li>
     @endif
 
     @if(Auth::user()->userid == 1027 || Auth::user()->userid == 2660)
@@ -335,14 +360,35 @@
         </a>
       </li>
     @endif -->
-
-  </ul>
-  <ul class="sidebar-legend">
-    <li>
-      <p class="sidebar-menu-title">Category</p>
+    <!-- <li class="nav-item">
+    <label for="sidebar-note" style="display: flex; align-items: center;">
+                Note(s):
+                <a href="#" data-toggle="modal" data-target="#new_note">
+                    <i class="typcn typcn-film menu-icon"></i>
+                    <span class="menu-title">CHAKI</span>
+                </a>
+            </label> -->
+        <!-- <label style="color:gray">#Legend:
+            <small>
+              <i style="color:green" class="typcn typcn-media-record menu-icon"></i> DONE
+              <i style="color:blue" class="typcn typcn-media-record-outline menu-icon"></i>  IN-PROGRESS
+            </small>
+        </label> -->
+        <!-- @foreach($notes as $note)
+          <div class="sidebar-note">
+            {{$note->notes}}<small>{{' - '. $note->user->lname .', '.$note->user->fname}}</small>
+            @if($note->status == 0)
+              <i style="color:green; float:right" class="typcn typcn-media-record menu-icon"></i> -->
+              <!-- <i style="color:blue; float:right" class="typcn typcn-media-record-outline menu-icon"></i>  -->
+            <!-- @elseif($note->status == 1) -->
+              <!-- <i style="color:green; float:right" class="typcn typcn-media-record menu-icon"></i> -->
+            <!-- @elseif($note->status == 2) -->
+              <!-- <i style="color:green; float:right" class="typcn typcn-media-record menu-icon"></i> -->
+            <!-- @endif -->
+          <!-- </div> -->
+        <!-- @endforeach -->
     </li>
-    <li class="nav-item"><a href="#" class="nav-link">#Patients</a></li>
-    <li class="nav-item"><a href="#" class="nav-link">#Fundsource</a></li>
-    <li class="nav-item"><a href="#" class="nav-link">#MAIFF</a></li>
-  </ul>
 </nav>
+@section('content')
+    @include('modal')
+@endsection

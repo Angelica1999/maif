@@ -64,7 +64,7 @@ class Dv3Controller extends Controller
                     }
                 ]);
 
-        if($filter_date){
+        if($request->gen_key){
             $dateRange = explode(' - ', $filter_date);
             $start_date = date('Y-m-d', strtotime($dateRange[0]));
             $end_date = date('Y-m-d', strtotime($dateRange[1]));
@@ -84,6 +84,8 @@ class Dv3Controller extends Controller
             $request->filter_date3 = '';
             $request->filter_on3 = '';
             $request->filter_by3 = '';
+            $request->gen_key = '';
+            $filter_date = '';
 
         }else if($request->keyword){
             $keyword = $request->keyword;
@@ -157,7 +159,7 @@ class Dv3Controller extends Controller
         $by =  User::whereIn('userid', Dv3::pluck('created_by'))->select('userid', 'lname', 'fname')->get();
 
         //header filtering 
-        if($request->filt3_dv){
+        // if($request->filt3_dv){
             if($request->filter_rem3 != null){
                 $dv3->whereIn('remarks', explode(',', $request->filter_rem3));
             }
@@ -187,7 +189,7 @@ class Dv3Controller extends Controller
             if($request->filter_by3 != null){
                 $dv3->whereIn('created_by', explode(',', $request->filter_by3));
             }
-        }
+        // }
 
         return view('dv3.dv3',[
             'dv3' => $dv3->paginate(50),
@@ -205,7 +207,9 @@ class Dv3Controller extends Controller
             'proponents' => $proponents,
             'dates' => $dates,
             'on' => $on,
-            'by' => $by
+            'by' => $by,
+            'gen_key' => $request->gen_key,
+            'generated_dates' => $filter_date
             ]);
     }
 
