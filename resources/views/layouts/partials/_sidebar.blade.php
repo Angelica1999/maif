@@ -259,12 +259,12 @@
             <span class="menu-title">Facility</span>
           </a>
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a class="nav-link" href="{{ route('tasks') }}">
             <i class="typcn typcn-pin menu-icon"></i>
             <span class="menu-title">Tasks</span>
           </a>
-        </li>
+        </li> -->
     @endif
 
     @if(Auth::user()->userid == 1027 || Auth::user()->userid == 2660)

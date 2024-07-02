@@ -1,15 +1,16 @@
 <div style="display: flex; align-items: center;" class="clone_saa">
     &nbsp;&nbsp;&nbsp;&nbsp;
-    <select name="fundsource_id[]" id="{{$uniqueCode}}" style="width:150px;" class="dv3_saa" onchange="saaValue($(this))" required>
+    <select name="fundsource_id[]" id="{{$uniqueCode}}" style="width:200px;" class="dv3_saa" onchange="saaValue($(this))" required>
         <option value="" data-facilities="" style="background-color:green">- Select SAA -</option> 
     </select> 
     <input type="hidden" name="info_id[]" id="info_id" class="info_id">
+    <input type="hidden" name="existing_info_id[]" id="existing_info_id" class="existing_info_id" value="0">
     <input type="hidden" name="existing[]" id="existing" class="existing" value="0">
     <div class="custom-dropdown" style="margin-left: 8px;">
-        <input type="text" name="amount[]" id="amount[]" style="width:120px; height: 42px;" onkeyup="validateAmount(this)" oninput="checkedAmount($(this))" class="amount" required autocomplete="off">
+        <input type="text" name="amount[]" id="amount[]" style="width:150px; height: 42px;" onkeyup="validateAmount(this)" oninput="checkedAmount($(this))" class="amount" required autocomplete="off">
     </div>
-    <input type="text" name="vat_amount[]" id="vat_amount" class="vat_amount" style="margin-left: 8px; width: 80px; height: 42px;" class="ft15" readonly required>
-    <input type="text" name="ewt_amount[]" id="ewt_amount" class="ewt_amount" style="width: 80px; height: 42px;" class="ft15" readonly required>
+    <!-- <input type="text" name="vat_amount[]" id="vat_amount" class="vat_amount" style="margin-left: 8px; width: 80px; height: 42px;" class="ft15" readonly required>
+    <input type="text" name="ewt_amount[]" id="ewt_amount" class="ewt_amount" style="width: 80px; height: 42px;" class="ft15" readonly required> -->
     <button type="button" id="remove_saa" class="remove_saa" class="fa fa-plus" style="border: none; width: 20px; height: 42px; font-size: 11px; cursor: pointer; width: 30px;">-</button>
 </div>
 <script>

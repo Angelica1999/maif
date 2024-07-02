@@ -141,13 +141,13 @@
                           <td style="width:14%; border-left: 0 " ></td>
                           <td style="width:14%; border-left: 0; vertical-align: top; text-align:center; ">
                             <br><br><br>
-                            <label>{{ number_format(floatval(str_replace(',','',$dv3->total)), 2, '.', ',') }}</label><br>
+                            <!-- <label>{{ number_format(floatval(str_replace(',','',$dv3->total)), 2, '.', ',') }}</label><br> -->
                             @for ($i = 1; $i <= $all; $i++)
                               <br> 
                             @endfor
-                            <label>{{ number_format(floatval(str_replace(',','',$total)), 2, '.', ',') }}</u></label>
-                            <label><img src="{{realpath(__DIR__ . '/../../..').'/public/images/line.png'}}" width="60%"></label>
-                            <label><?php echo number_format($dv3->total - $total, 2,'.', ',')?></label>
+                            <!-- <label>{{ number_format(floatval(str_replace(',','',$total)), 2, '.', ',') }}</u></label>
+                            <label><img src="{{realpath(__DIR__ . '/../../..').'/public/images/line.png'}}" width="60%"></label> -->
+                            <label><?php echo number_format($total, 2,'.', ',')?></label>
                         </td>
                         </tr>
                       </table>

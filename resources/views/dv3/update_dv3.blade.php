@@ -182,7 +182,7 @@
                                     @foreach($dv3->extension as $row)
                                         <div style="display: flex; align-items: center;" class="clone_saa">
                                             &nbsp;&nbsp;&nbsp;&nbsp;
-                                            <select name="fundsource_id[]" id="dv3_saa1{{$row->id}}" style="width:150px;" class="dv3_saa" onchange="saaValue($(this))" disabled required>
+                                            <select name="fundsource_id[]" id="dv3_saa1{{$row->id}}" style="width:200px;" class="dv3_saa" onchange="saaValue($(this))" disabled required>
                                                 <option value="" data-facilities="" style="background-color:green">- Select SAA -</option>
                                                 @foreach($info as $item)
                                                     <?php
@@ -208,12 +208,13 @@
                                                 @endforeach
                                             </select> 
                                             <input type="hidden" name="info_id[]" id="info_id" class="info_id" value="{{$row->info_id}}">
+                                            <input type="hidden" name="existing_info_id[]" id="existing_info_id" class="existing_info_id" value="{{$row->info_id}}">
                                             <input type="hidden" name="existing[]" id="existing" class="existing" value="{{$row->amount}}">
                                             <div class="custom-dropdown" style="margin-left: 8px;">
-                                                <input type="text" name="amount[]" id="amount[]" value="{{$row->amount}}" style="width:120px; height: 42px;" onkeyup="validateAmount(this)" oninput="checkedAmount($(this))" class="amount" required autocomplete="off" disabled>
+                                                <input type="text" name="amount[]" id="amount[]" value="{{$row->amount}}" style="width:150px; height: 42px;" onkeyup="validateAmount(this)" oninput="checkedAmount($(this))" class="amount" required autocomplete="off" disabled>
                                             </div>
-                                            <input type="text" name="vat_amount[]" id="vat_amount" class="vat_amount" value="{{$row->vat}}" style="margin-left: 8px; width: 80px; height: 42px;" class="ft15" readonly required>
-                                            <input type="text" name="ewt_amount[]" id="ewt_amount" class="ewt_amount" value="{{$row->ewt}}" style="width: 80px; height: 42px;" class="ft15" readonly required>
+                                            <!-- <input type="text" name="vat_amount[]" id="vat_amount" class="vat_amount" value="{{$row->vat}}" style="margin-left: 8px; width: 80px; height: 42px;" class="ft15" readonly required>
+                                            <input type="text" name="ewt_amount[]" id="ewt_amount" class="ewt_amount" value="{{$row->ewt}}" style="width: 80px; height: 42px;" class="ft15" readonly required> -->
                                             <button type="button" id="add_more" class="add_more" class="fa fa-plus" style="border: none; width: 20px; height: 42px; font-size: 11px; cursor: pointer; width: 30px;" disabled>+</button>
                                         </div>
                                         <script>
@@ -230,21 +231,13 @@
                             <td style="width:14%; border-left: 0 " ></td>
                             <td style="width:14%; border-left: 0; vertical-align: top; text-align:center; ">
                                 <br><br><br><br>
-                                <label class="total_amount">{{$dv3->total}}</label>
+                                <!-- <label class="total_amount">{{$dv3->total}}</label> -->
                                 <input type="hidden" class="total_amount" name="total_amount" id="total_amount" value="{{$dv3->total}}">
                                 @for ($i = 1; $i <= $all + 3; $i++)
                                     <br> 
                                 @endfor
-                                
-                                @if($f_info->vat > 3)
-                                    <label class="deduction">{{number_format($dv3->total/1.12 * ($f_info->vat + $f_info->ewt)/100, 2,'.', ',')}}</label><br>
-                                    <label>____________</label><br>
-                                    <label class="remaining">{{number_format($dv3->total - ($dv3->total/1.12 * ($f_info->vat + $f_info->ewt)/100) , 2,'.', ',')}}</label>
-                                @else
-                                    <label class="deduction">{{number_format($dv3->total * ($f_info->vat + $f_info->ewt)/100, 2, '.',',')}}</label><br>
-                                    <label>____________</label><br>
-                                    <label class="remaining">{{number_format($dv3->total - ($dv3->total * ($f_info->vat + $f_info->ewt)/100) , 2,'.', ',')}}</label>
-                                @endif
+                            
+                                <label class="remaining">{{number_format($dv3->total, 2,'.', ',')}}</label>
                             </td>
                           </tr>
                     </table>
@@ -389,8 +382,7 @@
     $('.dv3_saa').select2();
     
     var check = 0;
-    var vat = {{$f_info->vat}}, ewt = {{$f_info->ewt}};
-
+    var vat = 0, ewt = 0;
     $(document).ready(function() {
         var type = $('.identifier').val();
         console.log('chaki', type);
@@ -455,13 +447,17 @@
         timer = setTimeout(function () {
             var row = $(element).closest('div.clone_saa');
             var existing = row.find('input.existing');
+            var existing_info = row.find('input.existing_info_id');
             var info_id = row.find('select.dv3_saa option:selected').attr('dataproponentInfo_id');
             console.log('info_id:', info_id);
             $.get("{{ url('/balance')}}", function(result) {
                 var allocated_funds = Number((result.allocated_funds.find(item =>item.id == info_id)|| {}).remaining_balance|| 0);
-                if(existing != 0){
-                    allocated_funds = allocated_funds + Number(existing);
+                if(existing != 0 && existing_info.val() == info_id){
+                    allocated_funds = allocated_funds + Number(existing.val());
+                    console.log('chck', existing_info.val());
                 }
+                console.log('total:', existing.val());
+
                 if(value > allocated_funds){
                     Lobibox.alert('error',{
                         size : 'mini',
@@ -469,13 +465,13 @@
                     });
                     row.find('input.amount').val('');
                 }else{
-                    if(vat> 3){
-                        row.find('input.vat_amount').val((value/1.12 * vat / 100). toFixed(2));
-                        row.find('input.ewt_amount').val((value/1.12 * ewt / 100). toFixed(2));
-                    }else{
-                        row.find('input.vat_amount').val((value * vat / 100). toFixed(2));
-                        row.find('input.ewt_amount').val((value * ewt / 100). toFixed(2));
-                    }
+                    // if(vat> 3){
+                    //     row.find('input.vat_amount').val((value/1.12 * vat / 100). toFixed(2));
+                    //     row.find('input.ewt_amount').val((value/1.12 * ewt / 100). toFixed(2));
+                    // }else{
+                    //     row.find('input.vat_amount').val((value * vat / 100). toFixed(2));
+                    //     row.find('input.ewt_amount').val((value * ewt / 100). toFixed(2));
+                    // }
                 }
                 cal();
             });
@@ -495,15 +491,16 @@
         total = cut_off.reduce(function(prev, current){
             return Number(prev) + Number(current);
         }); 
-        if(vat> 3){
-            $('.deduction').text((total/1.12 * (vat + ewt) / 100). toFixed(2));
-            $('.remaining').text(total- (total/1.12 * (vat + ewt) / 100). toFixed(2));
-        }else{
-            $('.deduction').text((total * (vat + ewt) / 100). toFixed(2));
-            $('.remaining').text(total- (total * (vat + ewt) / 100). toFixed(2));
-        }
+        // if(vat> 3){
+        //     $('.deduction').text((total/1.12 * (vat + ewt) / 100). toFixed(2));
+        //     $('.remaining').text(total- (total/1.12 * (vat + ewt) / 100). toFixed(2));
+        // }else{
+        //     $('.deduction').text((total * (vat + ewt) / 100). toFixed(2));
+        //     $('.remaining').text(total- (total * (vat + ewt) / 100). toFixed(2));
+        // }
         $('.total_amount').text(total);
         $('.total_amount').val(total);
+        $('.remaining').text(total);
       
     }
 
@@ -536,15 +533,15 @@
       }
     
     function getVat(facility_id){
-        $.get("{{ url('/getvatEwt').'/' }}"+facility_id, function(result) {
-            console.log('result', result);
-            if(result == 0){
-                alert('Please update VAT and EWT of this facility first!');
-            }else{
-                vat = result.vat;
-                ewt = result.Ewt
-            }
-        });
+        // $.get("{{ url('/getvatEwt').'/' }}"+facility_id, function(result) {
+        //     console.log('result', result);
+        //     if(result == 0){
+        //         alert('Please update VAT and EWT of this facility first!');
+        //     }else{
+        //         vat = result.vat;
+        //         ewt = result.Ewt
+        //     }
+        // });
     }
 
     function addOption(data){

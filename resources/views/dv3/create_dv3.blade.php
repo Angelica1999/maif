@@ -172,15 +172,15 @@
                                 <div class="container">
                                     <div style="display: flex; align-items: center;" class="clone_saa">
                                         &nbsp;&nbsp;&nbsp;&nbsp;
-                                        <select name="fundsource_id[]" id="dv3_saa1" style="width:150px;" class="dv3_saa" onchange="saaValue($(this))" disabled required>
+                                        <select name="fundsource_id[]" id="dv3_saa1" style="width:200px;" class="dv3_saa" onchange="saaValue($(this))" disabled required>
                                             <option value="" data-facilities="" style="background-color:green">- Select SAA -</option> 
                                         </select> 
                                         <input type="hidden" name="info_id[]" id="info_id" class="info_id">
                                         <div class="custom-dropdown" style="margin-left: 8px;">
-                                            <input type="text" name="amount[]" id="amount[]" style="width:120px; height: 42px;" onkeyup="validateAmount(this)" oninput="checkedAmount($(this))" class="amount" required autocomplete="off" disabled>
+                                            <input type="text" name="amount[]" id="amount[]" style="width:150px; height: 42px;" onkeyup="validateAmount(this)" oninput="checkedAmount($(this))" class="amount" required autocomplete="off" disabled>
                                         </div>
-                                        <input type="text" name="vat_amount[]" id="vat_amount" class="vat_amount" style="margin-left: 8px; width: 80px; height: 42px;" class="ft15" readonly required>
-                                        <input type="text" name="ewt_amount[]" id="ewt_amount" class="ewt_amount" style="width: 80px; height: 42px;" class="ft15" readonly required>
+                                        <!-- <input type="text" name="vat_amount[]" id="vat_amount" class="vat_amount" style="margin-left: 8px; width: 80px; height: 42px;" class="ft15" readonly required>
+                                        <input type="text" name="ewt_amount[]" id="ewt_amount" class="ewt_amount" style="width: 80px; height: 42px;" class="ft15" readonly required> -->
                                         <button type="button" id="add_more" class="add_more" class="fa fa-plus" style="border: none; width: 20px; height: 42px; font-size: 11px; cursor: pointer; width: 30px;" disabled>+</button>
                                     </div>
                                 </div>
@@ -194,7 +194,7 @@
                                 <label class="total_amount"></label>
                                 <input type="hidden" class="total_amount" name="total_amount" id="total_amount"><br>
                                 <label class="deduction"></label><br><br>
-                                <label>____________</label><br>
+                                <!-- <label>____________</label><br> -->
                                 <label class="remaining"></label>
                             </td>
                           </tr>
@@ -388,13 +388,13 @@
                     });
                     row.find('input.amount').val('');
                 }else{
-                    if(vat> 3){
-                        row.find('input.vat_amount').val((value/1.12 * vat / 100). toFixed(2));
-                        row.find('input.ewt_amount').val((value/1.12 * ewt / 100). toFixed(2));
-                    }else{
-                        row.find('input.vat_amount').val((value * vat / 100). toFixed(2));
-                        row.find('input.ewt_amount').val((value * ewt / 100). toFixed(2));
-                    }
+                    // if(vat> 3){
+                    //     row.find('input.vat_amount').val((value/1.12 * vat / 100). toFixed(2));
+                    //     row.find('input.ewt_amount').val((value/1.12 * ewt / 100). toFixed(2));
+                    // }else{
+                    //     row.find('input.vat_amount').val((value * vat / 100). toFixed(2));
+                    //     row.find('input.ewt_amount').val((value * ewt / 100). toFixed(2));
+                    // }
                 }
 
             cal();
@@ -412,14 +412,15 @@
                 total = total + Number($(this).val().replace(/[^\d.]/g, ''));
             }
         });
-        if(vat> 3){
-            $('.deduction').text(formatToLocaleString(total/1.12 * (Number(vat) + Number(ewt)) / 100));
-            $('.remaining').text(formatToLocaleString(total- (total/1.12 * (Number(vat) + Number(ewt)) / 100)));
-        }else{
-            $('.deduction').text(formatToLocaleString((total * (Number(vat) + Number(ewt)) / 100). toFixed(2)));
-            $('.remaining').text(formatToLocaleString(total- (total * (Number(vat) + Number(ewt)) / 100)));
-        }
-        $('.total_amount').text(formatToLocaleString(total));
+        // if(vat> 3){
+        //     $('.deduction').text(formatToLocaleString(total/1.12 * (Number(vat) + Number(ewt)) / 100));
+        //     $('.remaining').text(formatToLocaleString(total- (total/1.12 * (Number(vat) + Number(ewt)) / 100)));
+        // }else{
+        //     $('.deduction').text(formatToLocaleString((total * (Number(vat) + Number(ewt)) / 100). toFixed(2)));
+        //     $('.remaining').text(formatToLocaleString(total- (total * (Number(vat) + Number(ewt)) / 100)));
+        // }
+        $('.remaining').text(formatToLocaleString(total));
+        // $('.total_amount').text(formatToLocaleString(total));
         $('.total_amount').val(total);
     }
 
@@ -456,15 +457,15 @@
       }
     
     function getVat(facility_id){
-        $.get("{{ url('/getvatEwt').'/' }}"+facility_id, function(result) {
-            console.log('result', result);
-            if(result == 0){
-                alert('Please update VAT and EWT of this facility first!');
-            }else{
-                vat = result.vat;
-                ewt = result.Ewt
-            }
-        });
+        // $.get("{{ url('/getvatEwt').'/' }}"+facility_id, function(result) {
+        //     console.log('result', result);
+        //     if(result == 0){
+        //         alert('Please update VAT and EWT of this facility first!');
+        //     }else{
+        //         vat = result.vat;
+        //         ewt = result.Ewt
+        //     }
+        // });
     }
 
     function addOption(data){
