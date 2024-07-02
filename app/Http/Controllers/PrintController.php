@@ -326,15 +326,15 @@ class PrintController extends Controller
                         );
                     }
                 ])->first();
-        $info = AddFacilityInfo::where('facility_id', $dv3->facility_id)->first();
-        if($info->vat > 3){
-            $total = ($dv3->total/ 1.12 * $info->vat / 100) + ($dv3->total/ 1.12 * $info->ewt / 100);
-        }else{
-            $total = ($dv3->total * $info->vat / 100) + ($dv3->total * $info->ewt / 100);
-        }
+        // $info = AddFacilityInfo::where('facility_id', $dv3->facility_id)->first();
+        // if($info->vat > 3){
+        //     $total = ($dv3->total/ 1.12 * $info->vat / 100) + ($dv3->total/ 1.12 * $info->ewt / 100);
+        // }else{
+        //     $total = ($dv3->total * $info->vat / 100) + ($dv3->total * $info->ewt / 100);
+        // }
         $data = [
             'dv3'=> $dv3,
-            'total' => $total
+            'total' => $dv3->total
         ];
         $pdf = PDF::loadView('dv3.dv3_pdf', $data);
         $pdf->setPaper('Folio');

@@ -251,8 +251,8 @@ class Dv3Controller extends Controller
         
         $amount = $request->amount;
         $saa = $request->fundsource_id;
-        $vat = $request->vat_amount;
-        $ewt = $request->ewt_amount;
+        // $vat = $request->vat_amount;
+        // $ewt = $request->ewt_amount;
 
         foreach($request->info_id as $index => $id){
             
@@ -262,7 +262,7 @@ class Dv3Controller extends Controller
             $util = new Utilization();
             $util->div_id = $dv3->route_no;
             $util->beginning_balance = $info->remaining_balance;
-            $util->discount = (float)str_replace(',','',$vat[$index]) + (float)str_replace(',','',$ewt[$index]);
+            $util->discount = 0;
             $util->utilize_amount = (float)str_replace(',','',$amount[$index]);
             $util->facility_id = $request->dv3_facility;
             $util->proponent_id = $info->proponent_id;
@@ -281,8 +281,8 @@ class Dv3Controller extends Controller
             $dv3_funds->fundsource_id = $saa[$index];
             $dv3_funds->info_id = $id;
             $dv3_funds->amount = (float)str_replace(',','',$amount[$index]);
-            $dv3_funds->vat = (float)str_replace(',','',$vat[$index]);
-            $dv3_funds->ewt = (float)str_replace(',','',$ewt[$index]);
+            $dv3_funds->vat = 0;
+            $dv3_funds->ewt = 0;
             $dv3_funds->save();
         }
         return redirect()->back()->with('dv3', true);
@@ -340,8 +340,8 @@ class Dv3Controller extends Controller
         $userid = Auth::user()->userid;
         $amount = $request->amount;
         $saa = $request->fundsource_id;
-        $vat = $request->vat_amount;
-        $ewt = $request->ewt_amount;
+        // $vat = $request->vat_amount;
+        // $ewt = $request->ewt_amount;
       
         $dv3 = Dv3::where('route_no',$route_no)->with('extension')->first();
         foreach($dv3->extension as $item){
@@ -380,7 +380,7 @@ class Dv3Controller extends Controller
             $util = new Utilization();
             $util->div_id = $dv3->route_no;
             $util->beginning_balance = $info->remaining_balance;
-            $util->discount = (float)str_replace(',','',$vat[$index]) + (float)str_replace(',','',$ewt[$index]);
+            $util->discount = 0;
             $util->utilize_amount = (float)str_replace(',','',$amount[$index]);
             $util->facility_id = $request->dv3_facility;
             $util->proponent_id = $info->proponent_id;
@@ -399,8 +399,8 @@ class Dv3Controller extends Controller
             $dv3_funds->fundsource_id = $saa[$index];
             $dv3_funds->info_id = $id;
             $dv3_funds->amount = (float)str_replace(',','',$amount[$index]);
-            $dv3_funds->vat = (float)str_replace(',','',$vat[$index]);
-            $dv3_funds->ewt = (float)str_replace(',','',$ewt[$index]);
+            $dv3_funds->vat = 0;
+            $dv3_funds->ewt = 0;
             $dv3_funds->save();
         }
         // return $i;
