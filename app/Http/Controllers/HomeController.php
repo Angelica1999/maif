@@ -45,6 +45,8 @@ class HomeController extends Controller
 
      public function index(Request $request){
         // return $request->input('sort');
+        // return explode(',',$request->filter_fname);
+
         $filter_date = $request->input('filter_dates');
         $order = $request->input('order', 'asc');
 
@@ -71,8 +73,7 @@ class HomeController extends Controller
         ]);
        
         //  -- for date range
-
-        if($filter_date){
+        if($request->gen){
             $dateRange = explode(' - ', $filter_date);
             $start_date = date('Y-m-d', strtotime($dateRange[0]));
             $end_date = date('Y-m-d', strtotime($dateRange[1]));
@@ -97,6 +98,9 @@ class HomeController extends Controller
             $request->filter_barangay = '';
             $request->filter_on = '';
             $request->filter_by = '';
+            $filter_date = '';
+            $request->gen = '';
+
 
         }else if($request->keyword){
             $keyword = $request->keyword;
@@ -170,7 +174,7 @@ class HomeController extends Controller
 
         // for filtering column
 
-        if($request->filter_col){
+        // if($request->filter_col){
             if($request->filter_date){
                 $patients = $patients->whereIn('date_guarantee_letter', explode(',',$request->filter_date));
             }
@@ -211,9 +215,10 @@ class HomeController extends Controller
                 $patients = $patients->whereIn(DB::raw('DATE(created_at)'), explode(',',$request->filter_on));
             }
             if($request->filter_by){
+                // return explode(',',$request->filter_by);
                 $patients = $patients->whereIn('created_by', explode(',',$request->filter_by));
             }
-        }
+        // }
 
         $date = clone ($patients);
         $fname = clone ($patients);
@@ -274,6 +279,8 @@ class HomeController extends Controller
             'filter_barangay' => explode(',',$request->filter_barangay),
             'filter_on' => explode(',',$request->filter_on),
             'filter_by' => explode(',',$request->filter_by),
+            'generate_dates' => $filter_date,
+            'gen' => $request->gen,
             'order' => $order
         ]);
      }

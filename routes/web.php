@@ -185,8 +185,13 @@ Route::match(['get','post'],'disbursement3/process/{type}', [App\Http\Controller
 
 //modified utilization dv tracking
 Route::get('checkdv/{route_no}', [App\Http\Controllers\UtilizationController::class, 'getDv'])->name('assigned.dv');
+Route::get('/pusher', [App\Http\Controllers\PusherController::class, 'push'])->name('push.notify');
+Route::get('/pusher/save', [App\Http\Controllers\PusherController::class, 'save'])->name('notify.save');
 
-// Route::match(['get', 'post'],'/dv3/create/save', [App\Http\Controllers\DvController::class, 'created'])->name('dv.create.save');
+Route::get('/tasks', [App\Http\Controllers\PusherController::class, 'tasks'])->name('tasks');
+Route::get('/notepad', [App\Http\Controllers\PusherController::class, 'note'])->name('add.note');
+Route::post('/notepad/save', [App\Http\Controllers\PusherController::class, 'save'])->name('save.note');
+
 
 
 

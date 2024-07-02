@@ -28,29 +28,38 @@
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-            <form method="GET" action="">
-                <div class="input-group float-right w-50" style="min-width: 600px;">
-                    <input type="text" class="form-control" name="keyword" placeholder="Search..." value="{{$keyword}}" id="search-input">
-                    <div class="input-group-append">
-                        <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
-                        <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
-                        <button type="button" href="#filter_dv" data-backdrop="static" data-toggle="modal" style="background-color:teal; color:white; width:100px" class=""><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
-                        @if(Auth::user()->userid != 1027 || Auth::user()->userid == 2660)
-                            <button type="button" href="#create_dv" onclick="createDv()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
-                            <button type="button" id="release_btn" data-target="#releaseTo" style="display:none; background:teal; color:white" onclick="putRoutes($(this))" data-target="#releaseTo" data-backdrop="static" data-toggle="modal" class="btn btn-md">Release All</button>
-                            <input type="hidden" class="all_route" id="all_route" name="all_route">
-                        @else
-                        @endif
-                        <button type="submit" value="filt" style="display:none; background-color:00563B; color:white;" name="filt_dv" id="filt_dv" class="btn btn-success btn-md"><i class="typcn typcn-filter menu-icon"></i>Filter</button>
-                    </div>
+            <div class="float-right">
+                <div class="input-group">
+                    <form method="GET" action="{{ route('dv')}}">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="keyword" placeholder="Search..." value="{{$keyword}}" id="search-input" style="width:350px;">
+                            <div class="input-group-append">
+                                <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
+                                <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
+                                @if(Auth::user()->userid != 1027 || Auth::user()->userid == 2660)
+                                    <button type="button" href="#create_dv" onclick="createDv()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
+                                    <button type="button" id="release_btn" data-target="#releaseTo" style="display:none; background:teal; color:white" onclick="putRoutes($(this))" data-target="#releaseTo" data-backdrop="static" data-toggle="modal" class="btn btn-md">Release All</button>
+                                    <input type="hidden" class="all_route" id="all_route" name="all_route">
+                                @else
+                                @endif
+                                <button type="submit" value="filt" style="display:none; background-color:00563B; color:white;" name="filt_dv" id="filt_dv" class="btn btn-success btn-md"><i class="typcn typcn-filter menu-icon"></i>Filter</button>
+                            </div>
+                        </div>
+                        <div class = "input-group">
+                            <input type="text" style="text-align:center" class="form-control" id="dates_filter" value="{{$dates_generated}}" name="dates_filter" />
+                            <button type="submit" id="gen_btn" style="background-color:teal; color:white; width:107px" class=""><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
+                        </div>
+                        <input type="hidden" id="filter_rem" name="filter_rem" value="{{implode(',',$filter_rem)}}"></input>
+                        <input type="hidden" id="filter_fac" name="filter_fac" value="{{implode(',',$filter_fac)}}"></input>
+                        <input type="hidden" id="filter_pro" name="filter_pro" value="{{implode(',',$filter_pro)}}"></input>
+                        <input type="hidden" id="filter_date" name="filter_date" value="{{implode(',',$filter_date)}}"></input>
+                        <input type="hidden" id="filter_created" name="filter_created" value="{{implode(',',$filter_created)}}"></input>
+                        <input type="hidden" id="filter_saa" name="filter_saa" value="{{implode(',',$filter_saa)}}"></input>
+                        <input type="hidden" id="generate" name="generate" value="{{$generate}}"></input>
+                    </form>
                 </div>
-                <input type="hidden" id="filter_rem" name="filter_rem"></input>
-                <input type="hidden" id="filter_fac" name="filter_fac"></input>
-                <input type="hidden" id="filter_pro" name="filter_pro"></input>
-                <input type="hidden" id="filter_date" name="filter_date"></input>
-                <input type="hidden" id="filter_created" name="filter_created"></input>
-                <input type="hidden" id="filter_saa" name="filter_saa"></input>
-            </form>
+            </div>
+            
             <h4 class="card-title">Disbursement Voucher</h4>
             <p class="card-description">
                 MAIF-IPP
@@ -140,6 +149,7 @@
                             <th style="min-width: 160px;">Month </th>
                             <th style="min-width: 170px;">Amount </th>
                             <th style="min-width: 150px;">Total </th>
+                            <th style="min-width: 150px;">Created On </th>
                             <th style="min-width: 190px;"><a href="{{ route('dv', ['sort' => 'user', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">Created By</a>
                                 <i id="created_i" class="typcn typcn-filter menu-icon"><i>
                                 <div class="filter" id="created_div" style="display:none;">
@@ -268,6 +278,7 @@
                                 </td>
                             
                                 <td class="td">{{$dvs->total_amount}}</td>
+                                <td class="td">{{date('F j, Y', strtotime($dvs->created_at))}}</td>
                                 <td class="td">{{ $dvs->user->lname .', '. $dvs->user->fname }}</td>
                             </tr>
                         @endforeach

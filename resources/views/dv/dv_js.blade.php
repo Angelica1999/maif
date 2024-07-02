@@ -12,6 +12,9 @@
     $(function() {
         $('#dates_filter').daterangepicker();
     });
+    $('#gen_btn').on('click', function(){
+        $('#generate').val(1);
+    });
     $('#rem_select').select2();
     $('#fac_select').select2();
     $('#saa_select').select2();
