@@ -563,4 +563,26 @@ class Dv3Controller extends Controller
             return redirect()->back()->with('dv3_paid', true);
         }
     }
+
+    public function dv3Remove($route_no){
+        Dv3::where('route_no', $route_no)->delete();
+        $extends = Dv3Fundsource::where('route_no', $route_no)->get();
+        foreach($extends as $row){
+            $info = ProponentInfo::where('id', $row->info_id)->first();
+            if($info){
+                $info->remaining_balance = (float)str_replace(',', '', $info->remaining_balance) + $row->amount;
+                $info->save();
+                $row->delete();
+                $u = Utilization::where('div_id', $route_no)->where('proponentinfo_id', $info->id)->where('status', 0)->first();
+                $util = Utilization::where('proponentinfo_id', $info->id)->where('id','>',$u->id)->get();
+                $u->delete();
+                foreach($util as $item){
+                    $item->beginning_balance = (float) str_replace(',','', $item->beginning_balance) + $row->amount;
+                    $item->save();
+                }
+            }
+        }
+        Utilization::where('div_id',$route_no)->delete();
+        return redirect()->back()->with('dv3_remove', true);
+    }
 }

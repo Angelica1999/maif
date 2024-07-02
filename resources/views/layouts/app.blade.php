@@ -182,7 +182,7 @@
         @endif
         @if(session('remove_patientgroup'))
            <?php session()->forget('remove_patientgroup'); ?>
-           Lobibox.notify('success', {
+           Lobibox.notify('error', {
               msg: 'Successfully removed a message!'
            });
         @endif
@@ -314,6 +314,12 @@
            <?php session()->forget('note'); ?>
            Lobibox.notify('success', {
               msg: 'Successfully created a note!'
+           });
+        @endif
+        @if(session('dv3_remove'))
+           <?php session()->forget('dv3_remove'); ?>
+           Lobibox.notify('error', {
+              msg: 'Successfully removed this disbursement voucher v3!'
            });
         @endif
     </script>

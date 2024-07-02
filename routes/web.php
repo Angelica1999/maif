@@ -178,6 +178,7 @@ Route::match(['get', 'post'],'/dv3/save', [App\Http\Controllers\Dv3Controller::c
 Route::get('/dv3/create', [App\Http\Controllers\Dv3Controller::class, 'createDv3'])->name('dv3.create');
 Route::get('clone/saa/{id}', [App\Http\Controllers\Dv3Controller::class, 'cloneSaa'])->name('saa.get');
 Route::get('dv3/pdf/{route_no}', [App\Http\Controllers\PrintController::class, 'dv3Pdf'])->name('dv3.pdf');
+Route::get('dv3/remove/{route_no}', [App\Http\Controllers\Dv3Controller::class, 'dv3Remove'])->name('dv3.remove');
 Route::match(['get', 'post'],'/dv3/update/{route_no}', [App\Http\Controllers\Dv3Controller::class, 'dv3Update'])->name('dv3.update');
 Route::match(['get', 'post'],'/dv3/save/{route_no}', [App\Http\Controllers\Dv3Controller::class, 'saveUpdate'])->name('dv3.update.save');
 Route::get('disbursement3/lists/{type}', [App\Http\Controllers\Dv3Controller::class, 'pendingDv3'])->name('budget.dv3');

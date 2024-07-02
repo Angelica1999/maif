@@ -192,7 +192,7 @@
                                     </td>
                                     @if(Auth::user()->userid != 1027 && Auth::user()->userid != 2660)
                                         <td>
-                                            <a href="{{ route('dv3.pdf', ['route_no' => $row->route_no]) }}" style="background-color:green;color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
+                                            <a href="{{ route('dv3.pdf', ['route_no' => $row->route_no]) }}" style="background-color:green;color:white; width:60px;" target="_blank" type="button" class="btn btn-xs">Print</a>
                                         </td>
                                         <td>
                                             <a href="#dv_history" onclick="getHistory('{{$row->route_no}}')" style="background-color:teal;color:white; width:80px;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">Edit History</a>

@@ -824,7 +824,7 @@ class DvController extends Controller
 
     public function removeDv($route_no){
         $dv = Dv::where('route_no', $route_no)->first();
-        $amount_list = 
+        // $amount_list = 
         $int_list = array_map('intval', json_decode($dv->info_id));
         $string_list = implode(',', $int_list);
         $info_list = ProponentInfo::whereIn('id', $int_list)->orderByRaw("FIELD(id, $string_list)")->get();
@@ -836,6 +836,13 @@ class DvController extends Controller
             $rem = (double) str_replace(',','',$info->remaining_balance) + (double) str_replace(',','', $amount_list[$index]);
             $info->remaining_balance = $rem;
             $info->save();
+            $u = Utilization::where('div_id', $route_no)->where('proponentinfo_id', $info->id)->where('status', 0)->first();
+            $util = Utilization::where('proponentinfo_id', $info->id)->where('id','>',$u->id)->get();
+            $u->delete();
+            foreach($util as $item){
+                $item->beginning_balance = (float) str_replace(',','', $item->beginning_balance) + (double) str_replace(',','', $amount_list[$index]);
+                $item->save();
+            }
         }
 
         $dv->delete();
