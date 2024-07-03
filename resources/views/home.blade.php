@@ -1,4 +1,5 @@
 @include('maif.editable_style')
+
 <style>
   .loading-container {
         position: fixed;

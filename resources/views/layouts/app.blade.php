@@ -316,10 +316,28 @@
               msg: 'Successfully created a note!'
            });
         @endif
+        @if(session('note_update'))
+           <?php session()->forget('note_update'); ?>
+           Lobibox.notify('success', {
+              msg: 'Successfully updated this note!'
+           });
+        @endif
+        @if(session('note_delete'))
+           <?php session()->forget('note_delete'); ?>
+           Lobibox.notify('error', {
+              msg: 'Successfully removed this note!'
+           });
+        @endif
         @if(session('dv3_remove'))
            <?php session()->forget('dv3_remove'); ?>
            Lobibox.notify('error', {
               msg: 'Successfully removed this disbursement voucher v3!'
+           });
+        @endif
+        @if(session('notes_update'))
+           <?php session()->forget('notes_update'); ?>
+           Lobibox.notify('success', {
+              msg: 'Done!'
            });
         @endif
     </script>

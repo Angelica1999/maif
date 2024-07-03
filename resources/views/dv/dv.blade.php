@@ -42,7 +42,7 @@
                                     <input type="hidden" class="all_route" id="all_route" name="all_route">
                                 @else
                                 @endif
-                                <button type="submit" value="filt" style="display:none; background-color:00563B; color:white;" name="filt_dv" id="filt_dv" class="btn btn-success btn-md"><i class="typcn typcn-filter menu-icon"></i>Filter</button>
+                                <button type="submit" value="filt" style="display:none; background-color:00563B; color:white;" name="filt_dv" id="filt_dv" class="btn btn-success btn-md"><i class="typcn typcn-filter menu-icon"></i>&nbsp;&nbsp;&nbsp;Filter</button>
                             </div>
                         </div>
                         <div class = "input-group">
