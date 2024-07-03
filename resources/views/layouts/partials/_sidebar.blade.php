@@ -187,12 +187,6 @@
                       
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('dv') }}">
-                            <i class="typcn typcn-document-text menu-icon"></i>
-                            <span class="menu-title">Disbursement V1</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
                       <a class="nav-link" href="{{ route('group') }}">
                         <i class="typcn typcn-group-outline menu-icon"></i>
                         <span class="menu-title">Group Patients</span>

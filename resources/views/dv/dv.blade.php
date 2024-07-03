@@ -291,6 +291,7 @@
                     <strong>No disbursement voucher found!</strong>
                 </div>
             @endif
+            <br>
             <div class="pl-5 pr-5 mt-5" id ="pagination_links">
                 {!! $disbursement->appends(request()->query())->links('pagination::bootstrap-5') !!}
             </div>

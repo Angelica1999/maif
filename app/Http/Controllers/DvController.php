@@ -125,7 +125,7 @@ class DvController extends Controller
             $dateRange = explode(' - ', $filter_dates);
             $start_date = date('Y-m-d', strtotime($dateRange[0]));
             $end_date = date('Y-m-d', strtotime($dateRange[1]));
-            $query ->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59']);
+            $query ->whereBetween('dv.created_at', [$start_date, $end_date . ' 23:59:59']);
      
         }
 
@@ -189,8 +189,11 @@ class DvController extends Controller
                     ->whereIn('proponent.proponent', explode(',', $request->filter_pro))
                     ->select('dv.*');
             }
+            if($request->filter_date){
+                $query->whereIn(DB::raw('DATE(date)'), explode(',',$request->filter_date));
+            }
             if($request->filter_created){
-                $query->whereIn('created_by', explode(',',$request->filter_created));
+                $query->whereIn('dv.created_by', explode(',',$request->filter_created));
             }
         // }            
 
