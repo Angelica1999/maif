@@ -982,7 +982,7 @@
                 }
             });
         }
-
+        
         initializeEditable();
         initializeGroupFunctions();
 
