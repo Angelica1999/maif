@@ -24,9 +24,9 @@
                         <div class="col-md-3  ">
                         <div class="form-group">
                             @if($row->status == 0)
-                                <textarea name="note" class="form-control" rows="5" style="color:blue; resize: vertical;" onclick="displayNote({{$row->id}})" readonly>{{$row->notes}}</textarea>
+                                <textarea name="note" class="form-control" rows="10" style="color:blue; resize: vertical;" onclick="displayNote({{$row->id}})" readonly>{{$row->notes}}</textarea>
                             @else
-                                <textarea name="note" class="form-control" rows="5" style="color:green; resize: vertical;" onclick="displayNote({{$row->id}})" readonly>{{$row->notes}}</textarea>
+                                <textarea name="note" class="form-control" rows="10" style="color:green; resize: vertical;" onclick="displayNote({{$row->id}})" readonly>{{$row->notes}}</textarea>
                             @endif
                         </div>
                         </div>
