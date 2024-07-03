@@ -189,9 +189,12 @@ Route::get('checkdv/{route_no}', [App\Http\Controllers\UtilizationController::cl
 Route::get('/pusher', [App\Http\Controllers\PusherController::class, 'push'])->name('push.notify');
 Route::get('/pusher/save', [App\Http\Controllers\PusherController::class, 'save'])->name('notify.save');
 
-Route::get('/tasks', [App\Http\Controllers\PusherController::class, 'tasks'])->name('tasks');
+Route::match(['get', 'post'],'/tasks', [App\Http\Controllers\PusherController::class, 'tasks'])->name('tasks');
 Route::get('/notepad', [App\Http\Controllers\PusherController::class, 'note'])->name('add.note');
 Route::post('/notepad/save', [App\Http\Controllers\PusherController::class, 'save'])->name('save.note');
+Route::get('/notepad/remove/{id}', [App\Http\Controllers\PusherController::class, 'delete'])->name('delete.note');
+Route::get('/notepad/{id}', [App\Http\Controllers\PusherController::class, 'process'])->name('process.note');
+Route::post('/notepad/update', [App\Http\Controllers\PusherController::class, 'update'])->name('update.note');
 
 
 

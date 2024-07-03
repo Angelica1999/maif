@@ -1,5 +1,4 @@
 @extends('layouts.app')
-
 @section('content')
 <div class="container-fluid col-lg-12 grid-margin stretch-card">
     <div class="card">
