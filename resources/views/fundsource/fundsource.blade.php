@@ -145,12 +145,12 @@
                             <th>FundSource</th>
                             <th>Proponent</th>
                             <th>Facility</th>
-                            <th>Beginning Balance</th>
+                            <th>Balance</th>
                             <th>Tax</th>
-                            <th>Utilize Amount</th>
-                            <th>Route No</th>
-                            <th>Created By</th>
-                            <th>Utilized On</th>
+                            <th>Amount</th>
+                            <th>Route</th>
+                            <th>By</th>
+                            <th>On</th>
                             <!-- <th>Remarks</th> -->
                             <th>Obligated</th>
                             <th>Paid</th>
@@ -287,6 +287,14 @@
         //     $('.btn-md').hide();
         // @endif
 
+        function splitIntoLines(text, length) {
+            var lines = [];
+            for (var i = 0; i < text.length; i += length) {
+                lines.push(text.substring(i, i + length));
+            }
+            return lines.join('<br>');
+        }
+
         function track_details2(event){
             event.stopPropagation();
             $('#track_details2').modal('show');
@@ -328,6 +336,9 @@
                         }else if(item.status == 3){
                             stat = 'Transfered/Added: ' + (item.transfer && item.transfer.remarks !== null ? item.transfer.remarks : '');
                         }
+
+                        stat = splitIntoLines(stat, 35); 
+
                         // else if(item.status == 1){
                         //     stat = 'Modified';
                         // }
