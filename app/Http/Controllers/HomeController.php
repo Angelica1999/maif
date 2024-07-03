@@ -241,7 +241,7 @@ class HomeController extends Controller
         $mncty = Muncity::whereIn('id', $muncity->groupBy('muncity_id')->pluck('muncity_id'))->select('id','description')->get();
         $prvnc = Province::whereIn('id', $province->groupBy('province_id')->pluck('province_id'))->select('id','description')->get();
         $on =  $on->groupBy(DB::raw('DATE(created_at)'))->pluck(DB::raw('MAX(created_at)'));
-        
+        $all_pat = clone ($patients);
         return view('home', [
             'patients' => $patients->paginate(50),
             'keyword' => $request->keyword,
@@ -281,7 +281,8 @@ class HomeController extends Controller
             'filter_by' => explode(',',$request->filter_by),
             'generate_dates' => $filter_date,
             'gen' => $request->gen,
-            'order' => $order
+            'order' => $order,
+            'id_pat' => $all_pat->get()
         ]);
      }
 

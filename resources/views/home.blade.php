@@ -754,7 +754,6 @@
         var parentTd = $(element).closest('td');   
         var patientId = parentTd.attr('data-patient-id');
         var checkboxId = element.attr("id");
-
         if(id_list.includes(patientId)){
             console.log("Patient ID already exists in the array.");
             id_list = id_list.filter(id => id !== patientId);
@@ -773,6 +772,9 @@
         }else{
             $('.send_mails').val('').hide();
         }
+        
+        console.log('list', id_list);
+        console.log('checked', patientId);
     }
 
     var group_a = [];
@@ -843,8 +845,10 @@
                     $('#patient_table_container').html($(response).find('#patient_table_container').html());
                     $('#pagination_links').html($(response).find('#pagination_links').html());
 
+                    console.log('row', mail_ids);
                     $.each(mail_ids, function(index, id) {
                         $('#' + id).prop('checked', true);
+                        console.log('row', '#' + id);
                     });
 
                     $.each(group_i, function(index, id) {
@@ -878,6 +882,22 @@
             loadPaginatedData(url);
           
         });
+        $(document).on('click', '.select_all', function() {
+            $('#patient_table').find('input.group-mailCheckBox').prop('checked', true).trigger('change');
+            $('.send_mails').val('').show();
+            var pat = @json($id_pat);
+            pat.forEach(function(p){
+                id_list.push(String(p.id));
+                mail_ids.push('mailCheckboxId_'+p.id);
+            });
+        });
+        $(document).on('click', '.unselect_all', function() {
+            $('#patient_table').find('input.group-mailCheckBox').prop('checked', false).trigger('change');
+            $('.send_mails').val('').hide();
+            id_list = [];
+            mail_ids = [];
+        });
+
 
         function initializeEditable() {
             $.fn.editable.defaults.mode = 'popup';
@@ -963,25 +983,8 @@
             });
         }
 
-        function initializeMailboxes() {
-           
-            $('.select_all').on('click', function() {
-                $('#patient_table').DataTable().$('input.group-mailCheckBox').each(function() {
-                    $(this).prop('checked', true).trigger('change');
-                });
-            });
-
-            $('.unselect_all').on('click', function() {
-                $('#patient_table').DataTable().$('input.group-mailCheckBox').each(function() {
-                    $(this).prop('checked', false).trigger('change');
-                });
-            });
-
-        }
-
         initializeEditable();
         initializeGroupFunctions();
-        initializeMailboxes();
 
     });
 
