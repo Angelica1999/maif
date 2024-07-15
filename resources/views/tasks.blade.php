@@ -46,7 +46,7 @@
     </div>
 </div>
 <div class="modal fade" id="update_note" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-dialog modal-md" role="document">
         <div class="modal-content">
             <form action="{{ route('update.note') }}" method="POST" style="background-color: #fff3cd;">
                 @csrf
@@ -57,7 +57,7 @@
                     </h4>
                     <hr />
                     <div class="form-group">
-                        <textarea name="note" id="note_t" class="form-control note_text" rows="15" style="resize: vertical;"></textarea>
+                        <textarea name="note" id="note_t" class="form-control note_text" rows="25" style="resize: vertical;"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">

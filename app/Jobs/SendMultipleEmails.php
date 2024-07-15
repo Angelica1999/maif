@@ -58,15 +58,20 @@ class SendMultipleEmails implements ShouldQueue
                             $pdf->save($pdfFilePath);
 
                             try {
-                                $this->sendMail($recipientEmail, $pdfFilePath, $cc_mails, $name_file);
-                                $patient->remarks = 1;
-                                $patient->save();
-                                $history = new MailHistory();
-                                $history->patient_id = $patient->id;
-                                $history->sent_by = Auth::user()->userid;
-                                $history->modified_by = $patient->created_by;
-                                $history->save();
-                                session()->flash('email_sent', true);
+
+                                if($this->sendMail($recipientEmail, $pdfFilePath, $cc_mails, $name_file)){
+                                    $patient->remarks = 1;
+                                    $patient->save();
+                                    $history = new MailHistory();
+                                    $history->patient_id = $patient->id;
+                                    $history->sent_by = Auth::user()->userid;
+                                    $history->modified_by = $patient->created_by;
+                                    $history->save();
+                                    session()->flash('email_sent', true);
+                                }else{
+                                    session()->flash('email_unsent', true);
+                                }
+                                
                             } catch (Exception $e) {
                                 session()->flash('email_unsent', true);
                             }
@@ -120,8 +125,14 @@ class SendMultipleEmails implements ShouldQueue
                 </body></html>
                 ';
             $mail->addAttachment($pdfFilePath, $name_file . ".pdf");
-            $mail->send();
-            unlink($pdfFilePath);
+
+            if($mail->send()){
+                unlink($pdfFilePath);
+                return true;
+            }else{
+                return false;
+            }
+            
         } catch (Exception $e) {
             echo 'Error: ' . $e->getMessage();
         }
