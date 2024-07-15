@@ -144,6 +144,7 @@ class FundSourceController extends Controller
     }
 
     public function getFundsource($type, $fundsource_id, Request $request){
+
         if($type == 'display'){
             return Fundsource::where('id', $fundsource_id)->first();
         }else if($type == 'save'){
@@ -161,6 +162,16 @@ class FundSourceController extends Controller
                 $fundsource->created_by = Auth::user()->userid;
                 $fundsource->save();
 
+                $funds_util = Utilization::where('fundsource_id', $fundsource->id)->where('status', 0)->where('obligated', 1)->get();
+                if($funds_util){
+                    foreach($funds_util as $item){
+                        $amount = (double) str_replace(',', '', $fundsource->remaining_balance);
+                        $util_balance = (double) str_replace(',', '', $item->budget_bbalance);
+                        $util_utilize = (double) str_replace(',', '', $item->budget_utilize);
+                        $fundsource->remaining_balance = $amount - $util_utilize;
+                        $fundsource->save();
+                    }
+                }
                 $info = ProponentInfo::where('fundsource_id', $fundsource->id)->get();
                 foreach($info as $row){
                     $allocated = (double)str_replace(',','',  $row->alocated_funds);
@@ -977,12 +988,16 @@ class FundSourceController extends Controller
         if($req->id){
             $pro = Proponent::where('id', $req->id)->first();
             $all = Proponent::where('proponent_code', $pro->proponent_code)->get();
-            foreach($all as $p){
-                $p->proponent = $req->proponent;
-                $p->proponent_code = $req->proponent_code;
-                $p->save();
-            }
 
+            $exists = Proponent::where('proponent_code', $req->proponent_code)->get();
+
+            if(!$exists){
+                foreach($all as $p){
+                    $p->proponent = $req->proponent;
+                    $p->proponent_code = $req->proponent_code;
+                    $p->save();
+                }
+            }
             return redirect()->back()->with('update_proponent', true);
         }else{
             return redirect()->back()->with('unreachable', true);

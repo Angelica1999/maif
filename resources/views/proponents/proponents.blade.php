@@ -93,8 +93,7 @@
 @section('js')
     <script>
         function putData(id){
-            var data = '{!! json_encode($all_proponents) !!}';
-            var proponents = JSON.parse(data);
+            var proponents = @json($all_proponents);
             var proponent = proponents.find(item => item.id === id);
             if(proponent){
                 $('#id').val(proponent.id);
