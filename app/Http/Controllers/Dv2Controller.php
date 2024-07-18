@@ -91,7 +91,8 @@ class Dv2Controller extends Controller
             return view('dv2.update_dv2', [
                 'dv2'=> $dv2,
                 'dv_amount' => $dv_amount,
-                'total' => $total
+                'total' => $total,
+                'control_nos' => DV2::pluck('ref_no')
             ]);
 
         }else{
@@ -108,7 +109,12 @@ class Dv2Controller extends Controller
                 $total = Group::whereIn('id', $groupIdArray)
                             ->select(DB::raw('SUM(REPLACE(amount, ",", "")) as totalAmount'))
                             ->first()->totalAmount;
-                return view('dv.create_dv2', ['dv'=> $dv, 'group'=>$group, 'total'=>$total]);
+                return view('dv.create_dv2', [
+                    'dv'=> $dv,
+                    'group'=>$group, 
+                    'total'=>$total,
+                    'control_nos' => DV2::pluck('ref_no')
+                ]);
             }else{
                 return "No proponent being recorded, please contact system administrator!";
             }
