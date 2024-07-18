@@ -370,11 +370,12 @@
         @foreach($notes as $note)
             @if($note->status == 0)
                 <div class="sidebar-note">
-                    @foreach(explode('-', $note->notes) as $noteItem)
+                    <!-- @foreach(explode('-', $note->notes) as $noteItem)
                         @if(!empty(trim($noteItem)))
                             <p>- {{ trim($noteItem) }}</p>
                         @endif
-                    @endforeach
+                    @endforeach -->
+                    <textarea name="note" class="form-control sidebar-note" rows="10" style="esize: vertical;" readonly>{{$note->notes}}</textarea>
                     <small>{{' ('. $note->user->lname .', '.$note->user->fname.')'}}</small>
                     @if($note->status == 0)
                         <a href="{{ route('process.note', ['id' => $note->id]) }}">
