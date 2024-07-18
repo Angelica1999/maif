@@ -20,7 +20,7 @@
                                 @foreach($group as $per_group)
                                     <div class="card" style="margin: 2px auto; text-align: center; width: 90%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box; padding:10px; border:1px solid lightgray;">
                                         <div style="display: flex; justify-content: space-between; width: 100%; box-sizing: border-box;">
-                                            <input class="form-control mx-auto d-block text-center" id="ref_no" name="ref_no[]" placeholder="Control No" style="width:80%; height:35px;">
+                                            <input class="form-control mx-auto d-block text-center" oninput="checkNo(this)" id="ref_no" name="ref_no[]" placeholder="Control No" style="width:80%; height:35px;">
                                         </div>
                                         <br>
                                         <div style="display: flex; justify-content: space-between; width: 100%; box-sizing: border-box;">
@@ -55,7 +55,7 @@
                                     <div class="for_clone" style="display:none">
                                         <div class="card" style="margin: 2px auto; text-align: center; width: 90%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box; padding:10px; border:1px solid lightgray;">
                                             <div style="display: flex; justify-content: space-between; width: 100%; box-sizing: border-box;">
-                                                <input class="form-control mx-auto d-block text-center" id="ref_no" name="ref_no[]" placeholder="Control No" style="width:80%; height:35px; ">
+                                                <input class="form-control mx-auto d-block text-center" id="ref_no" oninput="checkNo(this)" name="ref_no[]" placeholder="Control No" style="width:80%; height:35px; ">
                                                 <button type="button" class= "btn-info clone-button">+</button>
                                             </div>
                                             <br>
@@ -118,6 +118,20 @@
             $('.for_clone').css('display', 'block');       
             // $('.for_clone').toggle(); 
         }
+
+    var controls = @json($control_nos);
+    console.log('chaka', controls);
+
+    function checkNo(data){
+      
+        var val =$(data).val();
+        var existsInControls = controls.includes(val);
+        console.log('chaka', val);
+
+        if (existsInControls) {
+            alert('Control no ' +val+ ' existed already!')
+        }
+    }
        
     function validateAmount(element) {
         if (event.keyCode === 32) {
