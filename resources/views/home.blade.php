@@ -71,7 +71,7 @@
                                 <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
                                 <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
                                 <button type="button" href="#create_patient" id="crt_pnt" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
-                                <button type="submit" value="filt" style="display:none; background-color:00563B; color:white;" name="filter_col" id="filter_col" class="btn btn-success btn-md"><i class="typcn typcn-filter menu-icon"></i>Filter</button>
+                                <button type="submit" value="filt" style="display:none; background-color:00563B; color:white;" name="filter_col" id="filter_col" class="btn btn-success btn-md"><i class="typcn typcn-filter menu-icon"></i>&nbsp;&nbsp;&nbsp;Filter</button>
                             </div>  
                         </div>
                         <div class="input-group">
@@ -143,40 +143,33 @@
                         <th style="min-width:100px">Guaranteed </th>
                         <th style="min-width:120px; text-align:center;">@sortablelink('date_guarantee_letter', 'Date') <i id="date_i" class="typcn typcn-filter menu-icon"></i>
                             <div class="filter" id="date_div" style="display:none;">
-                                <select style="width: 120px;" id="date_select" name="date_select" multiple>
-                                @foreach($date as $d)
-                                    <option value="{{$d}}" {{ is_array($filter_date) && in_array($d, $filter_date) ? 'selected' : '' }}>
-                                        {{ date('F j, Y', strtotime($d)) }}
-                                    </option>
-                                @endforeach
-
-                                </select>
+                                <select style="width: 120px;" id="date_select" name="date_select" multiple></select>
                             </div>
                         </th>
                         <th style="min-width:150px; text-align:center;">@sortablelink('fname', 'Firstname')<i id="fname_i" class="typcn typcn-filter menu-icon"></i>
                             <div class="filter" id="fname_div" style="display:none;">
                                 <select style="width: 120px;" id="fname_select" name="fname_select" multiple>
-                                    @foreach($fname as $l)
+                                    <!-- @foreach($fname as $l)
                                         <option value="{{$l}}" {{ is_array($filter_fname) && in_array($l, $filter_fname) ? 'selected' : '' }}>{{$l}}</option>
-                                    @endforeach
+                                    @endforeach -->
                                 </select>
                             </div>
                         </th>
                         <th style="min-width:150px; text-align:center;">@sortablelink('mname', 'Middlename')<i id="mname_i" class="typcn typcn-filter menu-icon"></i>
                             <div class="filter" id="mname_div" style="display:none;">
                                 <select style="width: 120px;" id="mname_select" name="mname_select" multiple>
-                                    @foreach($mname as $l)
+                                    <!-- @foreach($mname as $l)
                                         <option value="{{$l}}" {{ is_array($filter_mname) && in_array($l, $filter_mname) ? 'selected' : '' }}>{{$l}}</option>
-                                    @endforeach
+                                    @endforeach -->
                                 </select>
                             </div>
                         </th>
                         <th style="min-width:150px; text-align:center;">@sortablelink('lname', 'Lastname')<i id="lname_i" class="typcn typcn-filter menu-icon"></i>
                             <div class="filter" id="lname_div" style="display:none;">
                                 <select style="width: 120px;" id="lname_select" name="lname_select" multiple>
-                                    @foreach($lname as $l)
+                                    <!-- @foreach($lname as $l)
                                         <option value="{{$l}}" {{ is_array($filter_lname) && in_array($l, $filter_lname) ? 'selected' : '' }}>{{$l}}</option>
-                                    @endforeach
+                                    @endforeach -->
                                 </select>
                             </div>
                         </th>
@@ -184,9 +177,9 @@
                             <a href="{{ route('home', ['sort' => 'facility']) }}">Facility</a><i id="facility_i" class="typcn typcn-filter menu-icon"></i>
                             <div class="filter" id="facility_div" style="display:none;">
                                 <select style="width: 120px;" id="facility_select" name="facility_select" multiple>
-                                    @foreach($fc_list as $l)
+                                    <!-- @foreach($fc_list as $l)
                                         <option value="{{$l->id}}" {{ is_array($filter_facility) && in_array($l->id, $filter_facility) ? 'selected' : '' }}>{{$l->name}}</option>
-                                    @endforeach
+                                    @endforeach -->
                                 </select>
                             </div>
                         </th>
@@ -194,27 +187,29 @@
                             <a href="{{ route('home', ['sort' => 'proponent']) }}">Proponent</a><i id="proponent_i" class="typcn typcn-filter menu-icon"></i>
                             <div class="filter" id="proponent_div" style="display:none;">
                                 <select style="width: 120px;" id="proponent_select" name="proponent_select" multiple>
-                                    @foreach($pros as $l)
+                                    <!-- @foreach($pros as $l)
                                         <option value="{{$l->id}}" {{ is_array($filter_proponent) && in_array($l->id, $filter_proponent) ? 'selected' : '' }}>{{$l->proponent}}</option>
-                                    @endforeach
+                                    @endforeach -->
                                 </select>
                             </div>
                         </th>
-                        <th>@sortablelink('patient_code', 'Code') <i id="code_i" class="typcn typcn-filter menu-icon"></i>
-                            <div class="filter" id="code_div" style="display:none;">
+                        <th>@sortablelink('patient_code', 'Code')
+                            <!-- <i id="code_i" class="typcn typcn-filter menu-icon"></i> -->
+                            <!-- <div class="filter" id="code_div" style="display:none;">
                                 <select style="width: 120px;" id="code_select" name="code_select" multiple>
                                     @foreach($code as $l)
                                         <option value="{{$l}}" {{ is_array($filter_code) && in_array($l, $filter_code) ? 'selected' : '' }}>{{$l}}</option>
                                     @endforeach
+
                                 </select>
-                            </div>
+                            </div> -->
                         </th>
                         <th style="min-width:150px;">@sortablelink('region', 'Region') <i id="region_i" class="typcn typcn-filter menu-icon"></i>
                             <div class="filter" id="region_div" style="display:none;">
                                 <select style="width: 120px;" id="region_select" name="region_select" multiple>
-                                    @foreach($region as $l)
+                                    <!-- @foreach($region as $l)
                                         <option value="{{$l}}" {{ is_array($filter_region) && in_array($l, $filter_region) ? 'selected' : '' }}>{{$l}}</option>
-                                    @endforeach
+                                    @endforeach -->
                                 </select>
                             </div>
                         </th>
@@ -223,12 +218,12 @@
                             <i id="province_i" class="typcn typcn-filter menu-icon"></i>
                             <div class="filter" id="province_div" style="display:none;">
                                 <select style="width: 120px;" id="province_select" name="province_select" multiple>
-                                    @foreach($prvnc as $l)
+                                    <!-- @foreach($prvnc as $l)
                                         <option value="{{$l->id}}" {{ is_array($filter_province) && in_array($l->id, $filter_province) ? 'selected' : '' }}>{{$l->description}}</option>
                                     @endforeach
                                     @foreach($pro1 as $l)
                                         <option value="{{$l}}" {{ is_array($filter_province) && in_array($l, $filter_province) && $l != null ? 'selected' : '' }}>{{$l}}</option>
-                                    @endforeach
+                                    @endforeach -->
                                 </select>
                             </div>
                         </th>
@@ -237,12 +232,12 @@
                             <i id="muncity_i" class="typcn typcn-filter menu-icon"></i>
                             <div class="filter" id="muncity_div" style="display:none;">
                                 <select style="width: 120px;" id="muncity_select" name="muncity_select" multiple>
-                                    @foreach($mncty as $l)
+                                    <!-- @foreach($mncty as $l)
                                         <option value="{{$l->id}}" {{ is_array($filter_municipality) && in_array($l->id, $filter_municipality) ? 'selected' : '' }}>{{$l->description}}</option>
                                     @endforeach
                                     @foreach($pro1 as $l)
                                         <option value="{{$l}}" {{ is_array($filter_municipality) && in_array($l, $filter_municipality) && $l != null ? 'selected' : '' }}>{{$l}}</option>
-                                    @endforeach
+                                    @endforeach -->
                                 </select>
                             </div>
                         </th>
@@ -251,25 +246,19 @@
                             <i id="barangay_i" class="typcn typcn-filter menu-icon"></i>
                             <div class="filter" id="barangay_div" style="display:none;">
                                 <select style="width: 120px;" id="barangay_select" name="barangay_select" multiple>
-                                    @foreach($brgy as $l)
+                                    <!-- @foreach($brgy as $l)
                                         <?php $id = $l->id;?>
                                         <option value="{{$l->id}}" {{ is_array($filter_barangay) && in_array($id, $filter_barangay) ? 'selected' : '' }}>{{$l->description}}</option>
                                     @endforeach
                                     @foreach($barangay as $l)
                                         <option value="{{$l}}" {{ is_array($filter_barangay) && in_array($l, $filter_barangay) && $l != null? 'selected' : '' }}>{{$l}}</option>
-                                    @endforeach
+                                    @endforeach -->
                                 </select>
                             </div>
                         </th>
                         <th style="min-width:150px">@sortablelink('created_at', 'Created On') <i id="on_i" class="typcn typcn-filter menu-icon"></i>
                             <div class="filter" id="on_div" style="display:none;">
                                 <select style="width: 120px;" id="on_select" name="on_select" multiple>
-                                    @foreach($on as $d)
-                                        <option value="{{ date('Y-m-d', strtotime($d)) }}" 
-                                                {{ is_array($filter_on) && in_array(date('Y-m-d', strtotime($d)), $filter_on) ? 'selected' : '' }}>
-                                            {{ date('F j, Y', strtotime($d)) }}
-                                        </option>
-                                    @endforeach
                                 </select>
                             </div>
                         </th>
@@ -278,12 +267,12 @@
                             <i id="by_i" class="typcn typcn-filter menu-icon"></i>
                             <div class="filter" id="by_div" style="display:none;">
                                 <select style="width: 120px;" id="by_select" name="by_select" multiple>
-                                    @foreach($by as $d)
+                                    <!-- @foreach($by as $d)
                                         <option value="{{ $d->userid }}" 
                                                 {{ is_array($filter_by) && in_array($d->userid, $filter_by) ? 'selected' : '' }}>
                                             {{ $d->lname }}, {{ $d->fname }}
                                         </option>
-                                    @endforeach
+                                    @endforeach -->
                                 </select>
                             </div>
                         </th>
@@ -326,7 +315,7 @@
                             <td class="td">{{ number_format((float) str_replace(',', '', $patient->guaranteed_amount), 2, '.', ',') }}</td>
                             <td>{{date('F j, Y', strtotime($patient->date_guarantee_letter))}}</td>
                             <td class="td">
-                                <a href="#create_patient" onclick="editPatient('{{ $patient->id }}')" data-backdrop="static" data-toggle="modal">
+                                <a href="#update_patient" onclick="editPatient('{{ $patient->id }}')" data-backdrop="static" data-toggle="modal">
                                     {{ $patient->fname }}
                                 </a>
                             </td>   
@@ -400,13 +389,13 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="fname">First Name</label>
-                                    <input type="text" class="form-control" style="width:220px;" id="fname" name="fname" oninput="this.value = this.value.toUpperCase()" placeholder="First Name" required>
+                                    <input type="text" class="form-control fname" style="width:220px;" id="fname" name="fname" oninput="this.value = this.value.toUpperCase()" placeholder="First Name" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="lname">Last Name</label>
-                                    <input type="text" class="form-control" style="width:220px;" id="lname" name="lname" placeholder="Last Name" oninput="this.value = this.value.toUpperCase()" required>
+                                    <input type="text" class="form-control lname" style="width:220px;" id="lname" name="lname" placeholder="Last Name" oninput="this.value = this.value.toUpperCase()" required>
                                 </div>
                             </div>
                         </div>
@@ -414,13 +403,13 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="fname">Middle Name</label>
-                                    <input type="text" class="form-control" style="width:220px;" id="mname" name="mname" oninput="this.value = this.value.toUpperCase()" placeholder="Middle Name">
+                                    <input type="text" class="form-control mname" style="width:220px;" id="mname" name="mname" oninput="this.value = this.value.toUpperCase()" placeholder="Middle Name">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="lname">Date of Birth</label>
-                                    <input type="date" class="form-control" style="width:220px;" id="dob" name="dob" placeholder="Date of Birth">
+                                    <input type="date" class="form-control dob" style="width:220px;" id="dob" name="dob" placeholder="Date of Birth">
                                 </div>
                             </div>
                         </div>
@@ -428,7 +417,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="fname">Region</label>
-                                    <select class="js-example-basic-single select2" style="width:220px;" id="region" onchange="othersRegion($(this));" name="region">
+                                    <select class="js-example-basic-single region" style="width:220px;" id="region" onchange="othersRegion($(this));" name="region">
                                         <option value="">Please select region</option>
                                         <option value="Region 7">Region 7</option>
                                         <option value="NCR">NCR</option>
@@ -452,8 +441,8 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="lname">Province</label>
-                                    <div id="province_body">
-                                        <select class="js-example-basic-single select2" style="width:220px;" id="province_id" name="province_id" onchange="onchangeProvince($(this))">
+                                    <div id="province_body" class="province_body">
+                                        <select class="js-example-basic-single province_id" style="width:220px;" id="province_id" name="province_id" onchange="onchangeProvince($(this))">
                                             <option value="">Please select province</option>
                                             @foreach($provinces as $prov)
                                                 <option value="{{ $prov->id }}">{{ $prov->description }}</option>
@@ -467,8 +456,8 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="lname">Municipality</label>
-                                    <div id="muncity_body">
-                                        <select class="js-example-basic-single select2" style="width:220px;" id="muncity_id" name="muncity_id" onchange="onchangeMuncity($(this))">
+                                    <div id="muncity_body" class="muncity_body">
+                                        <select class="js-example-basic-single muncity_id" style="width:220px;" id="muncity_id" name="muncity_id" onchange="onchangeMuncity($(this))">
                                             <option value="">Please select Municipality</option>
                                         </select>
                                     </div>
@@ -477,8 +466,8 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="lname">Barangay</label>
-                                    <div id="barangay_body">
-                                        <select class="js-example-basic-single select2" style="width:220px;" id="barangay_id" name="barangay_id">
+                                    <div id="barangay_body" class="barangay_body">
+                                        <select class="js-example-basic-single barangay_id" style="width:220px;" id="barangay_id" name="barangay_id">
                                             <option value="">Please select Barangay</option>
                                         </select>
                                     </div>
@@ -489,7 +478,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="fname">Date of Guarantee Letter</label>
-                                    <input type="date" class="form-control" style="width:220px;" id="date_guarantee_letter" name="date_guarantee_letter" placeholder="Date of Guarantee Letter" required>
+                                    <input type="date" class="form-control date_guarantee_letter" style="width:220px;" id="date_guarantee_letter" name="date_guarantee_letter" placeholder="Date of Guarantee Letter" required>
                                 </div>
                             </div>
                         </div>
@@ -517,7 +506,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group" id="patient-code-container">
-                                    <input type="text" class="form-control loading-input" style="width:220px;" id="patient_code" name="patient_code" placeholder="Patient Code" readonly>
+                                    <input type="text" class="form-control loading-input patient_code" style="width:220px;" id="patient_code" name="patient_code" placeholder="Patient Code" readonly>
                                     <img id="loading-image" src="{{ asset('images/loading.gif') }}" alt="Loading" style="display: none;">
                                 </div>
                             </div>
@@ -529,21 +518,15 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="fname">Guaranteed Amount</label>
-                                    <input type="text" class="form-control" id="guaranteed_amount" style="width:220px;" oninput="check()" onkeyup= "validateAmount(this)" name="guaranteed_amount" placeholder="Guaranteed Amount" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6"  id="actl_amnt" style="display:none">
-                                <div class="form-group">
-                                    <label for="fname">Actual Amount</label>
-                                    <input type="number" step="any" class="form-control" id="actual_amount" name="actual_amount">
+                                    <input type="text" class="form-control guaranteed_amount" id="guaranteed_amount" style="width:220px;" oninput="check()" onkeyup= "validateAmount(this)" name="guaranteed_amount" placeholder="Guaranteed Amount" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="fname">Remaining Balance</label>
-                                    <input type="text" class="form-control" id="remaining_balance" style="width:220px;" name="remaining_balance" placeholder="Remaining Balance" readonly>
+                                    <input type="text" class="form-control remaining_balance" id="remaining_balance" style="width:220px;" name="remaining_balance" placeholder="Remaining Balance" readonly>
                                 </div>
-                                <div id="suggestions"></div>
+                                <div id="suggestions" class="suggestions"></div>
                             </div>
                         </div>
                         <hr>
@@ -551,7 +534,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="fname">Remarks</label>
-                                    <textarea type="text" class="form-control" id="pat_rem" style="width:470px;" name="pat_rem" placeholder="Remarks"></textarea>
+                                    <textarea type="text" class="form-control pat_rem" id="pat_rem" style="width:470px;" name="pat_rem" placeholder="Remarks"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -559,7 +542,192 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" id="close_modal" data-dismiss="modal">Close</button>
                         <button type="submit" id="create_pat_btn" class="btn btn-primary">Create Patient</button>
-                        <button type="submit" id="update_send" name="update_send" value="upsend" class="btn btn-success" style="display:none; color:white" >Update & Send</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end-->
+<div class="modal fade" id="update_patient" tabindex="-1" role="dialog" aria-hidden="true" style="opacity:1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="text-success" id="title"><i style = "font-size:30px"class="typcn typcn-user-add-outline menu-icon"></i>Update Patient</h4><hr />
+                @csrf
+            </div>
+            <div class="modal_body">
+                <form id="update_form" method="POST">
+                    <input type="hidden" name="created_by" value="{{ $user->userid }}">
+                    <div class="modal-body">
+                        @csrf
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fname">First Name</label>
+                                    <input type="text" class="form-control fname" style="width:220px;" id="fname" name="fname" oninput="this.value = this.value.toUpperCase()" placeholder="First Name" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="lname">Last Name</label>
+                                    <input type="text" class="form-control lname" style="width:220px;" id="lname" name="lname" placeholder="Last Name" oninput="this.value = this.value.toUpperCase()" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fname">Middle Name</label>
+                                    <input type="text" class="form-control mname" style="width:220px;" id="mname" name="mname" oninput="this.value = this.value.toUpperCase()" placeholder="Middle Name">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="lname">Date of Birth</label>
+                                    <input type="date" class="form-control dob" style="width:220px;" id="dob" name="dob" placeholder="Date of Birth">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fname">Region</label>
+                                    <select class="js-example-basic-single region" style="width:220px;" id="region" onchange="othersRegion($(this));" name="region">
+                                        <option value="">Please select region</option>
+                                        <option value="Region 7">Region 7</option>
+                                        <option value="NCR">NCR</option>
+                                        <option value="CAR">CAR</option>
+                                        <option value="Region 1">Region 1</option>
+                                        <option value="Region 2">Region 2</option>
+                                        <option value="Region 3">Region 3</option>
+                                        <option value="Region 4">Region 4</option>
+                                        <option value="Region 5">Region 5</option>
+                                        <option value="Region 6">Region 6</option>
+                                        <option value="Region 8">Region 8</option>
+                                        <option value="Region 9">Region 9</option>
+                                        <option value="Region 10">Region 10</option>
+                                        <option value="Region 11">Region 11</option>
+                                        <option value="Region 12">Region 12</option>
+                                        <option value="Region 13">Region 13</option>
+                                        <option value="BARMM">BARMM</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="lname">Province</label>
+                                    <div id="province_body" class="province_body">
+                                        <select class="js-example-basic-single province_id" style="width:220px;" id="province_id" name="province_id" onchange="onchangeProvince($(this))">
+                                            <option value="">Please select province</option>
+                                            @foreach($provinces as $prov)
+                                                <option value="{{ $prov->id }}">{{ $prov->description }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="lname">Municipality</label>
+                                    <div id="muncity_body" class="muncity_body">
+                                        <select class="js-example-basic-single muncity_id" style="width:220px;" id="muncity_id" name="muncity_id" onchange="onchangeMuncity($(this))">
+                                            <option value="">Please select Municipality</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="lname">Barangay</label>
+                                    <div id="barangay_body" class="barangay_body">
+                                        <select class="js-example-basic-single barangay_id" style="width:220px;" id="barangay_id" name="barangay_id">
+                                            <option value="">Please select Barangay</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fname">Date of Guarantee Letter</label>
+                                    <input type="date" class="form-control date_guarantee_letter" style="width:220px;" id="date_guarantee_letter" name="date_guarantee_letter" placeholder="Date of Guarantee Letter" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fname">Facility</label>
+                                    <select class="js-example-basic-single facility_id1" style="width:220px;" id="facility_id" name="facility_id" onchange="onchangeForProponent($(this))" required>
+                                        <option value="">Please select Facility</option>
+                                        @foreach($facilities as $facility)
+                                            <option value="{{ $facility->id }}">{{ $facility->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div> 
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fname">Proponent</label>
+                                    <select class="js-example-basic-single proponent_id1" style="width:220px;" id="proponent_id" name="proponent_id" onchange="onchangeForPatientCode($(this))" required>
+                                        <option value="">Please select Proponent</option>
+                                        @foreach($proponents as $pro)
+                                            <option value="{{ $pro->id }}">{{ $pro->proponent }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group" id="patient-code-container">
+                                    <input type="text" class="form-control loading-input patient_code" style="width:220px;" id="patient_code" name="patient_code" placeholder="Patient Code" readonly>
+                                    <img id="loading-image" src="{{ asset('images/loading.gif') }}" alt="Loading" style="display: none;">
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <strong>Transaction</strong>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fname">Guaranteed Amount</label>
+                                    <input type="text" class="form-control guaranteed_amount" id="guaranteed_amount" style="width:220px;" oninput="check()" onkeyup= "validateAmount(this)" name="guaranteed_amount" placeholder="Guaranteed Amount" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6"  id="actl_amnt">
+                                <div class="form-group">
+                                    <label for="fname">Actual Amount</label>
+                                    <input type="number" step="any" class="form-control actual_amount" id="actual_amount" name="actual_amount">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fname">Remaining Balance</label>
+                                    <input type="text" class="form-control remaining_balance" id="remaining_balance" style="width:220px;" name="remaining_balance" placeholder="Remaining Balance" readonly>
+                                </div>
+                                <div id="suggestions" class="suggestions"></div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="fname">Remarks</label>
+                                    <textarea type="text" class="form-control pat_rem" id="pat_rem" style="width:470px;" name="pat_rem" placeholder="Remarks"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="close_modal" data-dismiss="modal">Close</button>
+                        <button type="submit" id="create_pat_btn" class="btn btn-primary">Update</button>
+                        <button type="submit" id="update_send" name="update_send" value="upsend" class="btn btn-success" style="color:white" >Update & Send</button>
                         <a type="button" class="btn btn-danger" onclick="removePatient()" style="display:none; color:white">Remove</a>
                     </div>
                 </form>
@@ -567,7 +735,6 @@
         </div>
     </div>
 </div>
-
 <!--end-->
 <div class="modal fade" id="get_mail" tabindex="-1" role="dialog" aria-hidden="true" style="opacity:1">
     <div class="modal-dialog" role="document">
@@ -621,6 +788,17 @@
         $('#filter_dates').daterangepicker();
     });
 
+    $('#crt_pnt').on('click', function(){
+        $('#region').select2();
+        $('#province_id').select2();
+        $('#muncity_id').select2();
+        $('#province_id').select2();
+        $('#barangay_id').select2();
+        $('#facility_id').select2();
+        $('#proponent_id').select2();
+        form_type = 'create';
+    });
+
     $('#gen_btn').on('click', function(){
         $('#gen').val('1');
     });
@@ -645,44 +823,285 @@
 
     });
     $('#date_i').on('click', function(){
+        $('#date_select').empty();
         $('#date_div').css('display', 'block');
+        var date = @json($date);
+        var filter_date = @json($filter_date);
+        var filtered = filter_date.filter(item => item !== '');
+        date.forEach(function(optionData) {
+            var date_obj = moment(optionData);
+            var isSelected = false;
+            if(filtered.length !== 0){
+              console.log('here');
+              isSelected = filter_date.includes(optionData) ? true : false;
+            }
+            console.log('check', isSelected);
+            $('#date_select').append($('<option>', {
+                value: optionData,
+                text: date_obj.format('MMMM d, YYYY'),
+                selected: isSelected
+            }));
+        });
     });
     $('#fname_i').on('click', function(){
         $('#fname_div').css('display', 'block');
+        var fname = @json($fname);
+        var filter_fname = @json($filter_fname);
+        var filtered = filter_fname.filter(item => item !== '');
+        fname.forEach(function(optionData) {
+            var isSelected = false;
+            if(filtered.length !== 0){
+              isSelected = filter_fname.includes(optionData) ? true : false;
+            }
+            $('#fname_select').append($('<option>', {
+                value: optionData,
+                text: optionData,
+                selected: isSelected
+            }));
+        });
     });
     $('#mname_i').on('click', function(){
         $('#mname_div').css('display', 'block');
+        var mname = @json($mname);
+        var filter_mname = @json($filter_mname);
+        var filtered = filter_mname.filter(item => item !== '');
+        mname.forEach(function(optionData) {
+            var isSelected = false;
+            if(filtered.length !== 0){
+              isSelected = filter_mname.includes(optionData) ? true : false;
+            }
+            $('#mname_select').append($('<option>', {
+                value: optionData,
+                text: optionData,
+                selected: isSelected
+            }));
+        });
     });
     $('#lname_i').on('click', function(){
         $('#lname_div').css('display', 'block');
+        var lname = @json($lname);
+        var filter_lname = @json($filter_lname);
+        var filtered = filter_lname.filter(item => item !== '');
+        lname.forEach(function(optionData) {
+            var isSelected = false;
+            if(filtered.length !== 0){
+              isSelected = filter_lname.includes(optionData) ? true : false;
+            }
+            $('#lname_select').append($('<option>', {
+                value: optionData,
+                text: optionData,
+                selected: isSelected
+            }));
+        });
     });
     $('#facility_i').on('click', function(){
         $('#facility_div').css('display', 'block');
+        var fc_list = @json($fc_list);
+        var filter_facility = @json($filter_facility);
+        filtered = filter_facility.map(Number);
+        fc_list.forEach(function(optionData) {
+            var isSelected = false;
+            var optionId = Number(optionData.id);
+            if(filtered.length !== 0){
+              isSelected = filtered.includes(optionId) ? true : false;
+              console.log('hereew', isSelected);
+            }
+            $('#facility_select').append($('<option>', {
+                value: optionData.id,
+                text: optionData.name,
+                selected: isSelected
+            }));
+        });
     });
     $('#proponent_i').on('click', function(){
+        $('#proponent_select').empty();
         $('#proponent_div').css('display', 'block');
-    });
-    $('#code_i').on('click', function(){
-        $('#code_div').css('display', 'block');
+        // <select style="width: 120px;" id="proponent_select" name="proponent_select" multiple>
+        var pros = @json($pros);
+        var filter_proponent = @json($filter_proponent);
+        filter_proponent = filter_proponent.map(Number);
+        pros.forEach(function(optionData) {
+            var isSelected = false;
+            var optionId = Number(optionData.id);
+            if(filter_proponent.length !== 0){
+              isSelected = filter_proponent.includes(optionId) ? true : false;
+            }
+            $('#proponent_select').append($('<option>', {
+                value: optionData.id,
+                text: optionData.proponent,
+                selected: isSelected
+            }));
+        });
     });
     $('#region_i').on('click', function(){
         $('#region_div').css('display', 'block');
+        $('#region_select').empty();
+        var region = @json($region);
+        var filter_region = @json($filter_region);
+        filter_region = filter_region.filter(item => item !== '');
+        region.forEach(function(optionData) {
+            var isSelected = false;
+            if(filter_region.length !== 0){
+              isSelected = filter_region.includes(optionData) ? true : false;
+            }
+            $('#region_select').append($('<option>', {
+                value: optionData,
+                text: optionData,
+                selected: isSelected
+            }));
+        });
     });
     $('#province_i').on('click', function(){
+        $('#province_select').empty();
         $('#province_div').css('display', 'block');
+        var province = @json($pro1).filter(item => item !== '' && item !== null);
+        var filter_province = @json($filter_province);
+        filter_province = filter_province.filter(item => item !== '');
+        province.forEach(function(optionData) {
+            var isSelected = false;
+            if(filter_province.length !== 0){
+              console.log('here');
+              isSelected = filter_province.includes(optionData) ? true : false;
+            }
+            console.log('check', isSelected);
+            $('#province_select').append($('<option>', {
+                value: optionData,
+                text: optionData,
+                selected: isSelected
+            }));
+        });
+
+        var province2 = @json($prvnc);
+        var prov = @json($filter_facility);
+        prov = prov.map(Number);
+        province2.forEach(function(optionData) {
+            var isSelected = false;
+            var optionId = Number(optionData.id);
+            if(prov.length !== 0){
+              isSelected = prov.includes(optionId) ? true : false;
+              console.log('hereew', isSelected);
+            }
+            $('#province_select').append($('<option>', {
+                value: optionData.id,
+                text: optionData.description,
+                selected: isSelected
+            }));
+        });
+
     });
     $('#muncity_i').on('click', function(){
+        $('#muncity_select').empty();
         $('#muncity_div').css('display', 'block');
+        var muncity = @json($muncity).filter(item => item !== '' && item !== null);
+        var filter_muncity = @json($filter_municipality);
+        filter_muncity = filter_muncity.filter(item => item !== '');
+        muncity.forEach(function(optionData) {
+            var isSelected = false;
+            if(filter_muncity.length !== 0){
+              console.log('here');
+              isSelected = filter_muncity.includes(optionData) ? true : false;
+            }
+            console.log('check', isSelected);
+            $('#muncity_select').append($('<option>', {
+                value: optionData,
+                text: optionData,
+                selected: isSelected
+            }));
+        });
+
+        var muncity2 = @json($mncty);
+        var f_mun = @json($filter_municipality);
+        f_mun = f_mun.map(Number);
+        muncity2.forEach(function(optionData) {
+            var isSelected = false;
+            var optionId = Number(optionData.id);
+            if(f_mun.length !== 0){
+              isSelected = f_mun.includes(optionId) ? true : false;
+              console.log('hereew', isSelected);
+            }
+            $('#muncity_select').append($('<option>', {
+                value: optionData.id,
+                text: optionData.description,
+                selected: isSelected
+            }));
+        });
     });
     $('#barangay_i').on('click', function(){
+        $('#barangay_select').empty();
         $('#barangay_div').css('display', 'block');
+        // <select style="width: 120px;" id="barangay_select" name="barangay_select" multiple>
+        var barangay = @json($barangay).filter(item => item !== '' && item !== null);
+        var filter_barangay = @json($filter_barangay);
+        filter_barangay = filter_barangay.filter(item => item !== '');
+        barangay.forEach(function(optionData) {
+            var isSelected = false;
+            if(filter_barangay.length !== 0){
+              isSelected = filter_barangay.includes(optionData) ? true : false;
+            }
+            $('#barangay_select').append($('<option>', {
+                value: optionData,
+                text: optionData,
+                selected: isSelected
+            }));
+        });
+
+        var barangay2 = @json($brgy);
+        var f_brgy = @json($filter_barangay);
+        f_brgy = f_brgy.map(Number);
+        barangay2.forEach(function(optionData) {
+            var isSelected = false;
+            var optionId = Number(optionData.id);
+            if(f_brgy.length !== 0){
+              isSelected = f_brgy.includes(optionId) ? true : false;
+            }
+            $('#barangay_select').append($('<option>', {
+                value: optionData.id,
+                text: optionData.description,
+                selected: isSelected
+            }));
+        });
     });
     $('#on_i').on('click', function(){
+        $('#on_select').empty();
         $('#on_div').css('display', 'block');
+        var on = @json($on);
+        console.log('date', on)
+        var filter_on = @json($filter_on);
+        filter_on = filter_on.filter(item => item !== '');
+        on.forEach(function(optionData) {
+            var date_obj = moment(optionData);
+            var isSelected = false;
+            if(filter_on.length !== 0){
+              isSelected = filter_on.includes(optionData) ? true : false;
+            }
+            $('#on_select').append($('<option>', {
+                value: date_obj.format('YYYY-MM-DD'),
+                text: moment(optionData).format('MMMM D, YYYY'),
+                selected: isSelected
+            }));
+        });
+
     });
     $('#by_i').on('click', function(){
+        $('#by_select').empty();
         $('#by_div').css('display', 'block');
         console.log('here');
+        var by = @json($by);
+        var filter_by = @json($filter_by);
+        filter_by = filter_by.map(Number);
+        by.forEach(function(optionData) {
+            var isSelected = false;
+            var optionId = Number(optionData.userid);
+            if(filter_by.length !== 0){
+              isSelected = filter_by.includes(optionId) ? true : false;
+              console.log('hereew', isSelected);
+            }
+            $('#by_select').append($('<option>', {
+                value: optionData.userid,
+                text: optionData.lname + ", "+ optionData.fname,
+                selected: isSelected
+            }));
+        });
     });
     $('#date_select').select2();
     $('#fname_select').select2();
@@ -885,8 +1304,7 @@
         $(document).on('click', '.select_all', function() {
             $('#patient_table').find('input.group-mailCheckBox').prop('checked', true).trigger('change');
             $('.send_mails').val('').show();
-            var pat = @json($id_pat);
-            pat.forEach(function(p){
+            all_patients.forEach(function(p){
                 id_list.push(String(p.id));
                 mail_ids.push('mailCheckboxId_'+p.id);
             });
@@ -1003,10 +1421,6 @@
         }
     }
 
-    $('#close_modal').on('click', function(){
-        location.reload();
-    });
-
     $('#update_send').on('click', function(){
         $('.loading-container').show();
     });
@@ -1014,119 +1428,112 @@
     var edit_c = 0;
 
     function editPatient(id) {
-        edit_c = 1;
-        var editRoute = `{{ route('patient.update', ['id' => ':id']) }}`;
-        editRoute = editRoute.replace(':id', id);
-        $('#contractForm').attr('action', editRoute);
-        $('#create_pat_btn').text('Update');
-        $('#update_send').css('display', 'block');
-        console.log('proponents', proponents);
-        proponents.forEach(function(optionData) {
-            $('.proponent_id1').append($('<option>', {
-                value: optionData.id,
-                text: optionData.proponent
-            }));
-        });
-        var patient = all_patients.filter(item => item.id == id)[0];
-        $('#title').html('<i style="font-size:30px" class="typcn typcn-user-outline menu-icon"></i> Update Patient');
-        console.log('chaki', patient);
-        if(patient){
-            if(patient.group_id == null || patient.group_id == null){
-                var removeRoute = `{{ route('patient.remove', ['id' => ':id']) }}`;
-                removeRoute = removeRoute.replace(':id', id);
-                $('.btn.btn-danger').attr('data-id', id).css('display', 'inline-block').text('Remove');
-            }
+        form_type='update';
+        var patient;
+        $.get("{{url('/gl/update').'/'}}" + id, function(result){
+            patient = result;
+            console.log('res', patient.id);
+            edit_c = 1;
+            var editRoute = `{{ route('patient.update', ['id' => ':id']) }}`;
+            editRoute = editRoute.replace(':id', id);
+            $('#update_form').attr('action', editRoute);
+            console.log('res', patient.fname);
+            if(patient){
+                if(patient.group_id == null || patient.group_id == null){
+                    var removeRoute = `{{ route('patient.remove', ['id' => ':id']) }}`;
+                    removeRoute = removeRoute.replace(':id', id);
+                    $('.btn.btn-danger').attr('data-id', id).css('display', 'inline-block').text('Remove');
+                }
 
-            $('#fname').val(patient.fname);
-            $('#lname').val(patient.lname);
-            $('#mname').val(patient.mname);
-            $('#dob').val(patient.dob);
-            $('#region').select2().val(patient.region).trigger('change');
-            if(patient.region == "Region 7"){
-                $('#province_id').select2().val(patient.province_id).trigger('change');
-                $('#muncity_id').select2().val(patient.muncity_id).trigger('change');
-                $('#barangay_id').select2().val(patient.barangay_id).trigger('change');
-            }else{
-                console.log('herehere',patient.other_muncity );
-                $('#other_province').val(patient.other_province);
-                $('#other_muncity').val(patient.other_muncity);
-                $('#other_barangay').val(patient.other_barangay);
+                $('.fname').val(patient.fname);
+                $('.lname').val(patient.lname);
+                $('.mname').val(patient.mname);
+                $('.dob').val(patient.dob);
+                console.log('herehere',patient.dob );
+                $('.region').select2().val(patient.region).trigger('change');
+                if(patient.region == "Region 7"){
+                    $('.province_id').select2().val(patient.province_id).trigger('change');
+                    $('.muncity_id').select2().val(patient.muncity_id).trigger('change');
+                    $('.barangay_id').select2().val(patient.barangay_id).trigger('change');
+                }else{
+                    $('.other_province').val(patient.other_province);
+                    $('.other_muncity').val(patient.other_muncity);
+                    $('.other_barangay').val(patient.other_barangay);
+                }
+                $('.date_guarantee_letter').val(patient.date_guarantee_letter);
+                $('.guaranteed_amount').val(patient.guaranteed_amount);
+                $('.actl_amnt').show();
+                $('.actual_amount').val(patient.actual_amount);
+                $('.proponent_id1').val(patient.proponent_id).trigger('change');
+                $('.facility_id1').val(patient.facility_id).trigger('change');
+                $('.patient_code').val(patient.patient_code);
+                $('.remaining_balance').val(patient.remaining_balance);
+                $('.pat_rem').val(patient.pat_rem);
             }
-            $('#date_guarantee_letter').val(patient.date_guarantee_letter);
-            $('#guaranteed_amount').val(patient.guaranteed_amount);
-            $('#actl_amnt').show();
-            $('#actual_amount').val(patient.actual_amount);
-            $('.proponent_id1').val(patient.proponent_id).trigger('change');
-            $('.facility_id1').val(patient.facility_id).trigger('change');
-            $('#patient_code').val(patient.patient_code);
-            $('#remaining_balance').val(patient.remaining_balance);
-            $('#pat_rem').val(patient.pat_rem);
-        }
-        edit_c = 0;
-        
+            edit_c = 0;
+        });
+        console.log('edit', edit_c)
     }
+    
+    var form_type = 'create';
 
     function othersRegion(data) {
         if(data.val() != "Region 7"){
-            {{-- var patientProvinceDescription = "{{ $patients->other_province }}"--}}
-            // $("#facility_body").html("<input type='text' class='form-control' name='other_facility' required>");
-            $("#province_body").html("<input type='text' class='form-control' value='' id='other_province' name='other_province'>");
-            
-            $("#muncity_body").html("<input type='text' class='form-control' id='other_muncity' name='other_muncity'>");
-            $("#barangay_body").html("<input type='text' class='form-control' id='other_barangay' name='other_barangay'>");
+            $(".province_body").html("<input type='text' class='form-control other_province' value='' id='other_province' name='other_province'>");
+            $(".muncity_body").html("<input type='text' class='form-control other_muncity' id='other_muncity' name='other_muncity'>");
+            $(".barangay_body").html("<input type='text' class='form-control other_barangay' id='other_barangay' name='other_barangay'>");
         }else {
-
-            $("#province_body").html("<select class=\"js-example-basic-single w-100 select2\" id=\"province_id\"  name=\"province_id\" onchange=\"onchangeProvince($(this))\">\n" +
+            
+            $(".province_body").html("<select class=\"js-example-basic-single w-100 province_id\" id=\"province_id\"  name=\"province_id\" onchange=\"onchangeProvince($(this))\">\n" +
                 "\n" + "</select>");
 
-            $('#province_id').append($('<option>', {
+            $('.province_id').append($('<option>', {
                 value: "",
                 text: "Please select a municipality"
             }));
 
             jQuery.each(JSON.parse('<?php echo $provinces; ?>'), function(i,val){
-                $('#province_id').append($('<option>', {
+                $('.province_id').append($('<option>', {
                     value: val.id,
                     text : val.description
                 }));
             });
 
-            // $("#facility_body").html("<select class=\"form-control select2\" id=\"facility_id\" name=\"facility_id\" required>\n" +
-            //     "                                        <option value=\"\">Please select municipality</option>\n" +
-            //     "                                    </select>");
-
-            $("#muncity_body").html("<select class=\"form-control select2\" id=\"muncity_id\" name=\"muncity_id\" onchange=\"onchangeMuncity($(this))\">\n" +
+            $(".muncity_body").html("<select class=\"form-control muncity_id\" id=\"muncity_id\" name=\"muncity_id\" onchange=\"onchangeMuncity($(this))\">\n" +
                 "                                        <option value=\"\">Please select municipality</option>\n" +
                 "                                    </select>");
 
-            $("#barangay_body").html("<select class=\"form-control select2\" id=\"barangay_id\" name=\"barangay_id\">\n" +
+            $(".barangay_body").html("<select class=\"form-control barangay_id\" id=\"barangay_id\" name=\"barangay_id\">\n" +
                 "                                        <option value=\"\">please select barangay</option>\n" +
                 "                                    </select>");
-
-            // $(".select2").select2({ width: '100%' });
-            $("#muncity_id").select2({ width: '220px' });
-            $("#barangay_id").select2({ width: '220px' });
-            $("#province_id").select2({ width: '220px' });
-
+            if(form_type == 'update'){
+                $(".muncity_id").select2({ width: '220px' });
+                $(".barangay_id").select2({ width: '220px' });
+                $(".province_id").select2({ width: '220px' });
+            }else{
+                $("#muncity_id").select2({ width: '220px' });
+                $("#barangay_id").select2({ width: '220px' });
+                $("#province_id").select2({ width: '220px' });
+            }
         }
 
    } 
 
     function onchangeProvince(data) {
-        $('#muncity_id').empty();
-        $('#barangay_id').empty();
+        $('.muncity_id').empty();
+        $('.barangay_id').empty();
         var municipalities = @json($municipalities);
         var muncity = municipalities.filter(item => item.province_id == data.val());
-        $('#muncity_id').append($('<option>', {
+        $('.muncity_id').append($('<option>', {
             value: "",
             text: "Please select a municipality"
         }));
-        $('#barangay_id').append($('<option>', {
+        $('.barangay_id').append($('<option>', {
             value: "",
             text: "Please select a barangay"
         }));
         muncity.forEach(function(optionData) {
-            $('#muncity_id').append($('<option>', {
+            $('.muncity_id').append($('<option>', {
                 value: optionData.id,
                 text: optionData.description
             }));
@@ -1135,15 +1542,15 @@
 
     function onchangeMuncity(data) {
         if(data.val()) {
-            $('#barangay_id').html('');
+            $('.barangay_id').html('');
             var barangays = @json($barangays);
             var barangay = barangays.filter(item => item.muncity_id == data.val());
-            $('#barangay_id').append($('<option>', {
+            $('.barangay_id').append($('<option>', {
                 value: "",
                 text: "Please select a barangay"
             }));
             barangay.forEach(function(optionData) {
-                $('#barangay_id').append($('<option>', {
+                $('.barangay_id').append($('<option>', {
                     value: optionData.id,
                     text: optionData.description
                 }));
@@ -1179,20 +1586,20 @@
         if(edit_c == 0){
             if(data.val()) {
                 $.get("{{ url('patient/code').'/' }}"+data.val()+"/"+facility_id, function(result) {
-                    $("#patient_code").val(result.patient_code);
+                    $(".patient_code").val(result.patient_code);
                     const formattedBalance = new Intl.NumberFormat('en-US', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                     }).format(result.balance);
 
-                    $('#remaining_balance').val(formattedBalance);
+                    $('.remaining_balance').val(formattedBalance);
                     var suggestions =[];
                     var res = result.proponent_info;
-                    
+
                     $.each(res, function(index, optionData) {
                         suggestions.push(res[index].fundsource.saa +' - '+res[index].remaining_balance);
                     });
-                    var suggestionsDiv = $('#suggestions');
+                    var suggestionsDiv = $('.suggestions');
                     suggestionsDiv.empty();
 
                     suggestions.forEach(function(suggestion) {
