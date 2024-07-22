@@ -171,7 +171,6 @@ class HomeController extends Controller
         }else{
             $patients->sortable(['id' => 'desc']);
         }
-
         // for filtering column
 
         // if($request->filter_col){
@@ -185,7 +184,7 @@ class HomeController extends Controller
                 $patients = $patients->whereIn('mname', explode(',',$request->filter_date));
             }
             if($request->filter_lname){
-                $patients = $patients->whereIn('lname', explode(',',$request->filter_fname));
+                $patients = $patients->whereIn('lname', explode(',',$request->filter_lname));
             }
             if($request->filter_facility){
                 $patients = $patients->whereIn('facility_id', explode(',',$request->filter_facility));
@@ -213,6 +212,7 @@ class HomeController extends Controller
             }
             if($request->filter_on){
                 $patients = $patients->whereIn(DB::raw('DATE(created_at)'), explode(',',$request->filter_on));
+                // return  $request->filter_on;
             }
             if($request->filter_by){
                 // return explode(',',$request->filter_by);
@@ -240,13 +240,16 @@ class HomeController extends Controller
         $brgy = Barangay::whereIn('id', $barangay->groupBy('barangay_id')->pluck('barangay_id'))->select('id','description')->get();
         $mncty = Muncity::whereIn('id', $muncity->groupBy('muncity_id')->pluck('muncity_id'))->select('id','description')->get();
         $prvnc = Province::whereIn('id', $province->groupBy('province_id')->pluck('province_id'))->select('id','description')->get();
-        $on =  $on->groupBy(DB::raw('DATE(created_at)'))->pluck(DB::raw('MAX(created_at)'));
+        $on = $on->groupBy(DB::raw('DATE(created_at)'))->pluck(DB::raw('MAX(DATE(created_at))'));
         $all_pat = clone ($patients);
+        $proponents_code = Proponent::groupBy('proponent_code')->select(DB::raw('MAX(proponent) as proponent'), DB::raw('MAX(proponent_code) as proponent_code'),DB::raw('MAX(id) as id') )->get();
+        // return $proponents_code;
         return view('home', [
             'patients' => $patients->paginate(50),
             'keyword' => $request->keyword,
             'provinces' => Province::get(),
             'municipalities' => Muncity::get(),
+            'proponents' => $proponents_code,
             'barangays' => Barangay::get(),
             'facilities' => Facility::get(),
             'user' => Auth::user(),
@@ -282,16 +285,20 @@ class HomeController extends Controller
             'generate_dates' => $filter_date,
             'gen' => $request->gen,
             'order' => $order,
-            'id_pat' => $all_pat->get()
+            'id_pat' => ''
         ]);
      }
 
-     public function fetchAdditionalData(){
+    public function fetchAdditionalData(){
         return [
             'all_pat' => Patients::get(),
             'proponents' => Proponent::get()
         ];
-     }
+    }
+
+    public function updateGl($id){
+        return Patients::where('id', $id)->first();
+    }
 
     public function report(Request $request){
 

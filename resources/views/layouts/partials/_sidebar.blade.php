@@ -15,7 +15,6 @@
         border-radius: 4px;
         font-size: 14px; 
         color: #856404; 
-        text-align: justify;
     }
     .nav-item label {
       font-weight: bold;
@@ -184,7 +183,6 @@
                         <i class="typcn typcn-document-text menu-icon"></i>
                         <span class="menu-title">Guarantee Letter</span>
                       </a>
-                      
                     </li>
                     <li class="nav-item">
                       <a class="nav-link" href="{{ route('group') }}">
@@ -375,7 +373,7 @@
                             <p>- {{ trim($noteItem) }}</p>
                         @endif
                     @endforeach -->
-                    <textarea name="note" class="form-control sidebar-note" rows="10" style="esize: vertical;" readonly>{{$note->notes}}</textarea>
+                    <textarea name="note" class="form-control sidebar-note" rows="10" style="esize: vertical; background-color:#fff3cd" readonly>{{$note->notes}}</textarea>
                     <small>{{' ('. $note->user->lname .', '.$note->user->fname.')'}}</small>
                     @if($note->status == 0)
                         <a href="{{ route('process.note', ['id' => $note->id]) }}">

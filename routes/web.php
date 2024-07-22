@@ -195,6 +195,7 @@ Route::post('/notepad/save', [App\Http\Controllers\PusherController::class, 'sav
 Route::get('/notepad/remove/{id}', [App\Http\Controllers\PusherController::class, 'delete'])->name('delete.note');
 Route::get('/notepad/{id}', [App\Http\Controllers\PusherController::class, 'process'])->name('process.note');
 Route::post('/notepad/update', [App\Http\Controllers\PusherController::class, 'update'])->name('update.note');
+Route::get('/gl/update/{id}', [App\Http\Controllers\HomeController::class, 'updateGl'])->name('update.gl');
 
 
 
