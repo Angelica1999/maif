@@ -68,6 +68,7 @@ class PrintController extends Controller
     }
 
     public function sendPatientPdf($patientId) {
+
         $ids = array($patientId);
         set_time_limit(0);
 
@@ -75,7 +76,9 @@ class PrintController extends Controller
             SendMultipleEmails::dispatch($ids);
             return redirect()->route('home')->with('status', 'Emails are being sent in the background.');
         }
-        // return redirect()->route('home')->with('status', 'No emails selected.');
+
+        return redirect()->route('home')->with('status', 'No emails selected.');
+
     }
 
     public function sendMultiple(Request $request)

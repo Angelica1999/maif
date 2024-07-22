@@ -75,14 +75,21 @@
          var channel = pusher.subscribe('my-channel');
          channel.bind('form-submitted', function(data) {
             if (data && data.post && data.post.author && data.post.title) {
-            toastr.success('New Post Created', 'Author: ' + data.post.author + '<br>Title: ' + data.post.title, {
-               timeOut: 0,  
-               extendedTimeOut: 0,  
-            });
+               toastr.success('New Post Created', 'Author: ' + data.post.author + '<br>Title: ' + data.post.title, {
+                  timeOut: 0,  
+                  extendedTimeOut: 0,  
+               });
             } else {
             console.error('Invalid data structure received:', data);
             }
          });
+         // toastr.success( 'The system is able to send mails now.','Reminders:', {
+         //    timeOut: 1000000,  
+         //    extendedTimeOut: 1000000, 
+         //    closeButton: true, 
+         //    progressBar: true,  
+         //    positionClass: 'toast-top-right' 
+         // });
     </script> -->
 
     <script>
