@@ -88,7 +88,7 @@ class SendMultipleEmails implements ShouldQueue
     {
         try {
             $email_doh = 'maipp@ro7.doh.gov.ph';
-            $email_password = 'betvdmvyribwcyba';
+            $email_password = 'ezfdilafwbdoutit';
             $mail = new PHPMailer(true);
             $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
             $mail->isSMTP();                                            //Send using SMTP
@@ -125,13 +125,12 @@ class SendMultipleEmails implements ShouldQueue
                 </body></html>
                 ';
             $mail->addAttachment($pdfFilePath, $name_file . ".pdf");
-
             if($mail->send()){
-                unlink($pdfFilePath);
                 return true;
             }else{
                 return false;
             }
+            unlink($pdfFilePath);
             
         } catch (Exception $e) {
             echo 'Error: ' . $e->getMessage();

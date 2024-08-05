@@ -76,9 +76,13 @@ class Dv2Controller extends Controller
     }
 
     public function createDv2($route_no){
+        $dv = Dv::where('route_no', $route_no)->first();
+        $searchValue = Facility::where('id', $dv->facility_id)->value('name');
+
         $dv2_exist = Dv2::where('route_no', $route_no)->first();
         
         if($dv2_exist){
+            
             $dv_amount = Dv::where('route_no', $route_no)->value('total_amount');
             $dv2 = Dv2::where('route_no', $route_no)
                         ->leftJoin('patients as p1', 'dv2.lname', '=', 'p1.id')
@@ -92,10 +96,11 @@ class Dv2Controller extends Controller
                 'dv2'=> $dv2,
                 'dv_amount' => $dv_amount,
                 'total' => $total,
-                'control_nos' => DV2::pluck('ref_no')
+                'control_nos' => Dv2::whereRaw("facility REGEXP ?", ["^" . preg_quote($searchValue, '/')])->pluck('ref_no')
             ]);
 
         }else{
+            
             $dv_1 = Dv::where('route_no', $route_no)->first();
             $groupIdArray = explode(',', $dv_1->group_id);
             $proponentArray = json_decode($dv_1->proponent_id, true);
@@ -113,7 +118,7 @@ class Dv2Controller extends Controller
                     'dv'=> $dv,
                     'group'=>$group, 
                     'total'=>$total,
-                    'control_nos' => DV2::pluck('ref_no')
+                    'control_nos' => Dv2::whereRaw("facility REGEXP ?", ["^" . preg_quote($searchValue, '/')])->pluck('ref_no')
                 ]);
             }else{
                 return "No proponent being recorded, please contact system administrator!";
