@@ -1562,9 +1562,11 @@
     function onchangeForProponent(data){
         if(edit_c == 0){
             if(data.val()){
-            facility_id = data.val();
-            $.get("{{ url('facility/proponent').'/' }}"+data.val(), function(result) {
+                facility_id = data.val();
+                $.get("{{ url('facility/proponent').'/' }}"+data.val(), function(result) {
+
                     $('#proponent_id').html('');
+                    $('.patient_code').val('');
                     $('#proponent_id').append($('<option>', {
                         value: "",
                         text: "Select Proponent"
@@ -1577,6 +1579,7 @@
                     });
                     $('#proponent_id').prop('disabled', false); 
                 });
+                $('.proponent_id1').val('').trigger('change');
             }
         }
     }

@@ -770,7 +770,9 @@ class HomeController extends Controller
         if(!$patient){
             return redirect()->back()->with('error', 'Patient not found');
         }
-        
+
+        DB::beginTransaction();
+
         $patientLogs = new PatientLogs();
         $patientLogs->patient_id = $patient->id;
         $patientLogs->fill($patient->toArray());
@@ -801,9 +803,10 @@ class HomeController extends Controller
         $patient->actual_amount = $request->input('actual_amount');
         $patient->remaining_balance = $request->input('remaining_balance');
         $patient->pat_rem = $request->input('pat_rem');
-
         $patient->save();
-        if($val =="upsend"){
+        DB::commit();
+        if($val == "upsend"){
+            // return Patients::where('id', $patient->id)->first();
             return redirect()->route('patient.sendpdf', ['patientid' => $patient->id]);
         }else{
             return redirect()->back();

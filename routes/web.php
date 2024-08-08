@@ -168,7 +168,7 @@ Route::get('fundsource/transfer/facility/{facility_id}',[App\Http\Controllers\Fu
 
 Route::get('/proponents', [App\Http\Controllers\FundSourceController::class, 'proponentList'])->name('proponents');
 Route::match(['get', 'post'],'proponent/update', [App\Http\Controllers\FundSourceController::class, 'updateProponent'])->name('proponent.update');
-Route::match(['get', 'post'],'/proponents/excel/', [App\Http\Controllers\getFundSourceController::class, 'generateExcel'])->name('proponent.excel');
+Route::match(['get', 'post'],'/proponents/excel/', [App\Http\Controllers\FundSourceController::class, 'generateExcel'])->name('proponent.excel');
 Route::match(['get', 'post'],'/data/update/', [App\Http\Controllers\FacilityController::class, 'updateData'])->name('update.data');
 Route::match(['get', 'post'],'/test/sample/', [App\Http\Controllers\UtilizationController::class, 'test'])->name('test.test');
 Route::get('report/saa', [App\Http\Controllers\ReportController::class, 'reportSaa'])->name('report.saa');
@@ -196,6 +196,7 @@ Route::get('/notepad/remove/{id}', [App\Http\Controllers\PusherController::class
 Route::get('/notepad/{id}', [App\Http\Controllers\PusherController::class, 'process'])->name('process.note');
 Route::post('/notepad/update', [App\Http\Controllers\PusherController::class, 'update'])->name('update.note');
 Route::get('/gl/update/{id}', [App\Http\Controllers\HomeController::class, 'updateGl'])->name('update.gl');
+Route::get('list/fundsources/{facility_id}', [App\Http\Controllers\DV3Controller::class, 'getFundsourceList'])->name('fundsource.list');
 
 
 
