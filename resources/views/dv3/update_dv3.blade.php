@@ -564,7 +564,7 @@
     }
 
     function handleChangesF(facility_id){
-        $.get("{{ url('fetch/fundsource').'/' }}"+facility_id, function(result) {
+        $.get("{{ url('list/fundsources').'/' }}"+facility_id, function(result) {
 
             $('.dv3_address').text(result.facility.address);
             $('.hospitalname').text(result.facility.name);

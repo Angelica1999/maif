@@ -585,4 +585,11 @@ class Dv3Controller extends Controller
         Utilization::where('div_id',$route_no)->delete();
         return redirect()->back()->with('dv3_remove', true);
     }
+
+    public function getFundsourceList($facility_id){
+        $info = ProponentInfo::with('facility', 'fundsource', 'proponent')->get();
+        // return count($info);
+        $facility = Facility::where('id', $facility_id)->first();
+        return response()->json(['info' => $info, 'facility' => $facility]);
+    }
 }
