@@ -990,14 +990,13 @@ class FundSourceController extends Controller
             $all = Proponent::where('proponent_code', $pro->proponent_code)->get();
 
             $exists = Proponent::where('proponent_code', $req->proponent_code)->get();
-
-            if(!$exists){
-                foreach($all as $p){
-                    $p->proponent = $req->proponent;
-                    $p->proponent_code = $req->proponent_code;
-                    $p->save();
-                }
+            
+            foreach($all as $p){
+                $p->proponent = $req->proponent;
+                $p->proponent_code = $req->proponent_code;
+                $p->save();
             }
+            
             return redirect()->back()->with('update_proponent', true);
         }else{
             return redirect()->back()->with('unreachable', true);
