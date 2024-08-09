@@ -35,7 +35,7 @@
     }
 
     function handleChangesF(facility_id){
-        $.get("{{ url('fetch/fundsource').'/' }}"+facility_id, function(result) {
+        $.get("{{ url('list/fundsources').'/' }}"+facility_id, function(result) {
 
             var data_result = result.info;
             var text_display;
