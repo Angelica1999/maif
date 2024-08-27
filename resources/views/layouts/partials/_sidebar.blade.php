@@ -220,7 +220,7 @@
                 </ul>
             </li>
         </ul>
-        <ul class="nav flex-column" style=" margin-bottom: 0;">
+        <!-- <ul class="nav flex-column" style=" margin-bottom: 0;">
             <li class="nav-item">
                 <a class="nav-link" href="#" >
                     <i class="typcn typcn-document menu-icon"></i>
@@ -254,7 +254,7 @@
                     </li>
                 </ul>
             </li>
-        </ul>
+        </ul> -->
         <ul class="nav flex-column" style=" margin-bottom: 0;">
             <li class="nav-item">
                 <a class="nav-link" href="#">
