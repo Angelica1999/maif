@@ -347,6 +347,12 @@
               msg: 'Done!'
            });
         @endif
+        @if(session('update_remarks'))
+           <?php session()->forget('update_remarks'); ?>
+           Lobibox.notify('success', {
+              msg: 'Done!'
+           });
+        @endif
     </script>
     @yield('js')
 </body>

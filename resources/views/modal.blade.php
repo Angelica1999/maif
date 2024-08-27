@@ -159,6 +159,27 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 <!--end-->
+<div class="modal fade" id="update_remarks" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content"> 
+            <form action="{{route('update.remarks')}}" method="POST">
+                <input type="hidden" class="remarks_id" name="route_no">
+                <h4 class="text-success"><i style = "font-size:30px"class="typcn typcn-location-arrow menu-icon"></i>Remarks</h4><hr />
+                <div class="modal-body">
+                    @csrf
+                    <div>
+                        <textarea style="margin-left:5%; width:90%; height:200px;" class="form-control text_remarks" name="text_remarks" placeholder="Remarks..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button style = "background-color:lightgray"  class="btn btn-sm btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> Close</button>
+                    <button type="submit" class="btn btn-sm btn-success">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!--end-->
 <!-- <div class="loading-container" style="display:none">
     <img src="public\images\loading.gif" alt="Loading..." class="loading-spinner">
 </div> -->

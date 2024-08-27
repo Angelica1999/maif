@@ -47,7 +47,7 @@
                 MAIF-IPP
             </p>
                 <div class="table-responsive">
-                    <table class="table table-striped">
+                    <table class="table table-striped" style="border-spacing: 0;">
                     <thead>
                         <tr>
                             <th>Tracking</th>
@@ -55,7 +55,6 @@
                             @if(Auth::user()->userid != 1027 && Auth::user()->userid != 2660)
                                 <th>Print</th>
                                 <th>Modified</th>
-                                <th><a href="{{ route('dv3', ['sort' => 'status', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">Status</a></th>
                                 <th style="text-align:center">
                                     <div style="display: flex; gap: 1px;">
                                         <button class="btn-info select_all" style="width: 25px; display: flex; justify-content: center; align-items: center;">
@@ -66,8 +65,10 @@
                                         </button>
                                     </div>
                                 </th>
+                                <th style="text-align:center">Remarks</th>
+                                <th><a href="{{ route('dv3', ['sort' => 'status', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">Forwarded</a></th>
                             @endif
-                            <th style="min-width:120px;"><a href="{{ route('dv3', ['sort' => 'remarks', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">Remarks</a>
+                            <th style="min-width:120px;"><a href="{{ route('dv3', ['sort' => 'remarks', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">Status</a>
                                 <i id="rem3_i" class="typcn typcn-filter menu-icon"><i>
                                 <div class="filter3" id="rem3_div" style="display:none;">
                                     <select style="width: 120px;" id="rem3_select" name="rem3_select" multiple>
@@ -169,10 +170,10 @@
                         @if(isset($dv3) && $dv3->count() > 0)
                             @foreach($dv3 as $index=> $row)
                                 <tr>
-                                    <td>
+                                    <td style="padding: 5;">
                                         <button type="button" class="btn btn-xs col-sm-12" style="background-color:#165A54;color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$row->route_no}}" id="track_load" onclick="openModal()">Track</button>
                                     </td>
-                                    <td>
+                                    <td style="padding: 5;">
                                         <?php
                                             $routed = TrackingDetails::where('route_no',$row->route_no)
                                                 ->count();
@@ -191,20 +192,28 @@
                                         @endif
                                     </td>
                                     @if(Auth::user()->userid != 1027 && Auth::user()->userid != 2660)
-                                        <td>
+                                        <td style="padding: 5;">
                                             <a href="{{ route('dv3.pdf', ['route_no' => $row->route_no]) }}" style="background-color:green;color:white; width:60px;" target="_blank" type="button" class="btn btn-xs">Print</a>
                                         </td>
-                                        <td>
-                                            <a href="#dv_history" onclick="getHistory('{{$row->route_no}}')" style="background-color:teal;color:white; width:80px;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">Edit History</a>
+                                        <td style="padding: 5;">
+                                            <a href="#dv_history" onclick="getHistory('{{$row->route_no}}')" style="background-color:#0D98BA;color:white; width:80px;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">Edit History</a>
+                                        </td>
+                                        <td style="text-align:center;padding: 5;" class="group-release" data-route_no="{{ $row->route_no }}" data-id="{{ $doc_id }}" >
+                                            <input type="checkbox" style="width: 60px; height: 20px;" name="release_dv[]" id="releaseDvId_{{ $index }}" 
+                                                class="group-releaseDv" >
+                                        </td>
+                                        <td style="padding: 4px; text-align:center; word-wrap: break-word; min-width: 200px;">
+                                            @if($row->text_remarks != null)
+                                                {{$row->text_remarks}}
+                                                <a href="#update_remarks" onclick="updateRemarks('{{$row->route_no}}', '{{($row->text_remarks ==null)?0:$row->text_remarks}}')" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs"><i class="typcn typcn-edit menu-icon" style="color:green; font-size: 24px; width:200px;"></i></a>
+                                            @else
+                                                <a href="#update_remarks" onclick="updateRemarks('{{$row->route_no}}', '{{($row->text_remarks ==null)?0:$row->text_remarks}}')" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs"><i class="typcn typcn-edit menu-icon" style="color:green; font-size: 24px; width:200px;"></i></a>
+                                            @endif
                                         </td>
                                         <td>
                                             @if($row->status == 1)
                                                 Forwarded
                                             @endif
-                                        </td>
-                                        <td style="text-align:center;" class="group-release" data-route_no="{{ $row->route_no }}" data-id="{{ $doc_id }}" >
-                                            <input type="checkbox" style="width: 60px; height: 20px;" name="release_dv[]" id="releaseDvId_{{ $index }}" 
-                                                class="group-releaseDv" >
                                         </td>
                                     @endif
                                     <td>
@@ -399,18 +408,12 @@
             });
         }
 
-        function getHistory(route_no){
-            $('.modal-body').html(loading);
-            var url = "{{ url('/dv/history').'/' }}"+route_no;
-            setTimeout(function(){
-                $.ajax({
-                    url: url,
-                    type: 'GET',
-                    success: function(result) {
-                        $('.modal-body').html(result);
-                    }
-                });
-            },1000);
+        function updateRemarks(route_no, remarks){
+            console.log('remarks', remarks);
+            if(remarks != 0){
+                $('.text_remarks').val(remarks);
+            }
+            $('.remarks_id').val(route_no);
         }
 
         $('.group-releaseDv').change(function () {
