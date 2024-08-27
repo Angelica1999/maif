@@ -592,4 +592,14 @@ class Dv3Controller extends Controller
         $facility = Facility::where('id', $facility_id)->first();
         return response()->json(['info' => $info, 'facility' => $facility]);
     }
+
+    public function updateRemarks(Request $req){
+        $dv3 = Dv3::where('route_no', $req->route_no)->first();
+        if($dv3){
+            $dv3->text_remarks = $req->text_remarks;
+            $dv3->save();
+
+            return redirect()->back()->with('update_remarks', true);
+        }
+    }
 }
