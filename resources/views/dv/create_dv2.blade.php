@@ -71,7 +71,7 @@
                                         </div>
                                     </div>
 
-                                    <a style=" margin-left:290px" href="#" onclick="addManual()">Add Manualsd</a>
+                                    <a style=" margin-left:290px" href="#" onclick="addManual()">Add Manual</a>
                                 </div>
                             <br>
 
