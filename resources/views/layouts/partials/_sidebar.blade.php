@@ -34,7 +34,7 @@
                     ->first();
     $notes = Notes::where('created_by', $id)->with('user')->get();
 ?>
-<nav class="sidebar sidebar-offcanvas" id="sidebar">
+<nav class="sidebar sidebar-offcanvas" id="sidebar" style="width:270px">
   <ul class="nav">
     <li class="nav-item">
       <div class="d-flex sidebar-profile">
@@ -55,79 +55,78 @@
     </li>
     @if($joinedData->section == 6)
     <ul class="nav flex-column" style=" margin-bottom: 0;">
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('fundsource_budget') }}">
-                <i class="typcn typcn-th-list menu-icon"></i>
-                    <span class="menu-title">Fundsource</span>
-                    &nbsp;&nbsp;<i class="typcn typcn-arrow-sorted-down menu-icon"></i>
-                </a>
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item">
-                      <a class="nav-link" href="{{ route('fundsource_budget') }}">
-                        <i class="typcn typcn-film menu-icon"></i>
-                        <span class="menu-title">BUDGET</span>
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="{{ route('fundsource') }}">
-                        <i class="typcn typcn-film menu-icon"></i>
-                        <span class="menu-title">MAIFIPP</span>
-                      </a>
-                    </li>
-                </ul>
-            </li>
-        </ul>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('fundsource_budget') }}">
+            <i class="typcn typcn-th-list menu-icon"></i>
+                <span class="menu-title">Fundsource</span>
+                &nbsp;&nbsp;<i class="typcn typcn-arrow-sorted-down menu-icon"></i>
+            </a>
+            <ul class="nav flex-column sub-menu">
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ route('fundsource_budget') }}">
+                    <i class="typcn typcn-film menu-icon"></i>
+                    <span class="menu-title">BUDGET</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ route('fundsource') }}">
+                    <i class="typcn typcn-film menu-icon"></i>
+                    <span class="menu-title">MAIFIPP</span>
+                  </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
 
-        <ul class="nav flex-column" style=" margin-bottom: 0;">
-            <li class="nav-item">
-                <a class="nav-link" href="#">
-                <i class="typcn typcn-group menu-icon"></i>
-                    <span class="menu-title">Disbursement Voucher (1)</span>
-                    &nbsp;&nbsp;<i class="typcn typcn-arrow-sorted-down menu-icon"></i>
-                </a>
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item">
-                      <a class="nav-link" href="{{ route('fundsource_budget.pendingDv', ['type' => 'pending']) }}">
-                        <i class="typcn typcn-film menu-icon"></i>
-                        <span class="menu-title">Pending DV</span>
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="{{ route('fundsource_budget.pendingDv', ['type' => 'obligated']) }}">
-                        <i class="typcn typcn-film menu-icon"></i>
-                        <span class="menu-title">Obligated DV</span>
-                      </a>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-        <ul class="nav flex-column" style=" margin-bottom: 0;">
-            <li class="nav-item">
-                <a class="nav-link" href="#">
-                <i class="typcn typcn-group-outline menu-icon"></i>
-                    <span class="menu-title">Disbursement Voucher (3)</span>
-                    &nbsp;&nbsp;<i class="typcn typcn-arrow-sorted-down menu-icon"></i>
-                </a>
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item">
-                      <a class="nav-link" href="{{ route('budget.dv3', ['type' => 'unsettled']) }}">
-                        <i class="typcn typcn-document menu-icon"></i>
-                        <span class="menu-title">Pending DV3</span>
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="{{ route('budget.dv3', ['type' => 'processed']) }}">
-                        <i class="typcn typcn-th-list menu-icon"></i>
-                        <span class="menu-title">Obligated DV3</span>
-                      </a>
-                    </li>
-                </ul>
-            </li>
-        </ul>
+    <ul class="nav flex-column" style=" margin-bottom: 0;">
+        <li class="nav-item">
+            <a class="nav-link" href="#">
+            <i class="typcn typcn-group menu-icon"></i>
+                <span class="menu-title">Disbursement Voucher (1)</span>
+                &nbsp;&nbsp;<i class="typcn typcn-arrow-sorted-down menu-icon"></i>
+            </a>
+            <ul class="nav flex-column sub-menu">
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ route('fundsource_budget.pendingDv', ['type' => 'pending']) }}">
+                    <i class="typcn typcn-film menu-icon"></i>
+                    <span class="menu-title">Pending DV</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ route('fundsource_budget.pendingDv', ['type' => 'obligated']) }}">
+                    <i class="typcn typcn-film menu-icon"></i>
+                    <span class="menu-title">Obligated DV</span>
+                  </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+    <ul class="nav flex-column" style=" margin-bottom: 0;">
+        <li class="nav-item">
+            <a class="nav-link" href="#">
+            <i class="typcn typcn-group-outline menu-icon"></i>
+                <span class="menu-title">Disbursement Voucher (3)</span>
+                &nbsp;&nbsp;<i class="typcn typcn-arrow-sorted-down menu-icon"></i>
+            </a>
+            <ul class="nav flex-column sub-menu">
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ route('budget.dv3', ['type' => 'unsettled']) }}">
+                    <i class="typcn typcn-document menu-icon"></i>
+                    <span class="menu-title">Pending DV3</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ route('budget.dv3', ['type' => 'processed']) }}">
+                    <i class="typcn typcn-th-list menu-icon"></i>
+                    <span class="menu-title">Obligated DV3</span>
+                  </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
 
     @endif
     @if($joinedData->section == 105 || $id == 2760 || $id == 201400208 || $joinedData->section == 36 || $joinedData->section == 31)
-
         <ul class="nav flex-column" style=" margin-bottom: 0;">
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('fundsource') }}">
@@ -169,7 +168,6 @@
                 </ul>
             </li>
         </ul>
-
         <ul class="nav flex-column" style=" margin-bottom: 0;">
             <li class="nav-item">
                 <a class="nav-link" href="#">
@@ -193,7 +191,6 @@
                 </ul>
             </li>
         </ul>
-
         <ul class="nav flex-column" style=" margin-bottom: 0;">
             <li class="nav-item">
                 <a class="nav-link" href="#">
@@ -218,6 +215,41 @@
                         <a class="nav-link" href="{{ route('dv3') }}">
                             <i class="typcn typcn-document-add menu-icon"></i>
                             <span class="menu-title">Disbursement V3</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <ul class="nav flex-column" style=" margin-bottom: 0;">
+            <li class="nav-item">
+                <a class="nav-link" href="#" >
+                    <i class="typcn typcn-document menu-icon"></i>
+                    <span class="menu-title">Disbursement Voucher(new)</span>
+                    <i class="typcn typcn-arrow-sorted-down menu-icon"></i>
+                </a>
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('pre_dv') }}">
+                            <i class="typcn typcn-document-text menu-icon"></i>
+                            <span class="menu-title">PRE-DV</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="">
+                            <i class="typcn typcn-document-text menu-icon"></i>
+                            <span class="menu-title">V1</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('dv2') }}">
+                            <i class="typcn typcn-document menu-icon"></i>
+                            <span class="menu-title">V2</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('dv3') }}">
+                            <i class="typcn typcn-document-add menu-icon"></i>
+                            <span class="menu-title">DV NEW</span>
                         </a>
                     </li>
                 </ul>
