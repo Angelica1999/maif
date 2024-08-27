@@ -32,8 +32,8 @@
     @yield('css')
 </head>
 <body>
-    <div id="app">
-        <div class="container-scroller">
+    <div id="app" >
+        <div class="container-scroller" >
             @include('layouts.partials._navbar')
             <div class="container-fluid page-body-wrapper">
                 {{-- @include('layouts.partials._settings-panel') --}}
