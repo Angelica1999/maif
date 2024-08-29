@@ -220,7 +220,7 @@
                 </ul>
             </li>
         </ul>
-        <!-- <ul class="nav flex-column" style=" margin-bottom: 0;">
+        <ul class="nav flex-column" style=" margin-bottom: 0;">
             <li class="nav-item">
                 <a class="nav-link" href="#" >
                     <i class="typcn typcn-document menu-icon"></i>
@@ -235,26 +235,20 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="">
-                            <i class="typcn typcn-document-text menu-icon"></i>
+                        <a class="nav-link" href="{{ route('pre_dv1') }}">
+                            <i class="typcn typcn-document menu-icon"></i>
                             <span class="menu-title">V1</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('dv2') }}">
-                            <i class="typcn typcn-document menu-icon"></i>
-                            <span class="menu-title">V2</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('dv3') }}">
+                        <a class="nav-link" href="{{ route('pre_dv2') }}">
                             <i class="typcn typcn-document-add menu-icon"></i>
-                            <span class="menu-title">DV NEW</span>
+                            <span class="menu-title">V2</span>
                         </a>
                     </li>
                 </ul>
             </li>
-        </ul> -->
+        </ul>
         <ul class="nav flex-column" style=" margin-bottom: 0;">
             <li class="nav-item">
                 <a class="nav-link" href="#">

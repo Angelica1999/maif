@@ -23,7 +23,7 @@
               margin-left: 7px;
               display: inline-block;
               vertical-align: middle;
-              margin-top: 8px;
+              margin-top: 5px;
               margin-bottom: 2px;
           }
           .label {
@@ -37,7 +37,7 @@
       </style>
     </head>
     <body>
-      @if($dv !== null)
+      @if($result !== null)
         <div >
           <?php $div=[1,2];?>
             @foreach($div as $d)
@@ -64,7 +64,7 @@
                           <td style="width:19%;" >
                           <b>
                             <span style="margin-bottom: 20px">Fund Cluster :</span><br>
-                            <span style="margin-top: 20px">Date: {{ date('F j, Y', strtotime($dv->date))}}</span><br>
+                            <span style="margin-top: 20px">Date: {{ date('F j, Y', strtotime($result->date))}}</span><br>
                             <span>DV No. :</span>   
                           </b>    
                           </td>
@@ -95,7 +95,7 @@
                       <table width=100%>
                         <tr>
                           <td width=10.4% height=2%><b> Payee</td>
-                          <td style="width:39.6%; border-left: 0 "><b> {{$facility->name}}</td>
+                          <td style="width:39.6%; border-left: 0 "><b> {{$pre_dv->facility->name}}</td>
                           <td style="width:30%; border-left: 0; vertical-align:top; " >
                             <span style="vertical-align:top; " >Tin/Employee No. :</span>
                           </td>
@@ -107,13 +107,13 @@
                       <table width=100%>
                         <tr>
                           <td width=10.5% height=2%><b>Address</td>
-                          <td style="width: 89.5%; border-left: 0 ;vertical-align:top; "><b>{{$facility->address}}</td>
+                          <td style="width: 89.5%; border-left: 0 ;vertical-align:top; "><b>{{$pre_dv->facility->address}}</td>
                           
                         </tr>
                       </table>
                       <table width=100%>
                         <tr class="header">
-                          <td height=2.3% width =50%> Particulars</td>
+                          <td height=2% width =50%> Particulars</td>
                           <td style="width:20%; border-left: 0 " >Responsibility Center</td>
                           <td style="width:10%; border-left: 0 " >MFO/PAP</td>
                           <td style="width:20%; border-left: 0 " >Amount</td>
@@ -122,42 +122,41 @@
                           <td height=3.5% >
                           
                               <p style="text-align:justify;">For reimbursement of medical services rendered to patients under the Medical 
-                              Assistance for Indigent Patient Program for {{$facility->name}}
-                              per billing statement dated {{date('F Y', strtotime($dv->month_year_from))}} {{!Empty($dv->month_year_to)?date('F Y', strtotime($dv->month_year_to)):''}}
+                              Assistance for Indigent Patient Program for {{$pre_dv->facility->name}}
+                              per billing statement dated {{date('F Y', strtotime($result->date_from))}} {{!Empty($result->date_to)?date('F Y', strtotime($result->date_to)):''}}
                               in the amount of:</p>
                               
-                              @foreach($fund_source as $index=> $fund_saa)
+                              @foreach($fundsources as $index=> $fund_saa)
                                   <div style="width: 100%;">
-                                      <span class="saa" style="float: left;">{{$saa_source[$index]}}</span>
-                                      <span class="amount" style="float: right;">{{ number_format(floatval(str_replace(',','',$saa_amount[$index])), 2, '.', ',') }}</span>
+                                      <span class="saa" style="float: left;">{{$fund_saa['saa']}}</span>
+                                      <span class="amount" style="float: right;">{{ number_format(floatval(str_replace(',','',$fund_saa['amount'])), 2, '.', ',') }}</span>
                                       <div style="clear: both;"></div>
                                   </div>
                               @endforeach
                               <br>
                               
                               <div style="width: 100%;">   
-                                @if(floor($dv->deduction1) == 3)
-                                  <span class="saa" style="margin-left:10px;">{{ floor($dv->deduction1) . '%' . ' ' . 'Percentage Tax' }}</span>
+                                @if(floor($info->vat) == 3)
+                                  <span class="saa" style="margin-left:10px;">{{ floor($info->vat) . '%' . ' ' . 'Percentage Tax' }}</span>
                                 @else
-                                  <span class="saa" style="margin-left:10px;">{{ floor($dv->deduction1) . '%' . ' ' . 'VAT' }}</span>
+                                  <span class="saa" style="margin-left:10px;">{{ floor($info->vat) . '%' . ' ' . 'VAT' }}</span>
                                 @endif
-                                <span style="margin-left:50px;"><?php echo number_format($total, 2, '.', ',')?></span>
-                                <span style="float: right;"><?php echo number_format(str_replace(',','',$dv->deduction_amount1), 2, '.', ',')?></span>
+                                <span style="margin-left:50px;">{{($info->vat > 3)?$amount / 1.12 : $amount}}</span>
+                                <span style="float: right;">{{($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100}}</span>
                                 <div style="clear: both;"></div>
                               </div>
                               <div style="width: 100%;">   
-                                <span class="saa" style="margin-left:10px;"> {{floor($dv->deduction2).'%'.' '.'EWT'}}</span>
-                                @if(floor($dv->deduction1) == 3)
-                                  <span style="margin-left:105px;"><?php echo number_format($total, 2, '.', ',')?></span>
+                                <span class="saa" style="margin-left:10px;"> {{floor($info->Ewt).'%'.' '.'EWT'}}</span>
+                                @if(floor($info->vat) == 3)
+                                  <span style="margin-left:105px;">{{($info->vat > 3)?$amount / 1.12 : $amount}}</span>
                                 @else
-                                  <span style="margin-left:48px;"><?php echo number_format($total, 2, '.', ',')?></span>
+                                  <span style="margin-left:48px;">{{($info->vat > 3)?$amount / 1.12 : $amount}}</span>
                                 @endif
-                                <span style="float: right;"><?php echo number_format(str_replace(',','',$dv->deduction_amount2), 2, '.', ',')?></span>
+                                <span style="float: right;">{{($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100}}</span>
                                 <div style="clear: both;"></div>
                               </div>
-                              <br><br>
-                    
-                              <span type="text" style="width:95%" class="saa">Control No:{{!Empty($dv->control_no)?$dv->control_no:''}}<span><br>
+                              <br>
+                              <span type="text" style="width:95%" class="saa">Control No:{{$control}}<span><br>
                               <span style="margin-left:150px; font-weight:bold">Amount Due</span>
                           
                           </td>
@@ -166,12 +165,12 @@
                           <td style="width:14%; border-left: 0 " >
                           <div class= "header">
                             <br><br><br><br>
-                            <span style="text-align:center;"><?php echo number_format(str_replace(',','',$dv->total_amount), 2, '.', ',')?></span>
+                            <span style="text-align:center;">{{$amount}}</span>
                             <br><br><br><br>
                         
-                            <span style="text-align:center;">{{$result}}</span><br><br>
+                            <span style="text-align:center;">{{(($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100) + (($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100)}}</span><br><br>
                             <span style="text-align:center;">_________________</span><br>
-                            <span style="text-align:center;">{{ number_format((str_replace(',','',$dv->total_amount)) -  (str_replace(',','',$result)), 2, '.', ',') }}</span>
+                            <span style="text-align:center;">{{$amount - ((($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100) + (($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100))}}</span>
                           </div> 
                         </td>
                         </tr>
@@ -230,13 +229,13 @@
                           </td>
                           <td style=" border-left: 0 ; text-align:right; vertical-align:top" >
                             <span>
-                              {{ number_format((double) str_replace(',', '', $dv->total_amount) - (!empty($dv->accumulated) ? (double) str_replace(',', '', $dv->accumulated) : 0), 2, '.', ',') }}
+                                {{($result)? $amount - $result->accumulated: $amount}}
                             </span><br>
-                            <span>{{!Empty($dv->accumulated)?number_format(str_replace(',','',$dv->accumulated), 2, '.', ','):''}}</span>
+                            <span>{{$result?$result->accumulated:0}}</span>
                           </td>
                           <td style=" border-left: 0 ; text-align:right; vertical-align:top" >
-                            <br><br><span>{{ $result }}</span><br>
-                            <span>{{ number_format((str_replace(',','',$dv->total_amount)) -  (str_replace(',','',$result)), 2, '.', ',')}}</span>
+                            <br><br><span>{{(($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100) + (($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100)}}</span><br>
+                            <span>{{$amount - ((($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100) + (($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100))}}</span>
                           </td>
                         </tr>
                       </table>
@@ -246,16 +245,16 @@
                             <td width =50%><strong>D. Approved for Payment:</strong></td>
                         </tr>
                         <tr>
-                            <td height=7%>
+                            <td height=6%>
                               <div style="display: inline-flex; align-items: center;">
                                   <span class="box" style="display: inline-block;"></span>
-                                  <p style="margin-left: 5px; display: inline;">Cash Available</p>
+                                  <p style="margin-left: 5px; display: inline;margin-top: 1px">Cash Available</p>
                               </div>
-                              <div style="display: inline-flex; align-items: center; margin-top: 5px">
+                              <div style="display: inline-flex; align-items: center; margin-top: 1px">
                                   <span class="box" style="display: inline-block;"></span>
                                   <p style="margin-left: 5px; display: inline;">Subject to Authority to Debit Account (when applicable)</p>
                               </div>
-                              <div style="display: inline-flex; align-items: center; margin-top: 5px">
+                              <div style="display: inline-flex; align-items: center; margin-top: 1px">
                                   <span class="box" style="display: inline-block;"></span>
                                   <p style="margin-left: 5px; display: inline;">Supporting documents complete and amount claimed proper</p>
                               </div>
@@ -335,29 +334,67 @@
                       </div>
                 </table>
                 <div style="position:absolute; left: 50%; transform: translateX(-50%); margin-top:15px;" class="modal_footer">
-                    {!! DNS1D::getBarcodeHTML($dv->route_no, 'C39E', 1, 28) !!}
+                    {!! DNS1D::getBarcodeHTML($result->route_no, 'C39E', 1, 28) !!}
                     <div style="text-align: center;">
-                        <font class="route_no">{{ $dv->route_no }}</font>
+                        <font class="route_no">{{ $result->route_no }}</font>
                     </div>
                 </div>  
                 @if($d == 1)
                   <div style="page-break-before: always;"></div>
                 @endif
             @endforeach
-            @foreach($fund_source as $index => $fund_saa)
-                @if($fund_saa->image)
+            @foreach($fundsources as $index => $fund_saa)
+                @if($fund_saa['path'])
                     <div style="page-break-before: always;"></div>
                     <div style="margin-left: 1px; margin-right: 1px;">
                         <div style="text-align: center;">
-                            <span>{{$fund_saa->saa}}</span>
+                            <span>{{$fund_saa['saa']}}</span>
                             <br><br> <br><br> <br><br> <br><br> <br><br>
-                            <img src="{{ url('storage/app/' . $fund_saa->image->path) }}" 
+                            <img src="{{ url('storage/app/' . $fund_saa['path']) }}" 
                                 style="width:1000px; height:700px; transform: rotate(270deg);">
                         </div>
                     </div>
                 @endif
             @endforeach
-        </div>
+            <div style="page-break-before: always;"></div>
+            <div>
+                <div style="width: 100%; text-align:center;margin-top:3%">
+                    <h5><b>V1</b><h3>
+                </div>
+                <table border= 1px solid black width= 100%>
+                    <tr>
+                        <div style="width: 100%; text-align:center;margin-top:3%">
+                            <span style="font-weight: bold">{{$pre_dv->facility->name}}</span>
+                        </div>
+                        <div style="display: inline-block; width: 100%; margin-top:30px;">
+                            @foreach($pre_dv->extension as $index => $row)
+                                @if($index == 0)
+                                    <label style="display: inline-block; margin-left: 16%; width: 20%; font-weight: bold">SAA</label>
+                                    <label style="display: inline-block; margin-left: 6%; width: 20%; font-weight: bold">AMOUNT</label>
+                                    <label style="display: inline-block; margin-left: 8%; width: 20%; font-weight: bold">PROPONENT</label>
+
+                                @endif
+                                @foreach ($row->saas as $data)
+                                    <span style="border: 1px solid black; padding: 2px;display: inline-block; width: 32%; height: 40px; margin-left: 2%; margin-top: 8px; text-align:center; font-size:12px">{{ $data->saa->saa }}</span>
+                                    <span style="line-height: 30px; border: 1px solid black; padding: 2px;display: inline-block; width: 20%; height: 40px; text-align: center; margin-left: 2%; text-align:center; font-size:12px">{{ number_format(str_replace(',', '', $data->amount), 2, '.',',')}}</span>
+                                    <span style="border: 1px solid black; padding: 2px;display: inline-block; width: 36%; height: 40px; text-align: center; margin-left: 2%; text-align:center; font-size:12px">{{ $row->proponent->proponent }}</span>
+                                @endforeach
+                            @endforeach
+                        </div>
+                    </tr>
+                    <div style="width: 100%; margin-top: 5%; margin-bottom: 5%;">
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="width: 61.5%;border:0"></td>
+                                <td style="width: 36.5%; text-align: center; border: 1px solid black; padding: 2px; font-size: 12px; margin-right: 20%;">
+                                    {{number_format(str_replace(',','', $amount), 2,'.',',')}}
+                                </td>
+                                <td style="width: 2%;border:0"></td>
+                            </tr>
+                        </table>
+                    </div>
+                </table>
+            </div>
         @endif
     </body>
 </html>
