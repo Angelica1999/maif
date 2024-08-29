@@ -353,6 +353,30 @@
               msg: 'Done!'
            });
         @endif
+        @if(session('pre_dv'))
+           <?php session()->forget('pre_dv'); ?>
+           Lobibox.notify('success', {
+              msg: 'Success!'
+           });
+        @endif
+        @if(session('pre_dv_error'))
+           <?php session()->forget('pre_dv_error'); ?>
+           Lobibox.notify('error', {
+              msg: 'Data not found!'
+           });
+        @endif
+        @if(session('remove_pre_dv'))
+           <?php session()->forget('remove_pre_dv'); ?>
+           Lobibox.notify('error', {
+              msg: 'Successfully removed!'
+           });
+        @endif
+        @if(session('pre_dv_update'))
+           <?php session()->forget('pre_dv_update'); ?>
+           Lobibox.notify('success', {
+              msg: 'Successfully updated!'
+           });
+        @endif
     </script>
     @yield('js')
 </body>

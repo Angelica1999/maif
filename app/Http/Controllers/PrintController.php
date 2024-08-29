@@ -22,6 +22,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Image;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use App\Models\PreDV;
+use App\Models\PreDVControl;
+use App\Models\PreDVSAA;
+use App\Models\PreDVExtension;
+use App\Models\NewDV;
 use PDF;
 
 use App\Jobs\SendMultipleEmails;
@@ -339,6 +344,70 @@ class PrintController extends Controller
         $pdf = PDF::loadView('dv3.dv3_pdf', $data);
         $pdf->setPaper('Folio');
         return $pdf->stream('dv3.pdf');
+    }
+
+    public function newDVPDF($id) {
+
+        $new = NewDV::where('predv_id', $id)->first();
+        if($new){
+            $pre_dv = PreDV::where('id', $id)->with(
+                [
+                    'user:userid,fname,lname,mname',
+                    'facility:id,name', 
+                    'extension' => function ($query){
+                        $query->with(
+                            [
+                                'proponent:id,proponent',
+                                'controls',
+                                'saas' => function($query){
+                                    $query->with([
+                                        'saa:id,saa'
+                                    ]);
+                                }
+                            ]
+                        );
+                    }
+                ])->first();
+            $extension = PreDVExtension::where('pre_dv_id', $pre_dv->id)->pluck('id');
+            $saas = PreDVSAA::whereIn('predv_extension_id', $extension)->with(
+                ['saa'=> function ($query){
+                    $query->with('image');
+                }]
+            )->get();
+
+            $info = AddFacilityInfo::where('facility_id', $pre_dv->facility_id)->first();
+            $controls = PreDVControl::whereIn('predv_extension_id', $extension)->get();  
+            $i = 0;   
+            $control = '';   
+            foreach ($controls as $index => $c) {
+                if ($i <= 3) {
+                    $control = ($control != '')? $control .', '.$c->control_no : $control .' '. $c->control_no ;
+                }
+                $i++;
+            }
+            $grouped = $saas->groupBy('fundsource_id')->map(function ($group) use ($info){
+                return [ 
+                    'amount' => $group->sum('amount'),
+                    'saa' => $group->first()->saa->saa, 
+                    'path' => $group->first()->saa->image->path, 
+                    'fundsource_id' => $group->first()->saa->id,
+                    'vat' => ($info && $info->vat != null)? (float) $info->vat *  $group->sum('amount') / 100: 0,
+                    'ewt' => ($info && $info->Ewt != null)? (float) $info->Ewt *  $group->sum('amount') / 100: 0
+                ];
+            });
+            $data = [
+                'result'=> $new,
+                'pre_dv'=> $pre_dv,
+                'fundsources' => $grouped,
+                'control' => $control,
+                'info' => $info,
+                'amount' => $grouped->sum('amount')
+            ];
+    
+            $pdf = PDF::loadView('pre_dv.new_pdf', $data);
+            $pdf->setPaper('Folio');
+            return $pdf->stream('dv.pdf');
+        }
     }
         
 }

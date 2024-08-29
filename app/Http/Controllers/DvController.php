@@ -360,16 +360,6 @@ class DvController extends Controller
                 $q->received_by= 0;
                 $q->status= 0;
                 $q->save();
-
-                // Session::put("releaseAdded",[
-                //     "route_no" => $req->route_no,
-                //     "section_released_to_id" => $req->section,
-                //     "user_released_name" => $user->fname.' '.$user->lname,
-                //     "section_released_by_id" => $user->section,
-                //     "section_released_by_name" => Section::find($user->section)->description,
-                //     "remarks" => $req->remarks,
-                //     "status" => "released"
-                // ]);
             }
 
             $dv3 = Dv3::where('route_no', $route_no)->first();

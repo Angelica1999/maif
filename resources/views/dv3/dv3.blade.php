@@ -202,7 +202,7 @@
                                             <input type="checkbox" style="width: 60px; height: 20px;" name="release_dv[]" id="releaseDvId_{{ $index }}" 
                                                 class="group-releaseDv" >
                                         </td>
-                                        <td style="padding: 4px; text-align:center; word-wrap: break-word; min-width: 200px;">
+                                        <td style="padding: 4px; text-align:center; word-wrap: break-word; min-width: 200px; ">
                                             @if($row->text_remarks != null)
                                                 {{$row->text_remarks}}
                                                 <a href="#update_remarks" onclick="updateRemarks('{{$row->route_no}}', '{{($row->text_remarks ==null)?0:$row->text_remarks}}')" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs"><i class="typcn typcn-edit menu-icon" style="color:green; font-size: 24px; width:200px;"></i></a>

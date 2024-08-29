@@ -38,7 +38,7 @@
                         @endforeach
                     @else
                         <tr>
-                            <td rowspan="3">No Data Available!</td>
+                            <td colspan="3">No Data Available!</td>
                         </tr>
                     @endif
                        
@@ -136,7 +136,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-sm btn-secondary update_close" data-dismiss="modal">CLOSE</button>
-                <button type="button" class="btn-sm btn-warning delete_btn">DELETE</button>
+                <button type="button" onclick="deletePre()" class="btn-sm btn-warning delete_btn">DELETE</button>
                 <button type="submit" class="btn-sm btn-success submit_btn">SUBMIT</button>
             </div>
         </div>
@@ -159,8 +159,36 @@
             location.reload();
         })
 
+        function deletePre(){
+            var id = $('#pre_id').val();
+
+            Lobibox.alert('error',
+                {
+                    size: 'mini',
+                    msg: '<div style="text-align:center;"><i class="typcn typcn-delete menu-icon" style="color:red; font-size:30px"></i>Are you sure you want to remove this?</div>',
+                    buttons:{
+                        ok:{
+                            'class': 'lobibox-btn lobibox-btn-ok',
+                            text: 'Delete',
+                            closeOnClick: true
+                        },
+                        cancel: {
+                            'class': 'lobibox-btn lobibox-btn-cancel',
+                            text: 'Cancel',
+                            closeOnClick: true
+                        }
+                    },
+                    callback: function(lobibox, type){
+                        if (type == "ok"){
+                            window.location.href="pre-dv/delete/" + id;
+                        }
+                    }
+                }
+            );
+
+        }
+
         function updatePre(id){
-            console.log('id', id);
 
             $.get("{{ url('pre-dv/update/').'/' }}"+id, function(result) {
                 $('.pre_body').append(result);
