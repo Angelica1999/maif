@@ -456,13 +456,9 @@
             var clone_saa =  data.closest('.saa_clone');
             var input_value =  parseFloat(data.val().replace(/,/g, ''));
 
-            var saa_balance = parseFloat(clone_saa.find('.saa_id').find(':selected').attr('dataval'));
-            console.log('input_value', input_value);
-                console.log('saa_balance', saa_balance);
+            var saa_balance = parseFloat((clone_saa.find('.saa_id').find(':selected').attr('dataval')).replace(/,/g, ''));
+       
             if(saa_balance != '' || saa_balance != undefined){
-                console.log('1');
-                console.log('input_value', input_value);
-                console.log('saa_balance', saa_balance);
 
                 if(input_value > saa_balance){
                     Lobibox.alert('error',{
