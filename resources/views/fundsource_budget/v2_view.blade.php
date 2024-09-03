@@ -68,11 +68,12 @@
     }
    
 </style>
-<form  method="post" action="{{ route('dv_new.save') }}" id ="new_form"> 
+<form  method="post" action="{{ route('pre_dv.process') }}" id ="new_form"> 
     @csrf   
     <input type="hidden" name="id" value="{{$result->id}}">
     <input type="hidden" name="extension_id" value="{{$result->id}}">
-    <input type="hidden" class="new_dv_id" value="{{$new_dv?$new_dv->route_no :0}}">
+    <input type="hidden" name="type" value="{{$type}}">
+    <input type="hidden" class="new_dv_id" name="new_dv_id" value="{{$new_dv?$new_dv->route_no :0}}">
     <div class="clearfix"></div>
         <div class="new-times-roman table-responsive">
           <div class="container-fluid">
@@ -103,10 +104,10 @@
                             <td width="25%">
                                 <span style="margin-bottom: 20px">Fund Cluster :</span><br>
                                 <span style="margin-top: 20px">Date: </span>
-                                &nbsp;&nbsp;&nbsp;&nbsp;<input type="date" asp-for="Date" name="date" style="width: 150px; height: 28px; font-size:8pt" value="{{$new_dv?$new_dv->date :(new DateTime())->format('Y-m-d')}}" required>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<input type="date" asp-for="Date" name="date" style="width: 150px; height: 28px; font-size:8pt" value="{{$new_dv?$new_dv->date :(new DateTime())->format('Y-m-d')}}" readonly>
                                 <br>
                                 <div>
-                                    <span>DV No:</span>
+                                    <span>DV No:  {{$new_dv->dv_no}}</span>
                                     @if(Auth::user()->userid == 1027 || Auth::user()->userid == 2660)
                                       &nbsp;<input type="text" name="dv_no" id="dv_no" style="width:150px; height: 28px;" class="ft15" required>
                                     @endif
@@ -142,7 +143,15 @@
                                 <span?>Tin/Employee No. :</span>
                             </td>
                             <td style="width:27%; border-left: 0 " >
-                                <span>ORS/BURS No. :</span>
+                              @if( $type == 'pending_new')
+                                <span>ORS/BURS No. : <span class="text-danger">*</span>
+                                    <input name="ors_no" style="width:150px; display:inline-block" class="form-control" required>
+                                </span>
+                              @else
+                                <span>ORS/BURS No. : {{$new_dv->ors_no}}</span>
+                              @endif
+
+                                
                             </td>
                           </tr>
                     </table>
@@ -167,8 +176,8 @@
                                 Assistance for Indigent Patient Program for
                                 <span id="hospitalAddress" name="hospitalname" style="color:red;"></span>
                                 per billing statement dated to 
-                                <input type="month" name="date_from" style="width: 110px; height: 28px; font-size: 8pt;" value="{{$new_dv ? date('Y-m', strtotime($new_dv->date_from)) : ''}}" required>
-                                <input type="month" name="date_to" style="width: 110px; height: 28px; font-size: 8pt;" value="{{$new_dv && $new_dv->date_to ? date('Y-m', strtotime($new_dv->date_to)) : ''}}">
+                                <input type="month" name="date_from" style="width: 110px; height: 28px; font-size: 8pt;" value="{{$new_dv ? date('Y-m', strtotime($new_dv->date_from)) : ''}}" readonly>
+                                <input type="month" name="date_to" style="width: 110px; height: 28px; font-size: 8pt;" value="{{$new_dv && $new_dv->date_to ? date('Y-m', strtotime($new_dv->date_to)) : ''}}" readonly>
                                 in the amount of:</p><br>
                                     <div style="display: flex; align-items: center; flex-wrap: wrap;">
                                         <?php $amount = 0;?>
@@ -185,18 +194,18 @@
                                 <div>
                                     <span style="margin-left:20px" class="saa">Vat : </span>
                                     <input type="text" name="in_vat" value="{{(int)$info->vat}}" id="vat" style="margin-left:32px;width:40px; height: 25px;" oninput="" readonly>
-                                    <input style="width:80px; height: 25px;" name="vat_val" value="{{number_format((($info->vat > 3)?$amount / 1.12 : $amount),2,'.',',')}}">
+                                    <input style="width:80px; height: 25px;" name="vat_val" value="{{number_format((($info->vat > 3)?$amount / 1.12 : $amount),2,'.',',')}}" readonly>
                                     <input name="vat_d" value="{{number_format((($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100),2,'.',',')}}" style="width:100px; height: 25px; font-size: 8pt" readonly>
                                 </div><br>
                                 <div padding-top:10px>
                                     <span style="margin-left:19.5px; margin-top:10px;" class="saa">Ewt : </span>
                                     <input value="{{(int)$info->Ewt}}" name="in_ewt" style="margin-left:31px;width:40px; height: 25px;" readonly>
-                                    <input style="margin-left:0px; width:80px; height: 25px;" name="ewt_val" value="{{number_format((($info->vat > 3)?$amount / 1.12 : $amount),2,'.',',')}}">
+                                    <input style="margin-left:0px; width:80px; height: 25px;" name="ewt_val" value="{{number_format((($info->vat > 3)?$amount / 1.12 : $amount),2,'.',',')}}" readonly>
                                     <input name="ewt_d" value="{{number_format((($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100),2,'.',',')}}" style="width:100px; height: 25px; font-size: 8pt" readonly>
                                 </div><br><br>
                                 <div>
                                     <span class="saa">Ref No:</span>
-                                    <input name="control_no" value="{{$control}}" style="width:185px; height: 28px;">
+                                    <input name="control_no" value="{{$control}}" style="width:185px; height: 28px;" readonly>
                                 </div>
 
                                 <br><br>
@@ -262,7 +271,7 @@
                             <td style="width:20%; border-left: 0 ; text-align:right; vertical-align:top" >
                             <br>
                               <span id="total_debit">{{number_format(($new_dv? $amount - $new_dv->accumulated: $amount),2,'.',',')}}</span><br>
-                              <input type="text" class="accumulated" name="accumulated" style="margin-top:1px;width:120px; height: 20px; text-align:right;" oninput="calculateSubsidy()" onkeyup="validateAmount(this)" value="{{$new_dv?$new_dv->accumulated:0}}"autocomplete="off">
+                              <input type="text" class="accumulated" name="accumulated" style="margin-top:1px;width:120px; height: 20px; text-align:right;" oninput="calculateSubsidy()" onkeyup="validateAmount(this)" value="{{$new_dv?$new_dv->accumulated:0}}"autocomplete="off" readonly>
                             </td>
                             <td style="width:20%; border-left: 0 ; text-align:right; vertical-align:top" >
                               <br><br><br>
@@ -363,70 +372,14 @@
             </div>
             <div class="modal-footer" id="dv_footer"> 
                 <button id="close_btn" style = "background-color:lightgray" type="button" class="btn btn-sm btn" data-dismiss="modal"><i class="typcn typcn-times"></i>Close</button>
-                <button type="submit" id="submitBtn" class="btn btn-sm btn-primary"><i class="typcn typcn-tick menu-icon"></i>Submit</button>
-                <a type="button" style="color:white" onclick="removePre()" class="btn btn-sm btn-danger"><i class="typcn typcn-close menu-icon"></i>Delete</a>
-                <input type="hidden" name="group_id" id="group_id" >
+                @if( $type == 'pending_new')
+                    <button type="submit" id="submitBtn" class="btn btn-sm btn-primary"><i class="typcn typcn-tick menu-icon"></i>Obligate</button>
+                @elseif( $type == 'cashier_pending')
+                    <button type="submit" id="submitBtn" class="btn btn-sm btn-primary"><i class="typcn typcn-tick menu-icon"></i>Paid</button>
+                @endif
+
             </div>
           </div>
       </div>
     </div>
 </form>
-<script>
-    function validateAmount(element) {
-        if (event.keyCode === 32) {
-            event.preventDefault();
-        }
-        var cleanedValue = element.value.replace(/[^\d.]/g, '');
-        var numericValue = parseFloat(cleanedValue);
-
-        if ((!isNaN(numericValue) || cleanedValue === '' || cleanedValue === '.') &&
-            !(cleanedValue.length === 1 && cleanedValue[0] === '0')) {
-                element.value = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        }else{
-            element.value = '';
-        }
-    }
-
-    function calculateSubsidy(){
-        var subsidy = parseNumberWithCommas($("#total_amount").text()) || 0;
-        var accumulated = parseNumberWithCommas($(".accumulated").val()) || 0;
-        console.log('subsidy', subsidy);
-        console.log('accumulated', accumulated);
-
-        if(accumulated>subsidy){
-            Lobibox.alert('error', {
-            size: 'mini',
-            msg: "Accumulated is greater than total amount."
-            });
-            $(".accumulated").val('');
-            $('#total_debit').text(formatNumberWithCommas(subsidy));
-        }else{
-            var res = (subsidy-accumulated).toFixed(2);
-            $('#total_debit').text(formatNumberWithCommas(res));
-        }
-    }
-
-    function parseNumberWithCommas(value) {
-        if(typeof value === 'string'){
-            return parseFloat(value.replace(/,/g, '')) || 0;
-        } else{
-            return parseFloat(value) || 0;
-        }
-    }
-
-    function formatNumberWithCommas(number) {
-        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    }
-
-    function removePre(){
-        var id = $('.new_dv_id').val();
-        if(id == 0){
-            Lobibox.alert('error', {
-                size: 'mini',
-                msg: 'No new disbursement is created for this pre dv'
-            });
-        }else{
-            window.location.href="v2/delete/" + id;
-        }
-    }
-</script>

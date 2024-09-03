@@ -24,4 +24,8 @@ class PreDV extends Model
         return $this->hasMany(PreDVExtension::class, 'pre_dv_id', 'id');
     }
 
+    public function new_dv(){
+        return $this->belongsTo(NewDV::class, 'id', 'predv_id');
+    }
+
 }

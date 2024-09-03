@@ -16,35 +16,64 @@ use App\Models\Facility;
 use App\Models\AddFacilityInfo;
 use App\Models\TrackingMaster;
 use App\Models\TrackingDetails;
+use App\Models\ProponentInfo;
+use App\Models\Utilization;
 use PDF;
+
 class PreDvController extends Controller
 {
     //
 
-    public function pre_dv(){
-        $pre_dv = PreDV::with('user','facility')->orderBy('id', 'desc')->paginate(50);
+    public function pre_dv(Request $request)
+    {
+
+        NewDV::whereNull('dv_no')
+            ->orWhere('dv_no', '')
+            ->with('dts')
+            ->get()
+            ->each(function ($dv) {
+                if ($dv->dts && $dv->dts->dv_no) {
+                    $dv->dv_no = $dv->dts->dv_no;
+                    $dv->save();
+                }
+            });
+
+        $pre_dv = PreDV::with('user', 'facility', 'new_dv')->orderBy('id', 'desc');
         $saas = Fundsource::get();
         $proponents = Proponent::select('proponent')->groupBy('proponent')->get();
-        $facilities = Facility::get();
+        $facilities = Facility::with('addFacilityInfo')->get();
+
+        if($request->viewAll){
+            $request->keyword = '';
+        }else if($request->keyword){
+            $keyword = $request->keyword;
+            $pre_dv->WhereHas('facility', function ($query) use ($keyword) {
+                $query->where('name', 'LIKE', '%' . $keyword . '%');
+            });
+        }
+        $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(50);
+        
         return view('pre_dv.pre_dv', [
             'results' => $pre_dv,
             'proponents' => $proponents,
             'saas' => $saas,
-            'facilities' => $facilities
+            'facilities' => $facilities,
+            'keyword' => $request->keyword
         ]);
     }
 
-    public function pre_dv1(){
+    public function pre_dv1(Request $request)
+    {
         $pre_dv = PreDV::with(
             [
                 'user:userid,fname,lname,mname',
-                'facility:id,name', 
-                'extension' => function ($query){
+                'facility:id,name',
+                'extension' => function ($query) {
                     $query->with(
                         [
                             'proponent:id,proponent',
                             'controls',
-                            'saas' => function($query){
+                            'saas' => function ($query) {
                                 $query->with([
                                     'saa:id,saa'
                                 ]);
@@ -52,30 +81,45 @@ class PreDvController extends Controller
                         ]
                     );
                 }
-            ])
-            ->orderBy('id', 'desc')->paginate(50);
+            ]
+        );
         $saas = Fundsource::get();
         $proponents = Proponent::select('proponent')->groupBy('proponent')->get();
         $facilities = Facility::get();
+
+        if($request->viewAll){
+            $request->keyword = '';
+        }else if($request->keyword){
+            $keyword = $request->keyword;
+            $pre_dv->WhereHas('facility', function ($query) use ($keyword) {
+                $query->where('name', 'LIKE', '%' . $keyword . '%');
+            });
+        }
+
+        $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(50);
+
         return view('pre_dv.pre_dv1', [
             'results' => $pre_dv,
             'proponents' => $proponents,
             'saas' => $saas,
-            'facilities' => $facilities
+            'facilities' => $facilities,
+            'keyword' => $request->keyword
         ]);
     }
 
-    public function pre_dv2(){
+    public function pre_dv2(Request $request)
+    {
         $pre_dv = PreDV::with(
             [
                 'user:userid,fname,lname,mname',
-                'facility:id,name', 
-                'extension' => function ($query){
+                'facility:id,name',
+                'new_dv',
+                'extension' => function ($query) {
                     $query->with(
                         [
                             'proponent:id,proponent',
                             'controls',
-                            'saas' => function($query){
+                            'saas' => function ($query) {
                                 $query->with([
                                     'saa:id,saa'
                                 ]);
@@ -83,30 +127,47 @@ class PreDvController extends Controller
                         ]
                     );
                 }
-            ])
-            ->orderBy('id', 'desc')->paginate(50);
+            ]
+        );
+        // return $pre_dv;
         $saas = Fundsource::get();
         $proponents = Proponent::select('proponent')->groupBy('proponent')->get();
         $facilities = Facility::get();
+
+        if($request->viewAll){
+            $request->keyword = '';
+        }else if($request->keyword){
+            $keyword = $request->keyword;
+            $pre_dv->whereHas('new_dv', function ($query) use ($keyword) {
+                $query->where('route_no', 'LIKE', '%' . $keyword . '%');
+            })->orWhereHas('facility', function ($query) use ($keyword) {
+                $query->where('name', 'LIKE', '%' . $keyword . '%');
+            });
+        }
+        $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(50);
+
         return view('pre_dv.pre_dv2', [
             'results' => $pre_dv,
             'proponents' => $proponents,
             'saas' => $saas,
-            'facilities' => $facilities
+            'facilities' => $facilities,
+            'keyword' => $request->keyword
         ]);
     }
 
-    public function v1View($id){
-        $pre_dv = PreDV::where('id', $id)->with(
+    public function pre_dvBudget(Request $request, $type)
+    {
+        $pre_dv = PreDV::with(
             [
                 'user:userid,fname,lname,mname',
-                'facility:id,name', 
-                'extension' => function ($query){
+                'facility:id,name',
+                'new_dv',
+                'extension' => function ($query) {
                     $query->with(
                         [
                             'proponent:id,proponent',
                             'controls',
-                            'saas' => function($query){
+                            'saas' => function ($query) {
                                 $query->with([
                                     'saa:id,saa'
                                 ]);
@@ -114,40 +175,145 @@ class PreDvController extends Controller
                         ]
                     );
                 }
-            ])->first();
+            ]
+        );
         // return $pre_dv;
-        if($pre_dv){
+        $saas = Fundsource::get();
+        $proponents = Proponent::select('proponent')->groupBy('proponent')->get();
+        $facilities = Facility::get();
+
+        if($request->viewAll){
+            $request->keyword = '';
+        }else if($request->keyword){
+            $keyword = $request->keyword;
+            $pre_dv->whereHas('new_dv', function ($query) use ($keyword) {
+                $query->where('route_no', 'LIKE', '%' . $keyword . '%');
+            })->orWhereHas('facility', function ($query) use ($keyword) {
+                $query->where('name', 'LIKE', '%' . $keyword . '%');
+            });
+        }
+
+        if($type == 'pending_new'){
+            $pre_dv->whereHas('new_dv', function ($query) {
+                $query->whereNull('ors_no'); 
+            });  
+        }else if($type== 'processed_new'){
+            $pre_dv->whereHas('new_dv', function ($query) {
+                $query->whereNotNull('ors_no'); 
+            });  
+        }else if($type== 'cashier_pending'){
+            $pre_dv->whereHas('new_dv', function ($query) {
+                $query->whereNull('paid_by')->whereNotNull('ors_no');
+            });  
+        }else if($type== 'cashier_paid'){
+            $pre_dv->whereHas('new_dv', function ($query) {
+                $query->whereNotNull('paid_by')->whereNotNull('ors_no'); 
+            });  
+        }
+
+        $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(50);
+
+        return view('fundsource_budget.new_dv_list', [
+            'results' => $pre_dv,
+            'proponents' => $proponents,
+            'saas' => $saas,
+            'facilities' => $facilities,
+            'keyword' => $request->keyword,
+            'type' => $type
+        ]);
+    }
+
+    public function budgetV2(Request $request, $type, $id){
+        $pre_dv = PreDV::where('id', $id)->with('facility')->first();
+        $new_dv = NewDV::where('predv_id', $id)->with('dts')->first();
+        $extension = PreDVExtension::where('pre_dv_id', $pre_dv->id)->pluck('id');
+        $saas = PreDVSAA::whereIn('predv_extension_id', $extension)->with('saa:id,saa')->get();
+        $info = AddFacilityInfo::where('facility_id', $pre_dv->facility_id)->first();
+        $controls = PreDVControl::whereIn('predv_extension_id', $extension)->get();
+        $i = 0;
+        $control = '';
+        foreach ($controls as $index => $c) {
+            if ($i <= 3) {
+                $control = ($control != '') ? $control . ', ' . $c->control_no : $control . ' ' . $c->control_no;
+            }
+            $i++;
+        }
+        $grouped = $saas->groupBy('fundsource_id')->map(function ($group) use ($info) {
+            return [
+                'amount' => $group->sum('amount'),
+                'saa' => $group->first()->saa->saa,
+                'fundsource_id' => $group->first()->saa->id,
+                'vat' => ($info && $info->vat != null) ? (float) $info->vat *  $group->sum('amount') / 100 : 0,
+                'ewt' => ($info && $info->Ewt != null) ? (float) $info->Ewt *  $group->sum('amount') / 100 : 0
+            ];
+        });
+        if ($pre_dv) {
+            return view('fundsource_budget.v2_view', [
+                'result' => $pre_dv,
+                'fundsources' => $grouped,
+                'info' => $info,
+                'control' => $control,
+                'new_dv' => $new_dv,
+                'type' => $type
+            ]);
+        }
+    }
+
+    public function v1View($id)
+    {
+        $pre_dv = PreDV::where('id', $id)->with(
+            [
+                'user:userid,fname,lname,mname',
+                'facility:id,name',
+                'extension' => function ($query) {
+                    $query->with(
+                        [
+                            'proponent:id,proponent',
+                            'controls',
+                            'saas' => function ($query) {
+                                $query->with([
+                                    'saa:id,saa'
+                                ]);
+                            }
+                        ]
+                    );
+                }
+            ]
+        )->first();
+        // return $pre_dv;
+        if ($pre_dv) {
             return view('pre_dv.v1_view', [
                 'result' => $pre_dv
             ]);
         }
     }
 
-    public function v2View($id){
+    public function v2View($id)
+    {
         $pre_dv = PreDV::where('id', $id)->with('facility')->first();
         $new_dv = NewDV::where('predv_id', $id)->first();
         $extension = PreDVExtension::where('pre_dv_id', $pre_dv->id)->pluck('id');
         $saas = PreDVSAA::whereIn('predv_extension_id', $extension)->with('saa:id,saa')->get();
         $info = AddFacilityInfo::where('facility_id', $pre_dv->facility_id)->first();
-        $controls = PreDVControl::whereIn('predv_extension_id', $extension)->get();  
-        $i = 0;   
-        $control = '';   
+        $controls = PreDVControl::whereIn('predv_extension_id', $extension)->get();
+        $i = 0;
+        $control = '';
         foreach ($controls as $index => $c) {
             if ($i <= 3) {
-                $control = ($control != '')? $control .', '.$c->control_no : $control .' '. $c->control_no ;
+                $control = ($control != '') ? $control . ', ' . $c->control_no : $control . ' ' . $c->control_no;
             }
             $i++;
         }
-        $grouped = $saas->groupBy('fundsource_id')->map(function ($group) use ($info){
-            return [ 
+        $grouped = $saas->groupBy('fundsource_id')->map(function ($group) use ($info) {
+            return [
                 'amount' => $group->sum('amount'),
-                'saa' => $group->first()->saa->saa, 
+                'saa' => $group->first()->saa->saa,
                 'fundsource_id' => $group->first()->saa->id,
-                'vat' => ($info && $info->vat != null)? (float) $info->vat *  $group->sum('amount') / 100: 0,
-                'ewt' => ($info && $info->Ewt != null)? (float) $info->Ewt *  $group->sum('amount') / 100: 0
+                'vat' => ($info && $info->vat != null) ? (float) $info->vat *  $group->sum('amount') / 100 : 0,
+                'ewt' => ($info && $info->Ewt != null) ? (float) $info->Ewt *  $group->sum('amount') / 100 : 0
             ];
         });
-        if($pre_dv){
+        if ($pre_dv) {
             return view('pre_dv.v2_view', [
                 'result' => $pre_dv,
                 'fundsources' => $grouped,
@@ -158,29 +324,35 @@ class PreDvController extends Controller
         }
     }
 
-    public function cloneProponent(){
+    public function cloneProponent($facility_id)
+    {
         $proponents = Proponent::select('proponent')->groupBy('proponent')->get();
         $saas = Fundsource::get();
 
-        return view('pre_dv.proponent_clone',[
+        return view('pre_dv.proponent_clone', [
             'proponents' => $proponents,
-            'saas' => $saas
+            'saas' => $saas,
+            'facility_id' => $facility_id
         ]);
     }
 
-    public function cloneSAA(){
+    public function cloneSAA($facility_id)
+    {
         $saas = Fundsource::get();
-        return view('pre_dv.saa_clone',[
-            'saas' => $saas
+        return view('pre_dv.saa_clone', [
+            'saas' => $saas,
+            'facility_id' => $facility_id
         ]);
     }
 
-    public function cloneControl(){
+    public function cloneControl()
+    {
         return view('pre_dv.control_clone');
     }
 
-    public function savePreDV($data,Request $request){
-        // return $data;
+    public function savePreDV($data, Request $request)
+    {
+
         $decodedData = urldecode($data);
         $all_data = json_decode($decodedData, true);
         $grand_total = $request->grand_total;
@@ -188,11 +360,11 @@ class PreDvController extends Controller
 
         $pre_dv = new PreDV();
         $pre_dv->facility_id = $facility_id;
-        $pre_dv->grand_total = (float)str_replace(',','',$grand_total);
+        $pre_dv->grand_total = (float) str_replace(',', '', $grand_total);
         $pre_dv->created_by = Auth::user()->userid;
         $pre_dv->save();
 
-        foreach($all_data as $value){
+        foreach ($all_data as $value) {
             $proponent_id = $value['proponent'];
             $control_nos = $value['pro_clone'];
             $fundsources = $value['fundsource_clone'];
@@ -201,61 +373,78 @@ class PreDvController extends Controller
             $pre_extension = new PreDVExtension();
             $pre_extension->pre_dv_id = $pre_dv->id;
             $pre_extension->proponent_id = $proponent;
-            $pre_extension->total_amount = (float)str_replace(',','',$value['total_amount']);
+            $pre_extension->total_amount = (float) str_replace(',', '', $value['total_amount']);
             $pre_extension->save();
 
-            foreach($control_nos as $row){
+            foreach ($control_nos as $row) {
                 $controls = new PreDVControl();
                 $controls->predv_extension_id = $pre_extension->id;
                 $controls->control_no = $row['control_no'];
                 $controls->patient_1 = $row['patient_1'];
                 $controls->patient_2 = $row['patient_2'];
-                $controls->amount = (float)str_replace(',','',$row['amount']);
+                $controls->amount = (float) str_replace(',', '', $row['amount']);
                 $controls->save();
             }
 
-            foreach($fundsources as $saa){
+            foreach ($fundsources as $saa) {
                 $pre_saa = new PreDVSAA();
                 $pre_saa->predv_extension_id = $pre_extension->id;
                 $pre_saa->fundsource_id = $saa['saa_id'];
-                $pre_saa->amount = (float)str_replace(',','',$saa['saa_amount']);
+                $pre_saa->info_id = $saa['info_id'];
+                $pre_saa->amount = (float) str_replace(',', '', $saa['saa_amount']);
                 $pre_saa->save();
             }
         }
         return redirect()->back()->with('pre_dv', true);
     }
 
-    public function displayPreDV($id){
+    public function displayPreDV($id)
+    {
+
         $pre_dv = PreDV::where('id', $id)->with(
-                [
-                    'user:userid,fname,lname,mname',
-                    'facility:id,name', 
-                    'extension' => function ($query){
-                        $query->with(
-                            [
-                                'proponent:id,proponent',
-                                'controls',
-                                'saas' => function($query){
-                                    $query->with([
-                                        'saa:id,saa'
-                                    ]);
-                                }
-                            ]
-                        );
-                    }
-                ])->first();
+            [
+                'user:userid,fname,lname,mname',
+                'facility:id,name',
+                'new_dv',
+                'extension' => function ($query) {
+                    $query->with(
+                        [
+                            'proponent:id,proponent',
+                            'controls',
+                            'saas' => function ($query) {
+                                $query->with([
+                                    'saa:id,saa'
+                                ]);
+                            }
+                        ]
+                    );
+                }
+            ]
+        )->first();
+
         $saas = Fundsource::get();
         $proponents = Proponent::select('proponent')->groupBy('proponent')->get();
         $facilities = Facility::get();
+        $facility_id = (string) $pre_dv->facility_id;
+        $info = ProponentInfo::with('facility', 'fundsource', 'proponent')
+            ->where(function ($query) use ($facility_id) {
+                $query->whereJsonContains('proponent_info.facility_id', '702')
+                    ->orWhereJsonContains('proponent_info.facility_id', [$facility_id]);
+            })
+            ->orWhereIn('proponent_info.facility_id', [$facility_id, '702'])
+            ->get();
+        // return $pre_dv;
         return view('pre_dv.update_predv', [
             'result' => $pre_dv,
             'proponents' => $proponents,
             'saas' => $saas,
-            'facilities' => $facilities
+            'facilities' => $facilities,
+            'info' => $info
         ]);
     }
 
-    public function updatePreDV($data, Request $request){
+    public function updatePreDV($data, Request $request)
+    {
 
         $decodedData = urldecode($data);
         $all_data = json_decode($decodedData, true);
@@ -265,11 +454,11 @@ class PreDvController extends Controller
 
         $pre_dv = PreDV::where('id', $id)->first();
 
-        if($pre_dv){
+        if ($pre_dv) {
             $pre_dv->facility_id = $request->facility_id;
-            $pre_dv->grand_total = str_replace(',','',$request->grand_total);
+            $pre_dv->grand_total = str_replace(',', '', $request->grand_total);
             $pre_dv->save();
-            foreach($all_data as $value){
+            foreach ($all_data as $value) {
                 $extension = PreDVExtension::where('pre_dv_id', $id)->get();
                 $ex_control = PreDVControl::where('predv_extension_id', $extension[0]->id)->delete();
                 $ex_saa = PreDVSAA::where('predv_extension_id', $extension[0]->id)->delete();
@@ -284,102 +473,234 @@ class PreDvController extends Controller
                 $pre_extension = new PreDVExtension();
                 $pre_extension->pre_dv_id = $pre_dv->id;
                 $pre_extension->proponent_id = $proponent;
-                $pre_extension->total_amount = (float)str_replace(',','',$value['total_amount']);
+                $pre_extension->total_amount = (float) str_replace(',', '', $value['total_amount']);
                 $pre_extension->save();
             }
 
-            foreach($control_nos as $row){
+            foreach ($control_nos as $row) {
                 $controls = new PreDVControl();
                 $controls->predv_extension_id = $pre_extension->id;
                 $controls->control_no = $row['control_no'];
                 $controls->patient_1 = $row['patient_1'];
                 $controls->patient_2 = $row['patient_2'];
-                $controls->amount = (float)str_replace(',','',$row['amount']);
+                $controls->amount = (float) str_replace(',', '', $row['amount']);
                 $controls->save();
             }
 
-            foreach($fundsources as $saa){
+            foreach ($fundsources as $saa) {
                 $pre_saa = new PreDVSAA();
                 $pre_saa->predv_extension_id = $pre_extension->id;
                 $pre_saa->fundsource_id = $saa['saa_id'];
-                $pre_saa->amount = (float)str_replace(',','',$saa['saa_amount']);
+                $pre_saa->amount = (float) str_replace(',', '', $saa['saa_amount']);
                 $pre_saa->save();
             }
             return redirect()->back()->with('pre_dv', true);
-        }else{
+        } else {
             return redirect()->back()->with('pre_dv_error', true);
         }
     }
 
-    public function deletePreDV($id){
+    public function deletePreDV($id)
+    {
         $pre_dv = PreDV::where('id', $id)->first();
-        if($pre_dv){
+        if ($pre_dv) {
             $extension = PreDVExtension::where('pre_dv_id', $id)->get();
             PreDVSAA::where('predv_extension_id', $extension[0]->id)->delete();
             PreDVControl::where('predv_extension_id', $extension[0]->id)->delete();
             PreDVExtension::where('pre_dv_id', $id)->delete();
-
+            $pre_dv->delete();
             return redirect()->back()->with('remove_pre_dv', true);
-        }else{
+        } else {
             return redirect()->back()->with('pre_dv_error', true);
         }
     }
 
-    public function newDV(Request $request){
+    public function newDV(Request $request)
+    {
         $id = $request->id;
-        $pre = PreDV::where('id', $id)->with('facility:id,name')->first();
+
+        $pre = PreDV::where('id', $id)->with(
+            [
+                'user:userid,fname,lname,mname',
+                'facility' => function ($query) {
+                    $query->with('addFacilityInfo');
+                },
+                'extension' => function ($query) {
+                    $query->with(
+                        [
+                            'proponent:id,proponent',
+                            'controls',
+                            'saas' => function ($query) {
+                                $query->with([
+                                    'saa:id,saa'
+                                ]);
+                            }
+                        ]
+                    );
+                }
+            ]
+        )->first();
         $existing = NewDV::where('predv_id', $id)->first();
-        // return $request->total_amount;
-        if($existing){
+        // return $pre;
+        if ($existing) {
 
             $existing->date = $request->date;
-            $existing->date_from = $request->date_from.'-1';
-            if($request->date_to){
-                $existing->date_to = $request->date_to.'-1';
+            $existing->date_from = $request->date_from . '-1';
+            if ($request->date_to) {
+                $existing->date_to = $request->date_to . '-1';
             }
             $existing->total = $request->total_amount;
             $existing->accumulated = $request->accumulated;
             $existing->created_by = Auth::user()->userid;
             $existing->save();
-            return redirect()->back()->with('pre_dv_update', true);
 
-        }else{
-            
+            return redirect()->back()->with('pre_dv_update', true);
+        } else {
+
             $new_dv = new NewDV();
             $new_dv->route_no = date('Y-') . Auth::user()->userid . date('mdHis');
             $new_dv->predv_id = $pre->id;
             $new_dv->date = $request->date;
-            $new_dv->date_from = $request->date_from.'-1';
-            if($request->date_to){
-                $new_dv->date_to = $request->date_to.'-1';
+            $new_dv->date_from = $request->date_from . '-1';
+            if ($request->date_to) {
+                $new_dv->date_to = $request->date_to . '-1';
             }
             $new_dv->total = $request->total_amount;
             $new_dv->accumulated = $request->accumulated;
             $new_dv->created_by = Auth::user()->userid;
+            $new_dv->status = 0;
             $new_dv->save();
 
-            $desc = "Disbursement voucher for " . $pre->facility->name. " amounting to Php " . number_format(str_replace(',', '', $request->total_amount), 2, '.', ',');
-            $dts_user = DB::connection('dts')->select("SELECT id FROM users WHERE username = ? LIMIT 1",array(Auth::user()->userid));
-            $data = [$new_dv->route_no,"DV",$new_dv->created_at,$dts_user[0]->id,0,  $desc, 0.00,"", "", "", "", "", "", "", "", "", "", "0000-00-00 00:00:00",
-                        "", "", "", 0, "", !Empty($dv->dv_no)? $dv->dv_no:"", "", "", "", "", ];
+            $desc = "Disbursement voucher for " . $pre->facility->name . " amounting to Php " . number_format(str_replace(',', '', $request->total_amount), 2, '.', ',');
+            $dts_user = DB::connection('dts')->select("SELECT id FROM users WHERE username = ? LIMIT 1", array(Auth::user()->userid));
+            $data = [
+                $new_dv->route_no, "DV", $new_dv->created_at, $dts_user[0]->id, 0,  $desc, 0.00, "", "", "", "", "", "", "", "", "", "", "0000-00-00 00:00:00",
+                "", "", "", 0, "", !empty($dv->dv_no) ? $dv->dv_no : "", "", "", "", "",
+            ];
             DB::connection('dts')->insert(
                 "INSERT INTO TRACKING_MASTER(route_no, doc_type, prepared_date, prepared_by, division_head, description, amount, pr_no, po_no, pr_date, purpose, po_date, 
                     source_fund, requested_by, route_to, route_from, supplier, event_date, event_location, event_participant, cdo_applicant, cdo_day, event_daterange, 
                     payee, item, dv_no, ors_no, fund_source_budget, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), now())",$data);
-            
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), now())",
+                $data
+            );
+
             $tracking_master = TrackingMaster::where('route_no', $new_dv->route_no)->first();
-            $updated_route = date('Y-').$tracking_master->id;
+            $updated_route = date('Y-') . $tracking_master->id;
             $tracking_master->route_no = $updated_route;
-            $tracking_master->save();  
+            $tracking_master->save();
             $new_dv->route_no = $updated_route;
             $new_dv->save();
             //creating tracking_details
-            $data_details = [$updated_route, "", 0,$new_dv->created_at, $dts_user[0]->id, $dts_user[0]->id,  $desc, 0];
+            $data_details = [$updated_route, "", 0, $new_dv->created_at, $dts_user[0]->id, $dts_user[0]->id,  $desc, 0];
             DB::connection('dts')->insert("INSERT INTO TRACKING_DETAILS(route_no, code, alert, date_in, received_by, delivered_by, action, status,created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, now(), now())",$data_details);
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, now(), now())", $data_details);
 
+            //utilization
+
+
+            foreach ($pre->extension as $data) {
+                foreach ($data->saas as $row) {
+                    $info = ProponentInfo::where('id', $row->info_id)->first();
+                    if ($info) {
+
+                        $vat = $pre->facility->addFacilityInfo->vat;
+                        $ewt = $pre->facility->addFacilityInfo->Ewt;
+
+                        $total = $row->amount;
+
+                        if ($vat > 3) {
+                            $total = ($total / 1.12 * $vat / 100) + ($total / 1.12 * $vat / 100);
+                        } else {
+                            $total = ($total * $vat / 100) + ($total * $vat / 100);
+                        }
+
+                        $util = new Utilization();
+                        $util->proponent_id = $data->proponent_id;
+                        $util->fundsource_id = $row->fundsource_id;
+                        $util->proponentinfo_id = $info->id;
+                        $util->div_id = $new_dv->route_no;
+                        $util->beginning_balance = $info->remaining_balance;
+                        $util->utilize_amount = $row->amount;
+                        $util->discount = $total;
+                        $util->created_by = Auth::user()->userid;
+                        $util->status = 0;
+                        $util->facility_id = $pre->facility_id;
+                        $util->save();
+
+                        $info->remaining_balance = (float) str_replace(',', '', $info->remaining_balance) - (float) str_replace(',', '', $row->amount);
+                        $info->save();
+                    }
+                }
+            }
             return redirect()->back()->with('pre_dv', true);
-        }       
+        }
+    }
+
+    public function v2Delete($route_no){
+        $new_dv = NewDV::where('route_no', $route_no)->first();
+        if($new_dv){
+            $uzs = Utilization::where('div_id', $route_no)->get();
+            if($uzs){
+                foreach($uzs as $u){
+                    $info = ProponentInfo::where('id', $u->proponentinfo_id)->first();
+                    $info->remaining_balance = (float) str_replace(',','', $info->remaining_balance) + (float) str_replace(',','', $u->utilize_amount);
+                    $info->save();
+                    $u->delete();
+                }
+            }
+            $new_dv->delete();
+        }
+        return redirect()->back()->with('pre_dv_remove', true);
+    }
+
+    public function processNew(Request $request){
+        $new = NewDV::where('route_no', $request->new_dv_id)->first();
+        $type = $request->type;
+        if($type == 'pending_new'){
+            $new->ors_no = $request->ors_no;
+            $new->obligated_by = Auth::user()->userid;
+            $new->obligated_on =  date('Y-m-d H:i:s');
+            $new->status = 1;
+            $new->save();
+
+            $uts = Utilization::where('div_id', $new->route_no)->get();
+
+            if($uts){
+                foreach($uts as $u){
+                    $fund = Fundsource::where('id', $u->fundsource_id)->first();
+
+                    $u->budget_bbalance = $fund->remaining_balance;
+                    $u->budget_utilize = $u->utilize_amount;
+                    $u->obligated = 1;
+                    $u->obligated_by = Auth::user()->userid;
+                    $u->obligated_on = date('Y-m-d H:i:s');
+                    $u->save();
+                    
+                    $fund->remaining_balance = (float) str_replace(',','', $fund->remaining_balance) + (float) str_replace(',','', $u->utilize_amount);
+                    $fund->save();
+                }
+            }
+            
+            return redirect()->back()->with('pre_dv_update', true);
+        }else if($type == 'cashier_pending'){
+            $new->paid_on = date('Y-m-d H:i:s');
+            $new->paid_by = Auth::user()->userid;
+            $new->status = 2;
+            $new->save();
+
+            $uts = Utilization::where('div_id', $new->route_no)->get();
+
+            if($uts){
+                foreach($uts as $u){
+                    $u->paid = 1;
+                    $u->paid_by = Auth::user()->userid;
+                    $u->paid_on = date('Y-m-d H:i:s');
+                    $u->save();
+                }
+            }
+
+            return redirect()->back()->with('pay_dv', true);
+        }
     }
 }

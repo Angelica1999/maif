@@ -20,4 +20,7 @@ class NewDV extends Model
     public function user_paid(){
         return $this->belongsTo(User::class, 'paid_by', 'userid');
     }
+    public function dts(){
+        return $this->belongsTo(TrackingMaster::class, 'route_no', 'route_no');
+    }
 }
