@@ -27,9 +27,6 @@ use App\Models\TrackingDetails;
                     <thead>
                         <tr>
                             <th style="padding:5px"></th>
-                            <th style="text-align:center">
-                                <a class="text-info select_all">Release All</a>
-                            </th>
                             <th>Route</th>
                             <th>Facility</th>
                             <th>Proponent</th>
@@ -38,59 +35,29 @@ use App\Models\TrackingDetails;
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($results as $index => $row)
-                            <tr>
-                                <td class="td" style="padding:5px;text-align:center">
-                                    @if($row->new_dv)
-                                        <?php
-                                            $routed = TrackingDetails::where('route_no',$row->new_dv->route_no)
-                                                ->count();
-                                            if($routed){
-                                                $doc_id = TrackingDetails::where('route_no',$row->new_dv->route_no)
-                                                ->orderBy('id','desc')
-                                                ->first()
-                                                ->id;
-                                            }else{
-                                                $doc_id= 0;
-                                            }
-                                        ?>                                   
-                                        <button type="button" class="btn btn-xs" style="background-color:#165A54;color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$row->new_dv->route_no}}" id="track_load" onclick="openModal()">Track</button>
-                                        <a href="{{ route('new_dv.pdf', ['id' => $row->id]) }}" style="background-color:green;color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
-                                        <button data-toggle="modal" data-target="#releaseTo" data-id="{{ $doc_id }}" data-route_no="{{ $row->new_dv->route_no }}" onclick="putRoute($(this))" style="background-color:#1E90FF;color:white; width:85px;" type="button" class="btn btn-xs">Release To</button>
-                                    @else
-                                        <span class="text-danger"><i>dv is not yet created</i></span>
-                                    @endif
-                                </td>
-                                @if($row->new_dv)
-                                    <td style="padding:5px;text-align:center" class="group-release" data-route_no="{{ $row->new_dv->route_no }}" data-id="{{ $doc_id }}" >
-                                        <input type="checkbox" style="width: 60px; height: 20px;" name="release_dv[]" id="releaseDvId_{{ $index }}" 
-                                            class="group-releaseDv" >
-                                    </td>
-                                @else
-                                    <td></td>
-                                @endif
-                            
-                                <td>
-                                    @if($row->new_dv)
-                                        {{$row->new_dv->route_no}}
-                                    @endif
-                                </td>
-                                <td class="td"><a data-toggle="modal" data-backdrop="static" href="#view_v2" onclick="viewV1({{$row->id}})">{{$row->facility->name}}</a></td>
-                                <td class="td">
-                                    @foreach($row->extension as $index => $data)
+                    @foreach($results as $index => $row)
+                        <tr>
+                            <td class="td" style="padding:5px;text-align:center">
+                                <button type="button" class="btn btn-xs" style="background-color:#165A54;color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$row->new_dv->route_no}}" id="track_load" onclick="openModal()">Track</button>
+                                <a href="{{ route('new_dv.pdf', ['id' => $row->id]) }}" style="background-color:green;color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
+                            </td>
+                            <td><a data-toggle="modal" data-backdrop="static" href="#view_v2" onclick="viewV1({{$row->id}})">{{$row->new_dv->route_no}}</a></td>
+                            <td class="td">{{$row->facility->name}}</td>
+                            <td class="td">
+                                @foreach($row->extension as $index => $data)
                                     {{$data->proponent->proponent}}
                                     @if($index + 1 % 2 == 0)
                                     <br>
                                     @endif
                                     @if($index < count($row->extension) - 1)
                                         ,
-                                        @endif
-                                        @endforeach
-                                </td>
-                                <td class="td">{{$row->grand_total}}</td>
-                                <td class="td">{{$row->user->lname .', '.$row->user->fname}}</td>
-                            </tr>
-                        @endforeach
+                                    @endif
+                                @endforeach
+                            </td>
+                            <td class="td">{{$row->grand_total}}</td>
+                            <td class="td">{{$row->user->lname .', '.$row->user->fname}}</td>
+                        </tr>
+                    @endforeach
                     </tbody>
                 </table>
             @else
@@ -127,9 +94,12 @@ use App\Models\TrackingDetails;
 <script>
     $('.filter-division').select2();
     $('.filter-section').select2();
+
+    var doc_type = @json($type);
+    
     function viewV1(id) {
         $('.pre_body').empty();
-        $.get("{{ url('pre-dv/v2/').'/' }}" + id, function(result) {
+        $.get("{{ url('pre-dv/budget/v2/').'/' }}" + doc_type + '/' + id, function(result) {
             $('.pre_body').append(result);
         });
     }

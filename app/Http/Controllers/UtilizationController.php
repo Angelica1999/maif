@@ -8,6 +8,7 @@ use App\Models\Proponent;
 use App\Models\Fundsource;
 use App\Models\User;
 use App\Models\Dv;
+use App\Models\Dv3;
 use PDF;
 
 class UtilizationController extends Controller{
@@ -51,10 +52,13 @@ class UtilizationController extends Controller{
 
     public function getDv($route_no){
         $dv = Dv::where('route_no', $route_no)->first();
+        $dv3 = Dv3::where('route_no', $route_no)->first();
         if($dv){
             return redirect()->route('dv', ['keyword' => $route_no]);
-        }else{
+        }else if($dv3){
             return redirect()->route('dv3', ['keyword' => $route_no]);
+        }else{
+            return redirect()->route('pre_dv2', ['keyword' => $route_no]);
         }
     }
 }

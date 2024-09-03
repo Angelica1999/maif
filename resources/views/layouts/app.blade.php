@@ -377,6 +377,12 @@
               msg: 'Successfully updated!'
            });
         @endif
+        @if(session('pre_dv_remove'))
+           <?php session()->forget('pre_dv_remove'); ?>
+           Lobibox.notify('error', {
+              msg: 'Successfully removed!'
+           });
+        @endif
     </script>
     @yield('js')
 </body>

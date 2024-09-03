@@ -1,11 +1,17 @@
 @extends('layouts.app')
 @section('content')
+<style>
+    .select2-container--default .select2-results__option--highlighted[aria-selected] {
+        background-color: green;
+        color: white;
+    }
+</style>
 <div class="container-fluid col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
             <form method="GET" action="">
                 <div class="input-group float-right w-50" style="min-width: 600px;">
-                    <input type="text" class="form-control" name="keyword" placeholder="Facility" value="">
+                    <input type="text" class="form-control" name="keyword" placeholder="Facility" value="{{$keyword}}">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
@@ -19,31 +25,31 @@
                 MAIF-IPP
             </p>
             <div class="table-responsive">
+            @if(count($results) > 0)
                 <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Facility</th>
-                        <th>Grand Total</th>
-                        <th>Created By</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if(count($results) > 0)
+                    <thead>
+                        <tr>
+                            <th>Facility</th>
+                            <th>Grand Total</th>
+                            <th>Created By</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         @foreach($results as $row)
                             <tr>
-                                <td class="td"><a data-toggle="modal" data-backdrop="static" href="#update_predv" onclick="updatePre({{$row->id}})">{{$row->facility->name}}</a></td>
+                                <td class="td"><a data-toggle="modal" data-backdrop="static" href="#update_predv" onclick="updatePre({{$row->id}}, {{$row->new_dv?1:2}})">{{$row->facility->name}}</a></td>
                                 <td class="td">{{$row->grand_total}}</td>
                                 <td class="td">{{$row->user->lname .', '.$row->user->fname}}</td>
                             </tr>
                         @endforeach
-                    @else
-                        <tr>
-                            <td colspan="3">No Data Available!</td>
-                        </tr>
-                    @endif
-                       
-                </tbody>
+                    </tbody>
                 </table>
+            @else
+                <div class="alert alert-danger" role="alert" style="width: 100%;">
+                    <i class="typcn typcn-times menu-icon"></i>
+                    <strong>No data found!</strong>
+                </div>
+            @endif
             </div>
             <div class="pl-5 pr-5 mt-5">
                 {!! $results->appends(request()->query())->links('pagination::bootstrap-5') !!}
@@ -51,8 +57,8 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="create_predv" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+<div class="modal fade" id="create_predv" role="dialog" style="overflow-y:scroll;">
+    <div class="modal-dialog modal-lg" role="document" style="width:700px">
         <div class="modal-content">
             <div class="modal-header" style="text-align:center">
                 <h5 class="text-success modal-title">Pre - DV</h5>
@@ -62,10 +68,11 @@
                     @csrf
                     <input type="hidden" class="status" value="0">
                     <div style="width: 100%; display:flex; justify-content: center;text-align:center;">
-                        <select class="select2 facility_id" style="width: 50%;" name="facility_id" required>
+                        <select class="select2 facility_id" style="width: 50%;" name="facility_id" onchange="getFundsource($(this).val())" required>
                             <option value=''>SELECT FACILITY</option>
                             @foreach($facilities as $facility)
-                                <option value="{{$facility->id}}">{{$facility->name}}</option>
+                                <option datavat="{{($facility->addFacilityInfo && $facility->addFacilityInfo->vat)?1:0}}" 
+                                    value="{{$facility->id}}">{{$facility->name}}</option>
                             @endforeach
                         </select>
                     </div>
@@ -73,20 +80,20 @@
                         <div class="proponent_clone" style="text-align: center; border: 1px solid black; width: 100%; padding: 3%;  margin-top: 10px; ">
                             <div class="card" style="border: none;">
                                 <div class="row" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 4%;">
-                                    <button type="button" class="form-control btn-xs btn-danger btn_pro_remove" style="width: 5%;"></button>
+                                    <i class="typcn typcn-minus menu-icon btn_pro_remove" style="width:40px; background-color:red; color:white;border: 1px; padding: 2px;"></i>
                                     <select style="width: 50%; margin-bottom: 10px;" class="select2 proponent" required>
                                         <option value=''>SELECT PROPONENT</option>
                                         @foreach($proponents as $proponent)
                                             <option value="{{$proponent->proponent}}">{{$proponent->proponent}}</option>
                                         @endforeach
                                     </select>
-                                    <button type="button" class="form-control btn-xs btn-info" onclick="cloneProponent($(this))" style="width: 5%;"></button>
+                                    <i onclick="cloneProponent($(this))" class="typcn typcn-plus menu-icon" style="width:40px; background-color:blue; color:white;border: 1px; padding: 2px;"></i>
                                 </div>
                                 <div class="control_div">
                                     <div class="control_clone" style="padding: 10px; border: 1px solid lightgray;">
                                         <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 4%;">
                                             <input class="form-control control_no" style="text-align: center; width: 56%;" placeholder="CONTROL NUMBER" required>
-                                            <button type="button" class="form-control btn-xs btn-info control_clone_btn" style="width: 5%;"></button>
+                                            <i class="typcn typcn-plus menu-icon control_clone_btn" style="width:40px;background-color:blue; color:white;border: 1px; padding: 2px;"></i>
                                         </div>
                                         <div style="display: flex; justify-content: space-between;">
                                             <input placeholder="PATIENT" class="form-control patient_1" style="width: 41%;" required>
@@ -99,14 +106,14 @@
                                     <input class="form-control total_amount" style="width: 60%; text-align: center;" placeholder="TOTAL AMOUNT PER PROPONENT" readonly>
                                 </div>
                                 <div class="saa_clone" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 2%;">
-                                    <select style="width: 40%;" class="select2 saa_id" required>
+                                    <select style="width: 50%;" class="select2 saa_id" required>
                                         <option value=''>SELECT SAA</option>
-                                        @foreach($saas as $saa)
+                                        <!-- @foreach($saas as $saa)
                                             <option value="{{$saa->id}}" data-balance="{{$saa->alocated_funds}}">{{$saa->saa}}</option>
-                                        @endforeach
+                                        @endforeach -->
                                     </select>
-                                    <input placeholder="AMOUNT" class="form-control saa_amount" onkeyup="validateAmount(this)" style="width: 41%;" required>
-                                    <button type="button" class="form-control btn-xs btn-info saa_clone_btn" style="width: 5%;"></button>
+                                    <input placeholder="AMOUNT" class="form-control saa_amount" onkeyup="validateAmount(this)" style="width: 35%;" required>
+                                    <i class="typcn typcn-plus menu-icon saa_clone_btn" style="width:40px;background-color:blue; color:white;border: 1px; padding: 2px;"></i>
                                 </div>
                             </div>
                         </div>
@@ -137,7 +144,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn-sm btn-secondary update_close" data-dismiss="modal">CLOSE</button>
                 <button type="button" onclick="deletePre()" class="btn-sm btn-warning delete_btn">DELETE</button>
-                <button type="submit" class="btn-sm btn-success submit_btn">SUBMIT</button>
+                <button type="button" class="btn-sm btn-success submit_btn">SUBMIT</button>
             </div>
         </div>
     </div>
@@ -158,6 +165,182 @@
         $('.update_close').on('click', function(){
             location.reload();
         })
+        
+        var f_id;
+
+        function getFundsource(facility_id){
+
+            var check_vat = $('.facility_id').find(':selected').attr('datavat');
+
+            if(check_vat == 0){
+                Lobibox.alert('error', {
+                    size: 'mini',
+                    msg: 'Please add vat and ewt first!'
+                });
+                $('.facility_id').val('').trigger('change');
+            }else if(check_vat == 1){
+
+                f_id = facility_id;
+                $.get("{{ url('fetch/fundsource').'/' }}"+facility_id, function(result) {
+                    var data_result = result.info;
+                    var text_display;
+
+                    var first = [],
+                        sec = [],
+                        third = [],
+                        fourth = [],
+                        fifth = [],
+                        six = [];
+                    $.each(data_result, function(index, optionData){
+                        var rem_balance = parseFloat(optionData.remaining_balance.replace(/,/g, '')).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+
+                        // arrangement:
+                        //     - conap specific hospitals
+                        //     - conap cvchd
+                        //     - specific hospitals
+                        //     - cvchd
+                        //     - no funds conap
+                        //     - no funds saa 2024
+
+                        var check_p = 0;  
+
+                        var id = optionData.facility_id;
+                    
+                        if(optionData.facility !== null){
+                            if(optionData.facility.id == facility_id){
+                                text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - SF - ' + rem_balance;
+                            }else{
+                                text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + optionData.facility.name + ' - ' + rem_balance;
+                                check_p = 1;
+                            } 
+                        }else{
+                            if(id.includes('702')){
+                                check_p = 1;
+                                text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + 'DOH CVCHD' + ' - ' + rem_balance;
+                            }else{
+                                text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - SF - ' + rem_balance;
+                            }
+                        }
+
+                        var color = '';
+                        if(rem_balance == '0' || rem_balance == '0.00'){
+                            color = 'red';
+                            if(optionData.fundsource.saa.includes('CONAP')){
+                                    obj = {
+                                        value: optionData.fundsource_id,
+                                        text: text_display,
+                                        dataval: optionData.remaining_balance,
+                                        dataproponentInfo_id: optionData.id,
+                                        dataprogroup: optionData.proponent.pro_group,
+                                        dataproponent: optionData.proponent.id,
+                                        d_color: color
+                                    }
+                                    fifth.push(obj);
+                                }else{
+                                    obj = {
+                                        value: optionData.fundsource_id,
+                                        text: text_display,
+                                        dataval: optionData.remaining_balance,
+                                        dataproponentInfo_id: optionData.id,
+                                        dataprogroup: optionData.proponent.pro_group,
+                                        dataproponent: optionData.proponent.id,
+                                        d_color: color
+                                    }
+                                    six.push(obj);
+                                }
+                        }else{
+
+                            color = 'normal';
+
+                            if(optionData.fundsource.saa.includes('CONAP')){
+                                if(check_p == 1){
+                                    obj = {
+                                        value: optionData.fundsource_id,
+                                        text: text_display,
+                                        dataval: optionData.remaining_balance,
+                                        dataproponentInfo_id: optionData.id,
+                                        dataprogroup: optionData.proponent.pro_group,
+                                        dataproponent: optionData.proponent.id,
+                                        d_color: color
+                                    }
+                                    sec.push(obj);
+                                }else{
+                                    obj = {
+                                        value: optionData.fundsource_id,
+                                        text: text_display,
+                                        dataval: optionData.remaining_balance,
+                                        dataproponentInfo_id: optionData.id,
+                                        dataprogroup: optionData.proponent.pro_group,
+                                        dataproponent: optionData.proponent.id,
+                                        d_color: color
+                                    }
+                                    first.push(obj);
+                                }
+                            }else{
+                                if(check_p == 1){
+                                    obj = {
+                                        value: optionData.fundsource_id,
+                                        text: text_display,
+                                        dataval: optionData.remaining_balance,
+                                        dataproponentInfo_id: optionData.id,
+                                        dataprogroup: optionData.proponent.pro_group,
+                                        dataproponent: optionData.proponent.id,
+                                        d_color: color
+                                    }
+                                    fourth.push(obj);
+                                }else{
+                                    obj = {
+                                        value: optionData.fundsource_id,
+                                        text: text_display,
+                                        dataval: optionData.remaining_balance,
+                                        dataproponentInfo_id: optionData.id,
+                                        dataprogroup: optionData.proponent.pro_group,
+                                        dataproponent: optionData.proponent.id,
+                                        d_color: color
+                                    }
+                                    third.push(obj);
+                                }
+                            }
+                        }
+
+                        $('.saa_id').select2({
+                            templateResult: function (data) {
+                                if ($(data.element).data('color') === 'red') {
+                                    return $('<span style="color: red;">' + data.text + '</span>');
+                                }
+                                return data.text;
+                            }
+                        });
+                    });
+
+                    addOption(first);
+                    addOption(sec);
+                    addOption(third);
+                    addOption(fourth);
+                    addOption(fifth);
+                    addOption(six);
+
+                    $('.saa_id').prop('disabled', false);
+                });
+
+            }
+        } 
+
+        function addOption(data){
+            data.forEach(function(item) {
+                var option = $('<option>', {
+                    value: item.value,
+                    text: item.text,
+                    dataval: item.dataval,
+                    dataproponentInfo_id: item.dataproponentInfo_id,
+                    dataprogroup: item.dataprogroup,
+                    dataproponent: item.dataproponent,
+                    'data-color': item.d_color
+                });
+
+                $('.saa_id').append(option.clone());
+            });
+        }
 
         function deletePre(){
             var id = $('#pre_id').val();
@@ -180,7 +363,7 @@
                     },
                     callback: function(lobibox, type){
                         if (type == "ok"){
-                            window.location.href="pre-dv/delete/" + id;
+                            window.location.href="delete/" + id;
                         }
                     }
                 }
@@ -188,12 +371,17 @@
 
         }
 
-        function updatePre(id){
-
+        function updatePre(id, data){
             $.get("{{ url('pre-dv/update/').'/' }}"+id, function(result) {
                 $('.pre_body').append(result);
+                if(data == 1){
+                    $('.delete_btn').css('display', 'none');
+                    $('.submit_btn').css('display', 'none');
+                }else{
+                    $('.delete_btn').css('display', 'block');
+                    $('.submit_btn').css('display', 'block');
+                }
             });
-
         }
 
         function validateAmount(element) {
@@ -222,7 +410,8 @@
         }
 
         function cloneProponent(element){
-            $.get("{{ route('clone.proponent') }}", function (result) {
+            console.log('faci', f_id);
+            $.get("{{ url('pre-dv/proponent-clone') .'/' }}" + f_id, function (result) {
                 $('.facility_div').append(result);
             });
         }
@@ -267,8 +456,9 @@
             var clone_saa =  data.closest('.saa_clone');
             var input_value =  parseFloat(data.val().replace(/,/g, ''));
 
-            var saa_balance = parseFloat(clone_saa.find('.saa_id').find(':selected').attr('data-balance'));
-            
+            var saa_balance = parseFloat(clone_saa.find('.saa_id').find(':selected').attr('dataval'));
+            console.log('input_value', input_value);
+                console.log('saa_balance', saa_balance);
             if(saa_balance != '' || saa_balance != undefined){
                 console.log('1');
                 console.log('input_value', input_value);
@@ -292,14 +482,16 @@
                         },
                         callback: function (lobibox, type){
                             if(type == 'yes'){
-                                $.get("{{ route('clone.saa') }}", function (result) {
-                                    console.log('clone');
+                                $.get("{{ url('pre-dv/saa-clone').'/' }}" + f_id, function (result) {
+
                                     var clonedElement = clone_saa.last().after(result).next();
 
                                     clonedElement.find('.saa_clone_btn')
-                                        .removeClass('saa_clone_btn btn-info')
+                                        .removeClass('saa_clone_btn btn-info typcn typcn-plus menu-icon')
                                         .addClass('saa_remove_btn btn-danger')
-                                        .text(''); 
+                                        .css('background-color', 'red')
+                                        .text('')
+                                        .html('<span class="typcn typcn-minus menu-icon"></span>');
                                 }); 
                                 data.val(saa_balance);
                             }else{
@@ -319,13 +511,16 @@
         $(document).on('click', '.proponent_clone .saa_clone .saa_clone_btn', function () {
             var button = $(this);
 
-            $.get("{{ route('clone.saa') }}", function (result) {
+            $.get("{{ url('pre-dv/saa-clone').'/' }}" + f_id, function (result) {
                 var clonedElement = button.closest('.proponent_clone').find('.saa_clone').last().after(result).next();
 
                 clonedElement.find('.saa_clone_btn')
-                    .removeClass('saa_clone_btn btn-info')
+                    .removeClass('saa_clone_btn btn-info typcn typcn-plus menu-icon')
                     .addClass('saa_remove_btn btn-danger')
-                    .text(''); 
+                    .css('background-color', 'red')
+                    .text('')
+                    .html('<span class="typcn typcn-minus menu-icon"></span>');
+
             });
         });
 
@@ -338,10 +533,12 @@
             $.get("{{ route('clone.control') }}", function (result) {
                 var clonedElement = $(result).appendTo(button.closest('.control_div')).last();
 
-                clonedElement.find('.control_clone_btn')
-                    .removeClass('control_clone_btn btn-info')
+                clonedElement.find('.control_clone_btn')                
+                    .removeClass('control_clone_btn btn-info typcn typcn-plus menu-icon')
                     .addClass('control_remove_btn btn-danger')
-                    .text(''); 
+                    .css('background-color','red')
+                    .text('')                    
+                    .html('<span class="typcn typcn-minus menu-icon"></span>');
             });
         });
 
@@ -382,13 +579,16 @@
                     var fundsource_clone = [];
                     var saa_total = 0;
                     $(proponent_clone).find('.saa_clone').each(function (index, saa_clone){
+                        var info_id = $(saa_clone).find('.saa_id');
+                        info_id = info_id.find(':selected').attr('dataproponentInfo_id');
                         var saa_id = $(saa_clone).find('.saa_id').val();
                         var saa_amount = $(saa_clone).find('.saa_amount').val();
                         saa_total += parseFloat(saa_amount.replace(/,/g, ''));
-
+                        
                         var data1 = {
                             saa_id : saa_id,
-                            saa_amount : saa_amount
+                            saa_amount : saa_amount,
+                            info_id : info_id
                         };
                         fundsource_clone.push(data1);
                     });

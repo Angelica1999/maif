@@ -200,8 +200,8 @@ Route::get('/gl/update/{id}', [App\Http\Controllers\HomeController::class, 'upda
 Route::get('list/fundsources/{facility_id}', [App\Http\Controllers\DV3Controller::class, 'getFundsourceList'])->name('fundsource.list');
 
 Route::get('/pre-dv/pre_list', [App\Http\Controllers\PreDvController::class, 'pre_dv'])->name('pre_dv');
-Route::get('/pre-dv/proponent-clone', [App\Http\Controllers\PreDvController::class, 'cloneProponent'])->name('clone.proponent');
-Route::get('/pre-dv/saa-clone', [App\Http\Controllers\PreDvController::class, 'cloneSAA'])->name('clone.saa');
+Route::get('/pre-dv/proponent-clone/{facility_id}', [App\Http\Controllers\PreDvController::class, 'cloneProponent'])->name('clone.proponent');
+Route::get('/pre-dv/saa-clone/{facility_id}', [App\Http\Controllers\PreDvController::class, 'cloneSAA'])->name('clone.saa');
 Route::get('/pre-dv/control-clone', [App\Http\Controllers\PreDvController::class, 'cloneControl'])->name('clone.control');
 Route::match(['post', 'get'],'/pre-dv/save/{data}', [App\Http\Controllers\PreDvController::class, 'savePreDV'])->name('pre_dv.save');
 Route::get('pre-dv/update/{id}', [App\Http\Controllers\PreDvController::class, 'displayPreDV'])->name('pre.display');
@@ -213,6 +213,10 @@ Route::get('/pre-dv/version-1', [App\Http\Controllers\PreDvController::class, 'p
 Route::get('/pre-dv/version-2', [App\Http\Controllers\PreDvController::class, 'pre_dv2'])->name('pre_dv2');
 Route::post('/pre-dv/dv/new', [App\Http\Controllers\PreDvController::class, 'newDV'])->name('dv_new.save');
 Route::get('/pre-dv/version-2/pdf/{id}', [App\Http\Controllers\PrintController::class, 'newDVPDF'])->name('new_dv.pdf');
+Route::get('/pre-dv/v2/delete/{route_no}', [App\Http\Controllers\PreDvController::class, 'v2Delete'])->name('v2.delete');
+Route::get('/pre-dv/budget/pre_list/{type}', [App\Http\Controllers\PreDvController::class, 'pre_dvBudget'])->name('pre_dv_budget');
+Route::get('/pre-dv/budget/v2/{type}/{id}', [App\Http\Controllers\PreDvController::class, 'budgetV2'])->name('budget.v2');
+Route::match(['post', 'get'],'/pre-dv/dv/process', [App\Http\Controllers\PreDvController::class, 'processNew'])->name('pre_dv.process');
 
 
 

@@ -15,21 +15,21 @@
             <div class="proponent_clone" style="text-align: center; border: 1px solid black; width: 100%; padding: 3%;  margin-top: 10px; ">
                 <div class="card" style="border: none;">
                     <div class="row" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 4%;">
-                        <button type="button" class="form-control btn-xs btn-danger btn_pro_remove" style="width: 5%;"></button>
+                        <i class="typcn typcn-minus menu-icon btn_pro_remove" style="width:40px; background-color:red; color:white;border: 1px; padding: 2px;"></i>
                         <select style="width: 50%; margin-bottom: 10px;" class="select2 proponent" required>
                             <option value=''>SELECT PROPONENT</option>
                             @foreach($proponents as $proponent)
                             <option value="{{$proponent->proponent}}" {{($row->proponent->proponent == $proponent->proponent)?'selected':'' }}>{{$proponent->proponent}}</option>
                             @endforeach
                         </select>
-                        <button type="button" class="form-control btn-xs btn-info" onclick="cloneProponent($(this))" style="width: 5%;"></button>
+                        <i onclick="cloneProponent($(this))" class="typcn typcn-plus menu-icon" style="width:40px; background-color:blue; color:white;border: 1px; padding: 2px;"></i>
                     </div>
                     <div class="control_div">
                         @foreach($row->controls as $row2)
                             <div class="control_clone" style="padding: 10px; border: 1px solid lightgray;">
                                 <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 4%;">
                                     <input class="form-control control_no" style="text-align: center; width: 56%;" placeholder="CONTROL NUMBER" value="{{$row2->control_no}}" required>
-                                    <button type="button" class="form-control btn-xs btn-info control_clone_btn" style="width: 5%;"></button>
+                                    <i class="typcn typcn-plus menu-icon control_clone_btn" style="width:40px;background-color:blue; color:white;border: 1px; padding: 2px;"></i>
                                 </div>
                                 <div style="display: flex; justify-content: space-between;">
                                     <input placeholder="PATIENT" class="form-control patient_1" style="width: 41%;" value="{{$row2->patient_1}}" required>
@@ -44,14 +44,35 @@
                     </div>
                     @foreach($row->saas as $row3)
                         <div class="saa_clone" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 2%;">
-                            <select style="width: 40%;" class="select2 saa_id" required>
+                            <select style="width: 50%;" class="select2 saa_id" required>
                                 <option value=''>SELECT SAA</option>
-                                @foreach($saas as $saa)
-                                <option value="{{$saa->id}}" data-balance="{{$saa->alocated_funds}}" {{($row3->saa->id == $saa->id)?'selected':''}}>{{$saa->saa}}</option>
+                           
+                                @foreach($info as $row)
+                                    <?php
+                                        $rem_balance = number_format((float)str_replace(',', '', $row->remaining_balance), 2, '.', ',');
+                                        $text_display = '';
+                                        if ($row->facility !== null) {
+                                            if ($row->facility->id == $facility->id) {
+                                                $text_display = $row->fundsource->saa . ' - ' . $row->proponent->proponent . ' - SF - ' . $rem_balance;
+                                            } else {
+                                                $text_display = $row->fundsource->saa . ' - ' . $row->proponent->proponent . ' - ' . $row->facility->name . ' - ' . $rem_balance;
+                                            }
+                                        } else {
+                                            if (strpos($row->facility_id, '702') !== false) {
+                                                $text_display = $row->fundsource->saa . ' - ' . $row->proponent->proponent . ' - DOH CVCHD - ' . $rem_balance;
+                                            } else {
+                                                $text_display = $row->fundsource->saa . ' - ' . $row->proponent->proponent . ' - SF - ' . $rem_balance;
+                                            }
+                                        }                            
+                                    ?>
+
+                                    <option dataproponentInfo_id="{{$row->id}}" dataprogroup="{{$row->proponent->pro_group}}" dataproponent="{{$row->proponent->id}}" value="{{$row->fundsource_id}}" dataval="{{$row->remaining_balance}}" {{($row3->fundsource_id == $row->fundsource_id && $row3->info_id == $row->id)?'selected':''}}>
+                                        {{$text_display}}
+                                    </option>
                                 @endforeach
                             </select>
-                            <input placeholder="AMOUNT" class="form-control saa_amount" onkeyup="validateAmount(this)" style="width: 41%;" value="{{$row3->amount}}" required>
-                            <button type="button" class="form-control btn-xs btn-info saa_clone_btn" style="width: 5%;"></button>
+                            <input placeholder="AMOUNT" class="form-control saa_amount" onkeyup="validateAmount(this)" style="width: 35%;" value="{{$row3->amount}}" required>
+                            <i class="typcn typcn-plus menu-icon saa_clone_btn" style="width:40px;background-color:blue; color:white;border: 1px; padding: 2px;"></i>
                         </div>
                     @endforeach
                 </div>

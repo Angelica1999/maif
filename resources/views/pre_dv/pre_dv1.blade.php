@@ -5,7 +5,7 @@
         <div class="card-body">
             <form method="GET" action="">
                 <div class="input-group float-right w-50" style="min-width: 600px;">
-                    <input type="text" class="form-control" name="keyword" placeholder="Facility" value="">
+                    <input type="text" class="form-control" name="keyword" placeholder="Facility" value="{{$keyword}}">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>                       
@@ -17,6 +17,7 @@
                 MAIF-IPP
             </p>
             <div class="table-responsive">
+            @if(count($results) > 0)
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -27,32 +28,32 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if(count($results) > 0)
-                            @foreach($results as $row)
-                                <tr>
-                                    <td class="td"><a data-toggle="modal" data-backdrop="static" href="#view_v1" onclick="viewV1({{$row->id}})">{{$row->facility->name}}</a></td>
-                                    <td class="td">
-                                        @foreach($row->extension as $index => $data)
-                                            {{$data->proponent->proponent}}
-                                            @if($index + 1 % 2 == 0)
-                                                <br>
-                                            @endif
-                                            @if($index < count($row->extension) - 1)
-                                                , 
-                                            @endif
-                                        @endforeach
-                                    </td>
-                                    <td class="td">{{$row->grand_total}}</td>
-                                    <td class="td">{{$row->user->lname .', '.$row->user->fname}}</td>
-                                </tr>
-                            @endforeach
-                        @else
+                        @foreach($results as $row)
                             <tr>
-                                <td colspan="4">No Data Available!</td>
+                                <td class="td"><a data-toggle="modal" data-backdrop="static" href="#view_v1" onclick="viewV1({{$row->id}})">{{$row->facility->name}}</a></td>
+                                <td class="td">
+                                    @foreach($row->extension as $index => $data)
+                                        {{$data->proponent->proponent}}
+                                        @if($index + 1 % 2 == 0)
+                                            <br>
+                                        @endif
+                                        @if($index < count($row->extension) - 1)
+                                            , 
+                                        @endif
+                                    @endforeach
+                                </td>
+                                <td class="td">{{$row->grand_total}}</td>
+                                <td class="td">{{$row->user->lname .', '.$row->user->fname}}</td>
                             </tr>
-                        @endif
+                        @endforeach
                     </tbody>
                 </table>
+            @else
+                <div class="alert alert-danger" role="alert" style="width: 100%;">
+                    <i class="typcn typcn-times menu-icon"></i>
+                    <strong>No data found!</strong>
+                </div>
+            @endif
             </div>
             <div class="pl-5 pr-5 mt-5">
                 {!! $results->appends(request()->query())->links('pagination::bootstrap-5') !!}
