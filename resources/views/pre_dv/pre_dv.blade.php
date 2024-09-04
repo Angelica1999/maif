@@ -167,6 +167,7 @@
             $('.facility_div .proponent_clone .control_clone:not(:first)').remove();
             $('.facility_div .saa_clone:not(:first)').remove();
             $('.facility_id, .proponent, .saa_id').val('').trigger('change');
+            $('.inputted_amount').text('');
         });
 
         $('.update_close').on('click', function(){
@@ -702,8 +703,7 @@
                         Lobibox.notify('success', {
                             msg: "Successfully created pre_dv!",
                         });
-
-                        $('#create_predv').modal('hide');
+                        location.reload();
                     }
                 });
             }else{
@@ -725,7 +725,7 @@
                         Lobibox.notify('success', {
                             msg: "Successfully created pre_dv!",
                         });
-                        $('#update_predv').modal('hide');
+                        location.reload();
                     },
                     error: function (error) {
                         if (error.status) {
