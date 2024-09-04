@@ -24,11 +24,11 @@
                         <i onclick="cloneProponent($(this))" class="typcn typcn-plus menu-icon" style="width:40px; background-color:blue; color:white;border: 1px; padding: 2px;"></i>
                     </div>
                     <div class="control_div">
-                        @foreach($row->controls as $row2)
+                        @foreach($row->controls as $index1 => $row2)
                             <div class="control_clone" style="padding: 10px; border: 1px solid lightgray;">
                                 <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 4%;">
                                     <input class="form-control control_no" style="text-align: center; width: 56%;" placeholder="CONTROL NUMBER" value="{{$row2->control_no}}" required>
-                                    <i class="typcn typcn-plus menu-icon control_clone_btn" style="width:40px;background-color:blue; color:white;border: 1px; padding: 2px;"></i>
+                                    <i class="{{($index1 == 0)?'typcn typcn-plus menu-icon control_clone_btn': 'typcn typcn-minus menu-icon control_remove_btn' }}" style="width:40px; color:white;border: 1px; padding: 2px; {{($index1 == 0)?'background-color:blue' : 'background-color:red'}}"></i>
                                 </div>
                                 <div style="display: flex; justify-content: space-between;">
                                     <input placeholder="PATIENT" class="form-control patient_1" style="width: 41%;" value="{{$row2->patient_1}}" required>
@@ -42,7 +42,7 @@
                         <input class="form-control total_amount" style="width: 60%; text-align: center;" value="{{number_format(str_replace(',','',$row->total_amount), 2, '.',',')}}" placeholder="TOTAL AMOUNT PER PROPONENT" readonly>
                     </div>
                     <?php $total_saa = number_format(str_replace(',','',$row->total_amount), 2, '.',','); ?>
-                    @foreach($row->saas as $row3)
+                    @foreach($row->saas as $index => $row3)
                         <div class="saa_clone" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 2%;">
                             <select style="width: 50%;" class="select2 saa_id" required>
                                 <option value=''>SELECT SAA</option>
@@ -72,7 +72,7 @@
                                 @endforeach
                             </select>
                             <input placeholder="AMOUNT" class="form-control saa_amount" onkeyup="validateAmount(this)" style="width: 35%;" value="{{number_format(str_replace(',','',$row3->amount), 2, '.',',')}}" required>
-                            <i class="typcn typcn-plus menu-icon saa_clone_btn" style="width:40px;background-color:blue; color:white;border: 1px; padding: 2px;"></i>
+                            <i class="{{($index == 0)?'typcn typcn-plus menu-icon saa_clone_btn' : 'typcn typcn-minus menu-icon saa_remove_btn' }}" style="width:40px; color:white;border: 1px; padding: 2px; {{($index == 0)?'background-color:blue' : 'background-color:red'}}"></i>
                         </div>
                     @endforeach
                     <div style="display:inline-block;">
