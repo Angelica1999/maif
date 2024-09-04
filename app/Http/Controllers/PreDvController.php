@@ -551,19 +551,20 @@ class PreDvController extends Controller
         $id = $request->pre_id;
         $grand_total = (float) str_replace(',','',$request->grand_total);
         $facility_id = $request->facility_id;
-
+        // return $all_data;
         $pre_dv = PreDV::where('id', $id)->first();
 
         if ($pre_dv) {
             $pre_dv->facility_id = $request->facility_id;
             $pre_dv->grand_total = str_replace(',', '', $request->grand_total);
             $pre_dv->save();
-            foreach ($all_data as $value) {
-                $extension = PreDVExtension::where('pre_dv_id', $id)->get();
-                $ex_control = PreDVControl::where('predv_extension_id', $extension[0]->id)->delete();
-                $ex_saa = PreDVSAA::where('predv_extension_id', $extension[0]->id)->delete();
+            
+            $extension = PreDVExtension::where('pre_dv_id', $id)->pluck('id')->toArray();
+            $ex_control = PreDVControl::whereIn('predv_extension_id', $extension)->delete();
+            $ex_saa = PreDVSAA::whereIn('predv_extension_id', $extension)->delete();
+            PreDVExtension::where('pre_dv_id', $id)->delete();
 
-                PreDVExtension::where('pre_dv_id', $id)->delete();
+            foreach ($all_data as $value) {
 
                 $proponent_id = $value['proponent'];
                 $control_nos = $value['pro_clone'];
@@ -575,26 +576,28 @@ class PreDvController extends Controller
                 $pre_extension->proponent_id = $proponent;
                 $pre_extension->total_amount = (float) str_replace(',', '', $value['total_amount']);
                 $pre_extension->save();
-            }
 
-            foreach ($control_nos as $row) {
-                $controls = new PreDVControl();
-                $controls->predv_extension_id = $pre_extension->id;
-                $controls->control_no = $row['control_no'];
-                $controls->patient_1 = $row['patient_1'];
-                $controls->patient_2 = $row['patient_2'];
-                $controls->amount = (float) str_replace(',', '', $row['amount']);
-                $controls->save();
-            }
+                foreach ($control_nos as $row) {
+                    $controls = new PreDVControl();
+                    $controls->predv_extension_id = $pre_extension->id;
+                    $controls->control_no = $row['control_no'];
+                    $controls->patient_1 = $row['patient_1'];
+                    $controls->patient_2 = $row['patient_2'];
+                    $controls->amount = (float) str_replace(',', '', $row['amount']);
+                    $controls->save();
+                }
+    
+                foreach ($fundsources as $saa) {
+                    $pre_saa = new PreDVSAA();
+                    $pre_saa->predv_extension_id = $pre_extension->id;
+                    $pre_saa->fundsource_id = $saa['saa_id'];
+                    $pre_saa->info_id = $saa['info_id'];
+                    $pre_saa->amount = (float) str_replace(',', '', $saa['saa_amount']);
+                    $pre_saa->save();
+                }
 
-            foreach ($fundsources as $saa) {
-                $pre_saa = new PreDVSAA();
-                $pre_saa->predv_extension_id = $pre_extension->id;
-                $pre_saa->fundsource_id = $saa['saa_id'];
-                $pre_saa->info_id = $saa['info_id'];
-                $pre_saa->amount = (float) str_replace(',', '', $saa['saa_amount']);
-                $pre_saa->save();
             }
+            
             return redirect()->back()->with('pre_dv', true);
         } else {
             return redirect()->back()->with('pre_dv_error', true);
