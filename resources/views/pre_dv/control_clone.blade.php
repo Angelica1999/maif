@@ -7,5 +7,5 @@
         <input placeholder="PATIENT" class="form-control patient_1" style="width: 41%;" required>
         <input placeholder="AMOUNT/TRANSMITTAL" class="form-control amount" onkeyup="validateAmount(this)" style="width: 50%;" required>
     </div>
-    <input placeholder="PATIENT" class="form-control patient_2" style="width: 41%; margin-top: 5px;" required>
+    <input placeholder="PATIENT" class="form-control patient_2" style="width: 41%; margin-top: 5px;">
 </div>

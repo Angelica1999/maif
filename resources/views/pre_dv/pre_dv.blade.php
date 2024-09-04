@@ -99,7 +99,7 @@
                                             <input placeholder="PATIENT" class="form-control patient_1" style="width: 41%;" required>
                                             <input placeholder="AMOUNT/TRANSMITTAL" class="form-control amount" onkeyup="validateAmount(this)" oninput="checkAmount($(this), $(this).val())" style="width: 50%;" required>
                                         </div>
-                                        <input placeholder="PATIENT" class="form-control patient_2" style="width: 41%; margin-top: 5px;" required>
+                                        <input placeholder="PATIENT" class="form-control patient_2" style="width: 41%; margin-top: 5px;">
                                     </div>
                                 </div>
                                 <div style="display: flex; justify-content: flex-end; margin-top: 5%; margin-bottom: 5%;">
@@ -175,7 +175,7 @@
         })
         
         var f_id = $('.facility_id').val();
-        console.log('sdsad', f_id);
+        
         function error(){
             Lobibox.alert('error', {
                 size: 'mini',
@@ -196,6 +196,9 @@
             }else if(check_vat == 1){
 
                 f_id = facility_id;
+                $.get("{{url('pre-dv/control_nos').'/'}}" + f_id, function (result){
+                    existing_control = result.controls;   
+                });
                 $.get("{{ url('fetch/fundsource').'/' }}"+facility_id, function(result) {
                     var data_result = result.info;
                     var text_display;
@@ -397,6 +400,9 @@
                     $('.submit_btn').css('display', 'block');
                 }
                 f_id = $('#facility_id').val();
+                $.get("{{url('pre-dv/control_nos').'/'}}" + f_id, function (result){
+                    existing_control = result.controls; 
+                }); 
             });
         }
 
@@ -619,19 +625,23 @@
             console.log('here');
         });
 
+        var existing_control;
+
         $('.pre_form1, #pre_form').submit( function(e){
             console.log('hereee');
             e.preventDefault();
 
             console.log('chakabells');
-            var facility_id = $('.facility_id').val();
+            var facility_id = f_id;
             var grand_total = $('.grand_total').val();
             var all_data = [];
+            var new_control = [];
+            var hasErrors = false; 
 
             $('.facility_div .proponent_clone').each(function (index, proponent_clone) {
                 var proponent = $(proponent_clone).find('.proponent').val();
-                if(proponent != ''){
 
+                if(proponent != ''){
                     var total_amount = $(proponent_clone).find('.total_amount').val();
                     var pro_clone = [];
                     var control_total = 0;
@@ -640,6 +650,21 @@
                         var patient_1 = $(control_clone).find('.patient_1').val();
                         var patient_2 = $(control_clone).find('.patient_2').val();
                         var amount = $(control_clone).find('.amount').val();
+                        var saa_number = $(control_clone).find('.saa_number').val();
+                        var exist = existing_control.find(item => item.includes(control_no));
+
+                        if ((new_control.includes(control_no) || exist) && (saa_number != 0) ) {
+                            Lobibox.alert('error',{
+                                size: 'mini',
+                                msg: 'Duplicate control no, kindly check!'
+                            });
+                           $(control_clone).find('.control_no').val('');
+                           hasErrors = true;
+                           return false;
+                        }else{
+                            new_control.push(control_no);
+                        }
+
                         var data = {
                             control_no : control_no,
                             patient_1 : patient_1,
@@ -648,8 +673,11 @@
                         };
                         pro_clone.push(data);
                     });
+
+                    if (hasErrors) return false;
                     var fundsource_clone = [];
                     var saa_total = 0;
+
                     $(proponent_clone).find('.saa_clone').each(function (index, saa_clone){
                         var info_id = $(saa_clone).find('.saa_id');
                         info_id = info_id.find(':selected').attr('dataproponentInfo_id');
@@ -671,6 +699,8 @@
                             msg: 'Mismatch amount, kindly check!'
                         });
                         $(proponent_clone).find('.saa_clone').find('.saa_amount').val('');
+                        hasErrors = true; // Set error flag
+                        return false;
                     }
 
                     var data2 = {
@@ -683,6 +713,7 @@
                 }
             });  
 
+            if (hasErrors) return;
             var jsonData = JSON.stringify(all_data);
             var encodedData = encodeURIComponent(jsonData);
 

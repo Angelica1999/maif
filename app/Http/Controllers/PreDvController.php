@@ -480,7 +480,9 @@ class PreDvController extends Controller
                 $controls->predv_extension_id = $pre_extension->id;
                 $controls->control_no = $row['control_no'];
                 $controls->patient_1 = $row['patient_1'];
-                $controls->patient_2 = $row['patient_2'];
+                if($row['patient_2']){
+                    $controls->patient_2 = $row['patient_2'];
+                }
                 $controls->amount = (float) str_replace(',', '', $row['amount']);
                 $controls->save();
             }
@@ -582,7 +584,9 @@ class PreDvController extends Controller
                     $controls->predv_extension_id = $pre_extension->id;
                     $controls->control_no = $row['control_no'];
                     $controls->patient_1 = $row['patient_1'];
-                    $controls->patient_2 = $row['patient_2'];
+                    if($row['patient_2']){
+                        $controls->patient_2 = $row['patient_2'];
+                    }
                     $controls->amount = (float) str_replace(',', '', $row['amount']);
                     $controls->save();
                 }
@@ -806,5 +810,12 @@ class PreDvController extends Controller
 
             return redirect()->back()->with('pay_dv', true);
         }
+    }
+
+    public function controlList($facility_id){
+        $pre_dv = PreDV::where('facility_id', $facility_id)->pluck('id')->toArray();
+        $extension = PreDVExtension::whereIn('pre_dv_id', $pre_dv)->pluck('id')->toArray();
+        $controls = PreDVControl::whereIn('predv_extension_id', $extension)->pluck('control_no')->toArray();
+        return response()->json(['controls'=>$controls]);
     }
 }
