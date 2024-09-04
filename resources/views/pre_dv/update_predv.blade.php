@@ -27,6 +27,7 @@
                         @foreach($row->controls as $index1 => $row2)
                             <div class="control_clone" style="padding: 10px; border: 1px solid lightgray;">
                                 <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 4%;">
+                                    <input type="hidden" class="saa_number" value="0">
                                     <input class="form-control control_no" style="text-align: center; width: 56%;" placeholder="CONTROL NUMBER" value="{{$row2->control_no}}" required>
                                     <i class="{{($index1 == 0)?'typcn typcn-plus menu-icon control_clone_btn': 'typcn typcn-minus menu-icon control_remove_btn' }}" style="width:40px; color:white;border: 1px; padding: 2px; {{($index1 == 0)?'background-color:blue' : 'background-color:red'}}"></i>
                                 </div>
@@ -34,7 +35,7 @@
                                     <input placeholder="PATIENT" class="form-control patient_1" style="width: 41%;" value="{{$row2->patient_1}}" required>
                                     <input placeholder="AMOUNT PER TRANSMITTAL" class="form-control amount" value="{{number_format(str_replace(',','',$row2->amount), 2, '.',',')}}" onkeyup="validateAmount(this)" oninput="checkAmount($(this), $(this).val())" style="width: 50%;" required>
                                 </div>
-                                <input placeholder="PATIENT" value="{{$row2->patient_2}}" class="form-control patient_2" style="width: 41%; margin-top: 5px;" required>
+                                <input placeholder="PATIENT" value="{{$row2->patient_2}}" class="form-control patient_2" style="width: 41%; margin-top: 5px;">
                             </div>
                         @endforeach
                     </div>
