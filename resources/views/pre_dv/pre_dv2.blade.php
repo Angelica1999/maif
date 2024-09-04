@@ -26,8 +26,8 @@ use App\Models\TrackingDetails;
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th style="padding:5px"></th>
-                            <th style="text-align:center">
+                            <th style="padding:5px; min-width:250px"></th>
+                            <th style="text-align:center;min-width:150px ">
                                 <a class="text-info select_all">Release All</a>
                             </th>
                             <th>Route</th>
