@@ -38,7 +38,26 @@ class PreDvController extends Controller
                 }
             });
 
-        $pre_dv = PreDV::with('user', 'facility', 'new_dv')->orderBy('id', 'desc');
+            $pre_dv = PreDV::with(
+                [
+                    'user:userid,fname,lname,mname',
+                    'facility:id,name',
+                    'new_dv',
+                    'extension' => function ($query) {
+                        $query->with(
+                            [
+                                'proponent:id,proponent',
+                                'controls',
+                                'saas' => function ($query) {
+                                    $query->with([
+                                        'saa:id,saa'
+                                    ]);
+                                }
+                            ]
+                        );
+                    }
+                ]
+            );
         $saas = Fundsource::get();
         $proponents = Proponent::select('proponent')->groupBy('proponent')->get();
         $facilities = Facility::with('addFacilityInfo')->get();
@@ -49,6 +68,8 @@ class PreDvController extends Controller
             $keyword = $request->keyword;
             $pre_dv->WhereHas('facility', function ($query) use ($keyword) {
                 $query->where('name', 'LIKE', '%' . $keyword . '%');
+            })->orWhereHas('extension.controls', function ($query) use ($keyword) {
+                $query->where('control_no', 'LIKE', '%' . $keyword . '%');
             });
         }
         $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(50);
@@ -142,7 +163,10 @@ class PreDvController extends Controller
                 $query->where('route_no', 'LIKE', '%' . $keyword . '%');
             })->orWhereHas('facility', function ($query) use ($keyword) {
                 $query->where('name', 'LIKE', '%' . $keyword . '%');
+            })->orWhereHas('extension.controls', function ($query) use ($keyword) {
+                $query->where('control_no', 'LIKE', '%' . $keyword . '%');
             });
+        
         }
         $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(50);
 
@@ -329,19 +353,94 @@ class PreDvController extends Controller
         $proponents = Proponent::select('proponent')->groupBy('proponent')->get();
         $saas = Fundsource::get();
 
+        $info = ProponentInfo::with('facility', 'fundsource', 'proponent')
+                ->where(function ($query) use ($facility_id) {
+                    $query->whereJsonContains('proponent_info.facility_id', '702')
+                        ->orWhereJsonContains('proponent_info.facility_id', [$facility_id]);
+                })
+                ->orWhereIn('proponent_info.facility_id', [$facility_id, '702'])
+                ->get()
+                ->sortBy(function ($item) {
+                    $facility_id = $item->facility_id;
+                    $contains702 = is_string($facility_id) && strpos($facility_id, '702') !== false;
+                    $is702 = $facility_id == 702;
+                    $containsCONAP = isset($item->fundsource->saa) && strpos($item->fundsource->saa, 'CONAP') !== false;
+
+                    if ($item->remaining_balance == 0) {
+                        if ($containsCONAP) {
+                            return 4; 
+                        }else{
+                            return 5;
+                        }
+                    }elseif($containsCONAP){
+                        if ($contains702 || $is702) {
+                            return 1; 
+                        }else{
+                            return 0;
+                        }
+                    }else{
+                        if ($contains702 || $is702) {
+                            return 3; 
+                        }else{
+                            return 2;
+                        }
+                    }
+            
+                });
+
         return view('pre_dv.proponent_clone', [
             'proponents' => $proponents,
             'saas' => $saas,
-            'facility_id' => $facility_id
+            'facility_id' => $facility_id,
+            'info' => $info,
+            'facility' => Facility::where('id', $facility_id)->first(),
         ]);
     }
 
     public function cloneSAA($facility_id)
     {
         $saas = Fundsource::get();
+
+        $info = ProponentInfo::with('facility', 'fundsource', 'proponent')
+                ->where(function ($query) use ($facility_id) {
+                    $query->whereJsonContains('proponent_info.facility_id', '702')
+                        ->orWhereJsonContains('proponent_info.facility_id', [$facility_id]);
+                })
+                ->orWhereIn('proponent_info.facility_id', [$facility_id, '702'])
+                ->get()
+                ->sortBy(function ($item) {
+                    $facility_id = $item->facility_id;
+                    $contains702 = is_string($facility_id) && strpos($facility_id, '702') !== false;
+                    $is702 = $facility_id == 702;
+                    $containsCONAP = isset($item->fundsource->saa) && strpos($item->fundsource->saa, 'CONAP') !== false;
+
+                    if ($item->remaining_balance == 0) {
+                        if ($containsCONAP) {
+                            return 4; 
+                        }else{
+                            return 5;
+                        }
+                    }elseif($containsCONAP){
+                        if ($contains702 || $is702) {
+                            return 1; 
+                        }else{
+                            return 0;
+                        }
+                    }else{
+                        if ($contains702 || $is702) {
+                            return 3; 
+                        }else{
+                            return 2;
+                        }
+                    }
+            
+                });
+                
         return view('pre_dv.saa_clone', [
             'saas' => $saas,
-            'facility_id' => $facility_id
+            'facility_id' => $facility_id,
+            'facility' => Facility::where('id', $facility_id)->first(),
+            'info' => $info
         ]);
     }
 
@@ -350,10 +449,10 @@ class PreDvController extends Controller
         return view('pre_dv.control_clone');
     }
 
-    public function savePreDV($data, Request $request)
+    public function savePreDV(Request $request)
     {
 
-        $decodedData = urldecode($data);
+        $decodedData = urldecode($request->data);
         $all_data = json_decode($decodedData, true);
         $grand_total = $request->grand_total;
         $facility_id = $request->facility_id;
@@ -421,6 +520,7 @@ class PreDvController extends Controller
                 }
             ]
         )->first();
+        // return $pre_dv;
 
         $saas = Fundsource::get();
         $proponents = Proponent::select('proponent')->groupBy('proponent')->get();
@@ -443,13 +543,13 @@ class PreDvController extends Controller
         ]);
     }
 
-    public function updatePreDV($data, Request $request)
+    public function updatePreDV(Request $request)
     {
 
-        $decodedData = urldecode($data);
+        $decodedData = urldecode($request->data);
         $all_data = json_decode($decodedData, true);
         $id = $request->pre_id;
-        $grand_total = $request->grand_total;
+        $grand_total = (float) str_replace(',','',$request->grand_total);
         $facility_id = $request->facility_id;
 
         $pre_dv = PreDV::where('id', $id)->first();
@@ -491,6 +591,7 @@ class PreDvController extends Controller
                 $pre_saa = new PreDVSAA();
                 $pre_saa->predv_extension_id = $pre_extension->id;
                 $pre_saa->fundsource_id = $saa['saa_id'];
+                $pre_saa->info_id = $saa['info_id'];
                 $pre_saa->amount = (float) str_replace(',', '', $saa['saa_amount']);
                 $pre_saa->save();
             }

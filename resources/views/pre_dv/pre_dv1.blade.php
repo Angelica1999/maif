@@ -42,7 +42,7 @@
                                         @endif
                                     @endforeach
                                 </td>
-                                <td class="td">{{$row->grand_total}}</td>
+                                <td class="td">{{number_format(str_replace(',','',$row->grand_total), 2, '.',',')}}</td>
                                 <td class="td">{{$row->user->lname .', '.$row->user->fname}}</td>
                             </tr>
                         @endforeach

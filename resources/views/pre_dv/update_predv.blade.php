@@ -1,9 +1,8 @@
-<form class="pre_form" style="width:100%; font-weight:1px solid black" method="get" >
     @csrf
     <input type="hidden" class="status" value="1">
     <input type="hidden" id="pre_id" value="{{$result->id}}" name="pre_id">
     <div style="width: 100%; display:flex; justify-content: center;text-align:center;">
-        <select class="select2 facility_id" style="width: 50%;" name="facility_id" required>
+        <select class="select2 facility_id" style="width: 50%;" id="facility_id" name="facility_id" required>
             <option value=''>SELECT FACILITY</option>
             @foreach($facilities as $facility)
               <option value="{{$facility->id}}" {{($result->facility->id == $facility->id)? 'selected': ''}}>{{$facility->name}}</option>
@@ -11,7 +10,7 @@
         </select>
     </div>
     <div class="facility_div">
-        @foreach($result->extension as $row)
+        @foreach($result->extension as $index=>$row)
             <div class="proponent_clone" style="text-align: center; border: 1px solid black; width: 100%; padding: 3%;  margin-top: 10px; ">
                 <div class="card" style="border: none;">
                     <div class="row" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 4%;">
@@ -33,15 +32,16 @@
                                 </div>
                                 <div style="display: flex; justify-content: space-between;">
                                     <input placeholder="PATIENT" class="form-control patient_1" style="width: 41%;" value="{{$row2->patient_1}}" required>
-                                    <input placeholder="AMOUNT PER TRANSMITTAL" class="form-control amount" value="{{$row2->amount}}" onkeyup="validateAmount(this)" oninput="checkAmount($(this), $(this).val())" style="width: 50%;" required>
+                                    <input placeholder="AMOUNT PER TRANSMITTAL" class="form-control amount" value="{{number_format(str_replace(',','',$row2->amount), 2, '.',',')}}" onkeyup="validateAmount(this)" oninput="checkAmount($(this), $(this).val())" style="width: 50%;" required>
                                 </div>
                                 <input placeholder="PATIENT" value="{{$row2->patient_2}}" class="form-control patient_2" style="width: 41%; margin-top: 5px;" required>
                             </div>
                         @endforeach
                     </div>
                     <div style="display: flex; justify-content: flex-end; margin-top: 5%; margin-bottom: 5%;">
-                        <input class="form-control total_amount" style="width: 60%; text-align: center;" value="{{$row->total_amount}}" placeholder="TOTAL AMOUNT PER PROPONENT" readonly>
+                        <input class="form-control total_amount" style="width: 60%; text-align: center;" value="{{number_format(str_replace(',','',$row->total_amount), 2, '.',',')}}" placeholder="TOTAL AMOUNT PER PROPONENT" readonly>
                     </div>
+                    <?php $total_saa = number_format(str_replace(',','',$row->total_amount), 2, '.',','); ?>
                     @foreach($row->saas as $row3)
                         <div class="saa_clone" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 2%;">
                             <select style="width: 50%;" class="select2 saa_id" required>
@@ -71,19 +71,23 @@
                                     </option>
                                 @endforeach
                             </select>
-                            <input placeholder="AMOUNT" class="form-control saa_amount" onkeyup="validateAmount(this)" style="width: 35%;" value="{{$row3->amount}}" required>
+                            <input placeholder="AMOUNT" class="form-control saa_amount" onkeyup="validateAmount(this)" style="width: 35%;" value="{{number_format(str_replace(',','',$row3->amount), 2, '.',',')}}" required>
                             <i class="typcn typcn-plus menu-icon saa_clone_btn" style="width:40px;background-color:blue; color:white;border: 1px; padding: 2px;"></i>
                         </div>
                     @endforeach
+                    <div style="display:inline-block;">
+                        <span class="text-info">Total fundsource inputted amount:</span>
+                        <span class="text-danger inputted_amount" id="inputted_amount">{{$total_saa}}</span>
+                    </div>
                 </div>
             </div>
         @endforeach
     </div>
     <div style="display: flex; justify-content: flex-end; margin-top: 5%; margin-bottom:5%">
-        <input class="form-control grand_total" name="grand_total" style="width: 50%; text-align: center;" placeholder="GRAND TOTAL" value="{{$result->grand_total}}" readonly>
+        <input class="form-control grand_total" name="grand_total" id="grand_total" style="width: 50%; text-align: center;" placeholder="GRAND TOTAL" value="{{number_format(str_replace(',','',$result->grand_total), 2, '.',',')}}" readonly> 
     </div>
     <button type="submit" class="btn-sm btn-success updated_submit" style="display:none">SUBMIT</button>
-</form>
+<!-- </form> -->
 <script>
     $('.select2').select2();
 </script>
