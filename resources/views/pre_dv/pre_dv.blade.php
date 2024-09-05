@@ -11,7 +11,7 @@
         <div class="card-body">
             <form method="GET" action="">
                 <div class="input-group float-right w-50" style="min-width: 600px;">
-                    <input type="text" class="form-control" name="keyword" placeholder="Facility/Control No ..." value="{{$keyword}}">
+                    <input type="text" class="form-control" name="keyword" placeholder="Facility" value="{{$keyword}}">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
@@ -29,6 +29,7 @@
                 <table class="table table-striped">
                     <thead>
                         <tr>
+                            <th>Route No</th>
                             <th>Facility</th>
                             <th>Grand Total</th>
                             <th>Created By</th>
@@ -37,8 +38,9 @@
                     <tbody>
                         @foreach($results as $row)
                             <tr>
+                                <td>{{($row->new_dv)?$row->new_dv->route_no:''}}</td>
                                 <td class="td"><a data-toggle="modal" data-backdrop="static" href="#update_predv" onclick="updatePre({{$row->id}}, {{$row->new_dv?1:2}})">{{$row->facility->name}}</a></td>
-                                <td class="td">{{number_format(str_replace(',','',$row->grand_total), 2, '.',',')}}</td>
+                                <td class="td">{{$row->grand_total}}</td>
                                 <td class="td">{{$row->user->lname .', '.$row->user->fname}}</td>
                             </tr>
                         @endforeach
@@ -64,7 +66,7 @@
                 <h5 class="text-success modal-title">Pre - DV</h5>
             </div>
             <div class="modal-body" style="display: flex; flex-direction: column; align-items: center;">
-                <form class="pre_form" id="pre_form" style="width:100%; font-weight:1px solid black" method="get" >
+                <form class="pre_form" style="width:100%; font-weight:1px solid black" method="get" >
                     @csrf
                     <input type="hidden" class="status" value="0">
                     <div style="width: 100%; display:flex; justify-content: center;text-align:center;">
@@ -99,7 +101,7 @@
                                             <input placeholder="PATIENT" class="form-control patient_1" style="width: 41%;" required>
                                             <input placeholder="AMOUNT/TRANSMITTAL" class="form-control amount" onkeyup="validateAmount(this)" oninput="checkAmount($(this), $(this).val())" style="width: 50%;" required>
                                         </div>
-                                        <input placeholder="PATIENT" class="form-control patient_2" style="width: 41%; margin-top: 5px;">
+                                        <input placeholder="PATIENT" class="form-control patient_2" style="width: 41%; margin-top: 5px;" required>
                                     </div>
                                 </div>
                                 <div style="display: flex; justify-content: flex-end; margin-top: 5%; margin-bottom: 5%;">
@@ -114,10 +116,6 @@
                                     </select>
                                     <input placeholder="AMOUNT" class="form-control saa_amount" onkeyup="validateAmount(this)" style="width: 35%;" required>
                                     <i class="typcn typcn-plus menu-icon saa_clone_btn" style="width:40px;background-color:blue; color:white;border: 1px; padding: 2px;"></i>
-                                </div>
-                                <div style="display:inline-block;">
-                                    <span class="text-info">Total fundsource inputted amount:</span>
-                                    <span class="text-danger inputted_amount" id="inputted_amount"></span>
                                 </div>
                             </div>
                         </div>
@@ -143,16 +141,13 @@
                 <button type="button" class="close" id="exit" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" style="color:white;">&times;</span></button>
             </div>
             <div class="pre_body" style="display: flex; flex-direction: column; align-items: center; padding:15px">
-                <form class="pre_form1" id="pre_form" style="width:100%; font-weight:1px solid black" method="get" >
-                    <div class="form_body"></div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn-sm btn-secondary update_close" data-dismiss="modal">CLOSE</button>
-                        <button type="button" onclick="deletePre()" class="btn-sm btn-warning delete_btn">DELETE</button>
-                        <button type="submit" class="btn-sm btn-success submit_btn">SUBMIT</button>
-                    </div>
-                </form>
+                
             </div>
-            
+            <div class="modal-footer">
+                <button type="button" class="btn-sm btn-secondary update_close" data-dismiss="modal">CLOSE</button>
+                <button type="button" onclick="deletePre()" class="btn-sm btn-warning delete_btn">DELETE</button>
+                <button type="button" class="btn-sm btn-success submit_btn">SUBMIT</button>
+            </div>
         </div>
     </div>
 </div>
@@ -167,21 +162,13 @@
             $('.facility_div .proponent_clone .control_clone:not(:first)').remove();
             $('.facility_div .saa_clone:not(:first)').remove();
             $('.facility_id, .proponent, .saa_id').val('').trigger('change');
-            $('.inputted_amount').text('');
         });
 
         $('.update_close').on('click', function(){
             location.reload();
         })
         
-        var f_id = $('.facility_id').val();
-        
-        function error(){
-            Lobibox.alert('error', {
-                size: 'mini',
-                msg: 'Select facility first!'
-            });
-        }
+        var f_id;
 
         function getFundsource(facility_id){
 
@@ -196,9 +183,6 @@
             }else if(check_vat == 1){
 
                 f_id = facility_id;
-                $.get("{{url('pre-dv/control_nos').'/'}}" + f_id, function (result){
-                    existing_control = result.controls;   
-                });
                 $.get("{{ url('fetch/fundsource').'/' }}"+facility_id, function(result) {
                     var data_result = result.info;
                     var text_display;
@@ -391,7 +375,7 @@
 
         function updatePre(id, data){
             $.get("{{ url('pre-dv/update/').'/' }}"+id, function(result) {
-                $('.form_body').append(result);
+                $('.pre_body').append(result);
                 if(data == 1){
                     $('.delete_btn').css('display', 'none');
                     $('.submit_btn').css('display', 'none');
@@ -399,10 +383,6 @@
                     $('.delete_btn').css('display', 'block');
                     $('.submit_btn').css('display', 'block');
                 }
-                f_id = $('#facility_id').val();
-                $.get("{{url('pre-dv/control_nos').'/'}}" + f_id, function (result){
-                    existing_control = result.controls; 
-                }); 
             });
         }
 
@@ -428,21 +408,14 @@
         }
 
         function checkAmount(element, value){
-            var element = element.closest
+            console.log('value', value);
         }
-
-
 
         function cloneProponent(element){
             console.log('faci', f_id);
-            if(f_id){
-                $.get("{{ url('pre-dv/proponent-clone') .'/' }}" + f_id, function (result) {
-                    $('.facility_div').append(result);
-                });
-            }else{
-                error();
-            }
-            
+            $.get("{{ url('pre-dv/proponent-clone') .'/' }}" + f_id, function (result) {
+                $('.facility_div').append(result);
+            });
         }
 
         function calculateAmount(data){
@@ -480,31 +453,18 @@
         });
 
         $(document).on('input', '.saa_amount', function(){
-            var p_clone = $(this).closest('.proponent_clone');
-            inputted_fundsource(p_clone);
-        });
-
-        function inputted_fundsource(data){
-            var total = 0;
-            data.find('.saa_amount').each(function(){
-                console.log('check_here');
-                var amount = parseFloat(($(this).val()).replace(/,/g, '')) || 0;
-                total += amount;
-            });
-            data.find('.inputted_amount').text(Number(total.toFixed(2)).toLocaleString('en-US', { maximumFractionDigits: 2 }));
-        }
-
-
-
-        $(document).on('input', '.saa_amount', function(){
             var data = $(this);
             var clone_pro = data.closest('.proponent_clone');
             var clone_saa =  data.closest('.saa_clone');
             var input_value =  parseFloat(data.val().replace(/,/g, ''));
 
-            var saa_balance = parseFloat((clone_saa.find('.saa_id').find(':selected').attr('dataval')).replace(/,/g, ''));
-       
+            var saa_balance = parseFloat(clone_saa.find('.saa_id').find(':selected').attr('dataval'));
+            console.log('input_value', input_value);
+                console.log('saa_balance', saa_balance);
             if(saa_balance != '' || saa_balance != undefined){
+                console.log('1');
+                console.log('input_value', input_value);
+                console.log('saa_balance', saa_balance);
 
                 if(input_value > saa_balance){
                     Lobibox.alert('error',{
@@ -538,110 +498,70 @@
                                 data.val(saa_balance);
                             }else{
                                 data.val('');
-                                inputted_fundsource(clone_pro)
                             }
                         }
                     });     
                 }
             }
             evaluateSAA(clone_pro);
-            inputted_fundsource(clone_pro)
         });
 
         $(document).on('click', '.proponent_clone .btn_pro_remove', function () {
-
-            var length = 0;
-
-            $('.facility_div .proponent_clone').each(function (index, proponent_clone) {
-                var proponent = $(proponent_clone).find('.proponent').val();
-                console.log('proponent', proponent);
-
-                if(proponent != ''){
-                    length = length + 1;
-                }
-            });
-
-            if(length !=1){
-                $(this).closest('.proponent_clone').remove();
-            }
-            console.log('length', length);
-            getGrand();
+            $(this).closest('.proponent_clone').remove();
         });
 
         $(document).on('click', '.proponent_clone .saa_clone .saa_clone_btn', function () {
-            if(f_id){
-                var button = $(this);
+            var button = $(this);
 
-                $.get("{{ url('pre-dv/saa-clone').'/' }}" + f_id, function (result) {
-                    var clonedElement = button.closest('.proponent_clone').find('.saa_clone').last().after(result).next();
+            $.get("{{ url('pre-dv/saa-clone').'/' }}" + f_id, function (result) {
+                var clonedElement = button.closest('.proponent_clone').find('.saa_clone').last().after(result).next();
 
-                    clonedElement.find('.saa_clone_btn')
-                        .removeClass('saa_clone_btn btn-info typcn typcn-plus menu-icon')
-                        .addClass('saa_remove_btn btn-danger')
-                        .css('background-color', 'red')
-                        .text('')
-                        .html('<span class="typcn typcn-minus menu-icon"></span>');
+                clonedElement.find('.saa_clone_btn')
+                    .removeClass('saa_clone_btn btn-info typcn typcn-plus menu-icon')
+                    .addClass('saa_remove_btn btn-danger')
+                    .css('background-color', 'red')
+                    .text('')
+                    .html('<span class="typcn typcn-minus menu-icon"></span>');
 
-                });
-            }else{
-                error();
-            }
+            });
         });
 
         $(document).on('click', '.proponent_clone .saa_clone .saa_remove_btn', function () {
-            // $(this).closest('.saa_clone').remove();  
-            var element = $(this);
-            var p_clone = element.closest('.proponent_clone');
-            element.closest('.saa_clone').remove();  
-            inputted_fundsource(p_clone); 
+            $(this).closest('.saa_clone').remove();  
         });
 
         $(document).on('click', '.proponent_clone .control_div .control_clone_btn', function () {
+            var button = $(this);
+            $.get("{{ route('clone.control') }}", function (result) {
+                var clonedElement = $(result).appendTo(button.closest('.control_div')).last();
 
-            if(f_id){
-                var button = $(this);
-                $.get("{{ route('clone.control') }}", function (result) {
-                    var clonedElement = $(result).appendTo(button.closest('.control_div')).last();
-
-                    clonedElement.find('.control_clone_btn')                
-                        .removeClass('control_clone_btn btn-info typcn typcn-plus menu-icon')
-                        .addClass('control_remove_btn btn-danger')
-                        .css('background-color','red')
-                        .text('')                    
-                        .html('<span class="typcn typcn-minus menu-icon"></span>');
-                });
-            }else{
-                error();
-            }
+                clonedElement.find('.control_clone_btn')                
+                    .removeClass('control_clone_btn btn-info typcn typcn-plus menu-icon')
+                    .addClass('control_remove_btn btn-danger')
+                    .css('background-color','red')
+                    .text('')                    
+                    .html('<span class="typcn typcn-minus menu-icon"></span>');
+            });
         });
 
         $(document).on('click', '.control_remove_btn', function () {
-            var p_clone = $(this).closest('.proponent_clone');
             $(this).closest('.control_clone').remove();  
-            calculateAmount(p_clone);
         });
 
         $(document).on('click', '.proponent_clone .control_div .amount', function () {
             console.log('here');
         });
 
-        var existing_control;
-
-        $('.pre_form1, #pre_form').submit( function(e){
-            console.log('hereee');
-            e.preventDefault();
-
+        $('.submit_btn').on('click', function(){
             console.log('chakabells');
-            var facility_id = f_id;
+            var facility_id = $('.facility_id').val();
             var grand_total = $('.grand_total').val();
             var all_data = [];
-            var new_control = [];
-            var hasErrors = false; 
 
             $('.facility_div .proponent_clone').each(function (index, proponent_clone) {
                 var proponent = $(proponent_clone).find('.proponent').val();
-
                 if(proponent != ''){
+
                     var total_amount = $(proponent_clone).find('.total_amount').val();
                     var pro_clone = [];
                     var control_total = 0;
@@ -650,21 +570,6 @@
                         var patient_1 = $(control_clone).find('.patient_1').val();
                         var patient_2 = $(control_clone).find('.patient_2').val();
                         var amount = $(control_clone).find('.amount').val();
-                        var saa_number = $(control_clone).find('.saa_number').val();
-                        var exist = existing_control.find(item => item.includes(control_no));
-
-                        if ((new_control.includes(control_no) || exist) && (saa_number != 0) ) {
-                            Lobibox.alert('error',{
-                                size: 'mini',
-                                msg: 'Duplicate control no, kindly check!'
-                            });
-                           $(control_clone).find('.control_no').val('');
-                           hasErrors = true;
-                           return false;
-                        }else{
-                            new_control.push(control_no);
-                        }
-
                         var data = {
                             control_no : control_no,
                             patient_1 : patient_1,
@@ -673,11 +578,8 @@
                         };
                         pro_clone.push(data);
                     });
-
-                    if (hasErrors) return false;
                     var fundsource_clone = [];
                     var saa_total = 0;
-
                     $(proponent_clone).find('.saa_clone').each(function (index, saa_clone){
                         var info_id = $(saa_clone).find('.saa_id');
                         info_id = info_id.find(':selected').attr('dataproponentInfo_id');
@@ -699,8 +601,6 @@
                             msg: 'Mismatch amount, kindly check!'
                         });
                         $(proponent_clone).find('.saa_clone').find('.saa_amount').val('');
-                        hasErrors = true; // Set error flag
-                        return false;
                     }
 
                     var data2 = {
@@ -712,63 +612,17 @@
                     all_data.push(data2);
                 }
             });  
-
-            if (hasErrors) return;
+            console.log('data', all_data);
             var jsonData = JSON.stringify(all_data);
             var encodedData = encodeURIComponent(jsonData);
+            console.log('status', $('.status').val());
+            console.log('pre_id', $('#pre_id').val());
 
             if($('#pre_id').val() == undefined){
-                // $('.pre_form').attr('action', "{{ route('pre_dv.save') }}".replace(':data', encodedData));
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ route("pre_dv.save") }}',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        data: encodedData,
-                        facility_id: $('.facility_id').val(),
-                        grand_total: $('.grand_total').val()
-                    },
-                    success: function (response) {
-                        console.log('respose', response);
-
-                        Lobibox.notify('success', {
-                            msg: "Successfully created pre_dv!",
-                        });
-                        location.reload();
-                    }
-                });
+                $('.pre_form').attr('action', "{{ route('pre_dv.save', ':data') }}".replace(':data', encodedData));
             }else{
-                // $('.pre_form').attr('action', "{{ route('pre_update.save') }}".replace(':data', encodedData));
-                // $('.updated_submit').trigger('click');
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ route("pre_update.save") }}',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        data: encodedData,
-                        facility_id: $('#facility_id').val(),
-                        grand_total: $('#grand_total').val(),
-                        pre_id: $('#pre_id').val()
-
-                    },
-                    success: function (response) {
-                        console.log('respose', response);
-                        Lobibox.notify('success', {
-                            msg: "Successfully created pre_dv!",
-                        });
-                        location.reload();
-                    },
-                    error: function (error) {
-                        if (error.status) {
-                            console.error('Status Code:', error.status);
-                        }
-
-                        if (error.responseJSON) {
-                            console.error('Response JSON:', error.responseJSON);
-                        }
-
-                    }
-                });
+                $('.pre_form').attr('action', "{{ route('pre_update.save', ':data') }}".replace(':data', encodedData));
+                $('.updated_submit').trigger('click');
             }
         });
 

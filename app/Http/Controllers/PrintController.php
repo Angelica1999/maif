@@ -377,6 +377,7 @@ class PrintController extends Controller
 
             $info = AddFacilityInfo::where('facility_id', $pre_dv->facility_id)->first();
             $controls = PreDVControl::whereIn('predv_extension_id', $extension)->get();  
+            // return $saas;
             $i = 0;   
             $control = '';   
             foreach ($controls as $index => $c) {
@@ -389,7 +390,7 @@ class PrintController extends Controller
                 return [ 
                     'amount' => $group->sum('amount'),
                     'saa' => $group->first()->saa->saa, 
-                    'path' => $group->first()->saa->image->path, 
+                    'path' => ($group->first()->saa->image)?$group->first()->saa->image->path: '', 
                     'fundsource_id' => $group->first()->saa->id,
                     'vat' => ($info && $info->vat != null)? (float) $info->vat *  $group->sum('amount') / 100: 0,
                     'ewt' => ($info && $info->Ewt != null)? (float) $info->Ewt *  $group->sum('amount') / 100: 0

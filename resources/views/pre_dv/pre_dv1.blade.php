@@ -21,6 +21,7 @@
                 <table class="table table-striped">
                     <thead>
                         <tr>
+                            <th style="min-width:150px">Route No</th>
                             <th>Facility</th>
                             <th>Proponent</th>
                             <th>Grand Total</th>
@@ -30,6 +31,7 @@
                     <tbody>
                         @foreach($results as $row)
                             <tr>
+                                <td>{{($row->new_dv)?$row->new_dv->route_no : ''}}</td>
                                 <td class="td"><a data-toggle="modal" data-backdrop="static" href="#view_v1" onclick="viewV1({{$row->id}})">{{$row->facility->name}}</a></td>
                                 <td class="td">
                                     @foreach($row->extension as $index => $data)

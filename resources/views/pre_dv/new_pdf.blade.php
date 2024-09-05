@@ -141,18 +141,18 @@
                                 @else
                                   <span class="saa" style="margin-left:10px;">{{ floor($info->vat) . '%' . ' ' . 'VAT' }}</span>
                                 @endif
-                                <span style="margin-left:50px;">{{($info->vat > 3)?$amount / 1.12 : $amount}}</span>
-                                <span style="float: right;">{{($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100}}</span>
+                                <span style="margin-left:50px;">{{number_format((($info->vat > 3)?$amount / 1.12 : $amount),2,'.',',')}}</span>
+                                <span style="float: right;">{{number_format((($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100),2,'.',',')}}</span>
                                 <div style="clear: both;"></div>
                               </div>
                               <div style="width: 100%;">   
                                 <span class="saa" style="margin-left:10px;"> {{floor($info->Ewt).'%'.' '.'EWT'}}</span>
                                 @if(floor($info->vat) == 3)
-                                  <span style="margin-left:105px;">{{($info->vat > 3)?$amount / 1.12 : $amount}}</span>
+                                  <span style="margin-left:105px;">{{number_format((($info->vat > 3)?$amount / 1.12 : $amount),2,'.',',')}}</span>
                                 @else
-                                  <span style="margin-left:48px;">{{($info->vat > 3)?$amount / 1.12 : $amount}}</span>
+                                  <span style="margin-left:48px;">{{number_format((($info->vat > 3)?$amount / 1.12 : $amount),2,'.',',')}}</span>
                                 @endif
-                                <span style="float: right;">{{($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100}}</span>
+                                <span style="float: right;">{{number_format((($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100),2,'.',',')}}</span>
                                 <div style="clear: both;"></div>
                               </div>
                               <br>
@@ -165,12 +165,12 @@
                           <td style="width:14%; border-left: 0 " >
                           <div class= "header">
                             <br><br><br><br>
-                            <span style="text-align:center;">{{$amount}}</span>
+                            <span style="text-align:center;">{{number_format($amount, 2, '.',',')}}</span>
                             <br><br><br><br>
                         
-                            <span style="text-align:center;">{{(($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100) + (($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100)}}</span><br><br>
+                            <span style="text-align:center;">{{number_format(((($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100) + (($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100)),2,'.',',')}}</span><br><br>
                             <span style="text-align:center;">_________________</span><br>
-                            <span style="text-align:center;">{{$amount - ((($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100) + (($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100))}}</span>
+                            <span style="text-align:center;">{{number_format(($amount - ((($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100) + (($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100))),2,'.',',')}}</span>
                           </div> 
                         </td>
                         </tr>
@@ -229,13 +229,13 @@
                           </td>
                           <td style=" border-left: 0 ; text-align:right; vertical-align:top" >
                             <span>
-                                {{($result)? $amount - $result->accumulated: $amount}}
+                                {{number_format((($result)? $amount - $result->accumulated: $amount),2,'.',',')}}
                             </span><br>
-                            <span>{{$result?$result->accumulated:0}}</span>
+                            <span>{{number_format(($result?$result->accumulated:0),2,'.',',')}}</span>
                           </td>
                           <td style=" border-left: 0 ; text-align:right; vertical-align:top" >
-                            <br><br><span>{{(($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100) + (($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100)}}</span><br>
-                            <span>{{$amount - ((($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100) + (($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100))}}</span>
+                            <br><br><span>{{number_format(((($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100) + (($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100)),2,'.',',')}}</span><br>
+                            <span>{{number_format(($amount - ((($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100) + (($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100))),2,'.',',')}}</span>
                           </td>
                         </tr>
                       </table>
