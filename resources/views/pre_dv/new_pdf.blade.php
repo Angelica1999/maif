@@ -41,11 +41,13 @@
         <div >
           <?php $div=[1,2];?>
             @foreach($div as $d)
-              <table border= 1px solid black width= 100%>
+              <table border= 1px solid black width= 100% style="table-layout: fixed;">
                   <div>
                       <table >
                           <tr>
-                          <td width="23%" style="text-align: center; border-right:none"><img src="{{realpath(__DIR__ . '/../../..').'/public/images/doh-logo.png'}}" width="60%"></td>
+                          <td width="23%" style="text-align: center; border-right:none">
+                              <img src="{{realpath(__DIR__ . '/../../..').'/public/images/doh-logo.png'}}" style="width: 60%; max-width: 60%;" />
+                          </td>
                           <td width="54%" style="border-left:none; border-right:none; ">
                             <div class="header" style="margin-top: 15px">
                               <span style="margin-top: 10px">Republic of the Philippines</span> <br>
@@ -71,7 +73,7 @@
                         </tr>
                       </table>
                     
-                      <table width=100%>
+                      <table width=100% style="table-layout: fixed;">
                         <tr>
                           <td height=3% width =10%><b> Mode of Payment</td>
                           <td style="width:85%; border-left: 0 " >

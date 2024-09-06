@@ -31,7 +31,13 @@
                     <tbody>
                         @foreach($results as $row)
                             <tr>
-                                <td>{{($row->new_dv)?$row->new_dv->route_no : ''}}</td>
+                                <td>
+                                    @if($row->new_dv)
+                                        {{$row->new_dv->route_no}}
+                                    @else
+                                        <span class="text-danger"><i>dv is not yet created</i></span>
+                                    @endif
+                                </td>
                                 <td class="td"><a data-toggle="modal" data-backdrop="static" href="#view_v1" onclick="viewV1({{$row->id}})">{{$row->facility->name}}</a></td>
                                 <td class="td">
                                     @foreach($row->extension as $index => $data)

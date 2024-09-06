@@ -2,7 +2,7 @@
     <input type="hidden" class="status" value="1">
     <input type="hidden" id="pre_id" value="{{$result->id}}" name="pre_id">
     <div style="width: 100%; display:flex; justify-content: center;text-align:center;">
-        <select class="select2 facility_id" style="width: 50%;" id="facility_id" name="facility_id" required>
+        <select class="select2 facility_id" style="width: 50%;" id="facility_id" name="facility_id" onchange="getFundsource($(this).val())" required>
             <option value=''>SELECT FACILITY</option>
             @foreach($facilities as $facility)
               <option value="{{$facility->id}}" {{($result->facility->id == $facility->id)? 'selected': ''}}>{{$facility->name}}</option>

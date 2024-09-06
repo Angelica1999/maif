@@ -29,6 +29,7 @@
                 <table class="table table-striped">
                     <thead>
                         <tr>
+                            <th></th>
                             <th>Route No</th>
                             <th>Facility</th>
                             <th>Grand Total</th>
@@ -39,10 +40,16 @@
                         @foreach($results as $row)
                             <tr>
                                 <td>
-                                    @if($row->new_dv)
-                                        {{$row->new_dv->route_no}}
+                                    @if($row->new_dv)                                  
+                                        <button type="button" class="btn btn-xs" style="background-color:#165A54;color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$row->new_dv->route_no}}" id="track_load" onclick="openModal()">Track</button>
+                                        <a href="{{ route('new_dv.pdf', ['id' => $row->id]) }}" style="background-color:green;color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
                                     @else
                                         <span class="text-danger"><i>dv is not yet created</i></span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($row->new_dv)
+                                        {{$row->new_dv->route_no}}
                                     @endif
                                 </td>
                                 <td class="td"><a data-toggle="modal" data-backdrop="static" href="#update_predv" onclick="updatePre({{$row->id}}, {{$row->new_dv?1:2}})">{{$row->facility->name}}</a></td>
@@ -164,7 +171,7 @@
         </div>
     </div>
 </div>
-
+@include('modal')
 @endsection
 @section('js')
     <script>
@@ -183,14 +190,24 @@
         })
         
         var f_id = $('.facility_id').val();
-        
+
+        function openModal() {
+            var routeNoo = event.target.getAttribute('data-routeId'); 
+            var src = "https://mis.cvchd7.com/dts/document/trackMaif/" + routeNoo;
+            // $('.modal-body').html(loading);
+            setTimeout(function() {
+                $("#trackIframe").attr("src", src);
+                $("#iframeModal").css("display", "block");
+            }, 150);
+        }
+
         function error(){
             Lobibox.alert('error', {
                 size: 'mini',
                 msg: 'Select facility first!'
             });
         }
-
+        
         function getFundsource(facility_id){
 
             var check_vat = $('.facility_id').find(':selected').attr('datavat');
@@ -207,6 +224,7 @@
                 $.get("{{url('pre-dv/control_nos').'/'}}" + f_id, function (result){
                     existing_control = result.controls;   
                 });
+
                 $.get("{{ url('fetch/fundsource').'/' }}"+facility_id, function(result) {
                     var data_result = result.info;
                     var text_display;
@@ -398,8 +416,9 @@
         }
 
         function updatePre(id, data){
+            $('.form_body').html(loading);
             $.get("{{ url('pre-dv/update/').'/' }}"+id, function(result) {
-                $('.form_body').append(result);
+                $('.form_body').html(result);
                 if(data == 1){
                     $('.delete_btn').css('display', 'none');
                     $('.submit_btn').css('display', 'none');
@@ -469,9 +488,14 @@
             console.log('total_amount', total_pro);
             data.find('.saa_amount').each(function(){
                 var amount = parseFloat($(this).val().replace(/,/g, '')) || 0;
+                total_saa = parseFloat(total_saa) || 0; 
+                total_saa = total_saa.toFixed(2);
                 total_saa += amount;
+
+
                 console.log('total_saa', total_saa);
                 console.log('total_pro', total_pro);
+                console.log('amount', amount);
 
                 if(total_saa > total_pro){
                     alert('Mismatch total amount!');
