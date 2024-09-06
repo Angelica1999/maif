@@ -404,8 +404,12 @@ class PrintController extends Controller
                 'info' => $info,
                 'amount' => $grouped->sum('amount')
             ];
-    
-            $pdf = PDF::loadView('pre_dv.new_pdf', $data);
+            
+            if(count($grouped) >=9){
+                $pdf = PDF::loadView('pre_dv.new_pdf1', $data);
+            }else{
+                $pdf = PDF::loadView('pre_dv.new_pdf', $data);
+            }
             $pdf->setPaper('Folio');
             return $pdf->stream('dv.pdf');
         }
