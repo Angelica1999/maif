@@ -196,7 +196,7 @@
                                 </div><br><br>
                                 <div>
                                     <span class="saa">Ref No:</span>
-                                    <input name="control_no" value="{{$control}}" style="width:185px; height: 28px;">
+                                    <input name="control_no" value="{{$control}}" style="width:185px; height: 28px;" readonly>
                                 </div>
 
                                 <br><br>
