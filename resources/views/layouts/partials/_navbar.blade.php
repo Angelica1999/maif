@@ -22,7 +22,16 @@
           <a class="nav-link dropdown-toggle  pl-0 pr-0" href="#" data-toggle="dropdown" id="profileDropdown">
             <h5 class="mr-0">
                 <i class="typcn typcn-user-outline" style="font-size: 1.5em;"></i>
-                {{ Auth::user()->lname }}, {{ Auth::user()->fname }}
+                @if(!Auth::user())
+                  <form id="logout-form" action="{{ route('logout') }}" method="POST">
+                      @csrf
+                  </form>
+                  <script type="text/javascript">
+                      document.getElementById('logout-form').submit();
+                  </script>
+                @else
+                  {{ Auth::user()->lname }}, {{ Auth::user()->fname }}
+                @endif
             </h5>
           </a>
           <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">

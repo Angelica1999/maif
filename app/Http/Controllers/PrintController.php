@@ -18,7 +18,14 @@ use Illuminate\Support\Facades\DB;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\SMTP;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\File;
+
+// use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+
+// use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Illuminate\Support\Facades\Image;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
@@ -414,5 +421,114 @@ class PrintController extends Controller
             return $pdf->stream('dv.pdf');
         }
     }
+    
+    public function prePDF($id) {
+
+        $pre_dv = PreDV::where('id', $id)->with(
+            [
+                'user:userid,fname,lname,mname',
+                'facility:id,name',
+                'new_dv',
+                'extension' => function ($query) {
+                    $query->with(
+                        [
+                            'proponent:id,proponent',
+                            'controls',
+                            'saas' => function ($query) {
+                                $query->with([
+                                    'saa:id,saa'
+                                ]);
+                            }
+                        ]
+                    );
+                }
+            ]
+        )->first();
+        // return $pre_dv;
+        if($pre_dv){
+
+            $data = [
+                'result'=> $pre_dv
+            ];
+            
+            $pdf = PDF::loadView('pre_dv.pre_pdf', $data);
+            $pdf->setPaper('Folio');
+            
+            return $pdf->stream('new_dv.pdf');
+            
+        }else{
+            return 'no data found!';
+        }
+    }
+
+    public function preImage($id) {
+
+        $pre_dv = PreDV::where('id', $id)->with(
+            [
+                'user:userid,fname,lname,mname',
+                'facility:id,name',
+                'new_dv',
+                'extension' => function ($query) {
+                    $query->with(
+                        [
+                            'proponent:id,proponent',
+                            'controls',
+                            'saas' => function ($query) {
+                                $query->with([
+                                    'saa:id,saa'
+                                ]);
+                            }
+                        ]
+                    );
+                }
+            ]
+        )->first();
         
+        if($pre_dv){
+
+            $data = [
+                'result' => $pre_dv
+            ];
+
+            $height = 500;
+            $width = 400;
+            foreach($pre_dv->extension as $row){
+                foreach($row->controls as $row1){
+                    $height = $height + 90;
+                    $width = $width + 20;
+                }
+                foreach($row->saas as $row2){
+                    $height = $height + 20;
+                    $width = $width + 5;
+                }
+            }
+            $pdf = PDF::loadView('pre_dv.pre_pdf', $data);
+            // $pdf->setPaper('Folio');
+            $pdf->setPaper([0, 0, 595.28, $height]); 
+
+            $pdfPath = storage_path("app/new_dv.pdf");
+            $pdf->save($pdfPath);
+
+            $imagePath = storage_path('app/new_dv'); // Directory to save individual images
+            $pdftoppmPath = 'C:\\poppler-24.07.0\\Library\\bin\\pdftoppm.exe';
+            $command = "{$pdftoppmPath} -png -f 1 -l 1 {$pdfPath} " . escapeshellarg($imagePath) . " 2>&1";
+            exec($command, $output, $returnVar);
+
+            $filePath = storage_path('app/new_dv-1.png');
+
+            if (!File::exists($filePath)) {
+                abort(404);
+            }
+
+            $file = File::get($filePath);
+            $type = File::mimeType($filePath);
+
+            return Response::make($file, 200, [
+                'Content-Type' => $type,
+                'Content-Disposition' => 'inline; filename="new_dv-1.png"', // Adjust as needed
+            ]);  
+        }else{
+            return 'no data found!';
+        }
+    }
 }
