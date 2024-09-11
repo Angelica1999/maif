@@ -820,4 +820,19 @@ class PreDvController extends Controller
         $controls = PreDVControl::whereIn('predv_extension_id', $extension)->pluck('control_no')->toArray();
         return response()->json(['controls'=>$controls]);
     }
+
+    public function check(){
+        // return 12;
+        $utils = Utilization::whereIn('div_id', ['2024-303798','2024-303788','2024-303779','2024-303748', '2024-303718','2024-303514','2024-303453',
+        '2024-303433', '2024-303398','2024-304064', '2024-304058', '2024-303839', '2024-303808', '2024-303802',
+        '2024-303390', '2024-302977'])->get();
+        
+        // return $utils;
+        foreach($utils as $row){
+            $row->delete();
+            // $info = ProponentInfo::where('id', $row->proponentinfo_id)->first();
+            // $info->remaining_balance = (float) str_replace(',','', $info->remaining_balance) + (float) str_replace(',','', $row->utilize_amount);
+            // $info->save();
+        }
+    }
 }
