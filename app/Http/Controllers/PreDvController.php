@@ -70,6 +70,8 @@ class PreDvController extends Controller
                 $query->where('name', 'LIKE', '%' . $keyword . '%');
             })->orWhereHas('extension.controls', function ($query) use ($keyword) {
                 $query->where('control_no', 'LIKE', '%' . $keyword . '%');
+            })->orWhereHas('new_dv', function ($query) use ($keyword) {
+                $query->where('route_no', 'LIKE', '%' . $keyword . '%');
             });
         }
         $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(50);
