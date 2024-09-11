@@ -42,7 +42,8 @@
                                 <td>
                                     @if($row->new_dv)                                  
                                         <button type="button" class="btn btn-xs" style="background-color:#165A54;color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$row->new_dv->route_no}}" id="track_load" onclick="openModal()">Track</button>
-                                        <a href="{{ route('new_dv.pdf', ['id' => $row->id]) }}" style="background-color:green;color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
+                                        <a href="{{ route('pre.pdf', ['id' => $row->id]) }}" style="background-color:green;color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
+                                        <a href="{{ route('pre.image', ['id' => $row->id]) }}" style="background-color:blue;color:white; width:55px;" target="_blank" type="button" class="btn btn-xs">Image</a>    
                                     @else
                                         <span class="text-danger"><i>dv is not yet created</i></span>
                                     @endif
