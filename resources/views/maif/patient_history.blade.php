@@ -2,7 +2,7 @@
     <div class="table-container" style="margin:5px; padding:10px">
         <table class="table table-bordered">
             <thead>
-                <tr style="background-color:gray; color:white">
+                <tr style="background-color:gray; color:black">
                     <th scope="col">Patient</th>
                     <th scope="col">Birthdate</th>
                     <th scope="col">Address</th>

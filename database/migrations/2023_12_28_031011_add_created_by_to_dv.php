@@ -24,7 +24,7 @@ return new class extends Migration
     {
         Schema::table('dv', function (Blueprint $table) {
             //
-            $table->dropColumn('created_by', 255);
+            // $table->dropColumn('created_by', 255);
         });
     }
 };
