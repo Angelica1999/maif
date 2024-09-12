@@ -167,8 +167,7 @@
                         <button type="submit" class="btn-sm btn-success submit_btn">SUBMIT</button>
                     </div>
                 </form>
-            </div>
-            
+            </div>        
         </div>
     </div>
 </div>
@@ -507,6 +506,40 @@
             getGrand();
         }
 
+        var existing_control;
+        var new_control = [];
+        var hasErrors = false; 
+
+        function controls(){
+            var cons = [];
+            $('.control_clone').each(function (index, clone) {
+                var control_no = $(clone).find('.control_no').val();
+                cons.push(control_no);
+            });
+            return cons;
+        }
+
+        $(document).on('input', '.control_no', function(){
+            var control_clone = $(this).closest('.control_clone');
+            var control_no = $(control_clone).find('.control_no').val();  
+            var cons = controls();
+            var index = cons.findIndex(item => item === control_no);
+            if (index > -1) {
+                cons.splice(index, 1); 
+            }            
+            var exist = existing_control.find(item => item === control_no);
+
+            if (cons.includes(control_no) || exist) {
+                Lobibox.alert('error',{
+                    size: 'mini',
+                    msg: 'Duplicate control no, kindly check!'
+                });
+                // $(control_clone).find('.control_no').val('');
+                hasErrors = true;
+                return false;
+            }
+        });
+
         $(document).on('input', '.amount', function(){
             var p_clone = $(this).closest('.proponent_clone');
             calculateAmount(p_clone);
@@ -658,8 +691,6 @@
             console.log('here');
         });
 
-        var existing_control;
-
         $('.pre_form1, #pre_form').submit( function(e){
             console.log('hereee');
             e.preventDefault();
@@ -668,8 +699,6 @@
             var facility_id = f_id;
             var grand_total = $('.grand_total').val();
             var all_data = [];
-            var new_control = [];
-            var hasErrors = false; 
 
             $('.facility_div .proponent_clone').each(function (index, proponent_clone) {
                 var proponent = $(proponent_clone).find('.proponent').val();
