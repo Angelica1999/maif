@@ -535,7 +535,6 @@
                     msg: 'Duplicate control no, kindly check!'
                 });
                 // $(control_clone).find('.control_no').val('');
-                hasErrors = true;
                 return false;
             }
         });
