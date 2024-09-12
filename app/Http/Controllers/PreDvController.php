@@ -660,7 +660,7 @@ class PreDvController extends Controller
                 $existing->date_to = $request->date_to . '-1';
             }
             $existing->total = $request->total_amount;
-            $existing->accumulated = $request->accumulated;
+            $existing->accumulated = (float) str_replace(',','',$request->accumulated);
             $existing->created_by = Auth::user()->userid;
             $existing->save();
 
@@ -676,7 +676,7 @@ class PreDvController extends Controller
                 $new_dv->date_to = $request->date_to . '-1';
             }
             $new_dv->total = $request->total_amount;
-            $new_dv->accumulated = $request->accumulated;
+            $new_dv->accumulated = (float) str_replace(',','',$request->accumulated);
             $new_dv->created_by = Auth::user()->userid;
             $new_dv->status = 0;
             $new_dv->save();
