@@ -530,10 +530,7 @@
             var exist = existing_control.find(item => item === control_no);
 
             if (cons.includes(control_no) || exist) {
-                Lobibox.alert('error',{
-                    size: 'mini',
-                    msg: 'Duplicate control no, kindly check!'
-                });
+                alert('Control no ' +control_no+ ' existed already!')
                 // $(control_clone).find('.control_no').val('');
                 return false;
             }

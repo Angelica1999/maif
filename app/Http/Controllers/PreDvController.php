@@ -18,6 +18,7 @@ use App\Models\TrackingMaster;
 use App\Models\TrackingDetails;
 use App\Models\ProponentInfo;
 use App\Models\Utilization;
+use App\Models\Dv2;
 use PDF;
 
 class PreDvController extends Controller
@@ -815,10 +816,12 @@ class PreDvController extends Controller
     }
 
     public function controlList($facility_id){
+        $searchValue = Facility::where('id', $facility_id)->value('name');
         $pre_dv = PreDV::where('facility_id', $facility_id)->pluck('id')->toArray();
         $extension = PreDVExtension::whereIn('pre_dv_id', $pre_dv)->pluck('id')->toArray();
         $controls = PreDVControl::whereIn('predv_extension_id', $extension)->pluck('control_no')->toArray();
-        return response()->json(['controls'=>$controls]);
+        $dv2 = Dv2::whereRaw("facility REGEXP ?", ["^" . preg_quote($searchValue, '/')])->pluck('ref_no')->toArray();
+        return response()->json(['controls'=> array_merge($controls, $dv2)]);
     }
 
     public function check(){
