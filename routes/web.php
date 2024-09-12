@@ -223,6 +223,7 @@ Route::match(['post', 'get'],'/pre-dv/dv/process', [App\Http\Controllers\PreDvCo
 Route::get('/pre-dv/control_nos/{facility_id}', [App\Http\Controllers\PreDvController::class, 'controlList'])->name('control.list');
 Route::get('/pre-dv/check', [App\Http\Controllers\PreDvController::class, 'check'])->name('check');
 Route::get('/users', [App\Http\Controllers\UserController::class, 'users'])->name('users');
+Route::get('/users/verified/{id}', [App\Http\Controllers\UserController::class, 'verifyuser'])->name('verify.user');
 
 
 

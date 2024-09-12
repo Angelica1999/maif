@@ -2,7 +2,7 @@
 
 @section('content')
 
-<div class="col-lg-8 grid-margin stretch-card">
+<div class="col-lg-7 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
             <form method="GET" action="">
@@ -25,12 +25,12 @@
                 <thead>
                     <tr>
                         <th>Name</th>
-                        <th>Type</th>
-                        <th>Account</th>
-                        <th style="min-width:200px">Email</th>
+                        <th style="width:50px">Type</th>
+                        <th style="width:150px">Account</th>
+                        <th>Email</th>
                         <th>Contact</th>
                         <th>Birthdate</th>
-                        <th></th>
+                        <th style="width:100px"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -52,7 +52,9 @@
                             <td class="td">{{$row->email}}</td>
                             <td class="td">{{$row->contact_no}}</td>
                             <td class="td">{{$row->contact_no}}</td>
-                            <td class="td"></td>
+                            <td class="td">
+                                <a href="{{ route('verify.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-info" style="color:white; width:80px;">Verified</a>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -70,7 +72,7 @@
         </div>
     </div>
 </div>
-<div class="col-lg-4 grid-margin stretch-card">
+<div class="col-lg-5 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
             <form method="GET" action="">
