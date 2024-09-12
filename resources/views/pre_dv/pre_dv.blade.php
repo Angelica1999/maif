@@ -711,17 +711,17 @@
                         var saa_number = $(control_clone).find('.saa_number').val();
                         var exist = existing_control.find(item => item.includes(control_no));
 
-                        if ((new_control.includes(control_no) || exist) && (saa_number != 0) ) {
-                            Lobibox.alert('error',{
-                                size: 'mini',
-                                msg: 'Duplicate control no, kindly check!'
-                            });
-                           $(control_clone).find('.control_no').val('');
-                           hasErrors = true;
-                           return false;
-                        }else{
-                            new_control.push(control_no);
-                        }
+                        // if ((new_control.includes(control_no) || exist) && (saa_number != 0) ) {
+                        //     Lobibox.alert('error',{
+                        //         size: 'mini',
+                        //         msg: 'Duplicate control no, kindly check!'
+                        //     });
+                        //    $(control_clone).find('.control_no').val('');
+                        //    hasErrors = true;
+                        //    return false;
+                        // }else{
+                        //     new_control.push(control_no);
+                        // }
 
                         var data = {
                             control_no : control_no,
