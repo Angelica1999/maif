@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Registration;
-
+use App\Models\OnlineUser;
 
 class UserController extends Controller{
 
@@ -15,8 +15,10 @@ class UserController extends Controller{
     
     public function users(){
         $registration = Registration::with('facility','proponent')->paginate(50);
+        $users = OnlineUser::with('facility','proponent')->paginate(50);
         return view('users',[
-            'registrations' => $registration
+            'registrations' => $registration,
+            'users' => $users
         ]);
     }
 }
