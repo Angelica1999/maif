@@ -262,7 +262,7 @@
                             <td style="width:20%; border-left: 0 ; text-align:right; vertical-align:top" >
                             <br>
                               <span id="total_debit">{{number_format(($new_dv? $amount - $new_dv->accumulated: $amount),2,'.',',')}}</span><br>
-                              <input type="text" class="accumulated" name="accumulated" style="margin-top:1px;width:120px; height: 20px; text-align:right;" oninput="calculateSubsidy()" onkeyup="validateAmount(this)" value="{{$new_dv?$new_dv->accumulated:0}}"autocomplete="off">
+                              <input type="text" class="accumulated" name="accumulated" style="margin-top:1px;width:120px; height: 20px; text-align:right;" oninput="calculateSubsidy()" onkeyup="validateAmount(this)" value="{{$new_dv?number_format($new_dv->accumulated,2,'.',','):0}}"autocomplete="off">
                             </td>
                             <td style="width:20%; border-left: 0 ; text-align:right; vertical-align:top" >
                               <br><br><br>
