@@ -360,7 +360,7 @@ class PrintController extends Controller
             $pre_dv = PreDV::where('id', $id)->with(
                 [
                     'user:userid,fname,lname,mname',
-                    'facility:id,name', 
+                    'facility:id,name,address', 
                     'extension' => function ($query){
                         $query->with(
                             [
@@ -490,15 +490,15 @@ class PrintController extends Controller
                 'result' => $pre_dv
             ];
 
-            $height = 500;
-            $width = 400;
+            $height = 600;
+            $width = 500;
             foreach($pre_dv->extension as $row){
                 foreach($row->controls as $row1){
-                    $height = $height + 155;
+                    $height = $height + 150;
                     $width = $width + 20;
                 }
                 foreach($row->saas as $row2){
-                    $height = $height + 30;
+                    $height = $height + 20;
                     $width = $width + 5;
                 }
             }

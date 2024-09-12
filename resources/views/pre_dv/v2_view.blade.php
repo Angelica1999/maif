@@ -116,7 +116,7 @@
                     </table>
                     <table border="2" style="width: 100%;border-top: 0px;">
                         <tr height=30px>
-                            <td  width =12% height= 3%><b> Mode of Payment</td>
+                            <td  width =11.9% height= 3%><b> Mode of Payment</td>
                             <td style="width:85%; border-left: 0 " >
                             <div class="box-container">
                               <span class="box"></span>
@@ -133,7 +133,7 @@
                     </table>
                     <table border="2" style="width: 100%;">
                         <tr>
-                            <td height=4% width =12%><b> Payee</td>
+                            <td height=4% width =11.7%><b> Payee</td>
                             <td style="width:29%; border-left: 0 "><b> 
                                 <input type="hidden" id ="for_facility_id">
                                 <input id="facilityDropdown" name="facilityname" value="{{$result->facility->name}}" style="margin-left:5px;width:260px;" class="form-control" readonly>
@@ -150,7 +150,7 @@
                         <tr>
                             <td style="height:30px;"width =12.3% ><b>Address</td>
                             <td style="width:88%; border-left: 0 "><b> 
-                              <p style="color:red;" id="facilityAddress"  class="ft15"></p>
+                              <p style="color:red;" id="facilityAddress"  class="ft15">{{$result->facility->address}}</p>
                               <input type="hidden" name="facilityAddress" id="facilitaddress"></td>
                         </tr>
                     </table>
