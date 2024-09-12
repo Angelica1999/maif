@@ -359,43 +359,29 @@
                 @endif
             @endforeach
             <div style="page-break-before: always;"></div>
-            <div>
-                <div style="width: 100%; text-align:center;margin-top:3%">
-                    <h5><b>V1</b><h3>
+            <div style="width: 100%; text-align:center;margin-top:5px">
+                <h5><b>V1</b><h3>
+            </div>
+            <div style="width:100%; border:1px solid black">
+                @foreach($pre_dv->extension as $index => $row)
+                    @if($index == 0)
+                        <div style="width: 100%; text-align:center;margin-top:10px; display:inline-block; font-weight:bold">
+                            <input type="text" class="" style="text-align:center; width:35%; height:20px; font-size:12px; border: none" value="SAA">
+                            <input type="text" class="" style="text-align:center; width:20%; height:20px; font-size:12px; border: none" value="AMOUNT">
+                            <input type="text" class="" style="text-align:center; width:35%; height:20px; font-size:12px; border: none" value="PROPONENT">
+                        </div>
+                    @endif
+                    @foreach ($row->saas as $data)
+                        <div style="width: 100%; text-align:center;margin-top:10px; display:inline-block">
+                            <input type="text" class="" style="text-align:center; width:35%; height:20px; font-size:12px;" value="{{ $data->saa->saa }}">
+                            <input type="text" class="" style="text-align:center; width:20%; height:20px; font-size:12px;" value="{{ number_format(str_replace(',', '', $data->amount), 2, '.',',')}}">
+                            <input type="text" class="" style="text-align:center; width:35%; height:20px; font-size:12px;" value="{{ $row->proponent->proponent }}">
+                        </div>        
+                    @endforeach
+                @endforeach
+                <div style="margin-top:15px">
+                    <input type="text" class="" style="text-align:center; width:35%; height:20px; font-size:14px; margin-left:61%; margin-bottom:20px" value="{{number_format($pre_dv->grand_total,2,'.',',')}}">
                 </div>
-                <table border= 1px solid black width= 100%>
-                    <tr>
-                        <div style="width: 100%; text-align:center;margin-top:3%">
-                            <span style="font-weight: bold">{{$pre_dv->facility->name}}</span>
-                        </div>
-                        <div style="display: inline-block; width: 100%; margin-top:30px;">
-                            @foreach($pre_dv->extension as $index => $row)
-                                @if($index == 0)
-                                    <label style="display: inline-block; margin-left: 16%; width: 20%; font-weight: bold">SAA</label>
-                                    <label style="display: inline-block; margin-left: 6%; width: 20%; font-weight: bold">AMOUNT</label>
-                                    <label style="display: inline-block; margin-left: 8%; width: 20%; font-weight: bold">PROPONENT</label>
-
-                                @endif
-                                @foreach ($row->saas as $data)
-                                    <span style="border: 1px solid black; padding: 2px;display: inline-block; width: 32%; height: 40px; margin-left: 2%; margin-top: 8px; text-align:center; font-size:12px">{{ $data->saa->saa }}</span>
-                                    <span style="line-height: 30px; border: 1px solid black; padding: 2px;display: inline-block; width: 20%; height: 40px; text-align: center; margin-left: 2%; text-align:center; font-size:12px">{{ number_format(str_replace(',', '', $data->amount), 2, '.',',')}}</span>
-                                    <span style="border: 1px solid black; padding: 2px;display: inline-block; width: 36%; height: 40px; text-align: center; margin-left: 2%; text-align:center; font-size:12px">{{ $row->proponent->proponent }}</span>
-                                @endforeach
-                            @endforeach
-                        </div>
-                    </tr>
-                    <div style="width: 100%; margin-top: 5%; margin-bottom: 5%;">
-                        <table style="width: 100%;">
-                            <tr>
-                                <td style="width: 61.5%;border:0"></td>
-                                <td style="width: 36.5%; text-align: center; border: 1px solid black; padding: 2px; font-size: 12px; margin-right: 20%;">
-                                    {{number_format(str_replace(',','', $amount), 2,'.',',')}}
-                                </td>
-                                <td style="width: 2%;border:0"></td>
-                            </tr>
-                        </table>
-                    </div>
-                </table>
             </div>
         @endif
     </body>
