@@ -1,4 +1,9 @@
 <style>
+    @font-face{
+      font-family:'Glyphicons Halflings';src:url('http://netdna.bootstrapcdn.com/bootstrap/3.0.0/fonts/glyphicons-halflings-regular.eot');src:url('http://netdna.bootstrapcdn.com/bootstrap/3.0.0/fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'),url('http://netdna.bootstrapcdn.com/bootstrap/3.0.0/fonts/glyphicons-halflings-regular.woff') format('woff'),url('http://netdna.bootstrapcdn.com/bootstrap/3.0.0/fonts/glyphicons-halflings-regular.ttf') format('truetype'),url('http://netdna.bootstrapcdn.com/bootstrap/3.0.0/fonts/glyphicons-halflings-regular.svg#glyphicons-halflingsregular') format('svg');}.glyphicon{position:relative;top:1px;display:inline-block;font-family:'Glyphicons Halflings';font-style:normal;font-weight:normal;line-height:1;-webkit-font-smoothing:antialiased;}
+      .glyphicon-ok:before{content:"\e013";}
+      .glyphicon-remove:before{content:"\e014";
+      }
     .nav-item .sub-menu {
         display: none;
     }
@@ -34,7 +39,7 @@
                     ->first();
     $notes = Notes::where('created_by', $id)->with('user')->get();
 ?>
-<nav class="sidebar sidebar-offcanvas" id="sidebar" style="width:270px">
+<nav class="sidebar sidebar-offcanvas" id="sidebar" style="width:280px">
   <ul class="nav">
     <li class="nav-item">
       <div class="d-flex sidebar-profile">
@@ -267,6 +272,23 @@
                         <a class="nav-link" href="{{ route('pre_dv2') }}">
                             <i class="typcn typcn-document-add menu-icon"></i>
                             <span class="menu-title">V2</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <ul class="nav flex-column" style=" margin-bottom: 0;">
+            <li class="nav-item">
+                <a class="nav-link" href="#" >
+                    <i><img class="menu-icon" src="\maif\public\images\user_account_16.png"></i>
+                    <span class="menu-title" style="margin-left:20px">Accounts</span>
+                    <i class="typcn typcn-arrow-sorted-down menu-icon"></i>
+                </a>
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('users') }}">
+                            <i><img class="menu-icon" src="\maif\public\images\user_accounts_16.png"></i>
+                            <span class="menu-title" style="margin-left:15px">USERS</span>
                         </a>
                     </li>
                 </ul>

@@ -222,6 +222,7 @@ Route::get('/pre-dv/budget/v2/{type}/{id}', [App\Http\Controllers\PreDvControlle
 Route::match(['post', 'get'],'/pre-dv/dv/process', [App\Http\Controllers\PreDvController::class, 'processNew'])->name('pre_dv.process');
 Route::get('/pre-dv/control_nos/{facility_id}', [App\Http\Controllers\PreDvController::class, 'controlList'])->name('control.list');
 Route::get('/pre-dv/check', [App\Http\Controllers\PreDvController::class, 'check'])->name('check');
+Route::get('/users', [App\Http\Controllers\UserController::class, 'users'])->name('users');
 
 
 
