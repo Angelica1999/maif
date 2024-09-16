@@ -14,6 +14,7 @@ use App\Models\TrackingDetails;
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
                         <button type="button" id="release_btn" data-target="#releaseTo" style="display:none; background:teal; color:white" onclick="putRoutes($(this))" data-target="#releaseTo" data-backdrop="static" data-toggle="modal" class="btn btn-md">Release All</button>
+                        <input type="hidden" class="all_route" id="all_route" name="all_route">
                     </div>
                 </div>
             </form>
@@ -31,6 +32,7 @@ use App\Models\TrackingDetails;
                                 <a class="text-info select_all">Release All</a>
                             </th>
                             <th>Route</th>
+                            <th>Status</th>
                             <th>Facility</th>
                             <th>Proponent</th>
                             <th>Grand Total</th>
@@ -52,6 +54,7 @@ use App\Models\TrackingDetails;
                                                 ->id;
                                             }else{
                                                 $doc_id= 0;
+                                                $routed = 0;
                                             }
                                         ?>                                   
                                         <button type="button" class="btn btn-xs" style="background-color:#165A54;color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$row->new_dv->route_no}}" id="track_load" onclick="openModal()">Track</button>
@@ -75,6 +78,7 @@ use App\Models\TrackingDetails;
                                         {{$row->new_dv->route_no}}
                                     @endif
                                 </td>
+                                <td class="td">{{ isset($routed) && $routed > 1? 'Forwarded' : '' }}</td>
                                 <td class="td"><a data-toggle="modal" data-backdrop="static" href="#view_v2" onclick="viewV1({{$row->id}})">{{$row->facility->name}}</a></td>
                                 <td class="td">
                                     @foreach($row->extension as $index => $data)
@@ -188,6 +192,30 @@ use App\Models\TrackingDetails;
             $('.group-releaseDv').trigger('change');
             s_ident = 0; 
         }
+    });
+
+    $('.group-releaseDv').change(function () {
+        document.getElementById('release_btn').style.display = 'inline-block';
+           
+        var checkedMailBoxes = $('.group-releaseDv:checked');
+        var ids = [];
+        var routes = [];
+
+        checkedMailBoxes.each(function () {
+            var doc_id = $(this).closest('.group-release').data('id');
+            var route = $(this).closest('.group-release').data('route_no');
+            ids.push(doc_id);
+            routes.push(route);
+        });
+        if(ids.length ==  0){
+            document.getElementById('release_btn').style.display = 'none';
+        }
+        $('#release_btn').val(ids);
+        $('#all_route').val(routes);
+
+        console.log('chakiii', ids);
+        console.log('chakiii', routes);
+
     });
 
 </script>

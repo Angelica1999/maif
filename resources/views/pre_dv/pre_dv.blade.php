@@ -485,17 +485,12 @@
         function evaluateSAA(data){
             var total_saa = 0;
             var total_pro = parseFloat(data.find('.total_amount').val().replace(/,/g, ''));
-            console.log('total_amount', total_pro);
             data.find('.saa_amount').each(function(){
+
                 var amount = parseFloat($(this).val().replace(/,/g, '')) || 0;
                 total_saa = parseFloat(total_saa) || 0; 
                 total_saa = total_saa.toFixed(2);
-                total_saa += amount;
-
-
-                console.log('total_saa', total_saa);
-                console.log('total_pro', total_pro);
-                console.log('amount', amount);
+                total_saa = Number(total_saa) + Number(amount);
 
                 if(total_saa > total_pro){
                     alert('Mismatch total amount!');
@@ -698,6 +693,7 @@
 
             $('.facility_div .proponent_clone').each(function (index, proponent_clone) {
                 var proponent = $(proponent_clone).find('.proponent').val();
+                hasErrors = false; 
 
                 if(proponent != ''){
                     var total_amount = $(proponent_clone).find('.total_amount').val();
@@ -732,7 +728,7 @@
                         pro_clone.push(data);
                     });
 
-                    if (hasErrors) return false;
+                    // if (hasErrors) return false;
                     var fundsource_clone = [];
                     var saa_total = 0;
 
@@ -741,6 +737,7 @@
                         info_id = info_id.find(':selected').attr('dataproponentInfo_id');
                         var saa_id = $(saa_clone).find('.saa_id').val();
                         var saa_amount = $(saa_clone).find('.saa_amount').val();
+                        console.log('saa', saa_amount);
                         saa_total += parseFloat(saa_amount.replace(/,/g, ''));
                         
                         var data1 = {

@@ -369,7 +369,7 @@
                         </div>
                     @endif
                     @foreach ($row->saas as $data)
-                        <div style="width: 100%; text-align:center;margin-top:10px; display:inline-block">
+                        <div style="width: 100%; text-align:center;margin-top:3px; display:inline-block">
                             <input type="text" class="" style="text-align:center; width:35%; height:20px; font-size:12px;" value="{{ $data->saa->saa }}">
                             <input type="text" class="" style="text-align:center; width:20%; height:20px; font-size:12px;" value="{{ number_format(str_replace(',', '', $data->amount), 2, '.',',')}}">
                             <input type="text" class="" style="text-align:center; width:35%; height:20px; font-size:12px;" value="{{ $row->proponent->proponent }}">
