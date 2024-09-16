@@ -92,26 +92,26 @@
                                     <input type="text" class="" style="margin-left:17%; margin-bottom:15px; text-align:center; width:65%; height:20px; font-size:12px;margin-right:auto;" value="{{$row1->control_no}}">
                                     <div style="justify-content: space-between; margin-bottom: 1px;">
                                         <input type="text" class="" style="text-align:center; width:45%; height:20px; font-size:12px;" value="{{$row1->patient_1}}">
-                                        <input type="text" class="" style="text-align:center; width:45%; height:20px; font-size:12px; margin-left:35px" value="{{number_format($row1->amount,2,'.',',')}}">
+                                        <input type="text" class="" style="text-align:center; width:45%; height:20px; font-size:12px; margin-left:35px" value="{{$row1->amount}}">
                                     </div>
                                     <input type="text" class="" style="text-align:center; width:45%; height:20px; font-size:12px;" value="{{$row1->patient_2}}">
                                 </div>
                             @endforeach
                             <div style="margin-bottom:1px">
-                                <input type="text" class="" style="text-align:center; width:45%; height:20px; font-size:12px; margin-left:52.5%; margin-bottom:30px" value="{{number_format($row->total_amount,2,'.',',')}}">
+                                <input type="text" class="" style="text-align:center; width:45%; height:20px; font-size:14px; margin-left:52.5%; margin-bottom:30px" value="{{$row->total_amount}}">
                             </div>
                             @foreach($row->saas as $row2)
                                 <!-- <div class="card3"> -->
                                     <div style="justify-content: space-between;"  class="page-break-avoid">
                                         <input type="text" class="" style="font-size:11px; text-align:center; width:45%; height:20px;page-break-inside: avoid;" value="{{$row2->saa->saa}}">
-                                        <input type="text" class="" style="text-align:center; width:45%; height:20px; font-size:11px; margin-left:35px; page-break-inside: avoid;" value="{{number_format($row2->amount,2,'.',',')}}">
+                                        <input type="text" class="" style="text-align:center; width:45%; height:20px; font-size:11px; margin-left:35px; page-break-inside: avoid;" value="{{$row2->amount}}">
                                     </div>
                                 <!-- </div> -->
                             @endforeach
                         </div>
                     @endforeach
                     <div style="margin-bottom:10px">
-                        <input type="text" class="" style="text-align:center; width:42%; height:20px; font-size:14px; margin-left:52%; margin-bottom:30px" value="{{number_format($result->grand_total,2,'.',',')}}">
+                        <input type="text" class="" style="text-align:center; width:42%; height:20px; font-size:14px; margin-left:52%; margin-bottom:30px" value="{{$row->total_amount}}">
                     </div>
                 </div>
             </div>

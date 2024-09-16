@@ -137,7 +137,13 @@ class PreDvController extends Controller
             [
                 'user:userid,fname,lname,mname',
                 'facility:id,name',
-                'new_dv',
+                'new_dv' => function ($query) {
+                    $query->with(
+                        [
+                            'details'
+                        ]
+                    );
+                },
                 'extension' => function ($query) {
                     $query->with(
                         [
@@ -153,7 +159,7 @@ class PreDvController extends Controller
                 }
             ]
         );
-        // return $pre_dv;
+        // return $pre_dv->get();
         $saas = Fundsource::get();
         $proponents = Proponent::select('proponent')->groupBy('proponent')->get();
         $facilities = Facility::get();

@@ -412,7 +412,7 @@ class PrintController extends Controller
                 'amount' => $grouped->sum('amount')
             ];
             
-            if(count($grouped) >=9){
+            if(count($grouped) >=7){
                 $pdf = PDF::loadView('pre_dv.new_pdf1', $data);
             }else{
                 $pdf = PDF::loadView('pre_dv.new_pdf', $data);

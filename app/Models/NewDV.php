@@ -23,4 +23,7 @@ class NewDV extends Model
     public function dts(){
         return $this->belongsTo(TrackingMaster::class, 'route_no', 'route_no');
     }
+    public function details(){
+        return $this->hasMany(TrackingDetails::class, 'route_no', 'route_no');
+    }
 }
