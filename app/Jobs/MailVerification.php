@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Models\Patients;
-use App\Models\Proponent;
+use App\Models\OnlineUser;
+use App\Models\Registration;
 use App\Models\AddFacilityInfo;
 use App\Models\MailHistory;
 use Illuminate\Bus\Queueable;
@@ -17,76 +17,69 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use Exception;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class MailVerification implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $patientIds;
+    protected $registration;
 
-    public function __construct($patientIds)
+    public function __construct($registration)
     {
-        $this->patientIds = $patientIds;
+        $this->registration = $registration;
     }
 
     public function handle()
     {
-        $ids = $this->patientIds;
+        $registration = $this->registration;
 
-        if ($ids !== null || $ids !== '') {
-            $patients = Patients::whereIn('id', $ids)->with('facility')->get();
-            if ($patients) {
-                foreach ($patients as $patient) {
-                    $proponent = Proponent::where('id', $patient->proponent_id)->first();
-                    $name_file = $patient->lname . ', ' . $patient->fname . ' - ' . $proponent->proponent;
-                    $facility = AddFacilityInfo::where('facility_id', $patient->facility_id)->first();
-                    if ($facility) {
-                        if ($facility->official_mail !== null || $facility->official_mail !== "" || $facility->official_mail !== "none") {
-                            $data = [
-                                'title' => 'Welcome to MAIF',
-                                'date' => date('m/d/Y'),
-                                'patient' => $patient,
-                                'age' => $this->calculateAge($patient->dob)
-                            ];
-                            $options = [];
-                            $recipientEmail = $facility->official_mail;
-                            $cc = str_replace(' ', '', $facility->cc);
-                            $cc_mails = explode(',', $cc);
-
-                            $pdf = PDF::loadView('maif.print_patient', $data, $options);
-                            $pdfFilePath = storage_path("app/pdf");
-                            $pdf->save($pdfFilePath);
-
-                            try {
-
-                                if($this->sendMail($recipientEmail, $pdfFilePath, $cc_mails, $name_file)){
-                                    $patient->remarks = 1;
-                                    $patient->save();
-                                    $history = new MailHistory();
-                                    $history->patient_id = $patient->id;
-                                    $history->sent_by = Auth::user()->userid;
-                                    $history->modified_by = $patient->created_by;
-                                    $history->save();
-                                    session()->flash('email_sent', true);
-                                }else{
-                                    session()->flash('email_unsent', true);
-                                }
-                                
-                            } catch (Exception $e) {
-                                session()->flash('email_unsent', true);
-                            }
-                        }
-                    } else {
-                        session()->flash('email_unsent', true);
-                    }
-                }
+        $password = $this->generateUniquePassword();
+        $randomNumber1 = rand(100, 999); 
+        $username = $registration->lname.$registration->identity_type.$registration->id;
+        $user = new OnlineUser();
+        $user->fname = $registration->fname;
+        $user->lname = $registration->lname;
+        $user->email = $registration->email;
+        $user->pass_change = 0;
+        $user->verified_by = Auth::user()->userid;
+        $user->username = $username;
+        $user->type_identity = $registration->identity_type;
+        $user->user_type = $registration->user_type;
+        $user->contact_no = $registration->contact_no;
+        $user->gender = $registration->gender;
+        $user->birthdate = $registration->birthdate;
+        $user->password =  Hash::make($password);
+        $user->roles = 0;
+        try {
+            if($this->sendMail($registration, $password, $username)){
+                $user->save();
+                session()->flash('email_sent', true);
             }
+        } catch (\Exception $e) {
+            return "Mail sending failed: " . $e->getMessage();
         }
+        
     }
 
-    private function sendMail($recipientEmail, $pdfFilePath, $cc_mails, $name_file)
+    private function generateUniquePassword($length = 12) {
+        $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $password = '';
+        $charactersLength = strlen($characters);
+    
+        for ($i = 0; $i < $length; $i++) {
+            $password .= $characters[rand(0, $charactersLength - 1)];
+        }
+    
+        return $password;
+    }
+
+    private function sendMail($registration, $password, $username)
     {
         try {
+           
+            $recipientEmail = $registration->email;
             $email_doh = 'maipp@ro7.doh.gov.ph';
             $email_password = 'ezfdilafwbdoutit';
             $mail = new PHPMailer(true);
@@ -103,20 +96,16 @@ class MailVerification implements ShouldQueue
             $mail->setFrom($email_doh, 'DOH-CVCHD MAIFIP');
             $mail->addAddress($recipientEmail);     //Add a recipient
             $mail->addReplyTo($email_doh);
-            if ($cc_mails !== null && $cc_mails !== "") {
-                foreach ($cc_mails as $ccEmail) {
-                    if ($ccEmail !== "") {
-                        $mail->addCC($ccEmail);
-                    }
-                }
-            }
             //Content
             $mail->isHTML(true);                                  //Set email format to HTML
-            $mail->Subject = 'Guarante Letters for the following patients';
+            $mail->Subject = 'System Account Activation Credentials';
             $mail->addEmbeddedImage('public\images\maipp_banner.png', 'unique_cid_for_image', 'image.jpg');
+            $link = "http://localhost/guaranteeletter";
             $mail->Body =
                 '<html><body>
-                <span style="text-align:right;">Please acknowledge receipt of this email. Thank you.<span>
+                <span style="text-align:right;">Username: '.$username.'<span><br>
+                <span style="text-align:right;">Password: '.$password.'<span><br>
+                <a href="http://localhost/guaranteeletter" style="text-align:right;">'.$link.'</a><br>
                     <div align="center">
                         <div align="center">
                             <img src="cid:unique_cid_for_image" width="100%"> 
@@ -124,34 +113,15 @@ class MailVerification implements ShouldQueue
                     </div>
                 </body></html>
                 ';
-            $mail->addAttachment($pdfFilePath, $name_file . ".pdf");
             if($mail->send()){
                 return true;
             }else{
                 return false;
             }
-            unlink($pdfFilePath);
-            
         } catch (Exception $e) {
             echo 'Error: ' . $e->getMessage();
         }
-    }
-
-    private function calculateAge($dob)
-    {
-        $dob = Carbon::parse($dob);
-        $currentDate = Carbon::now();
-        $age = $currentDate->diffInYears($dob);
-
-        if ($age >= 1) {
-            if ($dob->diffInMonths($currentDate) > 0) {
-                return $age . ' y/o';
-            } else {
-                return $age . ' y/o';
-            }
-        } else {
-            return $dob->diffInMonths($currentDate) . ' month' . ($dob->diffInMonths($currentDate) != 1 ? 's' : '');
-        }
+        
     }
 }
 

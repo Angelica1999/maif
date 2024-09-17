@@ -105,16 +105,9 @@
                         <tr>
                             <td class="td">{{$row->fname .' '.$row->lname}}</td>
                             <td class="td">
-                                {{ 
-                                    $row->user_type == 1 ? 'Proponent' : 
-                                    ($row->user_type == 2 ? 'Facility' : 'MUP') 
-                                }}
                             </td>
                             <td class="td">
-                                {{ 
-                                    $row->user_type == 1 ? $row->proponent->proponent : 
-                                    ($row->user_type == 2 ? $row->facility->name : 'MUP') 
-                                }}
+                              
                             </td>
                             <td class="td">{{$row->email}}</td>
                             <td class="td"></td>
