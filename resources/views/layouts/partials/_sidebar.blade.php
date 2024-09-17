@@ -139,7 +139,7 @@
             <ul class="nav flex-column sub-menu">
                 <li class="nav-item">
                   <a class="nav-link" href="{{ route('pre_dv_budget', ['type' => 'pending_new']) }}">
-                    <i class="typcn typcn-document menu-icon"></i>
+                    <i class="typcn typcn-document-outline menu-icon"></i>
                     <span class="menu-title">Pending DV (new)</span>
                   </a>
                 </li>
