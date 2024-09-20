@@ -17,14 +17,15 @@
             display: flex;
           }
           .box {
-              width: 20px;
-              height: 10px;
+              width: 10px;
+              height: 5px;
               border: 1px solid black;
               margin-left: 7px;
               display: inline-block;
               vertical-align: middle;
-              margin-top: 2px;
-              margin-bottom: 2px;
+              margin-top: 1px;
+              margin-bottom: 1px;
+              line-height:1;
           }
           .label {
               font-size: 11px;
@@ -34,15 +35,13 @@
               line-height: 1;
           }
           .barcode-container {
-            position: absolute;
-            left: 10px; /* Adjust to position from the left edge */
-            top: 50%; /* Center vertically on the page */
-            transform: translateY(-50%); /* Center vertically */
-            transform: rotate(-90deg); /* Rotate to landscape orientation */
-            transform-origin: left center; /* Rotate around the left center */
-            margin-top: 5px;
-        }
-        
+              position: absolute;
+              right: 0; 
+              top: 45%; 
+              transform: translateY(-50%) rotate(-90deg); 
+              transform-origin: right center; 
+              margin-top: 1px;
+          }
       </style>
     </head>
     <body>
@@ -58,7 +57,7 @@
                                       <img src="{{realpath(__DIR__ . '/../../..').'/public/images/doh-logo.png'}}" style="width: 50%; max-width: 50%;" />
                                   </td>
                                   <td width="54%" style="border-left:none;padding: 2px; border-right:none; "><br>
-                                    <div class="header" style="line-height: 1.2;">
+                                    <div class="header" style="line-height: 1.1;">
                                       <span style="margin-top: 10px">Republic of the Philippines</span> <br>
                                       <strong> CENTRAL VISAYAS CENTER for HEALTH DEVELOPMENT</strong> <br>
                                       <small>Osmeña Boulevard, Cebu City, Philippines 6000</small> <br>
@@ -74,7 +73,7 @@
                       <table width=100%>
                         <tr>
                           <td height=3% width =81% style="text-align:center;font-size:14px"> <strong>DISBURSEMENT VOUCHER</strong></td>
-                          <td style="width:19%; font-size: 10px; line-height: 1.2;" >
+                          <td style="width:19%; font-size: 10px; line-height: 1;" >
                             <b>
                               <span style="margin-bottom: 20px">Fund Cluster :</span><br>
                               <span style="margin-top: 20px">Date: {{ date('F j, Y', strtotime($result->date))}}</span><br>
@@ -138,12 +137,12 @@
                               in the amount of:</p>
                               
                               @foreach($fundsources as $index=> $fund_saa)
-                                  <span class="saa" style="float: left; font-size:10px; padding:0px; margin:0; line-height: 1.2;">{{$fund_saa['saa']}}</span>
-                                  <span class="amount" style="float: right; padding:0px; margin:0; line-height: 1.2;">{{ number_format(floatval(str_replace(',','',$fund_saa['amount'])), 2, '.', ',') }}</span>
+                                  <span class="saa" style="float: left; font-size:10px; padding:0px; margin:0; line-height: 1;">{{$fund_saa['saa']}}</span>
+                                  <span class="amount" style="float: right; padding:0px; margin:0; line-height: 1;">{{ number_format(floatval(str_replace(',','',$fund_saa['amount'])), 2, '.', ',') }}</span>
                                   <div style="clear: both;"></div>
                               @endforeach
                               
-                              <div style="width: 100%; margin-top:5px; line-height: 1.2;">   
+                              <div style="width: 100%; margin-top:5px; line-height: 1;">   
                                 @if(floor($info->vat) == 3)
                                   <span class="saa" style="margin-left:10px;">{{ floor($info->vat) . '%' . ' ' . 'Percentage Tax' }}</span>
                                 @else
@@ -153,7 +152,7 @@
                                 <span style="float: right;">{{number_format((($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100),2,'.',',')}}</span>
                                 <div style="clear: both;"></div>
                               </div>
-                              <div style="width: 100%;line-height: 1.2;">   
+                              <div style="width: 100%;line-height: 1;">   
                                 <span class="saa" style="margin-left:10px;"> {{floor($info->Ewt).'%'.' '.'EWT'}}</span>
                                 @if(floor($info->vat) == 3)
                                   <span style="margin-left:105px;">{{number_format((($info->vat > 3)?$amount / 1.12 : $amount),2,'.',',')}}</span>
@@ -211,64 +210,58 @@
                       </table>
                       <table width=100%>
                         <tr>
-                          <td width =15% style="line-height: 1.2;"><strong>B. Accounting Entry:</strong></td>
+                          <td width =15% style="line-height: 1;"><strong>B. Accounting Entry:</strong></td>
                         </tr>
                       </table>
                       <table width=100%>
-                        <tr class="header" tyle="line-height: 1.2;">
+                        <tr class="header" tyle="line-height: 1;">
                           <td width =50%>Account Title</td>
                           <td style="width:20%; border-left: 0; vertical-align:top " >Uacs Code</td>
                           <td style="width:15%; border-left: 0 " >Debit</td>
                           <td style="width:15%; border-left: 0 " >Credit</td>
                         </tr>
                         <tr class="header">
-                          <td style="text-align : left;vertical-align:top; line-height: 1.2;">
+                          <td style="text-align : left;vertical-align:top; line-height: 1;">
                             &nbsp;&nbsp;&nbsp;&nbsp;<span>Subsidy / Others</span><br>
                             &nbsp;&nbsp;&nbsp;&nbsp;<span>Accumulated Surplus</span><br>
                             <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Due to BIR</span><br> 
                             <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CIB-MDS</span> 
                           </td>
-                          <td style=" border-left: 0; line-height: 1.2;" >
+                          <td style=" border-left: 0; line-height: 1;" >
                             <span>50214990</span><br>
                             <span>30101010</span><br>
                             <span>20201010</span><br> 
                             <span>10104040</span> 
                           </td>
-                          <td style=" border-left: 0 ; text-align:right; vertical-align:top; line-height: 1.2;" >
+                          <td style=" border-left: 0 ; text-align:right; vertical-align:top; line-height: 1;" >
                             <span>
                                 {{number_format((($result)? $amount - $result->accumulated: $amount),2,'.',',')}}
                             </span><br>
                             <span>{{number_format(($result?$result->accumulated:0),2,'.',',')}}</span>
                           </td>
-                          <td style=" border-left: 0 ; text-align:right; vertical-align:top; line-height: 1.2;" >
+                          <td style=" border-left: 0 ; text-align:right; vertical-align:top; line-height: 1;" >
                             <br><br><span>{{number_format(((($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100) + (($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100)),2,'.',',')}}</span><br>
                             <span>{{number_format(($amount - ((($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100) + (($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100))),2,'.',',')}}</span>
                           </td>
                         </tr>
                       </table>
-                      <table width=100%>
-                        <tr>
-                            <td width =50%><strong>C. Certified:</strong></td>
-                            <td width =50%><strong>D. Approved for Payment:</strong></td>
-                        </tr>
-                        <tr>
-                            <td>
-                              <div style="display: inline-flex; align-items: center;margin-top:5px">
-                                  <span class="box" style="display: inline-block;"></span>
-                                  <p style="margin-left: 5px; display: inline;line-height: 1.2;">Cash Available</p>
-                              </div>
-                              <div style="display: inline-flex; align-items: center;">
-                                  <span class="box" style="display: inline-block;"></span>
-                                  <p style="margin-left: 5px; display: inline;line-height: 1.2;">Subject to Authority to Debit Account (when applicable)</p>
-                              </div>
-                              <div style="display: inline-flex; align-items: center;">
-                                  <span class="box" style="display: inline-block;"></span>
-                                  <p style="margin-left: 5px; display: inline;line-height: 1.2;">Supporting documents complete and amount claimed proper</p>
-                              </div>
-                            </td>
-                            <td></td>  
-                        </tr>
+                      <table width="100%">
+                          <tr>
+                              <td width="50%"><strong>C. Certified:</strong></td>
+                              <td width="50%"><strong>D. Approved for Payment:</strong></td>
+                          </tr>
+                          <tr>
+                              <td style="height: 20px; vertical-align: top; overflow: hidden;">
+                                  <p style="line-height: 1; margin: 0;">
+                                      <span style="display: inline-block; width: 10px; height: 5px; margin-right: 5px; vertical-align: middle; border:1px solid black"></span>Cash Available <br>
+                                      <span style="display: inline-block; width: 10px; height: 5px; margin-right: 5px; vertical-align: middle; border:1px solid black"></span>Subject to Authority to Debit Account (when applicable) <br>
+                                      <span style="display: inline-block; width: 10px; height: 5px; margin-right: 5px; vertical-align: middle; border:1px solid black"></span>Supporting documents complete and amount claimed proper
+                                  </p>
+                              </td>
+                              <td style="height: 20px;"></td>
+                          </tr>
                       </table>
+
                       <table width=100%>
                         <tr class="header">
                             <td width =10%>Signature</td>
@@ -342,16 +335,14 @@
                 </table>
                 <!-- <div style="position:absolute; left: 50%; transform: translateX(-50%); margin-top:5px;" class="modal_footer">
                     {!! DNS1D::getBarcodeHTML($result->route_no, 'C39E', 1, 28) !!}
-                    <div style="text-align: center;">
+                    <div style="text-align: center; line-height:1">
                         <font class="route_no">{{ $result->route_no }}</font>
                     </div>
                 </div>   -->
-
-                <div class="barcode-container">
-                    {!! DNS1D::getBarcodeHTML($result->route_no, 'C39E', 1, 28) !!}
-                    <div style="text-align: center;">
-                        <font class="route_no">{{ $result->route_no }}</font>
-                    </div>
+                <div class="barcode-container" style="text-align: center;line-height:1">
+                  <br style="line-height:1px">
+                    {!! DNS1D::getBarcodeHTML($result->route_no, 'C39E', 1, 25) !!}
+                    <font class="route_no" style="">{{ $result->route_no }}</font>
                 </div>
                 @if($d == 1)
                   <div style="page-break-before: always;"></div>
@@ -378,16 +369,16 @@
                 @foreach($pre_dv->extension as $index => $row)
                     @if($index == 0)
                         <div style="width: 100%; text-align:center;margin-top:10px; display:inline-block; font-weight:bold">
-                            <input type="text" class="" style="text-align:center; width:35%; height:20px; font-size:12px; border: none" value="SAA">
-                            <input type="text" class="" style="text-align:center; width:20%; height:20px; font-size:12px; border: none" value="AMOUNT">
-                            <input type="text" class="" style="text-align:center; width:35%; height:20px; font-size:12px; border: none" value="PROPONENT">
+                            <input type="text" class="" style="text-align:center; width:35%; height:18px; font-size:11px; border: none" value="SAA">
+                            <input type="text" class="" style="text-align:center; width:20%; height:18px; font-size:11px; border: none" value="AMOUNT">
+                            <input type="text" class="" style="text-align:center; width:35%; height:18px; font-size:11px; border: none" value="PROPONENT">
                         </div>
                     @endif
                     @foreach ($row->saas as $data)
                         <div style="width: 100%; text-align:center;margin-top:3px; display:inline-block">
-                            <input type="text" class="" style="text-align:center; width:35%; height:20px; font-size:12px;" value="{{ $data->saa->saa }}">
-                            <input type="text" class="" style="text-align:center; width:20%; height:20px; font-size:12px;" value="{{ number_format(str_replace(',', '', $data->amount), 2, '.',',')}}">
-                            <input type="text" class="" style="text-align:center; width:35%; height:20px; font-size:12px;" value="{{ $row->proponent->proponent }}">
+                            <input type="text" class="" style="text-align:center; width:35%; height:18px; font-size:11px;" value="{{ $data->saa->saa }}">
+                            <input type="text" class="" style="text-align:center; width:20%; height:18px; font-size:11px;" value="{{ number_format(str_replace(',', '', $data->amount), 2, '.',',')}}">
+                            <input type="text" class="" style="text-align:center; width:35%; height:18px; font-size:11px;" value="{{ $row->proponent->proponent }}">
                         </div>        
                     @endforeach
                 @endforeach
