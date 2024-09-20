@@ -32,7 +32,14 @@
               margin-right: 8px;
               margin-left: 5px;
           }
-          
+          .barcode-container {
+              position: absolute;
+              right: 0; /* Position from the right edge */
+              top: 45%; /* Center vertically on the page */
+              transform: translateY(-50%) rotate(-90deg); /* Center vertically and rotate */
+              transform-origin: right center; /* Rotate around the right center */
+              margin-top: 1px;
+          }
         
       </style>
     </head>
@@ -335,12 +342,17 @@
                       </table>     
                       </div>
                 </table>
-                <div style="position:absolute; left: 50%; transform: translateX(-50%); margin-top:15px;" class="modal_footer">
+                <!-- <div style="position:absolute; left: 50%; transform: translateX(-50%); margin-top:15px;" class="modal_footer">
                     {!! DNS1D::getBarcodeHTML($result->route_no, 'C39E', 1, 28) !!}
                     <div style="text-align: center;">
                         <font class="route_no">{{ $result->route_no }}</font>
                     </div>
-                </div>  
+                </div>   -->
+                <div class="barcode-container" style="text-align: center;line-height:1">
+                  <br style="line-height:1px">
+                    {!! DNS1D::getBarcodeHTML($result->route_no, 'C39E', 1, 25) !!}
+                    <font class="route_no" style="">{{ $result->route_no }}</font>
+                </div>
                 @if($d == 1)
                   <div style="page-break-before: always;"></div>
                 @endif

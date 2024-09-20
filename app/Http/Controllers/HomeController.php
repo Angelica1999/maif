@@ -15,6 +15,9 @@ use App\Models\ProponentInfo;
 use App\Models\User;
 use App\Models\Transfer;
 use App\Models\Dv;
+use App\Models\Dv2;
+use App\Models\Dv3;
+use App\Models\NewDV;
 use App\Models\Utilization;
 use App\Models\TrackingDetails;
 use App\Models\PatientLogs;
@@ -346,8 +349,8 @@ class HomeController extends Controller
             ->groupBy(DB::raw('CASE WHEN utilization.div_id = 0 THEN utilization.id ELSE utilization.div_id END'))
             ->leftJoin('proponent', 'proponent.id', '=', 'utilization.proponentinfo_id')
             ->with('fundSourcedata')
-            ->with('facilitydata')
-            ->with('user')
+            ->with('facilitydata:id,name,address')
+            ->with('user:id,userid,fname,lname,mname')
             ->orderBy('id', 'asc')
             ->get();
         $proponent = Proponent::where('pro_group', $pro_group)->first();
@@ -371,9 +374,12 @@ class HomeController extends Controller
             </tr>";
             // return $utilization;
         $all = ProponentInfo::whereIn('proponent_id', $proponentIds)->get();
+        $all_id = ProponentInfo::whereIn('proponent_id', $proponentIds)->pluck('id')->toArray();
+
         $allocation_funds = $all->sum(function ($info) {
             return (float) str_replace(',', '', $info->alocated_funds);
         });  
+
         $deduct = 0;
         if($utilization){
 
@@ -421,44 +427,98 @@ class HomeController extends Controller
                     }else{
                         $facility = $row->facilitydata->name;
                         $dv = Dv::where('route_no', $row->route_no)->first();
-                        $saa_Ids = json_decode($dv->fundsource_id);
-                        $saa_name = Fundsource::whereIn('id',$saa_Ids)->pluck('saa')->toArray();
-                        $saaString = implode('<br>', $saa_name);
-                        $groupIdArray = explode(',', $dv->group_id);
-                        $patients = Patients::whereIn('group_id', $groupIdArray)->get();
-                        $patient_list = [];
-                        foreach($patients as $patient){
-                            $patient_list[] = $patient->lname.', '. $patient->fname .' '. $patient->mname;
+                        $dv3 = Dv3::where('route_no', $row->route_no)->with('extension')->first();
+                        $new_dv = NewDV::where('route_no', $row->route_no)->first();
+
+                        if($dv){
+                            $saa_Ids = json_decode($dv->fundsource_id);
+                            $saa_name = Fundsource::whereIn('id',$saa_Ids)->pluck('saa')->toArray();
+                            $saaString = implode('<br>', $saa_name);
+                            $groupIdArray = explode(',', $dv->group_id);
+                            $patients = Patients::whereIn('group_id', $groupIdArray)->get();
+                            $patient_list = [];
+                            foreach($patients as $patient){
+                                $patient_list[] = $patient->lname.', '. $patient->fname .' '. $patient->mname;
+                            }
+                            $string_patient =  implode('<br>', $patient_list);
+                            $trap = 1;
+                            if($dv->deduction1 >3){
+                                $trap = 1.12;
+                            }
+                            $amount1 = str_replace(',', '', $dv->amount1);
+                            $amount2 = str_replace(',', '', $dv->amount2);
+                            $amount3 = str_replace(',', '', $dv->amount3);
+                
+                            $discount1 = !empty($dv->amount1)? floatval($amount1/$trap * $dv->deduction1/100) + floatval($amount1/$trap * $dv->deduction2/100) :'';
+                            $discount2 = !empty($dv->amount2)? floatval($amount2/$trap * $dv->deduction1/100) + floatval($amount1/$trap * $dv->deduction2/100) :'';
+                            $discount3 = !empty($dv->amount3)? floatval($amount3/$trap * $dv->deduction1/100) + floatval($amount1/$trap * $dv->deduction2/100) :'';
+                
+                            $amounts = array_filter([
+                                $dv->amount1 !== null ? $dv->amount1 : null,
+                                $dv->amount2 !== null ? $dv->amount2 : null,
+                                $dv->amount3 !== null ? $dv->amount3 : null,
+                            ]);
+                            $discounts = array_filter([
+                                $discount1 !== null ? $discount1 : null,
+                                $discount2 !== null ? $discount2 : null,
+                                $discount3 !== null ? $discount3 : null,
+                            ]);
+                            $all_amount = implode('<br>', $amounts);
+                            $rem_bal =  $allocation_funds - str_replace(',','', $dv->total_amount);
+                            $discount_all = implode('<br>', $discounts);
+                            $percentage = number_format((str_replace(',', '', $dv->total_amount) / $allocation_funds) * 100, 2);
+                            $al_disp = number_format($allocation_funds, 2);
+                            $rem_disp = number_format($rem_bal, 2);
+                        }else if($dv3){
+
+                            $saa_ids = [];
+                            $amounts = [];
+                            $amount_total = 0;
+
+                            foreach($dv3->extension as $row){
+
+                                if (in_array($row->info_id, $all_id)) {
+                                    $saa_ids [] = $row->fundsource_id;
+                                    $amounts [] = $row->amount;
+                                    $amount_total = $amount_total + $row->amount;
+                                }
+                            }
+
+                            $saa_name = Fundsource::whereIn('id',$saa_ids)->pluck('saa')->toArray();
+                            $saaString = implode('<br>', $saa_name);
+                            $all_amount = implode('<br>', $amounts);
+                            $rem_bal =  $allocation_funds - str_replace(',','', $amount_total);
+                            $percentage = number_format((str_replace(',', '', $amount_total) / $allocation_funds) * 100, 2);
+                            $al_disp = number_format($allocation_funds, 2);
+                            $rem_disp = number_format($rem_bal, 2);
+                            $discount_all = 0;
+                            $string_patient = '';
+                        }elseif($new_dv){
+
+                            $saa_ids = [];
+                            $amounts = [];
+                            $amount_total = 0;
+
+                            $util = Utilization::where('div_id', $row->route_no)->where('status', 0)->whereIn('proponent_id', $proponentIds)->get();
+                       
+                            foreach($util as $u){
+                                $saa_ids [] = $u->fundsource_id;
+                                $amounts [] = $u->utilize_amount;
+                                $amount_total = $amount_total +str_replace(',','', $u->utilize_amount);
+                            }
+                            
+                           
+                            $saa_name = Fundsource::whereIn('id',$saa_ids)->pluck('saa')->toArray();
+                            $saaString = implode('<br>', $saa_name);
+                            $all_amount = implode('<br>', $amounts);
+                            $rem_bal =  $allocation_funds - str_replace(',','', $amount_total);
+                            $percentage = number_format((str_replace(',', '', $amount_total) / $allocation_funds) * 100, 2);
+                            $al_disp = number_format($allocation_funds, 2);
+                            $rem_disp = number_format($rem_bal, 2);
+                            $discount_all = 0;
+                            $string_patient = '';
                         }
-                        $string_patient =  implode('<br>', $patient_list);
-                        $trap = 1;
-                        if($dv->deduction1 >3){
-                            $trap = 1.12;
-                        }
-                        $amount1 = str_replace(',', '', $dv->amount1);
-                        $amount2 = str_replace(',', '', $dv->amount2);
-                        $amount3 = str_replace(',', '', $dv->amount3);
-            
-                        $discount1 = !empty($dv->amount1)? floatval($amount1/$trap * $dv->deduction1/100) + floatval($amount1/$trap * $dv->deduction2/100) :'';
-                        $discount2 = !empty($dv->amount2)? floatval($amount2/$trap * $dv->deduction1/100) + floatval($amount1/$trap * $dv->deduction2/100) :'';
-                        $discount3 = !empty($dv->amount3)? floatval($amount3/$trap * $dv->deduction1/100) + floatval($amount1/$trap * $dv->deduction2/100) :'';
-            
-                        $amounts = array_filter([
-                            $dv->amount1 !== null ? $dv->amount1 : null,
-                            $dv->amount2 !== null ? $dv->amount2 : null,
-                            $dv->amount3 !== null ? $dv->amount3 : null,
-                        ]);
-                        $discounts = array_filter([
-                            $discount1 !== null ? $discount1 : null,
-                            $discount2 !== null ? $discount2 : null,
-                            $discount3 !== null ? $discount3 : null,
-                        ]);
-                        $all_amount = implode('<br>', $amounts);
-                        $rem_bal =  $allocation_funds - str_replace(',','', $dv->total_amount);
-                        $discount_all = implode('<br>', $discounts);
-                        $percentage = number_format((str_replace(',', '', $dv->total_amount) / $allocation_funds) * 100, 2);
-                        $al_disp = number_format($allocation_funds, 2);
-                        $rem_disp = number_format($rem_bal, 2);
+                        
                         $table_body .= "<tr>
                             <td style='vertical-align:top;'>$row->route_no</td>
                             <td style='vertical-align:top;'>$saaString</td>
