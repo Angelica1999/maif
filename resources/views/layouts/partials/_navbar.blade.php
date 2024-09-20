@@ -1,13 +1,5 @@
-{{-- <style>
-  .navbar {
-    background-image: url("{{ asset('images/maip_banner_2023_updated.png') }}") !important; /* Replace with the actual path or URL of your image */
-    background-size: cover; /* Adjust the size as needed */
-    background-repeat: no-repeat; /* Prevent repeating the image */
-    /* You can also add other background properties like background-position if needed */
-    background-color: #067536 !important;
-  }
-</style> --}}
-<nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+
+<nav class="navbar col-sm-12 col-12 p-0 fixed-top d-flex flex-row">
     <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
       {{-- <a class="navbar-brand brand-logo" href="index.html"><img src="{{ asset('images/doh-logo.png') }}" style="width: 50px; height: 50px;" alt="logo"/>MAIF-IPP</a> --}}
       <a class="navbar-brand brand-logo" href="index.html">MAIF-IPP</a>

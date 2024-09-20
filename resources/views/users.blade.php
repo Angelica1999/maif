@@ -2,15 +2,20 @@
 
 @section('content')
 
-<div class="col-lg-7 grid-margin stretch-card">
+<div class="col-lg-6 grid-margin stretch-card">
+@if (session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
+
     <div class="card">
         <div class="card-body">
             <form method="GET" action="">
-                <div class="input-group float-right w-50" style="min-width: 600px;">
+                <div class="input-group float-right w-50" style="min-width: 400px;">
                     <input type="text" class="form-control" name="keyword" placeholder="Search..." value="">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
-                        <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
                     </div>
                 </div>
             </form>
@@ -29,7 +34,6 @@
                         <th style="width:150px">Account</th>
                         <th>Email</th>
                         <th>Contact</th>
-                        <th>Birthdate</th>
                         <th style="width:100px"></th>
                     </tr>
                 </thead>
@@ -51,9 +55,9 @@
                             </td>
                             <td class="td">{{$row->email}}</td>
                             <td class="td">{{$row->contact_no}}</td>
-                            <td class="td">{{$row->contact_no}}</td>
                             <td class="td">
-                                <a href="{{ route('verify.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-info" style="color:white; width:80px;">Verified</a>
+                                <a href="{{ route('verify.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-info" style="color:white; width:80px;">Verify</a>
+                                <button type="button" href="#user_cancel" style="width:100%" data-toggle="modal" data-backdrop="static" class="btn btn-xs btn-warning" onclick="cancel({{$row->id}})">Cancel</button>
                             </td>
                         </tr>
                     @endforeach
@@ -72,7 +76,7 @@
         </div>
     </div>
 </div>
-<div class="col-lg-5 grid-margin stretch-card">
+<div class="col-lg-6 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
             <form method="GET" action="">
@@ -80,7 +84,6 @@
                     <input type="text" class="form-control" name="keyword" placeholder="Search..." value="">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
-                        <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
                     </div>
                 </div>
             </form>
@@ -105,12 +108,21 @@
                         <tr>
                             <td class="td">{{$row->fname .' '.$row->lname}}</td>
                             <td class="td">
+                                {{ 
+                                    $row->user_type == 1 ? 'Proponent' : 
+                                    ($row->user_type == 2 ? 'Facility' : 'MUP') 
+                                }}
                             </td>
                             <td class="td">
-                              
+                                {{ 
+                                    $row->user_type == 1 ? $row->proponent->proponent : 
+                                    ($row->user_type == 2 ? $row->facility->name : 'MUP') 
+                                }}
                             </td>
                             <td class="td">{{$row->email}}</td>
-                            <td class="td"></td>
+                            <td class="td">
+                                <a href="{{ route('reset.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-success" style="">Reset</a>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -128,4 +140,32 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="user_cancel" role="dialog" style="overflow-y:scroll;">
+    <div class="modal-dialog modal-lg" role="document" style="width:700px">
+        <div class="modal-content">
+            <div class="modal-header" style="text-align:center">
+                <h5 class="text-success modal-title">CANCEL USER REGISTRATION</h5>
+            </div>
+            <div class="modal-body" style="display: flex; flex-direction: column; align-items: center;">
+                <form id="cancel_user" style="width:100%; font-weight:1px solid black" method="get" >
+                    @csrf
+                    <div style="text-align:center">
+                        <textarea class="form-control" placeholder="Remarks" name="remarks" required></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-sm btn-secondary" data-dismiss="modal">CLOSE</button>
+                        <button type="submit" class="btn-sm btn-success submit_btn">SUBMIT</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
+<script>
+    function cancel(id){
+        $('#user_cancel').modal('show');
+        $('#cancel_user').attr('action', '{{ route("cancel.user", [":id"]) }}'.replace(':id', id));
+    }
+
+</script>

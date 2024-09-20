@@ -39,8 +39,7 @@
               transform: translateY(-50%) rotate(-90deg); /* Center vertically and rotate */
               transform-origin: right center; /* Rotate around the right center */
               margin-top: 1px;
-          }
-        
+          }    
       </style>
     </head>
     <body>

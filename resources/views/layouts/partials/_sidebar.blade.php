@@ -30,6 +30,11 @@
 </style>
 <?php 
     use App\Models\Notes;
+
+    if(!Auth::user()){
+      return route('logout');
+    }
+    
     $id = Auth::user()->userid;
     $joinedData = DB::connection('dohdtr')
                     ->table('users')
@@ -323,6 +328,12 @@
                 </ul>
             </li>
         </ul>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ route('bills') }}">
+            <i class="typcn typcn-flow-switch menu-icon"></i>
+            <span class="menu-title">Bills</span>
+          </a>
+        </li>
         <li class="nav-item">
           <a class="nav-link" href="{{ route('facility') }}">
             <i class="typcn typcn-flow-switch menu-icon"></i>

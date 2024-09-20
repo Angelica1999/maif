@@ -8,7 +8,11 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Laravel') }}</title>
-
+    <style>
+      html {
+         font-size: 12px; /* Increasing this will scale everything using rem or em */
+      }
+   </style>
     <!-- base:css -->
     <link rel="stylesheet" href="{{ asset('admin/vendors/typicons.font/font/typicons.css') }}">
     <link rel="stylesheet" href="{{ asset('admin/vendors/css/vendor.bundle.base.css') }}">
@@ -26,7 +30,7 @@
             <div class="container-fluid page-body-wrapper full-page-wrapper">
                 <div class="content-wrapper d-flex align-items-center auth px-0">
                     <div class="row w-100 mx-0">
-                        <div class="col-lg-4 mx-auto">
+                        <div class="col-lg-3 mx-auto">
                             <div class="auth-form-light text-left py-5 px-4 px-sm-5">
                                 <div class="brand-logo text-center">
                                     <img src="{{ asset('images/doh-logo.png') }}" alt="logo" style="width: 90px; height: 90px;">
