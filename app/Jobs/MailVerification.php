@@ -11,7 +11,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Auth;
 use PDF;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
@@ -25,42 +24,57 @@ class MailVerification implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $registration;
+    protected $type;
+    protected $userid;
 
-    public function __construct($registration)
+    public function __construct($registration, $type, $userid)
     {
         $this->registration = $registration;
+        $this->type = $type;
+        $this->userid = $userid;
     }
 
     public function handle()
     {
         $registration = $this->registration;
-
+        $type = $this->type;
+        $userid = $this->userid;
+   
         $password = $this->generateUniquePassword();
-        $randomNumber1 = rand(100, 999); 
         $username = $registration->lname.$registration->identity_type.$registration->id;
-        $user = new OnlineUser();
-        $user->fname = $registration->fname;
-        $user->lname = $registration->lname;
-        $user->email = $registration->email;
+
+        if($type == 'verify'){
+            $user = new OnlineUser();
+            $user->fname = $registration->fname;
+            $user->lname = $registration->lname;
+            $user->email = $registration->email;
+            $user->verified_by = $userid;
+            $user->type_identity = $registration->identity_type;
+            $user->user_type = $registration->user_type;
+            $user->contact_no = $registration->contact_no;
+            $user->gender = $registration->gender;
+            $user->birthdate = $registration->birthdate;
+            $user->roles = 0;
+        }else{
+            $user = OnlineUser::where('username', $registration->username)->first();
+        }
+
         $user->pass_change = 0;
-        $user->verified_by = Auth::user()->userid;
         $user->username = $username;
-        $user->type_identity = $registration->identity_type;
-        $user->user_type = $registration->user_type;
-        $user->contact_no = $registration->contact_no;
-        $user->gender = $registration->gender;
-        $user->birthdate = $registration->birthdate;
         $user->password =  Hash::make($password);
-        $user->roles = 0;
+
         try {
-            if($this->sendMail($registration, $password, $username)){
+            if($this->sendMail($registration, $password, $username, $type)){
                 $user->save();
+                if ($type == 'verify') {
+                    $registration->delete();
+                }
                 session()->flash('email_sent', true);
             }
         } catch (\Exception $e) {
-            return "Mail sending failed: " . $e->getMessage();
+            echo 'Error: ' . $e->getMessage();
+            return false;
         }
-        
     }
 
     private function generateUniquePassword($length = 12) {
@@ -71,11 +85,10 @@ class MailVerification implements ShouldQueue
         for ($i = 0; $i < $length; $i++) {
             $password .= $characters[rand(0, $charactersLength - 1)];
         }
-    
         return $password;
     }
 
-    private function sendMail($registration, $password, $username)
+    private function sendMail($registration, $password, $username, $type)
     {
         try {
            
@@ -97,10 +110,11 @@ class MailVerification implements ShouldQueue
             $mail->addAddress($recipientEmail);     //Add a recipient
             $mail->addReplyTo($email_doh);
             //Content
-            $mail->isHTML(true);                                  //Set email format to HTML
-            $mail->Subject = 'System Account Activation Credentials';
+            $mail->isHTML(true);    
+            $mail->Subject = 'System Account Credentials';
             $mail->addEmbeddedImage('public\images\maipp_banner.png', 'unique_cid_for_image', 'image.jpg');
-            $link = "http://localhost/guaranteeletter";
+            $link = "http://localhost/guaranteeletter";                              //Set email format to HTML
+     
             $mail->Body =
                 '<html><body>
                 <span style="text-align:right;">Username: '.$username.'<span><br>
@@ -113,15 +127,13 @@ class MailVerification implements ShouldQueue
                     </div>
                 </body></html>
                 ';
-            if($mail->send()){
-                return true;
-            }else{
-                return false;
-            }
+        
+            return $mail->send();
+
         } catch (Exception $e) {
             echo 'Error: ' . $e->getMessage();
-        }
-        
+            return false;
+        }   
     }
 }
 

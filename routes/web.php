@@ -123,7 +123,7 @@ Route::get('/group', [App\Http\Controllers\HomeController::class, 'group'])->nam
 Route::get('/group/patients/list/{group_id}', [App\Http\Controllers\HomeController::class, 'getPatientGroup'])->name('group.patients');
 Route::match(['get', 'post'],'/proponent/report/{pro_group}', [App\Http\Controllers\HomeController::class, 'getProponentReport'])->name('proponent.report');
 Route::match(['get', 'post'],'/facility/report/{facility_id}', [App\Http\Controllers\HomeController::class, 'getFacilityReport'])->name('facility.report');
-Route::get('/report', [App\Http\Controllers\HomeController::class, 'report'])->name('report');
+Route::get('/report/proponent', [App\Http\Controllers\HomeController::class, 'report'])->name('report');
 Route::get('/report/facility', [App\Http\Controllers\HomeController::class, 'reportFacility'])->name('report.facility');
 Route::match(['get', 'post'],'patient/mails', [App\Http\Controllers\PrintController::class, 'sendMultiple'])->name('sent.mails');
 Route::match(['get', 'post'],'patient/{patient_id}', [App\Http\Controllers\HomeController::class, 'getPatient'])->name('get.patient');
@@ -224,6 +224,13 @@ Route::get('/pre-dv/control_nos/{facility_id}', [App\Http\Controllers\PreDvContr
 Route::get('/pre-dv/check', [App\Http\Controllers\PreDvController::class, 'check'])->name('check');
 Route::get('/users', [App\Http\Controllers\UserController::class, 'users'])->name('users');
 Route::get('/users/verified/{id}', [App\Http\Controllers\UserController::class, 'verifyuser'])->name('verify.user');
+Route::get('/bills', [App\Http\Controllers\FacilityController::class, 'bills'])->name('bills');
+Route::get('/bills/tracking/{id}', [App\Http\Controllers\FacilityController::class, 'tracking'])->name('tracking');
+Route::get('/bills/view/{id}', [App\Http\Controllers\FacilityController::class, 'viewBills'])->name('view.bills');
+Route::match(['get', 'post'], '/bills/process/{type}/{id}', [App\Http\Controllers\FacilityController::class, 'processBills'])->name('process.bills');
+Route::get('/users/reset/{id}', [App\Http\Controllers\UserController::class, 'reset'])->name('reset.user');
+Route::get('/users/save', [App\Http\Controllers\UserController::class, 'save'])->name('save');
+Route::match(['get', 'post'],'/users/cancel/{id}', [App\Http\Controllers\UserController::class, 'cancel'])->name('cancel.user');
 
 
 

@@ -57,6 +57,10 @@ class Patients extends Model
         return $this->belongsTo(User::class, 'created_by','userid');
     }
 
+    public function gl_user() {       
+        return $this->belongsTo(OnlineUser::class, 'created_by','username');
+    }
+
     public function fundSource() {       
         return $this->belongsTo(Fundsource::class, 'fundsource_id','id');
     }

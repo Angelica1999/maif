@@ -14,11 +14,15 @@ class OnlineUser extends Authenticatable{
 	protected $hidden = array('password', 'remember_token');
 
 	public function facility(){
-			return $this->belongsTo(Facility::class, 'identity_type', 'id');
+			return $this->belongsTo(Facility::class, 'type_identity', 'id');
+	}
+
+	public function facility1(){
+			return $this->belongsTo(Facility::class, 'type_identity', 'id');
 	}
 
 	public function proponent(){
-		return $this->belongsTo(Proponent::class, 'identity_type', 'id');
+		return $this->belongsTo(Proponent::class, 'type_identity', 'id');
 	}
 
 }

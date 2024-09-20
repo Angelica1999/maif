@@ -299,9 +299,9 @@
                                     <i class="typcn typcn-tick menu-icon">
                                 @endif
                             </td>
-                            <td>{{$patient->pat_rem}}</td>
-                            <td style="text-align:center;" class="group-amount" data-patient-id="{{ $patient->id }}" data-proponent-id="{{$patient->proponent_id}}" 
-                                data-amount="{{$patient->actual_amount}}" data-facility-id="{{$patient->facility_id}}" >
+                            <td>{{ $patient->pat_rem }}</td>
+                            <td style="text-align:center;" class="group-amount" data-patient-id="{{ $patient->id }}" data-proponent-id="{{ $patient->proponent_id }}" 
+                                data-amount="{{ $patient->actual_amount }}" data-facility-id="{{ $patient->facility_id }}" >
                                 @if($patient->group_id == null)
                                 <input type="checkbox" style="width: 60px; height: 20px;" name="someCheckbox[]" id="someCheckboxId_{{ $patient->id }}" 
                                     class="group-checkbox" onclick="groupItem($(this))">
@@ -309,7 +309,7 @@
                                     w/group
                                 @endif
                             </td>
-                            <td class="editable-amount" data-actual-amount="{{!Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}" data-patient-id="{{ $patient->id }}" data-guaranteed-amount="{{str_replace(',', '', $patient->guaranteed_amount)}}">
+                            <td class="editable-amount" data-actual-amount="{{ !Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','):0 }}" data-patient-id="{{ $patient->id }}" data-guaranteed-amount="{{str_replace(',', '', $patient->guaranteed_amount)}}">
                                 <a href="#" class="number_editable"  title="Actual Amount" id="{{ $patient->id }}">{{!Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}</a>
                             </td>
                             <td class="td">{{ number_format((float) str_replace(',', '', $patient->guaranteed_amount), 2, '.', ',') }}</td>
@@ -354,7 +354,7 @@
                                 @endif
                             </td>
                             <td>{{date('F j, Y', strtotime($patient->created_at))}}</td>
-                            <td class="td">{{ $patient->encoded_by->lname .', '. $patient->encoded_by->fname }}</td>
+                            <td class="td">{{ $patient->encoded_by? $patient->encoded_by->lname .', '. $patient->encoded_by->fname: ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td>
                         </tr>
                     @endforeach
                 </tbody>

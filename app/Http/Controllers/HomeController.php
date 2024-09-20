@@ -64,6 +64,9 @@ class HomeController extends Controller
             'encoded_by' => function ($query) {
                 $query->select('userid', 'fname', 'lname');
             },
+            'gl_user' => function ($query) {
+                $query->select('username', 'fname', 'lname');
+            },
             'facility' => function ($query) {
                 $query->select('id','name');
             },

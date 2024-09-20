@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+   
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -27,9 +27,14 @@
     <link rel="stylesheet" href="{{ asset('admin/vendors/datatables.net-bs4/dataTables.bootstrap4.css') }}">
     <!-- datarangepicker -->
     <link rel="stylesheet" href="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.css') }}">
-
+    <style>
+      html {
+         font-size: 13px; /* Increasing this will scale everything using rem or em */
+      }
+   </style>
     {{-- @vite(['resources/sass/app.scss', 'resources/js/app.js']) --}}
     @yield('css')
+
 </head>
 <body>
     <div id="app" >
@@ -381,6 +386,12 @@
            <?php session()->forget('pre_dv_remove'); ?>
            Lobibox.notify('error', {
               msg: 'Successfully removed!'
+           });
+        @endif
+        @if(session('process_bills'))
+           <?php session()->forget('process_bills'); ?>
+           Lobibox.notify('succes', {
+              msg: 'Successfully process!'
            });
         @endif
     </script>

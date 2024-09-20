@@ -27,7 +27,7 @@
             <div class="form-check form-check-success">
             <label class="form-check-label text-muted">
                 <input type="checkbox" class="form-check-input">
-                Keep me signed in
+                &nbsp;&nbsp;&nbsp;Keep me signed in
             </label>
             </div>
             {{-- <a href="#" class="auth-link text-black">Forgot password?</a> --}}
