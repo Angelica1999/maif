@@ -562,7 +562,6 @@ class PreDvController extends Controller
         $id = $request->pre_id;
         $grand_total = (float) str_replace(',','',$request->grand_total);
         $facility_id = $request->facility_id;
-        // return $all_data;
         $pre_dv = PreDV::where('id', $id)->first();
 
         if ($pre_dv) {
@@ -714,7 +713,6 @@ class PreDvController extends Controller
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, now(), now())", $data_details);
 
             //utilization
-
 
             foreach ($pre->extension as $data) {
                 foreach ($data->saas as $row) {

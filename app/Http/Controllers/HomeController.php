@@ -67,9 +67,9 @@ class HomeController extends Controller
             'encoded_by' => function ($query) {
                 $query->select('userid', 'fname', 'lname');
             },
-            'gl_user' => function ($query) {
-                $query->select('username', 'fname', 'lname');
-            },
+            // 'gl_user' => function ($query) {
+            //     $query->select('username', 'fname', 'lname');
+            // },
             'facility' => function ($query) {
                 $query->select('id','name');
             },
@@ -249,7 +249,7 @@ class HomeController extends Controller
         $on = $on->groupBy(DB::raw('DATE(created_at)'))->pluck(DB::raw('MAX(DATE(created_at))'));
         $all_pat = clone ($patients);
         $proponents_code = Proponent::groupBy('proponent_code')->select(DB::raw('MAX(proponent) as proponent'), DB::raw('MAX(proponent_code) as proponent_code'),DB::raw('MAX(id) as id') )->get();
-        // return $proponents_code;
+        // return $patients->paginate(50);
         return view('home', [
             'patients' => $patients->paginate(50),
             'keyword' => $request->keyword,
