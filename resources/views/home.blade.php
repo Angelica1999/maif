@@ -76,7 +76,7 @@
                         </div>
                         <div class="input-group">
                             <input type="text" style="text-align:center" class="form-control" id="filter_dates" value="{{($generate_dates)?$generate_dates:''}}" name="filter_dates" />
-                            <button type="submit" id="gen_btn" style="background-color:teal; color:white; width:107px" class=""><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
+                            <button type="submit" id="gen_btn" style="background-color:teal; color:white; width:90px" class=""><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
                         </div>
                         <input type="hidden" name="filter_date" id="filter_date" value="{{implode(',', $filter_date)}}"></input>
                         <input type="hidden" name="filter_fname" id="filter_fname" value="{{implode(',', $filter_fname)}}"></input>
@@ -354,7 +354,8 @@
                                 @endif
                             </td>
                             <td>{{date('F j, Y', strtotime($patient->created_at))}}</td>
-                            <td class="td">{{ $patient->encoded_by? $patient->encoded_by->lname .', '. $patient->encoded_by->fname: ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td>
+                            <td>{{ $patient->encoded_by->lname .', '. $patient->encoded_by->fname }}</td>
+                            <!-- <td class="td">{{ $patient->encoded_by? $patient->encoded_by->lname .', '. $patient->encoded_by->fname: ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td> -->
                         </tr>
                     @endforeach
                 </tbody>
