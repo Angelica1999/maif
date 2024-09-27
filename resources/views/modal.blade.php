@@ -162,7 +162,7 @@
 <div class="modal fade" id="update_remarks" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content"> 
-            <form action="{{route('update.remarks')}}" method="POST">
+            <form action="{{route('update.remarks')}}" id="remarks_update" method="POST">
                 <input type="hidden" class="remarks_id" name="route_no">
                 <h4 class="text-success"><i style = "font-size:30px"class="typcn typcn-location-arrow menu-icon"></i>Remarks</h4><hr />
                 <div class="modal-body">

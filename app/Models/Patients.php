@@ -69,4 +69,7 @@ class Patients extends Model
         return $this->belongsTo(Proponent::class, 'proponent_id','id');
     }
     
+    public function pat_remarks(){
+        return $this->hasMany(ReturnedPatients::class, 'patient_id', 'id');
+    }
 }

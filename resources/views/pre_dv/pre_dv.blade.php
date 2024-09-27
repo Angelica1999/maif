@@ -6,66 +6,110 @@
         color: white;
     }
 </style>
-<div class="container-fluid col-lg-12 grid-margin stretch-card">
+
+<div class="col-md-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-            <form method="GET" action="">
-                <div class="input-group float-right w-50" style="min-width: 600px;">
-                    <input type="text" class="form-control" name="keyword" placeholder="Facility/Route No/Control No ..." value="{{$keyword}}">
-                    <div class="input-group-append">
-                        <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
-                        <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
-                        <button type="button" class="btn-sm btn-success" data-toggle="modal" href="#create_predv" style="display: inline-flex; align-items: center;"><img src="\maif\public\images\icons8_create_16.png" style="margin-right: 5px;"><span style="vertical-align: middle;">Create</span></button>
-                       
-                    </div>
+            <div class="float-right">
+                <div class="input-group">
+                    <form method="GET" action="">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="keyword" placeholder="Search..." value="{{$keyword}}" id="search-input" style="width:350px;">
+                            <div class="input-group-append">
+                                <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
+                                <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
+                                <button type="button" class="btn btn-success" data-toggle="modal" href="#create_predv" style="display: inline-flex; align-items: center; border-radius: 0;"><img src="\maif\public\images\icons8_create_16.png" style="margin-right: 5px;"><span style="vertical-align: middle;">Create</span></button>      
+                                <button type="submit" value="filt" style="display:none; background-color:green; color:white; width:95px;" name="filt_dv" id="filt_dv" class="btn btn-xs"><i class="typcn typcn-filter menu-icon"></i>&nbsp;&nbsp;&nbsp;Filter</button>
+                            </div>
+                        </div>
+                        <div class = "input-group">
+                            <input type="text" style="text-align:center" class="form-control" id="dates_filter" value="" name="dates_filter" />
+                            <button type="submit" id="gen_btn" style="background-color:teal; color:white; width:95px; border-radius: 0; font-size:11px" class="btn btn-xs"><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
+                        </div>
+                        <input type="hidden" name="f_id" class="fc_id" value="{{ implode(',',$f_id) }}">
+                        <input type="hidden" name="b_id" class="user_id" value="{{ implode(',',$b_id) }}">
+                        <input type="hidden" id="generate" name="generate" value="{{$generate}}"></input>
+                    </form>
                 </div>
-            </form>
+            </div>
             <h4 class="card-title">Pre - DV</h4>
             <p class="card-description">
                 MAIF-IPP
             </p>
             <div class="table-responsive">
-            @if(count($results) > 0)
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>Route No</th>
-                            <th>Facility</th>
-                            <th>Grand Total</th>
-                            <th>Created By</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($results as $row)
+                @if(count($results) > 0)
+                    <table class="table table-striped">
+                        <thead>
                             <tr>
-                                <td>
-                                    @if($row->new_dv)                                  
-                                        <button type="button" class="btn btn-xs" style="background-color:#165A54;color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$row->new_dv->route_no}}" id="track_load" onclick="openModal()">Track</button>
-                                        <a href="{{ route('pre.pdf', ['id' => $row->id]) }}" style="background-color:green;color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
-                                        <a href="{{ route('pre.image', ['id' => $row->id]) }}" style="background-color:blue;color:white; width:55px;" target="_blank" type="button" class="btn btn-xs">Image</a>    
-                                    @else
-                                        <span class="text-danger"><i>dv is not yet created</i></span>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if($row->new_dv)
-                                        {{$row->new_dv->route_no}}
-                                    @endif
-                                </td>
-                                <td class="td"><a data-toggle="modal" data-backdrop="static" href="#update_predv" onclick="updatePre({{$row->id}}, {{$row->new_dv?1:2}})">{{$row->facility->name}}</a></td>
-                                <td class="td">{{number_format(str_replace(',','',$row->grand_total), 2, '.',',')}}</td>
-                                <td class="td">{{$row->user->lname .', '.$row->user->fname}}</td>
+                                <th></th>
+                                <th>Route No</th>
+                                <th class="fc">Facility
+                                    <i id="fac_i" class="typcn typcn-filter menu-icon"><i>
+                                    <div class="filter" id="fac_div" style="display:none;">
+                                        <select style="width: 120px;" id="fac_select" name="fac_select" multiple>
+                                            <?php $check = []; ?>
+                                            @foreach($results as $index => $d)
+                                                @if(!in_array($d->facility->id, $check))
+                                                    <option value="{{ $d->facility->id }}" {{ is_array($f_id) && in_array($d->facility->id, $f_id) ? 'selected' : '' }}>
+                                                        {{ $d->facility->name}}
+                                                    </option>
+                                                    <?php $check[] = $d->facility->id; ?>
+                                                @endif
+                                            @endforeach
+                                        </select>
+                                    </div>  
+                                </th>
+                                <th>Grand Total</th>
+                                <th class="user">Created By
+                                    <i id="by_i" class="typcn typcn-filter menu-icon"><i>
+                                    <div class="filter" id="by_div" style="display:none;">
+                                        <select style="width: 120px;" id="by_select" name="by_select" multiple>
+                                            <?php $check = []; ?>
+                                            @foreach($results as $index => $d)
+                                                @if(!in_array($d->user->userid, $check))
+                                                    <option value="{{ $d->user->userid }}" {{ is_array($b_id) && in_array($d->user->userid, $b_id) ? 'selected' : '' }}>
+                                                        {{ $d->user->fname .' '.$d->user->lname }}
+                                                    </option>
+                                                    <?php $check[] = $d->user->userid; ?>
+                                                @endif
+                                            @endforeach
+                                        </select>
+                                    </div>  
+                                </th>
+                                <th>Created On</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            @else
-                <div class="alert alert-danger" role="alert" style="width: 100%;">
-                    <i class="typcn typcn-times menu-icon"></i>
-                    <strong>No data found!</strong>
-                </div>
-            @endif
+                        </thead>
+                        <tbody>
+                            @foreach($results as $row)
+                                <tr>
+                                    <td>
+                                        @if($row->new_dv)                                  
+                                            <button type="button" class="btn btn-xs" style="border-radius:0; background-color:#165A54; color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$row->new_dv->route_no}}" id="track_load" onclick="openModal()">Track</button>
+                                            <a href="{{ route('pre.pdf', ['id' => $row->id]) }}" style="background-color:green; border-radius:0; color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
+                                            <a href="{{ route('pre.image', ['id' => $row->id]) }}" style="background-color:blue; border-radius:0; color:white; width:55px;" target="_blank" type="button" class="btn btn-xs">Image</a>    
+                                        @else
+                                            <span class="text-danger"><i>dv is not yet created</i></span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($row->new_dv)
+                                            {{$row->new_dv->route_no}}
+                                        @endif
+                                    </td>
+                                    <td><a data-toggle="modal" data-backdrop="static" href="#update_predv" onclick="updatePre( {{$row->id}}, {{$row->new_dv?1:2}} )">{{ $row->facility->name }}</a></td>
+                                    <td>{{ number_format(str_replace(',','',$row->grand_total), 2, '.',',') }}</td>
+                                    <td>{{ $row->user->lname .', '.$row->user->fname }}</td>
+                                    <td>{{ date('F j, Y', strtotime($row->created_at)) }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @else
+                    <div class="alert alert-danger" role="alert" style="width: 100%; margin-top:5px;">
+                        <i class="typcn typcn-times menu-icon"></i>
+                        <strong>No data found!</strong>
+                    </div>
+                @endif
             </div>
             <div class="pl-5 pr-5 mt-5">
                 {!! $results->appends(request()->query())->links('pagination::bootstrap-5') !!}
@@ -174,8 +218,39 @@
 @include('modal')
 @endsection
 @section('js')
+
+<script src="{{ asset('admin/vendors/daterangepicker-master/moment.min.js?v=1') }}"></script>
+<script src="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.js?v=1') }}"></script>
+
     <script>
+
+        $('#gen_btn').on('click', function(){
+            $('#generate').val(1);
+        });
+        
         $('.select2').select2();
+        $('#fac_select').select2();
+        $('#by_select').select2();
+
+        $('#dates_filter').daterangepicker();
+
+        $('.fc').on('click', function(){
+            $('#fac_div').css('display', 'block');
+        });
+
+        $('.user').on('click', function(){
+            $('#by_div').css('display', 'block');
+        });
+
+        $('.filter').on('click', function(){
+            $('#filt_dv').css('display', 'block');
+        });
+
+        $('#filt_dv').on('click', function(){
+            $('.fc_id').val($('#fac_select').val());
+            $('.userid').val($('#by_select').val());
+        }); 
+
         $('#create_predv').on('hidden.bs.modal', function () {
             $(this).find('form')[0].reset(); 
             $('.facility_div .proponent_clone:not(:first)').remove();

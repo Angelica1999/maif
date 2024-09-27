@@ -86,21 +86,21 @@ class UserController extends Controller{
     }
 
     public function save(){
-        $registration = OnlineUser::where('id', 1)->first();
-        // $user = new OnlineUser();
-        //     $user->fname = $registration->fname;
-        //     $user->lname = $registration->lname;
-        //     $user->email = $registration->email;
-        //     $user->pass_change = 0;
-        //     $user->verified_by = Auth::user()->userid;
-            $registration->username = "Proponent7";
-            // $user->type_identity = $registration->identity_type;
-            // $user->user_type = $registration->user_type;
-            // $user->contact_no = $registration->contact_no;
-            // $user->gender = $registration->gender;
-            // $user->birthdate = $registration->birthdate;
-            $registration->password =  Hash::make("Proponent7.");
-            // $user->roles = 0;
-            $registration->save();
+        // $registration = OnlineUser::where('id', 1)->first();
+        $user = new OnlineUser();
+            $user->fname = 'Oronan';
+            $user->lname = 'Angel';
+            $user->email = 'lenga@gmail.com';
+            $user->pass_change = 0;
+            $user->verified_by = '2760';
+            $user->username = "angel7";
+            $user->type_identity = 3;
+            $user->user_type = 0;
+            $user->contact_no = '12325469875';
+            $user->gender = 'F';
+            $user->birthdate = '2024-09-18';
+            $user->password =  Hash::make("angel7.");
+            $user->roles = 0;
+            $user->save();
     }
 }

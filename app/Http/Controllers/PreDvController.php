@@ -59,12 +59,25 @@ class PreDvController extends Controller
                     }
                 ]
             );
+
+        if ($request->generate && !$request->viewAll) {
+
+            $dateRange = explode(' - ', $request->dates_filter);
+            $start_date = date('Y-m-d', strtotime($dateRange[0]));
+            $end_date = date('Y-m-d', strtotime($dateRange[1]));
+            $pre_dv ->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59']);
+        
+        }
+
         $saas = Fundsource::get();
         $proponents = Proponent::select('proponent')->groupBy('proponent')->get();
         $facilities = Facility::with('addFacilityInfo')->get();
 
         if($request->viewAll){
             $request->keyword = '';
+            $request->f_id = '';
+            $request->b_id = '';
+            $request->generate = '';
         }else if($request->keyword){
             $keyword = $request->keyword;
             $pre_dv->WhereHas('facility', function ($query) use ($keyword) {
@@ -75,6 +88,13 @@ class PreDvController extends Controller
                 $query->where('route_no', 'LIKE', '%' . $keyword . '%');
             });
         }
+
+        if($request->f_id){
+            $pre_dv->whereIn('facility_id', explode(',', $request->f_id));
+        }elseif($request->b_id){
+            $pre_dv->whereIn('created_by', explode(',', $request->b_id));
+        }
+
         $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(50);
         
         return view('pre_dv.pre_dv', [
@@ -82,7 +102,10 @@ class PreDvController extends Controller
             'proponents' => $proponents,
             'saas' => $saas,
             'facilities' => $facilities,
-            'keyword' => $request->keyword
+            'keyword' => $request->keyword,
+            'f_id' => explode(',', $request->f_id),
+            'b_id' => explode(',', $request->b_id),
+            'generate' => $request->generate
         ]);
     }
 
@@ -107,16 +130,40 @@ class PreDvController extends Controller
                 }
             ]
         );
+
+        if ($request->generate && !$request->viewAll) {
+
+            $dateRange = explode(' - ', $request->dates_filter);
+            $start_date = date('Y-m-d', strtotime($dateRange[0]));
+            $end_date = date('Y-m-d', strtotime($dateRange[1]));
+            $pre_dv ->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59']);
+        
+        }
+
         $saas = Fundsource::get();
         $proponents = Proponent::select('proponent')->groupBy('proponent')->get();
         $facilities = Facility::get();
 
         if($request->viewAll){
             $request->keyword = '';
+            $request->f_id = '';
+            $request->b_id = '';
+            $request->p_id = '';
+            $request->generate = '';
         }else if($request->keyword){
             $keyword = $request->keyword;
             $pre_dv->WhereHas('facility', function ($query) use ($keyword) {
                 $query->where('name', 'LIKE', '%' . $keyword . '%');
+            });
+        }
+
+        if($request->f_id){
+            $pre_dv->whereIn('facility_id', explode(',', $request->f_id));
+        }elseif($request->b_id){
+            $pre_dv->whereIn('created_by', explode(',', $request->b_id));
+        }elseif($request->p_id){
+            $pre_dv->whereHas('extension', function ($query) use ($request) {
+                $query->whereIn('proponent_id', explode(',', $request->p_id));
             });
         }
 
@@ -127,7 +174,12 @@ class PreDvController extends Controller
             'proponents' => $proponents,
             'saas' => $saas,
             'facilities' => $facilities,
-            'keyword' => $request->keyword
+            'keyword' => $request->keyword,
+            'f_id' => explode(',', $request->f_id),
+            'b_id' => explode(',', $request->b_id),
+            'p_id' => explode(',', $request->p_id),
+            'generate' => $request->generate,
+            'proponents' => Proponent::whereIn('id', PreDVExtension::pluck('proponent_id')->toArray())->get()
         ]);
     }
 
@@ -159,13 +211,26 @@ class PreDvController extends Controller
                 }
             ]
         );
-        // return $pre_dv->get();
+
+        if ($request->generate && !$request->viewAll) {
+
+            $dateRange = explode(' - ', $request->dates_filter);
+            $start_date = date('Y-m-d', strtotime($dateRange[0]));
+            $end_date = date('Y-m-d', strtotime($dateRange[1]));
+            $pre_dv ->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59']);
+        
+        }
+
         $saas = Fundsource::get();
         $proponents = Proponent::select('proponent')->groupBy('proponent')->get();
         $facilities = Facility::get();
 
         if($request->viewAll){
             $request->keyword = '';
+            $request->f_id = '';
+            $request->p_id = '';
+            $request->b_id = '';
+            $request->s_id = '';
         }else if($request->keyword){
             $keyword = $request->keyword;
             $pre_dv->whereHas('new_dv', function ($query) use ($keyword) {
@@ -177,6 +242,21 @@ class PreDvController extends Controller
             });
         
         }
+
+        if($request->f_id){
+            $pre_dv->whereIn('facility_id', explode(',', $request->f_id));
+        }elseif($request->b_id){
+            $pre_dv->whereIn('created_by', explode(',', $request->b_id));
+        }elseif($request->p_id){
+            $pre_dv->whereHas('extension', function ($query) use ($request) {
+                $query->whereIn('proponent_id', explode(',', $request->p_id));
+            });
+        }elseif($request->s_id){
+            $pre_dv->whereHas('new_dv', function ($query) use ($request) {
+                $query->whereIn('status', explode(',', $request->s_id));
+            });
+        }
+
         $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(50);
 
         return view('pre_dv.pre_dv2', [
@@ -184,7 +264,13 @@ class PreDvController extends Controller
             'proponents' => $proponents,
             'saas' => $saas,
             'facilities' => $facilities,
-            'keyword' => $request->keyword
+            'keyword' => $request->keyword,
+            'generate' => $request->generate,
+            'f_id' => explode(',', $request->f_id),
+            'p_id' => explode(',', $request->p_id),
+            'b_id' => explode(',', $request->b_id),
+            's_id' => explode(',', $request->s_id),
+            'pros' => Proponent::whereIn('id', PreDVExtension::pluck('proponent_id')->toArray())->get()
         ]);
     }
 
@@ -325,6 +411,7 @@ class PreDvController extends Controller
     {
         $pre_dv = PreDV::where('id', $id)->with('facility')->first();
         $new_dv = NewDV::where('predv_id', $id)->first();
+        // return $new_dv;
         $extension = PreDVExtension::where('pre_dv_id', $pre_dv->id)->pluck('id');
         $saas = PreDVSAA::whereIn('predv_extension_id', $extension)->with('saa:id,saa')->get();
         $info = AddFacilityInfo::where('facility_id', $pre_dv->facility_id)->first();
@@ -671,7 +758,8 @@ class PreDvController extends Controller
             $existing->created_by = Auth::user()->userid;
             $existing->save();
 
-            return redirect()->back()->with('pre_dv_update', true);
+            
+
         } else {
 
             $new_dv = new NewDV();
@@ -842,6 +930,16 @@ class PreDvController extends Controller
             // $info = ProponentInfo::where('id', $row->proponentinfo_id)->first();
             // $info->remaining_balance = (float) str_replace(',','', $info->remaining_balance) + (float) str_replace(',','', $row->utilize_amount);
             // $info->save();
+        }
+    }
+
+    public function dv2Remarks(Request $req){
+        $dv2 = NewDV::where('route_no', $req->route_no)->first();
+        if($dv2){
+            $dv2->remarks = $req->text_remarks;
+            $dv2->save();
+
+            return redirect()->back()->with('update_remarks', true);
         }
     }
 }

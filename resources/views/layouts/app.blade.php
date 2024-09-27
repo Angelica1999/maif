@@ -394,6 +394,18 @@
               msg: 'Successfully process!'
            });
         @endif
+        @if(session('facility_send'))
+           <?php session()->forget('facility_send'); ?>
+           Lobibox.notify('succes', {
+              msg: 'Patient was successfully send to facility!'
+           });
+        @endif
+        @if(session('return_gl'))
+           <?php session()->forget('return_gl'); ?>
+           Lobibox.notify('error', {
+              msg: 'Return patient successfully!'
+           });
+        @endif
     </script>
     @yield('js')
 </body>

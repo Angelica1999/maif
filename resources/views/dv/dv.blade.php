@@ -38,7 +38,7 @@
                                 <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
                                 @if(Auth::user()->userid != 1027 || Auth::user()->userid == 2660)
                                     <button type="button" href="#create_dv" onclick="createDv()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
-                                    <button type="button" id="release_btn" data-target="#releaseTo" style="display:none; background:teal; color:white" onclick="putRoutes($(this))" data-target="#releaseTo" data-backdrop="static" data-toggle="modal" class="btn btn-md">Release All</button>
+                                    <button type="button" id="release_btn" data-target="#releaseTo" style="display:none; background:green; color:white; width:90px" onclick="putRoutes($(this))" data-target="#releaseTo" data-backdrop="static" data-toggle="modal" class="btn btn-md">Release</button>
                                     <input type="hidden" class="all_route" id="all_route" name="all_route">
                                 @else
                                 @endif
@@ -47,7 +47,7 @@
                         </div>
                         <div class = "input-group">
                             <input type="text" style="text-align:center" class="form-control" id="dates_filter" value="{{$dates_generated}}" name="dates_filter" />
-                            <button type="submit" id="gen_btn" style="background-color:teal; color:white; width:107px" class=""><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
+                            <button type="submit" id="gen_btn" style="background-color:teal; color:white; width:90px; border-radius:0;" class="btn btn-sm"><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
                         </div>
                         <input type="hidden" id="filter_rem" name="filter_rem" value="{{implode(',',$filter_rem)}}"></input>
                         <input type="hidden" id="filter_fac" name="filter_fac" value="{{implode(',',$filter_fac)}}"></input>
@@ -169,17 +169,17 @@
                         @foreach($disbursement as $index=> $dvs)
                             <tr> 
                                 <td>                 
-                                    <button type="button" class="btn btn-xs col-sm-12" style="background-color:#165A54;color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$dvs->route_no}}" id="track_load" onclick="openModal()">Track</button>
+                                    <button type="button" class="btn btn-xs col-sm-12" style="border-radius:0; background-color:#165A54; color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$dvs->route_no}}" id="track_load" onclick="openModal()">Track</button>
                                     @if(Auth::user()->userid != 1027 || Auth::user()->userid == 2660)
                                         @if(count($dvs->dv2) > 0)
-                                            <button type="button" class="btn btn-xs btn-success col-sm-12 create-dv2-btn" data-toggle="modal" href="#create_dv2" data-amount="{{$dvs->total_amount}}" data-routeId="{{$dvs->route_no}}" onclick="createDv2()">Update DV2</button>
+                                            <button type="button" style="border-radius:0; margin-top:1px" class="btn btn-xs btn-success col-sm-12 create-dv2-btn" data-toggle="modal" href="#create_dv2" data-amount="{{$dvs->total_amount}}" data-routeId="{{$dvs->route_no}}" onclick="createDv2()">Update DV2</button>
                                         @else
-                                            <button type="button" class="btn btn-xs btn-success col-sm-12 create-dv2-btn" data-toggle="modal" href="#create_dv2" data-amount="{{$dvs->total_amount}}" data-routeId="{{$dvs->route_no}}" onclick="createDv2()">Create DV2</button>
+                                            <button type="button" style="border-radius:0; margin-top:1px" class="btn btn-xs btn-success col-sm-12 create-dv2-btn" data-toggle="modal" href="#create_dv2" data-amount="{{$dvs->total_amount}}" data-routeId="{{$dvs->route_no}}" onclick="createDv2()">Create DV2</button>
                                         @endif
                                     @endif
                                 </td>
                                 <td > 
-                                    <a  data-dvId="{{$dvs->id}}" href="#create_dv" onclick="updateDv()" style="background-color:teal;color:white;" type="button" class="btn btn-xs" data-backdrop="static" data-toggle="modal">
+                                    <a  data-dvId="{{ $dvs->id }}" href="#create_dv" onclick="updateDv()" style="border-radius:0; margin-top:1px; background-color:teal; color:white;" type="button" class="btn btn-xs" data-backdrop="static" data-toggle="modal">
                                     @if(Auth::user()->userid != 1027 || Auth::user()->userid == 2660)
                                         @if($dvs->facility)
                                             {{ $dvs->route_no }}
@@ -197,16 +197,16 @@
                                                 $doc_id= 0;
                                             }
                                         ?>
-                                        <button data-toggle="modal" data-target="#releaseTo" data-id="{{ $doc_id }}" data-route_no="{{ $dvs->route_no }}" onclick="putRoute($(this))" style="background-color:#1E90FF;color:white; width:85px;" type="button" class="btn btn-xs">Release To</button>
+                                        <button data-toggle="modal" data-target="#releaseTo" data-id="{{ $doc_id }}" data-route_no="{{ $dvs->route_no }}" onclick="putRoute($(this))" style="border-radius:0; margin-top:1px; background-color:#1E90FF;color:white; width:70px;" type="button" class="btn btn-xs">Release To</button>
                                     @else
                                         <a href="#obligate"  onclick="obligateDv('{{$dvs->route_no}}', 'add_dvno')" style="background-color:teal;color:white; width:83px;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">{{ $dvs->route_no }}</a>
                                     @endif
                                 </td> 
                                 <td> 
-                                    <a href="{{ route('dv.pdf', ['dvId' => $dvs->id]) }}" style="background-color:green;color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
+                                    <a href="{{ route('dv.pdf', ['dvId' => $dvs->id]) }}" style="border-radius:0; background-color:green;color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
                                 </td>
                                 <td>
-                                    <a href="#dv_history" onclick="getHistory('{{$dvs->route_no}}')" style="background-color:teal;color:white; width:80px;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">Edit History</a>
+                                    <a href="#dv_history" onclick="getHistory('{{$dvs->route_no}}')" style="border-radius:0; background-color:teal;color:white; width:80px;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">Edit History</a>
                                 </td>
                                 <td class="td">
                                     @if($routed > 1)
