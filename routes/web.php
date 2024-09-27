@@ -39,6 +39,8 @@ Route::get('/patient/remove/{id}', [App\Http\Controllers\HomeController::class, 
 Route::get('/patient/{id}', [App\Http\Controllers\HomeController::class, 'fetchPatient'])->name('patient.fetch');
 Route::get('/patient', [App\Http\Controllers\HomeController::class, 'fetchAdditionalData'])->name('home.addditional');
 Route::get('/group/remove_patient/{id}', [App\Http\Controllers\HomeController::class, 'groupRemovePatient'])->name('patient.group_remove');
+Route::get('/patient/send-to-facility/{id}', [App\Http\Controllers\HomeController::class, 'facilitySend'])->name('facility.send');
+Route::match(['get', 'post'],'/patient/return/{id}', [App\Http\Controllers\HomeController::class, 'returnPatient'])->name('patient.return');
 
 Route::get('/mail/history/{id}', [App\Http\Controllers\HomeController::class, 'mailHistory'])->name('mail.history');
 Route::get('/patient/history/{id}', [App\Http\Controllers\HomeController::class, 'patientHistory'])->name('patient.history');
@@ -213,25 +215,29 @@ Route::get('/pre-dv/version-1', [App\Http\Controllers\PreDvController::class, 'p
 Route::get('/pre-dv/version-2', [App\Http\Controllers\PreDvController::class, 'pre_dv2'])->name('pre_dv2');
 Route::post('/pre-dv/dv/new', [App\Http\Controllers\PreDvController::class, 'newDV'])->name('dv_new.save');
 Route::get('/pre-dv/version-2/pdf/{id}', [App\Http\Controllers\PrintController::class, 'newDVPDF'])->name('new_dv.pdf');
-Route::get('/pre-dv/pdf/{id}', [App\Http\Controllers\PrintController::class, 'prePDF'])->name('pre.pdf');
-Route::get('/pre-dv/image/{id}', [App\Http\Controllers\PrintController::class, 'preImage'])->name('pre.image');
-
 Route::get('/pre-dv/v2/delete/{route_no}', [App\Http\Controllers\PreDvController::class, 'v2Delete'])->name('v2.delete');
 Route::get('/pre-dv/budget/pre_list/{type}', [App\Http\Controllers\PreDvController::class, 'pre_dvBudget'])->name('pre_dv_budget');
 Route::get('/pre-dv/budget/v2/{type}/{id}', [App\Http\Controllers\PreDvController::class, 'budgetV2'])->name('budget.v2');
 Route::match(['post', 'get'],'/pre-dv/dv/process', [App\Http\Controllers\PreDvController::class, 'processNew'])->name('pre_dv.process');
 Route::get('/pre-dv/control_nos/{facility_id}', [App\Http\Controllers\PreDvController::class, 'controlList'])->name('control.list');
 Route::get('/pre-dv/check', [App\Http\Controllers\PreDvController::class, 'check'])->name('check');
+Route::post('/pre-dv2/remarks', [App\Http\Controllers\PreDvController::class, 'dv2Remarks'])->name('dv2.remarks');
+
 Route::get('/users', [App\Http\Controllers\UserController::class, 'users'])->name('users');
 Route::get('/users/verified/{id}', [App\Http\Controllers\UserController::class, 'verifyuser'])->name('verify.user');
-Route::get('/bills', [App\Http\Controllers\FacilityController::class, 'bills'])->name('bills');
-Route::get('/bills/tracking/{id}', [App\Http\Controllers\FacilityController::class, 'tracking'])->name('tracking');
-Route::get('/bills/view/{id}', [App\Http\Controllers\FacilityController::class, 'viewBills'])->name('view.bills');
-Route::match(['get', 'post'], '/bills/process/{type}/{id}', [App\Http\Controllers\FacilityController::class, 'processBills'])->name('process.bills');
 Route::get('/users/reset/{id}', [App\Http\Controllers\UserController::class, 'reset'])->name('reset.user');
 Route::get('/users/save', [App\Http\Controllers\UserController::class, 'save'])->name('save');
 Route::match(['get', 'post'],'/users/cancel/{id}', [App\Http\Controllers\UserController::class, 'cancel'])->name('cancel.user');
 
+Route::get('/bills', [App\Http\Controllers\FacilityController::class, 'bills'])->name('bills');
+Route::get('/bills/tracking/{id}', [App\Http\Controllers\FacilityController::class, 'tracking'])->name('tracking');
+Route::get('/bills/view/{id}', [App\Http\Controllers\FacilityController::class, 'viewBills'])->name('view.bills');
+Route::match(['get', 'post'], '/bills/process/{type}/{id}', [App\Http\Controllers\FacilityController::class, 'processBills'])->name('process.bills');
+
+Route::get('/pre-dv/pdf/{id}', [App\Http\Controllers\PrintController::class, 'prePDF'])->name('pre.pdf');
+Route::get('/pre-dv/image/{id}', [App\Http\Controllers\PrintController::class, 'preImage'])->name('pre.image');
+Route::get('/version2/{id}', [App\Http\Controllers\FundSourceController::class, 'version2'])->name('version2');
+Route::get('/patients', [App\Http\Controllers\HomeController::class, 'patients'])->name('patients');
 
 
 

@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Kyslik\ColumnSortable\Sortable;
-
+use App\Models\NewDV;
 
 class DvController extends Controller
 {
@@ -366,6 +366,8 @@ class DvController extends Controller
             if($dv3){
                 $dv3->status = 1;
                 $dv3->save();
+            }else{
+            //    NewDV::where('route_no', $route_no)->update(['status' =>]);
             }
 
         }

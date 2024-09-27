@@ -6,6 +6,11 @@
     use App\Models\ProponentInfo; 
     use App\Models\Facility; 
 ?>
+<style>
+    .btn {
+        border-radius:0;
+    }
+</style>
 
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
@@ -40,7 +45,7 @@
                                             <h4 class="card-title" style="text-align: left; margin: 0;">{{ $fund->saa }}</h4>
                                         @endif
                                         @if($user->section != 6)
-                                            <button class="btn btn-sm update_saa" style="min-width:110px;cursor: pointer; text-align: right;color:white; background-color:#417524" data-proponent-id="" data-backdrop="static" data-toggle="modal" onclick="createBreakdowns({{ $fund->id }})" href="#create_fundsource">Breakdowns</button>                                      
+                                            <button class="btn btn-sm update_saa" style="min-width:110px; cursor: pointer; text-align:center; color:white; background-color:#417524; border-radius:0;" data-proponent-id="" data-backdrop="static" data-toggle="modal" onclick="createBreakdowns({{ $fund->id }})" href="#create_fundsource">Breakdowns</button>                                      
                                         @endif
                                     </div>
 
@@ -75,12 +80,12 @@
 
                                                         <div class="d-flex justify-content-between align-items-center">
                                                             <span class="ml-3">Allocated Funds &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->alocated_funds)), 2, '.', ',') }}</strong></span>
-                                                            <button style="min-width:90px" id="track" data-backdrop="static" data-proponentInfo-id="{{ $proponentInfo->id }}" data-toggle="modal" href="#track_details2" onclick="track_details2(event)" class='btn btn-sm btn-outline-info track_details2'>Track</button>
+                                                            <button style="min-width:90px; border-radius:0;" id="track" data-backdrop="static" data-proponentInfo-id="{{ $proponentInfo->id }}" data-toggle="modal" href="#track_details2" onclick="track_details2(event)" class='btn btn-sm btn-outline-info track_details2'>Track</button>
                                                         </div>
                                                         <div class="d-flex justify-content-between align-items-center">
                                                             <span class="ml-3">Administrative Cost : <strong class="text-info">{{ $proponentInfo->admin_cost}}</strong></span>
                                                             @if($user->section != 6)
-                                                                <button style="min-width:90px" id="transfer_funds" data-backdrop="static" data-toggle="modal" href="#transfer_fundsource" onclick="transferFunds({{ $proponentInfo->id }})" style="width:100px" class='btn btn-sm btn-outline-success ml-2 transfer_funds'>Transfer</button>
+                                                                <button style="min-width:90px; border-radius:0; margin-top:1px" id="transfer_funds" data-backdrop="static" data-toggle="modal" href="#transfer_fundsource" onclick="transferFunds({{ $proponentInfo->id }})" style="width:100px" class='btn btn-sm btn-outline-success ml-2 transfer_funds'>Transfer</button>
                                                             @endif
                                                         </div>
                                                         <div class="d-flex justify-content-between align-items-center">
@@ -114,6 +119,7 @@
         </div>
     </div>
 </div>
+
 <div class="modal fade" id="create_fundsource" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -164,6 +170,22 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="version2" tabindex="-2" role="dialog">
+    <div class="modal-dialog modal-lg " role="document" style="max-width:600px">
+        <div class="modal-content">
+            <div class="modal-header" >
+                <h4 class="modal-title text-success" id="exampleModalLabel" >Disbursement Version - 2 Details</h4>
+                <span type="button" data-dismiss="modal">
+                    <i class="typcn typcn-times menu-icon" style="font-size:17px"></i>
+                </span>
+            </div>
+            <div class="v2_body" >
+            </div>
+        </div>
+    </div>
+</div>  
+
 <div class="modal fade" id="i_frame" tabindex="-2" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" >
     <div class="modal-dialog modal-lg " role="document" style="max-width:1000px">
         <div class="modal-content">
@@ -179,6 +201,7 @@
         </div>
     </div>
 </div>
+
 <div class="modal fade" id="transfer_fundsource" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -281,11 +304,6 @@
             });
         
         });
-        // @if($user->section != 6)
-        //     $('.update_saa').hide();
-        //     $('.transfer_funds').hide();
-        //     $('.btn-md').hide();
-        // @endif
 
         function splitIntoLines(text, length) {
             var lines = [];
@@ -349,7 +367,7 @@
                         var new_row = '<tr style="text-align:center">' +
                             '<td>' + saa + '</td>' +
                             '<td>' + proponentName + '</td>' +
-                            '<td>' + facility_name + '</td>' +
+                            '<td>' + '<a class="modal-link" href="#i_frame" data-routeId="'+route+'" onclick="version2(this)">' + facility_name + '</a>' + '</td>' +
                             '<td>' + number_format(parseFloat(beg_balance.replace(',', '')), 2, '.', ',') + '</td>' +
                             '<td>' + discount + '</td>' +
                             '<td>' +(item.div_id != 0 ?'<a class="modal-link" href="#i_frame" data-routeId="'+route+'" onclick="openModal(this)">' + utilize + '</a>' :utilize) +'</td>' +
@@ -421,9 +439,9 @@
                     }
                 });
             }, 500);
-        }//createBreakdowns
+        }
+
         function createBreakdowns(fundsourceId){
-            // var proponent_id = event.target.getAttribute('data-proponent-id');
             $('.modal_body').empty();
             $('.modal_body').html(loading);
             $('.modal-title').html("Create Breakdowns");
@@ -437,13 +455,9 @@
                     }
                 });
             }, 0);
-        }//createBreakdowns
+        }
+
         function transferFunds(info_id){
-            console.log('ahsdsd');
-            // var proponent_id = event.target.getAttribute('data-proponentInfo-id');
-            // var facility_id = event.target.getAttribute('data-facility-id');
-            // var proponent_id = proponent_id;
-            // var facility_id = facility_id;
             $('.modal_body').html(loading);
             $('.modal-title').html("Transfer Funds");
             var url = "{{ url('fundsource/transfer_funds').'/' }}"+ info_id;
@@ -473,21 +487,6 @@
                 });
             },500);
         }
-
-        // function createFundSource() {
-        //     $('.modal_body').html(loading);
-        //     $('.modal-title').html("Create Fundsource");
-        //     var url = "{{ route('fundsource.create') }}";
-        //     setTimeout(function(){
-        //         $.ajax({
-        //             url: url,
-        //             type: 'GET',
-        //             success: function(result) {
-        //                 $('.modal_body').html(result);
-        //             }
-        //         });
-        //     },500);
-        // }
 
         function addTransaction() {
             console.log('okii');
@@ -532,25 +531,15 @@
                 $("#proponent_code").val('').prop('readonly', false);
             }   
         }
-        // function proCode(proponent){
-            
-        //     if(proponent.val()){
-        //         var proponent_id = proponent.val()
-        //         var url = "{{ url('proponent').'/' }}"+ proponent_id;
-        //         setTimeout(function() {
-        //             $.ajax({
-        //                 url: url,
-        //                 type: 'GET',
-        //                 success: function(result){
-        //                     $("#proponent_code").val(result).prop('readonly', true);
-        //                     var selectedText = $('#proponent_exist option:selected').text();
-        //                     $("#proponent").val(selectedText).prop('readonly', true);
-        //                 }
-        //             });
-        //         }, 500);
-        //     }else{
-        //         $("#proponent_code").val('').prop('readonly', false);
-        //     }   
-        // }
+
+        function version2(data) {
+            var route_no = $(data).data('routeid');
+            console.log('route_no',route_no )
+            $.get(" {{ url('/version2').'/'}}" + route_no, function (result){
+                $('.v2_body').html(result);
+            });
+            $('#version2').modal('show');
+        }
+       
     </script>
 @endsection

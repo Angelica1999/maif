@@ -63,21 +63,19 @@
         <div class="card-body">
             <div class="float-right">
                 <div class="input-group">
-                    <form method="GET" action="{{ route('home') }}">
+                    <form method="GET" action="">
                         <div class="input-group">
                             <input type="hidden" class="form-control" name="key">
                             <input type="text" class="form-control" name="keyword" id="search_patient" placeholder="Search..." value="{{$keyword}}" style="width:350px;">
                             <div class="input-group-append">
                                 <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
-                                <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
-                                <button type="button" href="#create_patient" id="crt_pnt" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
+                                <button style="width:90px;" class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
                                 <button type="submit" value="filt" style="display:none; background-color:00563B; color:white;" name="filter_col" id="filter_col" class="btn btn-success btn-md"><i class="typcn typcn-filter menu-icon"></i>&nbsp;&nbsp;&nbsp;Filter</button>
                             </div>  
                         </div>
                         <div class="input-group">
                             <input type="text" style="text-align:center" class="form-control" id="filter_dates" value="{{($generate_dates)?$generate_dates:''}}" name="filter_dates" />
                             <button type="submit" id="gen_btn" style="background-color:teal; color:white; width:90px; height:40px; border-radius:0; " class="btn"><i class="typcn typcn-calendar-outline menu-icon"></i>Filter</button>
-
                         </div>
                         <input type="hidden" name="filter_date" id="filter_date" value="{{implode(',', $filter_date)}}"></input>
                         <input type="hidden" name="filter_fname" id="filter_fname" value="{{implode(',', $filter_fname)}}"></input>
@@ -115,7 +113,7 @@
                 </div>
             </div>
            
-            <h4 class="card-title">Manage Patients</h4>
+            <h4 class="card-title">PROPONENT PATIENT</h4>
             <span class="card-description">
                 MAIF-IPP
             </span>
@@ -261,19 +259,11 @@
                                     class="group-mailCheckBox" onclick="itemChecked($(this))">
                             </td>
                             <td style="text-align:center">
-                                @if($patient->remarks == 1 || $patient->status == 1)
-                                    <i class="typcn typcn-tick menu-icon">
-                                @elseif($patient->status == 2)
-                                    Returned
+                                @if($patient->sent_type == 2)
+                                    'Return to Proponent'
                                 @endif
                             </td>
-                            <td>
-                                @if($patient->status == 1)
-                                    {{$patient->pat_rem}}
-                                @elseif($patient->status == 2)
-                                    {{ $patient->pat_remarks[count($patient->pat_remarks) -1]->remarks }}
-                                @endif             
-                            </td>
+                            <td>{{$patient->pat_rem}}</td>
                             <td style="text-align:center;" class="group-amount" data-patient-id="{{ $patient->id }}" data-proponent-id="{{ $patient->proponent_id }}" 
                                 data-amount="{{ $patient->actual_amount }}" data-facility-id="{{ $patient->facility_id }}" >
                                 @if($patient->group_id == null)
@@ -328,15 +318,14 @@
                                 @endif
                             </td>
                             <td>{{date('F j, Y', strtotime($patient->created_at))}}</td>
-                            <td>{{ $patient->encoded_by->lname .', '. $patient->encoded_by->fname }}</td>
-                            <!-- <td class="td">{{ $patient->encoded_by? $patient->encoded_by->lname .', '. $patient->encoded_by->fname: ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td> -->
+                            <td class="td">{{ $patient->encoded_by? $patient->encoded_by->lname .', '. $patient->encoded_by->fname: ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td>
                         </tr>
                     @endforeach
                 </tbody>
                 </table>
             </div>
             @else
-                <div class="alert alert-danger" role="alert" style="width: 100%;">
+                <div class="alert alert-danger" role="alert" style="width: 100%; margin-top:5px">
                 <i class="typcn typcn-times menu-icon"></i>
                     <strong>No patient found!</strong>
                 </div>
@@ -348,181 +337,6 @@
     </div>
 </div>
 
-<div class="modal fade" id="create_patient" tabindex="-1" role="dialog" aria-hidden="true" style="opacity:1">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="text-success" id="title"><i style = "font-size:30px"class="typcn typcn-user-add-outline menu-icon"></i> Create Patient</h4><hr />
-                @csrf
-            </div>
-            <div class="modal_body">
-                <form id="contractForm" method="POST" action="{{ route('patient.create.save') }}">
-                    <input type="hidden" name="created_by" value="{{ $user->userid }}">
-                    <div class="modal-body">
-                        @csrf
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="fname">First Name</label>
-                                    <input type="text" class="form-control fname" style="width:220px;" id="fname" name="fname" oninput="this.value = this.value.toUpperCase()" placeholder="First Name" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="lname">Last Name</label>
-                                    <input type="text" class="form-control lname" style="width:220px;" id="lname" name="lname" placeholder="Last Name" oninput="this.value = this.value.toUpperCase()" required>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="fname">Middle Name</label>
-                                    <input type="text" class="form-control mname" style="width:220px;" id="mname" name="mname" oninput="this.value = this.value.toUpperCase()" placeholder="Middle Name">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="lname">Date of Birth</label>
-                                    <input type="date" class="form-control dob" style="width:220px;" id="dob" name="dob" placeholder="Date of Birth">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="fname">Region</label>
-                                    <select class="js-example-basic-single region" style="width:220px;" id="region" onchange="othersRegion($(this));" name="region">
-                                        <option value="">Please select region</option>
-                                        <option value="Region 7">Region 7</option>
-                                        <option value="NCR">NCR</option>
-                                        <option value="CAR">CAR</option>
-                                        <option value="Region 1">Region 1</option>
-                                        <option value="Region 2">Region 2</option>
-                                        <option value="Region 3">Region 3</option>
-                                        <option value="Region 4">Region 4</option>
-                                        <option value="Region 5">Region 5</option>
-                                        <option value="Region 6">Region 6</option>
-                                        <option value="Region 8">Region 8</option>
-                                        <option value="Region 9">Region 9</option>
-                                        <option value="Region 10">Region 10</option>
-                                        <option value="Region 11">Region 11</option>
-                                        <option value="Region 12">Region 12</option>
-                                        <option value="Region 13">Region 13</option>
-                                        <option value="BARMM">BARMM</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="lname">Province</label>
-                                    <div id="province_body" class="province_body">
-                                        <select class="js-example-basic-single province_id" style="width:220px;" id="province_id" name="province_id" onchange="onchangeProvince($(this))">
-                                            <option value="">Please select province</option>
-                                            @foreach($provinces as $prov)
-                                                <option value="{{ $prov->id }}">{{ $prov->description }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="lname">Municipality</label>
-                                    <div id="muncity_body" class="muncity_body">
-                                        <select class="js-example-basic-single muncity_id" style="width:220px;" id="muncity_id" name="muncity_id" onchange="onchangeMuncity($(this))">
-                                            <option value="">Please select Municipality</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="lname">Barangay</label>
-                                    <div id="barangay_body" class="barangay_body">
-                                        <select class="js-example-basic-single barangay_id" style="width:220px;" id="barangay_id" name="barangay_id">
-                                            <option value="">Please select Barangay</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="fname">Date of Guarantee Letter</label>
-                                    <input type="date" class="form-control date_guarantee_letter" style="width:220px;" id="date_guarantee_letter" name="date_guarantee_letter" placeholder="Date of Guarantee Letter" required>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="fname">Facility</label>
-                                    <select class="js-example-basic-single facility_id1" style="width:220px;" id="facility_id" name="facility_id" onchange="onchangeForProponent($(this))" required>
-                                        <option value="">Please select Facility</option>
-                                        @foreach($facilities as $facility)
-                                            <option value="{{ $facility->id }}">{{ $facility->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div> 
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="fname">Proponent</label>
-                                    <select class="js-example-basic-single proponent_id1" style="width:220px;" id="proponent_id" name="proponent_id" onchange="onchangeForPatientCode($(this))" required>
-                                        <option value="">Please select Proponent</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group" id="patient-code-container">
-                                    <input type="text" class="form-control loading-input patient_code" style="width:220px;" id="patient_code" name="patient_code" placeholder="Patient Code" readonly>
-                                    <img id="loading-image" src="{{ asset('images/loading.gif') }}" alt="Loading" style="display: none;">
-                                </div>
-                            </div>
-                        </div>
-                        <hr>
-                        <strong>Transaction</strong>
-                        <hr>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="fname">Guaranteed Amount</label>
-                                    <input type="text" class="form-control guaranteed_amount" id="guaranteed_amount" style="width:220px;" oninput="check()" onkeyup= "validateAmount(this)" name="guaranteed_amount" placeholder="Guaranteed Amount" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="fname">Remaining Balance</label>
-                                    <input type="text" class="form-control remaining_balance" id="remaining_balance" style="width:220px;" name="remaining_balance" placeholder="Remaining Balance" readonly>
-                                </div>
-                                <div id="suggestions" class="suggestions"></div>
-                            </div>
-                        </div>
-                        <hr>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label for="fname">Remarks</label>
-                                    <textarea type="text" class="form-control pat_rem" id="pat_rem" style="width:470px;" name="pat_rem" placeholder="Remarks"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" id="close_modal" data-dismiss="modal">Close</button>
-                        <button type="submit" id="create_pat_btn" class="btn btn-primary">Create Patient</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 <!--end-->
 <div class="modal fade" id="update_patient" tabindex="-1" role="dialog" aria-hidden="true" style="opacity:1">
     <div class="modal-dialog" role="document">
@@ -534,6 +348,7 @@
             <div class="modal_body">
                 <form id="update_form" method="POST">
                     <input type="hidden" name="created_by" value="{{ $user->userid }}">
+                    <input type="hidden" name="sent_type" class="sent_type" value="3">
                     <div class="modal-body">
                         @csrf
                         <div class="row">
@@ -701,10 +516,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" id="close_modal" data-dismiss="modal">Close</button>
-                        <button type="submit" id="create_pat_btn" class="btn btn-primary">Update</button>
-                        <button type="submit" id="update_send" name="update_send" value="upsend" class="btn btn-success" style="color:white" >Update & Send</button>
-                        <a type="button" class="btn btn-danger" onclick="removePatient()" style="display:none; color:white">Remove</a>
-                        <a type="button" class="btn btn-warning" onclick="returnPatient()" style="display:none; color:white">Return</a>
+                        <button type="submit" id="create_pat_btn" class="btn btn-primary">Process</button>
+                        <button class="btn btn-warning" onclick="returnPatient()" style="display:none; color:white">Return</button>
                     </div>
                 </form>
             </div>
@@ -762,17 +575,6 @@
 <script>
     $(function() {
         $('#filter_dates').daterangepicker();
-    });
-
-    $('#crt_pnt').on('click', function(){
-        $('#region').select2();
-        $('#province_id').select2();
-        $('#muncity_id').select2();
-        $('#province_id').select2();
-        $('#barangay_id').select2();
-        $('#facility_id').select2();
-        $('#proponent_id').select2();
-        form_type = 'create';
     });
 
     $('#gen_btn').on('click', function(){
@@ -1417,11 +1219,7 @@
             $('#update_form').attr('action', editRoute);
             console.log('res', patient.fname);
             if(patient){
-                if(patient.group_id == null || patient.group_id == null){
-                    var removeRoute = `{{ route('patient.remove', ['id' => ':id']) }}`;
-                    removeRoute = removeRoute.replace(':id', id);
-                    $('.btn.btn-danger').attr('data-id', id).css('display', 'inline-block').text('Remove');
-                }
+               
                 $('.btn.btn-warning').attr('data-id', id).css('display', 'inline-block');
 
                 $('.fname').val(patient.fname);
@@ -1564,12 +1362,12 @@
     }
 
     function onchangeForPatientCode(data) {
-
         // var facility_id = $('#facility_id').val();
 
         if(facility_id == 0){
             facility_id = $('#facility_id').val();
         }
+        console.log('facility', facility_id);
         if(edit_c == 0){
             if(data.val()) {
                 $.get("{{ url('patient/code').'/' }}"+data.val()+"/"+facility_id, function(result) {
@@ -1651,34 +1449,6 @@
                 $('.mail_body').html(result);
             }
         });
-    }
-
-    function removePatient(){
-        var id = event.target.getAttribute('data-id');
-        console.log('route_no', id);
-        Lobibox.alert('error',
-            {
-                size: 'mini',
-                msg: '<div style="text-align:center;"><i class="typcn typcn-delete menu-icon" style="color:red; font-size:30px"></i>Are you sure you want to delete this?</div>',
-                buttons:{
-                    ok:{
-                        'class': 'lobibox-btn lobibox-btn-ok',
-                        text: 'Delete',
-                        closeOnClick: true
-                    },
-                    cancel: {
-                        'class': 'lobibox-btn lobibox-btn-cancel',
-                        text: 'Cancel',
-                        closeOnClick: true
-                    }
-                },
-                callback: function(lobibox, type){
-                    if (type == "ok"){
-                        window.location.href="patient/remove/" + id;
-                    }
-                }
-            }
-        )
     }
 
     function returnPatient(){

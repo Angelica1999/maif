@@ -212,7 +212,13 @@
                     <li class="nav-item">
                       <a class="nav-link" href="{{ route('home') }}">
                         <i class="typcn typcn-document-text menu-icon"></i>
-                        <span class="menu-title">Guarantee Letter</span>
+                        <span class="menu-title">Guarantee Letter (MUP)</span>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{ route('patients') }}">
+                        <i class="typcn typcn-document-text menu-icon"></i>
+                        <span class="menu-title">Guarantee Letter (Proponent)</span>
                       </a>
                     </li>
                     <li class="nav-item">
@@ -328,12 +334,24 @@
                 </ul>
             </li>
         </ul>
-        <li class="nav-item">
-          <a class="nav-link" href="{{ route('bills') }}">
-            <i class="typcn typcn-flow-switch menu-icon"></i>
-            <span class="menu-title">Bills</span>
-          </a>
-        </li>
+
+        <ul class="nav flex-column" style=" margin-bottom: 0;">
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="typcn typcn-flow-switch menu-icon"></i>
+                    <span class="menu-title">BILLS</span>
+                    &nbsp;&nbsp;<i class="typcn typcn-arrow-sorted-down menu-icon"></i>
+                </a>
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item">
+                    <a class="nav-link" href="{{ route('bills') }}">
+                      <i class="typcn typcn-flow-switch menu-icon"></i>
+                      <span class="menu-title">Incoming Send Bills</span>
+                    </a>
+                  </li>
+                </ul>
+            </li>
+        </ul>
         <li class="nav-item">
           <a class="nav-link" href="{{ route('facility') }}">
             <i class="typcn typcn-flow-switch menu-icon"></i>

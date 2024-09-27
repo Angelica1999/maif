@@ -37,7 +37,7 @@
                                         @endif
                                         <!-- <button class="btn btn-sm update_saa" style="cursor: pointer; text-align: right; background-color:#417524; color:white;" data-proponent-id="" data-backdrop="static" data-toggle="modal" onclick="editfundsource()" href="#create_fundsource">Update</button> -->
 
-                                        <button style="width:120px" id="track" data-fundsource-id="{{  $fund->id }}" data-target="#track_details" onclick="track_details(event)" class='btn btn-sm btn-outline-success track_details'>Track</button>
+                                        <button style="width:120px; border-radius:0; border:1px solid teal" id="track" data-fundsource-id="{{  $fund->id }}" data-target="#track_details" onclick="track_details(event)" class='btn btn-sm btn-outline-success track_details'>Track</button>
                                     </div>
                                         <ul class="list-arrow mt-3">
                                         <li><span class="ml-3">Allocated Funds: <strong class="text-info">{{ !Empty($fund->alocated_funds)? number_format(floatval(str_replace(',', '',$fund->alocated_funds)), 2, '.', ','):0 }}</strong></span></li>

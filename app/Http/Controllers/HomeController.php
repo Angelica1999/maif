@@ -24,6 +24,7 @@ use App\Models\PatientLogs;
 use App\Models\MailHistory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Arr;
 use DataTables;
 use Kyslik\ColumnSortable\Sortable;
 
@@ -46,7 +47,7 @@ class HomeController extends Controller
      */
 
 
-     public function index(Request $request){
+    public function index(Request $request){
         // return $request->input('sort');
         // return explode(',',$request->filter_fname);
 
@@ -55,27 +56,14 @@ class HomeController extends Controller
 
 
         $patients = Patients::with([
-            'province' => function ($query) {
-                $query->select('id', 'description');
-            },
-            'muncity' => function ($query) {
-                $query->select('id', 'description');
-            },
-            'barangay' => function ($query) {
-                $query->select('id', 'description');
-            },
-            'encoded_by' => function ($query) {
-                $query->select('userid', 'fname', 'lname');
-            },
-            // 'gl_user' => function ($query) {
-            //     $query->select('username', 'fname', 'lname');
-            // },
-            'facility' => function ($query) {
-                $query->select('id','name');
-            },
-            'proponentData' => function ($query) {
-                $query->select('id','proponent');
-            }
+            'province:id,description',
+            'muncity:id,description',
+            'barangay:id,description',
+            'encoded_by:userid,fname,lname,mname',
+            'gl_user:username,fname,lname',
+            'facility:id,name',
+            'proponentData:id,proponent',
+            'pat_remarks:patient_id,remarks'
         ]);
        
         //  -- for date range
@@ -249,7 +237,7 @@ class HomeController extends Controller
         $on = $on->groupBy(DB::raw('DATE(created_at)'))->pluck(DB::raw('MAX(DATE(created_at))'));
         $all_pat = clone ($patients);
         $proponents_code = Proponent::groupBy('proponent_code')->select(DB::raw('MAX(proponent) as proponent'), DB::raw('MAX(proponent_code) as proponent_code'),DB::raw('MAX(id) as id') )->get();
-        // return $patients->paginate(50);
+
         return view('home', [
             'patients' => $patients->paginate(50),
             'keyword' => $request->keyword,
@@ -838,42 +826,16 @@ class HomeController extends Controller
 
         $patientLogs = new PatientLogs();
         $patientLogs->patient_id = $patient->id;
-        $patientLogs->fill($patient->toArray());
+        $patientLogs->fill(Arr::except($patient->toArray(), ['status', 'sent_type', 'user_type']));
         unset($patientLogs->id);
         $patientLogs->save();
-
-        session()->flash('patient_update', true);
-        $patient->fname = $request->input('fname');
-        $patient->lname = $request->input('lname');
-        $patient->mname = $request->input('mname');
-        $patient->dob   = $request->input('dob');
-        $patient->region = $request->input('region');
-
-        if($patient->region !== "Region 7"){
-            $patient->other_province = $request->input('other_province');
-            $patient->other_muncity = $request->input('other_muncity');
-            $patient->other_barangay = $request->input('other_barangay');
-        }
         
-        $patient->province_id = $request->input('province_id');
-        $patient->muncity_id  = $request->input('muncity_id');
-        $patient->barangay_id = $request->input('barangay_id');
-        // $patient->fundsource_id = $request->input('fundsource_id');
-        $patient->proponent_id = $request->input('proponent_id');
-        $patient->facility_id = $request->input('facility_id');
-        $patient->patient_code = $request->input('patient_code');
-        $patient->guaranteed_amount = $request->input('guaranteed_amount');
-        $patient->actual_amount = $request->input('actual_amount');
-        $patient->remaining_balance = $request->input('remaining_balance');
         $patient->pat_rem = $request->input('pat_rem');
         $patient->save();
         DB::commit();
-        if($val == "upsend"){
-            // return Patients::where('id', $patient->id)->first();
-            return redirect()->route('patient.sendpdf', ['patientid' => $patient->id]);
-        }else{
-            return redirect()->back();
-        }
+
+        return redirect()->back()->with('return_gl', true);
+
     }
 
     public function removePatient($id){
@@ -908,4 +870,258 @@ class HomeController extends Controller
             'facilities' => $facilities
         ]);
     }
+
+    public function facilitySend($id){
+
+        Patients::where('id', $id)->update(['status' => 1]);
+        return redirect()->back()->with('facility_send',true);
+        
+    }   
+
+    public function returnPatient($id, Request $request){
+
+        return  $request->pat_rem;
+        Patients::where('id', $id)->update(['remarks' => $request->pat_rem, 'sent_type' => 3]);
+        return redirect()->back()->with('return_gl', true);
+    }
+
+    public function patients(Request $request){
+
+        $filter_date = $request->input('filter_dates');
+        $order = $request->input('order', 'asc');
+
+
+        $patients = Patients::where('user_type', 1)
+            ->where('sent_type','!=', 1)->with([
+            'province:id,description',
+            'muncity:id,description',
+            'barangay:id,description',
+            'encoded_by:userid,fname,lname,mname',
+            'gl_user:username,fname,lname',
+            'facility:id,name',
+            'proponentData:id,proponent',
+            'pat_remarks:patient_id,remarks'
+        ]);
+       
+        //  -- for date range
+        if($request->gen){
+            $dateRange = explode(' - ', $filter_date);
+            $start_date = date('Y-m-d', strtotime($dateRange[0]));
+            $end_date = date('Y-m-d', strtotime($dateRange[1]));
+            $patients = $patients ->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59']);
+        }
+
+        // -- for search
+
+        if($request->viewAll){
+
+            $request->keyword = '';
+            $request->filter_date = '';
+            $request->filter_fname = '';
+            $request->filter_mname = '';
+            $request->filter_lname = '';
+            $request->filter_facility = '';
+            $request->filter_proponent = '';
+            $request->filter_code = '';
+            $request->filter_region = '';
+            $request->filter_province = '';
+            $request->filter_muncity = '';
+            $request->filter_barangay = '';
+            $request->filter_on = '';
+            $request->filter_by = '';
+            $filter_date = '';
+            $request->gen = '';
+
+
+        }else if($request->keyword){
+            $keyword = $request->keyword;
+            
+            $patients = $patients->where('user_type', 1)->where('sent_type','!=', 1)->where(function ($query) use ($keyword) {
+                $query->where('fname', 'LIKE', "%$keyword%")
+                      ->orWhere('lname', 'LIKE', "%$keyword%")
+                      ->orWhere('mname', 'LIKE', "%$keyword%")
+                      ->orWhere('region', 'LIKE', "%$keyword%")
+                      ->orWhere('other_province', 'LIKE', "%$keyword%")
+                      ->orWhere('other_muncity', 'LIKE', "%$keyword%")
+                      ->orWhere('other_barangay', 'LIKE', "%$keyword%")
+                      ->orWhere('patient_code', 'LIKE', "%$keyword%");
+            })
+            ->orWhere(function ($query) use ($keyword) {
+                $query->whereHas('facility', function ($query) use ($keyword) {
+                    $query->where('name', 'LIKE', "%$keyword%");
+                })
+                ->orWhereHas('proponentData', function ($query) use ($keyword) {
+                    $query->where('proponent', 'LIKE', "%$keyword%");
+                })
+                ->orWhereHas('barangay', function ($query) use ($keyword) {
+                    $query->where('description', 'LIKE', "%$keyword%");
+                })
+                ->orWhereHas('muncity', function ($query) use ($keyword) {
+                    $query->where('description', 'LIKE', "%$keyword%");
+                })
+                ->orWhereHas('province', function ($query) use ($keyword) {
+                    $query->where('description', 'LIKE', "%$keyword%");
+                });
+            });
+        }
+
+        // -- for table header sorting
+
+        if ($request->sort && $request->input('sort') == 'facility') {
+            $patients = $patients->sortable(['facility.name' => 'asc']);
+        }else if ($request->sort && $request->input('sort') == 'proponent') {
+            $patients = $patients->sortable(['proponentData.proponent' => 'asc']);
+        }else if ($request->sort && $request->input('sort') == 'province') {
+            
+            $patients = $patients->leftJoin('province', 'province.id', '=', 'patients.province_id')
+                            ->orderBy('patients.other_province', $request->input('order'))
+                            ->orderBy('province.description', $request->input('order')) 
+                            ->select('patients.*');
+
+        }else if ($request->sort && $request->input('sort') == 'municipality') {
+            
+            $patients = $patients->leftJoin('muncity', 'muncity.id', '=', 'patients.muncity_id')
+                            ->orderBy('patients.other_muncity', $request->input('order'))
+                            ->orderBy('muncity.description', $request->input('order')) 
+                            ->select('patients.*');
+
+        }else if ($request->sort && $request->input('sort') == 'barangay') {
+            
+            $patients = $patients->leftJoin('barangay', 'barangay.id', '=', 'patients.barangay_id')
+                            ->orderBy('patients.other_barangay', $request->input('order'))
+                            ->orderBy('barangay.description', $request->input('order')) 
+                            ->select('patients.*');
+
+        }else if ($request->sort && $request->input('sort') == 'encoded_by') {
+        
+            $patients = $patients
+                        ->orderBy(
+                            \DB::connection('dohdtr')
+                                ->table('users')
+                                ->select('lname')
+                                ->whereColumn('users.userid', 'patients.created_by'),
+                                $request->input('order')
+                        );
+        }else{
+            $patients->sortable(['id' => 'desc']);
+        }
+        // for filtering column
+
+        // if($request->filter_col){
+            if($request->filter_date){
+                $patients = $patients->whereIn('date_guarantee_letter', explode(',',$request->filter_date));
+            }
+            if($request->filter_fname){
+                $patients = $patients->whereIn('fname', explode(',',$request->filter_fname));
+            }
+            if($request->filter_mname){
+                $patients = $patients->whereIn('mname', explode(',',$request->filter_date));
+            }
+            if($request->filter_lname){
+                $patients = $patients->whereIn('lname', explode(',',$request->filter_lname));
+            }
+            if($request->filter_facility){
+                $patients = $patients->whereIn('facility_id', explode(',',$request->filter_facility));
+            }
+            if($request->filter_proponent){
+                $patients = $patients->whereIn('proponent_id', explode(',',$request->filter_proponent));
+            }
+            if($request->filter_code){
+                $patients = $patients->whereIn('patient_code', explode(',',$request->filter_code));
+            }
+            if($request->filter_region){
+                $patients = $patients->whereIn('region', explode(',',$request->filter_region));
+            }
+            if($request->filter_province){
+                $patients = $patients->whereIn('province_id', explode(',',$request->filter_province))
+                            ->orWhereIn('other_province', explode(',',$request->filter_province));
+            }
+            if($request->filter_municipality){
+                $patients = $patients->whereIn('muncity_id', explode(',',$request->filter_municipality))
+                            ->orWhereIn('other_muncity', explode(',',$request->filter_municipality));
+            }
+            if($request->filter_barangay){
+                $patients = $patients->whereIn('barangay_id', explode(',',$request->filter_barangay))
+                            ->orWhereIn('other_barangay', explode(',',$request->filter_barangay));
+            }
+            if($request->filter_on){
+                $patients = $patients->whereIn(DB::raw('DATE(created_at)'), explode(',',$request->filter_on));
+                // return  $request->filter_on;
+            }
+            if($request->filter_by){
+                // return explode(',',$request->filter_by);
+                $patients = $patients->whereIn('created_by', explode(',',$request->filter_by));
+            }
+        // }
+
+        $date = clone ($patients);
+        $fname = clone ($patients);
+        $mname = clone ($patients);
+        $lname = clone ($patients);
+        $facs = clone ($patients);
+        $code = clone ($patients);
+        $proponent = clone ($patients);
+        $region = clone ($patients);
+        $province = clone ($patients);
+        $muncity = clone ($patients);
+        $barangay = clone ($patients);
+        $on = clone ($patients);
+        $by = clone ($patients);
+
+        $fc_list = Facility::whereIn('id', $facs->groupBy('facility_id')->pluck('facility_id'))->select('id','name')->get();;
+        $pros = Proponent::whereIn('id', $proponent->groupBy('proponent_id')->pluck('proponent_id'))->select('id','proponent')->get();
+        $users = User::whereIn('userid', $by->groupBy('created_by')->pluck('created_by'))->select('userid','lname', 'fname')->get();
+        $brgy = Barangay::whereIn('id', $barangay->groupBy('barangay_id')->pluck('barangay_id'))->select('id','description')->get();
+        $mncty = Muncity::whereIn('id', $muncity->groupBy('muncity_id')->pluck('muncity_id'))->select('id','description')->get();
+        $prvnc = Province::whereIn('id', $province->groupBy('province_id')->pluck('province_id'))->select('id','description')->get();
+        $on = $on->groupBy(DB::raw('DATE(created_at)'))->pluck(DB::raw('MAX(DATE(created_at))'));
+        $all_pat = clone ($patients);
+        $proponents_code = Proponent::groupBy('proponent_code')->select(DB::raw('MAX(proponent) as proponent'), DB::raw('MAX(proponent_code) as proponent_code'),
+            DB::raw('MAX(id) as id') )->get();
+     
+            // return $patients;   
+        return view('maif.proponent_patient', [
+            'patients' => $patients->where('patients.user_type', 1)->where('sent_type','!=', 1)->paginate(50),
+            'keyword' => $request->keyword,
+            'provinces' => Province::get(),
+            'municipalities' => Muncity::get(),
+            'proponents' => $proponents_code,
+            'barangays' => Barangay::get(),
+            'facilities' => Facility::get(),
+            'user' => Auth::user(),
+            'date' =>  $date->groupBy('date_guarantee_letter')->pluck('date_guarantee_letter'),
+            'fname' => $fname->groupBy('fname')->pluck('fname'),
+            'mname' => $mname->groupBy('mname')->pluck('mname'),
+            'lname' => $lname->groupBy('lname')->pluck('lname'),
+            'fc_list' => $fc_list,
+            'pros' => $pros,
+            'code' => $code->groupBy('patient_code')->pluck('patient_code'),
+            'region' => $region->groupBy('region')->pluck('region'),
+            'pro1' => $province->groupBy('other_province')->pluck('other_province'),
+            'prvnc' => $prvnc,
+            'muncity' => $province->groupBy('other_muncity')->pluck('other_muncity'),
+            'mncty' => $mncty,
+            'barangay' => $barangay->groupBy('other_barangay')->pluck('other_barangay'),
+            'brgy' => $brgy,
+            'on' => $on,
+            'by' => $users,
+            'filter_date' => explode(',',$request->filter_date),
+            'filter_fname' => explode(',',$request->filter_fname),
+            'filter_mname' => explode(',',$request->filter_mname),
+            'filter_lname' => explode(',',$request->filter_lname),
+            'filter_facility' => explode(',',$request->filter_facility),
+            'filter_proponent' => explode(',',$request->filter_proponent),
+            'filter_code' => explode(',',$request->filter_code),
+            'filter_region' => explode(',',$request->filter_region),
+            'filter_province' => explode(',',$request->filter_province),
+            'filter_municipality' => explode(',',$request->filter_municipality),
+            'filter_barangay' => explode(',',$request->filter_barangay),
+            'filter_on' => explode(',',$request->filter_on),
+            'filter_by' => explode(',',$request->filter_by),
+            'generate_dates' => $filter_date,
+            'gen' => $request->gen,
+            'order' => $order,
+            'id_pat' => ''
+        ]);
+     }
 }

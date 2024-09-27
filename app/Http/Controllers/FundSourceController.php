@@ -12,6 +12,9 @@ use App\Models\Transfer;
 use App\Models\Patients;
 use App\Models\Admin_Cost;
 use App\Models\Fundsource_Files;
+use App\Models\Dv2;
+use App\Models\NewDV;
+use App\Models\PreDV;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -1000,6 +1003,55 @@ class FundSourceController extends Controller
             return redirect()->back()->with('update_proponent', true);
         }else{
             return redirect()->back()->with('unreachable', true);
+        }
+    }
+
+    public function version2($route_no){
+
+        $dv2 = Dv2::where('route_no', $route_no)->get();
+        $new_dv = NewDV::where('route_no', $route_no)->first();
+
+        if(count($dv2) != 0){
+            $dv2 =  Dv2::where('route_no', $route_no)->leftJoin('patients as p1', 'dv2.lname', '=', 'p1.id')
+                    ->leftJoin('patients as p2', 'dv2.lname2', '=', 'p2.id')
+                    ->select('dv2.*', 'p1.lname as lname1', 'p2.lname as lname_2')
+                    ->get();
+                
+            $total = Dv2::where('route_no', $route_no)
+                    ->select(DB::raw('SUM(REPLACE(amount, ",", "")) as totalAmount'))
+                    ->first()->totalAmount;   
+
+            return view('maif.dv2', [
+                'dv2'=> $dv2,
+                'total' => $total
+            ]);
+        }else if($new_dv){
+
+            $pre_dv = PreDV::where('id', $new_dv->predv_id)->with(
+                [
+                    'facility:id,name',
+                    'new_dv',
+                    'extension' => function ($query) {
+                        $query->with(
+                            [
+                                'proponent:id,proponent',
+                                'controls',
+                                'saas' => function ($query) {
+                                    $query->with([
+                                        'saa:id,saa'
+                                    ]);
+                                }
+                            ]
+                        );
+                    }
+                ]
+            )->first();
+        
+            return view('maif.predv', [
+                'result' => $pre_dv
+            ]);
+        }else{
+            return "No disbursement version 2 found on this dv!";
         }
     }
 }

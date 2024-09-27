@@ -372,7 +372,7 @@
             @endforeach
             <div style="page-break-before: always;"></div>
             <div style="width: 100%; text-align:center;margin-top:5px">
-                <h5><b>V1</b><h3>
+                <h6><b>V1 - {{$pre_dv->facility->name}}</b><h6>
             </div>
             <div style="width:100%; border:1px solid black">
                 @foreach($pre_dv->extension as $index => $row)
