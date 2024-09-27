@@ -41,14 +41,14 @@ use App\Models\TrackingDetails;
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th style="padding:5px; min-width:250px"></th>
+                            <th style="padding:5px; min-width:200px"></th>
                             <th style="text-align:center;min-width:150px ">
                                 <a class="text-info select_all">Release All</a>
                             </th>
                             <th>Route</th>
                             <th>Remarks</th>
                             <th>Forwarded</th>
-                            <th class="status">Status
+                            <th class="status" style="min-width:100px">Status
                                 <i id="stat_i" class="typcn typcn-filter menu-icon"><i>
                                 <div class="filter" id="stat_div" style="display:none;">
                                     <select style="width: 120px;" id="stat_select" name="stat_select" multiple>
@@ -77,7 +77,7 @@ use App\Models\TrackingDetails;
                                     </select>
                                 </div>  
                             </th>
-                            <th class="proponent">Proponent
+                            <th class="proponent" style="min-width: 300px">Proponent
                                 <i id="proponent_i" class="typcn typcn-filter menu-icon"><i>
                                 <div class="filter" id="proponent_div" style="display:none;">
                                     <select style="width: 120px;" id="proponent_select" name="proponent_select" multiple>

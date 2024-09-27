@@ -325,7 +325,7 @@
                 </table>
             </div>
             @else
-                <div class="alert alert-danger" role="alert" style="width: 100%; margin-top:5px">
+                <div class="alert alert-danger" role="alert" style="width: 100%; margin-top:40px">
                 <i class="typcn typcn-times menu-icon"></i>
                     <strong>No patient found!</strong>
                 </div>
