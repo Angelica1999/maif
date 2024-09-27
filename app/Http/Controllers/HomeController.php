@@ -237,7 +237,7 @@ class HomeController extends Controller
         $on = $on->groupBy(DB::raw('DATE(created_at)'))->pluck(DB::raw('MAX(DATE(created_at))'));
         $all_pat = clone ($patients);
         $proponents_code = Proponent::groupBy('proponent_code')->select(DB::raw('MAX(proponent) as proponent'), DB::raw('MAX(proponent_code) as proponent_code'),DB::raw('MAX(id) as id') )->get();
-        // return $patients->paginate(5);
+
         return view('home', [
             'patients' => $patients->paginate(50),
             'keyword' => $request->keyword,

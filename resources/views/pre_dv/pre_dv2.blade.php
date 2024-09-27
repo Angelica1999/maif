@@ -168,14 +168,15 @@ use App\Models\TrackingDetails;
                                 <td><a data-toggle="modal" data-backdrop="static" href="#view_v2" onclick="viewV1({{$row->id}})">{{$row->facility->name}}</a></td>
                                 <td>
                                     @foreach($row->extension as $index => $data)
-                                    {{$data->proponent->proponent}}
-                                    @if($index + 1 % 2 == 0)
-                                    <br>
-                                    @endif
-                                    @if($index < count($row->extension) - 1)
-                                        ,
+                                        {{$data->proponent->proponent}}
+                                        @if($index + 1 % 2 == 0)
+                                        <br>
                                         @endif
-                                        @endforeach
+                                        
+                                        @if($index < count($row->extension) - 1)
+                                            ,
+                                        @endif
+                                    @endforeach
                                 </td>
                                 <td>{{number_format(str_replace(',','',$row->grand_total), 2, '.',',')}}</td>
                                 <td>{{$row->user->lname .', '.$row->user->fname}}</td>
