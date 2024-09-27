@@ -666,6 +666,7 @@ class DvController extends Controller
 
     function obligate(Request $request){
         $dv= Dv::where('id', $request->input('dv_id'))->first();
+        // return $dv;
         if($dv){
             $saa= array_map('intval', json_decode($dv->fundsource_id));
             $proponent= array_map('intval', json_decode($dv->proponent_id));
@@ -677,8 +678,15 @@ class DvController extends Controller
                 $info->save();
 
                 $utilization = Utilization::where('div_id', $dv->route_no)->where('fundsource_id', $saa_list)
-                    ->where('proponent_id', $proponent[$index])->where('status', 0)->whereNull('obligated')->orderBy('id', 'desc')->first();
+                    ->where('proponent_id', $proponent[$index])->where('status', 0)->orderBy('id', 'desc')->first();
+                    //->whereNull('obligated')
                 if($utilization != null){
+
+                    if($utilization->obligated == 1){
+                        $info->remaining_balance = floatval(str_replace(',','', $info->remaining_balance)) + floatval(str_replace(',','', $utilization->budget_utilize));
+                        $info->save();
+                    }
+
                     $utilization->budget_bbalance = $info->remaining_balance + floatval(str_replace(',','', $amount[$index]));
                     $utilization->budget_utilize = $amount[$index];
                     $utilization->obligated = 1;

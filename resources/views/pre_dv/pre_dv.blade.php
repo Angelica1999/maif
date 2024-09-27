@@ -510,11 +510,20 @@
 
         function validateAmount(element) {
             if (event.keyCode === 32) {
-                event.preventDefault();
+                event.preventDefault(); 
             }
-            var cleanedValue = element.value.replace(/[^\d.]/g, '');
+
+            var cleanedValue = element.value.replace(/[^\d.]/g, ''); 
             var numericValue = parseFloat(cleanedValue);
+
             if (!isNaN(numericValue) || cleanedValue === '' || cleanedValue === '.') {
+                var parts = cleanedValue.split('.');
+                if (parts.length > 1) {
+                    parts[1] = parts[1].substring(0, 2); 
+                }
+
+                cleanedValue = parts.join('.'); 
+
                 element.value = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
             } else {
                 element.value = ''; 
@@ -566,6 +575,7 @@
                 total_saa = parseFloat(total_saa) || 0; 
                 total_saa = total_saa.toFixed(2);
                 total_saa = Number(total_saa) + Number(amount);
+                total_saa = total_saa.toFixed(2);
 
                 if(total_saa > total_pro){
                     alert('Mismatch total amount!');
@@ -619,7 +629,6 @@
         function inputted_fundsource(data){
             var total = 0;
             data.find('.saa_amount').each(function(){
-                console.log('check_here');
                 var amount = parseFloat(($(this).val()).replace(/,/g, '')) || 0;
                 total += amount;
             });
@@ -667,7 +676,7 @@
                                         .text('')
                                         .html('<span class="typcn typcn-minus menu-icon"></span>');
                                 }); 
-                                data.val(saa_balance);
+                                data.val(saa_balance.toFixed(2));
                             }else{
                                 data.val('');
                                 inputted_fundsource(clone_pro)
@@ -822,6 +831,8 @@
                         };
                         fundsource_clone.push(data1);
                     });
+
+                    saa_total = saa_total.toFixed(2);
                 
                     if(saa_total != parseFloat(total_amount.replace(/,/g, ''))){
                         Lobibox.alert('error',{
