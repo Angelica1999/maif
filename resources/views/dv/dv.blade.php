@@ -197,7 +197,7 @@
                                                 $doc_id= 0;
                                             }
                                         ?>
-                                        <button data-toggle="modal" data-target="#releaseTo" data-id="{{ $doc_id }}" data-route_no="{{ $dvs->route_no }}" onclick="putRoute($(this))" style="background-color:#1E90FF;color:white; width:85px;" type="button" class="btn btn-xs">Release To</button>
+                                        <button data-toggle="modal" data-target="#releaseTo" data-id="{{ $doc_id }}" data-route_no="{{ $dvs->route_no }}" onclick="putRoute($(this))" style="background-color:#1E90FF;color:white; width:70px;" type="button" class="btn btn-xs">Release To</button>
                                     @else
                                         <a href="#obligate"  onclick="obligateDv('{{$dvs->route_no}}', 'add_dvno')" style="background-color:teal;color:white; width:83px;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">{{ $dvs->route_no }}</a>
                                     @endif

@@ -1586,7 +1586,13 @@
     }
 
     function onchangeForPatientCode(data) {
-        var facility_id = $('#facility_id').val();
+        
+        // var facility_id = $('#facility_id').val();
+
+        if(facility_id == 0){
+            facility_id = $('#facility_id').val();
+        }
+
         if(edit_c == 0){
             if(data.val()) {
                 $.get("{{ url('patient/code').'/' }}"+data.val()+"/"+facility_id, function(result) {
