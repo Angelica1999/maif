@@ -133,7 +133,7 @@
                           <td style="width: 58%;vertical-align:top">
                               <p style="text-align:justify; margin-bottom:8px; line-height: 1.3;">For reimbursement of medical services rendered to patients under the Medical 
                               Assistance for Indigent Patient Program for {{$pre_dv->facility->name}}
-                              per billing statement dated {{date('F Y', strtotime($result->date_from))}} {{!Empty($result->date_to)?date('F Y', strtotime($result->date_to)):''}}
+                              per billing statement dated {{date('F Y', strtotime($result->date_from))}} {{!Empty($result->date_to)?' - '.date('F Y', strtotime($result->date_to)):''}}
                               in the amount of:</p>
                               
                               @foreach($fundsources as $index=> $fund_saa)

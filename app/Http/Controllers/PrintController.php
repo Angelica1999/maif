@@ -411,7 +411,7 @@ class PrintController extends Controller
                 'info' => $info,
                 'amount' => $grouped->sum('amount')
             ];
-            
+
             if(count($grouped) >=5){
                 $pdf = PDF::loadView('pre_dv.new_pdf1', $data);
             }else{
@@ -450,7 +450,7 @@ class PrintController extends Controller
             $data = [
                 'result'=> $pre_dv
             ];
-            
+
             $pdf = PDF::loadView('pre_dv.pre_pdf', $data);
             $pdf->setPaper('Folio');
             

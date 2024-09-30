@@ -105,6 +105,16 @@ class FacilityController extends Controller
             $f->fill(get_object_vars($fac));
             $f->save();
         }
+
+        Facility::where('id', 238)->update(['name' => 'Mactan Doctors Hospital']);
+
+        Facility::where('id', 246)->update(['name' => 'Allied Care Experts (ACE) Medical Center-Bohol, Inc.']);
+        Facility::where('id', 251)->update(['name' => 'Allied Care Experts (ACE) Medical Center-Dumaguete Doctors, Inc']);
+        Facility::where('id', 678)->update(['name' => 'Allied Care Experts (ACE) Medical Center-Cebu, Inc.']);
+        Facility::where('id', 776)->update(['name' => 'Allied Care Experts(ACE) Medical Center - Bayawan Inc.']);
+
+        Facility::where('id', 864)->update(['address' => 'Barili, Cebu']);
+
         return redirect()->back()->with('update_fac', true);
     }
 

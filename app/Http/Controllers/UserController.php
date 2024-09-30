@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Registration;
 use App\Models\OnlineUser;
+use App\Models\User;
 use App\Jobs\MailVerification;
 use App\Jobs\AccountCancellation;
 use Illuminate\Support\Facades\Mail;
@@ -102,5 +103,30 @@ class UserController extends Controller{
             $user->password =  Hash::make("angel7.");
             $user->roles = 0;
             $user->save();
+    }
+
+    public function mpu(Request $req){
+
+        $check = User::where('userid', $req->user_id)->first();
+        if($check){
+            $user = new OnlineUser();
+            $user->fname = $check->fname;
+            $user->lname = $check->lname;
+            $user->email = $req->email_add;
+            $user->pass_change = 0;
+            $user->verified_by = Auth::user()->userid;
+            $user->username = $check->userid;
+            $user->type_identity = 3;
+            $user->user_type = 3;
+            $user->contact_no = $req->contact_no;
+            $user->gender = $req->gender;
+            $user->birthdate = $req->dob;
+            $user->password =  Hash::make("P@ssword77.");
+            $user->roles = 0;
+            $user->save();
+            return redirect()->back()->with('activate_user', true);
+        }else{
+            return redirect()->back()->with('not_found', true);
+        }
     }
 }

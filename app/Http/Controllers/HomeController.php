@@ -237,7 +237,7 @@ class HomeController extends Controller
         $on = $on->groupBy(DB::raw('DATE(created_at)'))->pluck(DB::raw('MAX(DATE(created_at))'));
         $all_pat = clone ($patients);
         $proponents_code = Proponent::groupBy('proponent_code')->select(DB::raw('MAX(proponent) as proponent'), DB::raw('MAX(proponent_code) as proponent_code'),DB::raw('MAX(id) as id') )->get();
-        // return $patients->paginate(5);
+
         return view('home', [
             'patients' => $patients->paginate(50),
             'keyword' => $request->keyword,
@@ -719,7 +719,6 @@ class HomeController extends Controller
     }
 
     public function createPatientSave(Request $request) {
-        
         $data = $request->all();
         Patients::create($request->all());
         $patientCount = Patients::where('fname', $request->fname)
@@ -829,13 +828,42 @@ class HomeController extends Controller
         $patientLogs->fill(Arr::except($patient->toArray(), ['status', 'sent_type', 'user_type']));
         unset($patientLogs->id);
         $patientLogs->save();
+        
+        session()->flash('patient_update', true);
+        $patient->fname = $request->input('fname');
+        $patient->lname = $request->input('lname');
+        $patient->mname = $request->input('mname');
+        $patient->dob   = $request->input('dob');
+        $patient->region = $request->input('region');
 
+        if($patient->region !== "Region 7"){
+            $patient->other_province = $request->input('other_province');
+            $patient->other_muncity = $request->input('other_muncity');
+            $patient->other_barangay = $request->input('other_barangay');
+        }
+
+        $patient->province_id = $request->input('province_id');
+        $patient->muncity_id  = $request->input('muncity_id');
+        $patient->barangay_id = $request->input('barangay_id');
+        // $patient->fundsource_id = $request->input('fundsource_id');
+        $patient->proponent_id = $request->input('proponent_id');
+        $patient->facility_id = $request->input('facility_id');
+        $patient->patient_code = $request->input('patient_code');
+        $patient->guaranteed_amount = $request->input('guaranteed_amount');
+        $patient->actual_amount = $request->input('actual_amount');
+        $patient->remaining_balance = $request->input('remaining_balance');
         $patient->pat_rem = $request->input('pat_rem');
         $patient->sent_type = $request->input('sent_type');
         $patient->save();
         DB::commit();
+        if($val == "upsend"){
+            // return Patients::where('id', $patient->id)->first();
+            return redirect()->route('patient.sendpdf', ['patientid' => $patient->id]);
+        }else{
+            return redirect()->back();
+        }
 
-        return redirect()->back()->with('return_gl', true);
+        return redirect()->back()->with('patient_update', true);
 
     }
 

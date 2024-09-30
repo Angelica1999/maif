@@ -77,6 +77,7 @@
                         <div class="input-group">
                             <input type="text" style="text-align:center" class="form-control" id="filter_dates" value="{{($generate_dates)?$generate_dates:''}}" name="filter_dates" />
                             <button type="submit" id="gen_btn" style="background-color:teal; color:white; width:90px; height:40px; border-radius:0; " class="btn"><i class="typcn typcn-calendar-outline menu-icon"></i>Filter</button>
+
                         </div>
                         <input type="hidden" name="filter_date" id="filter_date" value="{{implode(',', $filter_date)}}"></input>
                         <input type="hidden" name="filter_fname" id="filter_fname" value="{{implode(',', $filter_fname)}}"></input>
@@ -327,7 +328,8 @@
                                 @endif
                             </td>
                             <td>{{date('F j, Y', strtotime($patient->created_at))}}</td>
-                            <td class="td">{{ $patient->encoded_by? $patient->encoded_by->lname .', '. $patient->encoded_by->fname: ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td>
+                            <td>{{ $patient->encoded_by->lname .', '. $patient->encoded_by->fname }}</td>
+                            <!-- <td class="td">{{ $patient->encoded_by? $patient->encoded_by->lname .', '. $patient->encoded_by->fname: ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td> -->
                         </tr>
                     @endforeach
                 </tbody>
@@ -1420,7 +1422,7 @@
                     removeRoute = removeRoute.replace(':id', id);
                     $('.btn.btn-danger').attr('data-id', id).css('display', 'inline-block').text('Remove');
                 }
-                $('.btn.btn-warning').attr('data-id', id).css('display', 'inline-block');
+                // $('.btn.btn-warning').attr('data-id', id).css('display', 'inline-block');
 
                 $('.fname').val(patient.fname);
                 $('.lname').val(patient.lname);
@@ -1562,14 +1564,15 @@
     }
 
     function onchangeForPatientCode(data) {
+
         // var facility_id = $('#facility_id').val();
 
         if(facility_id == 0){
             facility_id = $('#facility_id').val();
         }
-        console.log('facility', facility_id);
         if(edit_c == 0){
             if(data.val()) {
+                console.log('code', data.val());
                 $.get("{{ url('patient/code').'/' }}"+data.val()+"/"+facility_id, function(result) {
                     $(".patient_code").val(result.patient_code);
                     const formattedBalance = new Intl.NumberFormat('en-US', {
