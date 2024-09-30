@@ -829,8 +829,9 @@ class HomeController extends Controller
         $patientLogs->fill(Arr::except($patient->toArray(), ['status', 'sent_type', 'user_type']));
         unset($patientLogs->id);
         $patientLogs->save();
-        
+
         $patient->pat_rem = $request->input('pat_rem');
+        $patient->sent_type = $request->input('sent_type');
         $patient->save();
         DB::commit();
 

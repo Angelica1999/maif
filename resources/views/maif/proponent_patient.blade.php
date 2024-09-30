@@ -259,9 +259,7 @@
                                     class="group-mailCheckBox" onclick="itemChecked($(this))">
                             </td>
                             <td style="text-align:center">
-                                @if($patient->sent_type == 2)
-                                    'Return to Proponent'
-                                @endif
+                                {{ $patient->sent_type == 2 ? 'In Transit from Proponent' : ($patient->sent_type == 3 ? 'Returned back from MPU' : ( $patient->sent_type == 3 ? 'Returned back from Facility' : 'Credentials Check' )) }}
                             </td>
                             <td>{{$patient->pat_rem}}</td>
                             <td style="text-align:center;" class="group-amount" data-patient-id="{{ $patient->id }}" data-proponent-id="{{ $patient->proponent_id }}" 
@@ -277,7 +275,7 @@
                                 <a href="#" class="number_editable"  title="Actual Amount" id="{{ $patient->id }}">{{!Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}</a>
                             </td>
                             <td class="td">{{ number_format((float) str_replace(',', '', $patient->guaranteed_amount), 2, '.', ',') }}</td>
-                            <td>{{date('F j, Y', strtotime($patient->date_guarantee_letter))}}</td>
+                            <td>{{ date('F j, Y', strtotime($patient->date_guarantee_letter)) }}</td>
                             <td class="td">
                                 <a href="#update_patient" onclick="editPatient('{{ $patient->id }}')" data-backdrop="static" data-toggle="modal">
                                     {{ $patient->fname }}
@@ -348,7 +346,7 @@
             <div class="modal_body">
                 <form id="update_form" method="POST">
                     <input type="hidden" name="created_by" value="{{ $user->userid }}">
-                    <input type="hidden" name="sent_type" class="sent_type" value="3">
+                    <input type="hidden" name="sent_type" class="sent_type" value="4">
                     <div class="modal-body">
                         @csrf
                         <div class="row">
@@ -516,7 +514,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" id="close_modal" data-dismiss="modal">Close</button>
-                        <button type="submit" id="create_pat_btn" class="btn btn-primary">Process</button>
+                        <button type="submit" id="create_pat_btn" onclick="acceptPatient()" class="btn btn-primary">Process</button>
                         <button class="btn btn-warning" onclick="returnPatient()" style="display:none; color:white">Return</button>
                     </div>
                 </form>
@@ -1221,6 +1219,7 @@
             if(patient){
                
                 $('.btn.btn-warning').attr('data-id', id).css('display', 'inline-block');
+                $('.create_pat_btn').attr('data-id', id).css('display', 'inline-block');
 
                 $('.fname').val(patient.fname);
                 $('.lname').val(patient.lname);
@@ -1452,9 +1451,14 @@
     }
 
     function returnPatient(){
-        var id = event.target.getAttribute('data-id');
-        window.location.href= "patient/return/" + id;
+        $('.sent_type').val(3);
+        // var id = event.target.getAttribute('data-id');
+        // window.location.href= "patient/return/" + id;
     }
 
-    </script>
+    function updatePatient(){
+        $('.sent_type').val(4);
+    }
+
+</script>
 @endsection
