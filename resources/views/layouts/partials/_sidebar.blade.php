@@ -212,7 +212,7 @@
                     <li class="nav-item">
                       <a class="nav-link" href="{{ route('home') }}">
                         <i class="typcn typcn-document-text menu-icon"></i>
-                        <span class="menu-title">Guarantee Letter (MUP)</span>
+                        <span class="menu-title">Guarantee Letter (MPU)</span>
                       </a>
                     </li>
                     <li class="nav-item">

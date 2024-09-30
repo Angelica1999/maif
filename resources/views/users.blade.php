@@ -16,6 +16,7 @@
                     <input type="text" class="form-control" name="keyword" placeholder="Search..." value="">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
+                        <button type="button" href="#add_user" id="crt_pnt" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
                     </div>
                 </div>
             </form>
@@ -44,13 +45,13 @@
                             <td class="td">
                                 {{ 
                                     $row->user_type == 1 ? 'Proponent' : 
-                                    ($row->user_type == 2 ? 'Facility' : 'MUP') 
+                                    ($row->user_type == 2 ? 'Facility' : 'MPU') 
                                 }}
                             </td>
                             <td class="td">
                                 {{ 
                                     $row->user_type == 1 ? $row->proponent->proponent : 
-                                    ($row->user_type == 2 ? $row->facility->name : 'MUP') 
+                                    ($row->user_type == 2 ? $row->facility->name : 'MPU') 
                                 }}
                             </td>
                             <td class="td">{{$row->email}}</td>
@@ -99,7 +100,7 @@
                         <th>Name</th>
                         <th>Type</th>
                         <th>Account</th>
-                        <th>Contact</th>
+                        <th>Email</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -110,13 +111,13 @@
                             <td class="td">
                                 {{ 
                                     $row->user_type == 1 ? 'Proponent' : 
-                                    ($row->user_type == 2 ? 'Facility' : 'MUP') 
+                                    ($row->user_type == 2 ? 'Facility' : 'MPU') 
                                 }}
                             </td>
                             <td class="td">
                                 {{ 
                                     $row->user_type == 1 ? $row->proponent->proponent : 
-                                    ($row->user_type == 2 ? $row->facility->name : 'MUP') 
+                                    ($row->user_type == 2 ? $row->facility->name : 'MPU') 
                                 }}
                             </td>
                             <td class="td">{{$row->email}}</td>
@@ -161,8 +162,75 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="add_user" tabindex="-1" role="dialog" aria-hidden="true" style="opacity:1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="text-success" id="title"><i style = "font-size:30px"class="typcn typcn-user-add-outline menu-icon"></i>MPU USER PERSONAL INFO</h4><hr />
+                @csrf
+            </div>
+            <div class="modal_body">
+                <form id="contractForm" method="POST" action="{{ route('mpu') }}">
+                    <div class="modal-body">
+                        @csrf
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="lname">DTR Userid</label>
+                                    <input type="text" class="form-control user_id" style="width:220px;" id="user_id" name="user_id" placeholder="DTR USERID" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                            </div>
+                        </div>
+                        <div class="row">
+                           
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fname">GENDER</label>
+                                    <select class="form-control gender" style="width:220px;" id="gender" name="gender">
+                                        <option value="">GENDER</option>
+                                        <option value="M">MALE</option>
+                                        <option value="F">FEMALE</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="lname">Date of Birth</label>
+                                    <input type="date" class="form-control dob" style="width:220px;" id="dob" name="dob" placeholder="Date of Birth">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fname">Contact No</label>
+                                    <input type="number" class="form-control contact_no" style="width:220px;" id="contact_no" name="contact_no" placeholder="Contact No" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="lname">Email Address</label>
+                                    <input type="email" class="form-control email_add" style="width:220px;" id="email_add" name="email_add" placeholder="sample@gmail.com" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="close_modal" data-dismiss="modal">Close</button>
+                        <button type="submit" id="create_pat_btn" class="btn btn-primary">Activate User</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
+<script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 <script>
+    // $('#gender').select2();
     function cancel(id){
         $('#user_cancel').modal('show');
         $('#cancel_user').attr('action', '{{ route("cancel.user", [":id"]) }}'.replace(':id', id));

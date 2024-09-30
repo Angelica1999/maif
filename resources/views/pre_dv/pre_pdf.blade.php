@@ -111,7 +111,7 @@
                         </div>
                     @endforeach
                     <div style="margin-bottom:10px">
-                        <input type="text" class="" style="border: 2px solid black; text-decoration: underline; text-align:center; width:42%; height:25px; font-size:16px; margin-left:52%; margin-bottom:30px" value="{{ 'Total Amount Paid: '. number_format(str_replace(',','',$row->total_amount), 2, '.',',') }}">
+                        <input type="text" class="" style="border: 2px solid black; text-decoration: underline; text-align:center; width:42%; height:25px; font-size:16px; margin-left:52%; margin-bottom:30px" value="{{ 'Total Amount Paid: '. number_format(str_replace(',','',$result->grand_total), 2, '.',',') }}">
                     </div>
                 </div>
             </div>

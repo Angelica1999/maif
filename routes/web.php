@@ -239,6 +239,7 @@ Route::get('/pre-dv/image/{id}', [App\Http\Controllers\PrintController::class, '
 Route::get('/version2/{id}', [App\Http\Controllers\FundSourceController::class, 'version2'])->name('version2');
 Route::get('/patients', [App\Http\Controllers\HomeController::class, 'patients'])->name('patients');
 
+Route::post('/mpu/activate', [App\Http\Controllers\UserController::class, 'mpu'])->name('mpu');
 
 
 

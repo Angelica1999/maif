@@ -406,6 +406,18 @@
               msg: 'Return patient successfully!'
            });
         @endif
+        @if(session('activate_user'))
+           <?php session()->forget('activate_user'); ?>
+           Lobibox.notify('success', {
+              msg: 'User was successfully activated!'
+           });
+        @endif
+        @if(session('not_found'))
+           <?php session()->forget('not_found'); ?>
+           Lobibox.notify('error', {
+              msg: 'User was not found!'
+           });
+        @endif
     </script>
     @yield('js')
 </body>

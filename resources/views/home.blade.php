@@ -1422,7 +1422,7 @@
                     removeRoute = removeRoute.replace(':id', id);
                     $('.btn.btn-danger').attr('data-id', id).css('display', 'inline-block').text('Remove');
                 }
-                $('.btn.btn-warning').attr('data-id', id).css('display', 'inline-block');
+                // $('.btn.btn-warning').attr('data-id', id).css('display', 'inline-block');
 
                 $('.fname').val(patient.fname);
                 $('.lname').val(patient.lname);
@@ -1572,6 +1572,7 @@
         }
         if(edit_c == 0){
             if(data.val()) {
+                console.log('code', data.val());
                 $.get("{{ url('patient/code').'/' }}"+data.val()+"/"+facility_id, function(result) {
                     $(".patient_code").val(result.patient_code);
                     const formattedBalance = new Intl.NumberFormat('en-US', {
