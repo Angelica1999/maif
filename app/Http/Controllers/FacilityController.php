@@ -15,6 +15,8 @@ use App\Models\Barangay;
 use App\Models\Bills;
 use App\Models\BillExtension;
 use App\Models\BillTracking;
+use App\Models\Transmittal;
+use Illuminate\Support\Facades\Http;
 
 class FacilityController extends Controller
 {
@@ -188,5 +190,19 @@ class FacilityController extends Controller
         }
 
         return redirect()->back()->with('process_bills', true);
+    }
+
+    public function incoming(Request $req){
+
+        $transmittal = Transmittal::where('status', 1)->with('user')->orderBy('id', 'desc')->paginate(50);
+        return view('facility.incoming',[
+            'transmittal' => $transmittal
+        ]);
+    }
+
+    public function getTrans($id){
+
+        $response = Http::get('http://192.168.110.148/guaranteeletter/transmittal/summary/'.$id);
+        return $response;
     }
 }

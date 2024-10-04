@@ -259,7 +259,7 @@
                                     class="group-mailCheckBox" onclick="itemChecked($(this))">
                             </td>
                             <td style="text-align:center">
-                                {{ $patient->sent_type == 2 ? 'In Transit from Proponent' : ($patient->sent_type == 3 ? 'Returned back from MPU' : ( $patient->sent_type == 3 ? 'Returned back from Facility' : 'Credentials Check' )) }}
+                                {{ $patient->sent_type == 2 ? 'In Transit from Proponent' : ($patient->sent_type == 3 ? 'Returned back from MPU' : ( $patient->status == 2 ? 'Returned back from Facility' : 'Credentials Check' )) }}
                             </td>
                             <td>{{$patient->pat_rem}}</td>
                             <td style="text-align:center;" class="group-amount" data-patient-id="{{ $patient->id }}" data-proponent-id="{{ $patient->proponent_id }}" 
@@ -1212,7 +1212,7 @@
             patient = result;
             console.log('res', patient.id);
             edit_c = 1;
-            var editRoute = `{{ route('patient.update', ['id' => ':id']) }}`;
+            var editRoute = `{{ route('patient.return', ['id' => ':id']) }}`;
             editRoute = editRoute.replace(':id', id);
             $('#update_form').attr('action', editRoute);
             console.log('res', patient.fname);

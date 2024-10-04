@@ -290,6 +290,35 @@
         </ul>
         <ul class="nav flex-column" style=" margin-bottom: 0;">
             <li class="nav-item">
+                <a class="nav-link" href="#">
+                <i class="typcn typcn-group menu-icon"></i>
+                    <span class="menu-title">Transmittal</span>
+                    &nbsp;&nbsp;<i class="typcn typcn-arrow-sorted-down menu-icon"></i>
+                </a>
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{ route('incoming') }}">
+                        <i class="typcn typcn-document-text menu-icon"></i>
+                        <span class="menu-title">Incomming Send Bills</span>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{ route('patients') }}">
+                        <i class="typcn typcn-document-text menu-icon"></i>
+                        <span class="menu-title">Returned Send Bills</span>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{ route('group') }}">
+                        <i class="typcn typcn-group-outline menu-icon"></i>
+                        <span class="menu-title">Accepted Send Bills</span>
+                      </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <ul class="nav flex-column" style=" margin-bottom: 0;">
+            <li class="nav-item">
                 <a class="nav-link" href="#" >
                     <i><img class="menu-icon" src="\maif\public\images\user_account_16.png"></i>
                     <span class="menu-title" style="margin-left:20px">Accounts</span>

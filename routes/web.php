@@ -241,6 +241,8 @@ Route::get('/patients', [App\Http\Controllers\HomeController::class, 'patients']
 
 Route::post('/mpu/activate', [App\Http\Controllers\UserController::class, 'mpu'])->name('mpu');
 
+Route::get('/incoming', [App\Http\Controllers\FacilityController::class, 'incoming'])->name('incoming');
+Route::get('/transmittal/{id}', [App\Http\Controllers\FacilityController::class, 'getTrans'])->name('transmittal.get');
 
 
 

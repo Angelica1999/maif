@@ -20,6 +20,7 @@ use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\SMTP;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\File;
+use \Mpdf\Mpdf;
 
 // use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
@@ -149,10 +150,19 @@ class PrintController extends Controller
             'saa_amount' => $saa_amount,
             'result' => $result
         ];
+        $html = view('dv.dv_pdf', $data)->render();
+        // return $html;
+        $mpdf = new Mpdf([
+            'format' => 'A4',
+            'strictVariables' => false
+        ]);
+
+        $mpdf->WriteHTML($html);
+        return $mpdf->Output('dv.pdf', 'I');
     
-        $pdf = PDF::loadView('dv.dv_pdf', $data);
-        $pdf->setPaper('Folio');
-        return $pdf->stream('dv.pdf');
+        // $pdf = PDF::loadView('dv.dv_pdf', $data);
+        // $pdf->setPaper('Folio');
+        // return $pdf->stream('dv.pdf');
     }
 
     public function dv2Pdf($route_no) {

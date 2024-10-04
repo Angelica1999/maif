@@ -328,8 +328,7 @@
                                 @endif
                             </td>
                             <td>{{date('F j, Y', strtotime($patient->created_at))}}</td>
-                            <td>{{ $patient->encoded_by->lname .', '. $patient->encoded_by->fname }}</td>
-                            <!-- <td class="td">{{ $patient->encoded_by? $patient->encoded_by->lname .', '. $patient->encoded_by->fname: ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td> -->
+                            <td class="td">{{ $patient->encoded_by? $patient->encoded_by->lname .', '. $patient->encoded_by->fname: ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td>
                         </tr>
                     @endforeach
                 </tbody>
