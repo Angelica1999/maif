@@ -288,23 +288,25 @@
                 </ul>
             </li>
         </ul>
-        <ul class="nav flex-column" style=" margin-bottom: 0;">
-            <li class="nav-item">
-                <a class="nav-link" href="#" >
-                    <i><img class="menu-icon" src="\maif\public\images\user_account_16.png"></i>
-                    <span class="menu-title" style="margin-left:20px">Accounts</span>
-                    <i class="typcn typcn-arrow-sorted-down menu-icon"></i>
-                </a>
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('users') }}">
-                            <i><img class="menu-icon" src="\maif\public\images\user_accounts_16.png"></i>
-                            <span class="menu-title" style="margin-left:15px">USERS</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-        </ul>
+        @if( $id == 2760 || $id == 2680)
+            <ul class="nav flex-column" style=" margin-bottom: 0;">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" >
+                        <i><img class="menu-icon" src="\maif\public\images\user_account_16.png"></i>
+                        <span class="menu-title" style="margin-left:20px">Accounts</span>
+                        <i class="typcn typcn-arrow-sorted-down menu-icon"></i>
+                    </a>
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('users') }}">
+                                <i><img class="menu-icon" src="\maif\public\images\user_accounts_16.png"></i>
+                                <span class="menu-title" style="margin-left:15px">USERS</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        @endif
         <ul class="nav flex-column" style=" margin-bottom: 0;">
             <li class="nav-item">
                 <a class="nav-link" href="#">
