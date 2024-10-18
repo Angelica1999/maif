@@ -303,13 +303,13 @@
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" href="{{ route('patients') }}">
+                      <a class="nav-link" href="{{ route('returned') }}">
                         <i class="typcn typcn-document-text menu-icon"></i>
                         <span class="menu-title">Returned Send Bills</span>
                       </a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" href="{{ route('group') }}">
+                      <a class="nav-link" href="{{ route('accepted') }}">
                         <i class="typcn typcn-group-outline menu-icon"></i>
                         <span class="menu-title">Accepted Send Bills</span>
                       </a>
@@ -365,8 +365,14 @@
                 </ul>
             </li>
         </ul>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ route('logbook') }}">
+            <i class="typcn typcn-flow-switch menu-icon"></i>
+            <span class="menu-title">Logbook</span>
+          </a>
+        </li>
 
-        <ul class="nav flex-column" style=" margin-bottom: 0;">
+        <!-- <ul class="nav flex-column" style=" margin-bottom: 0;">
             <li class="nav-item">
                 <a class="nav-link" href="#">
                     <i class="typcn typcn-flow-switch menu-icon"></i>
@@ -382,7 +388,7 @@
                   </li>
                 </ul>
             </li>
-        </ul>
+        </ul> -->
         <li class="nav-item">
           <a class="nav-link" href="{{ route('facility') }}">
             <i class="typcn typcn-flow-switch menu-icon"></i>

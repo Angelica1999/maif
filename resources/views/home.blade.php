@@ -328,7 +328,7 @@
                                 @endif
                             </td>
                             <td>{{date('F j, Y', strtotime($patient->created_at))}}</td>
-                            <td class="td">{{ $patient->encoded_by? $patient->encoded_by->lname .', '. $patient->encoded_by->fname: ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td>
+                            <td class="td">{{ $patient->user_type == null ? $patient->encoded_by->lname .', '. $patient->encoded_by->fname: ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -1277,14 +1277,25 @@
           
         });
         $(document).on('click', '.select_all', function() {
-            if(all_patients){
+            // if(all_patients){
                 $('#patient_table').find('input.group-mailCheckBox').prop('checked', true).trigger('change');
                 $('.send_mails').val('').show();
-                all_patients.forEach(function(p){
-                    id_list.push(String(p.id));
-                    mail_ids.push('mailCheckboxId_'+p.id);
-                });
-            }
+
+                // $('#patient_table').find('input.group-mailCheckBox:checked').each(function() {
+                //     var p_id = $(this).val(); // or use $(this).data('id') if the ID is stored as a data attribute
+
+                //     // Add the checkbox value (ID) to id_list
+                //     id_list.push(String(p_id));
+
+                //     // Create mailCheckboxId based on the checkbox value and add it to mail_ids
+                //     mail_ids.push('mailCheckboxId_' + p_id);
+                // });
+
+                // all_patients.forEach(function(p){
+                //     id_list.push(String(p.id));
+                //     mail_ids.push('mailCheckboxId_'+p.id);
+                // });
+            // }
         });
         $(document).on('click', '.unselect_all', function() {
             $('#patient_table').find('input.group-mailCheckBox').prop('checked', false).trigger('change');

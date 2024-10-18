@@ -204,7 +204,7 @@
                                                     ?>
                                                     <option value="{{$item->fundsource_id}}" dataproponentInfo_id="{{$item->id}}" dataprogroup="{{$item->proponent->pro_group}}" data-facilities=""
                                                         dataproponent="{{$item->proponent->id}}" d_color="{{($rem_balance == 0)?'red':'normal'}}" style="background-color:green"
-                                                        {{($row->info_id == $item->id)?'selected':''}}>{{$text_display}}</option>
+                                                        {{($row->info_id == $item->id)?'selected':''}}>{{$text_display}} /// {{$item->id}} // {{$row->info_id}}</option>
                                                 @endforeach
                                             </select> 
                                             <input type="hidden" name="info_id[]" id="info_id" class="info_id" value="{{$row->info_id}}">

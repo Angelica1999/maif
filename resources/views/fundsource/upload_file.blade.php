@@ -74,7 +74,7 @@
                     @csrf
                     <div class="form-group">
                         <b><label>Files:</label><b><br>
-                        <input class="form-control" type="file"  id="file-upload" name="files[]" multiple>
+                        <input style="" class="form-control" type="file"  id="file-upload" name="files[]" multiple>
                     </div>
                 </div>
                 <div class="modal-footer">

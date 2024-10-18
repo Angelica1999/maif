@@ -22,11 +22,10 @@
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
-                        <button type="button" href="#logbook" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Receive</button>
                     </div>
                 </div>
             </form>
-            <h1 class="card-title">TRANSMITTAL : INCOMING</h1>
+            <h1 class="card-title">TRANSMITTAL : ACCEPTED</h1>
             <p class="card-description">
                 MAIF-IPP
             </p>
@@ -35,9 +34,8 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th style="width:150px"></th>
+                                <th></th>
                                 <th>Control No</th>
-                                <th>Status</th>
                                 <th>Prepared Date</th>
                                 <th>Total Amount</th>
                                 <th>Created On</th>
@@ -48,15 +46,9 @@
                             @foreach($transmittal  as $item)
                                 <tr>
                                     <td>
-                                        @if($item->remarks == 2)
-                                            <button onclick="returnTrans({{ $item->id }})" href="#return" style="border-radius:0; color:white" data-toggle="modal" data-backdrop="static" type="button" class="btn btn-warning btn-xs">Return</button>
-                                            <button onclick="accept({{ $item->id }})" style="border-radius:0; color:white" type="button" class="btn btn-success btn-xs">Accept</button>
-                                        @else
-                                            <i class="text-danger">this transmittal is not yet received</i>
-                                        @endif
+                                        <button onclick="disRem({{ $item->id }})" class="btn btn-sm btn-success" style="border-radius:0px" data-toggle="modal" href="#trans_remarks">Remarks</button>
                                     </td>
                                     <td><a onclick="displaySum({{ $item->id }})" href="#summary_display" data-toggle="modal" data-backdrop="static">{{ $item->control_no }}</a></td>
-                                    <td></td>
                                     <td>{{ date('F j, Y', strtotime($item->prepared_date)) }}</td>
                                     <td>{{ number_format($item->total, 2, '.', ',') }}</td>
                                     <td>{{ date('F j, Y', strtotime($item->created_at)) }}</td>
@@ -72,6 +64,9 @@
                     <strong>No bills found!</strong>
                 </div>
             @endif
+            @error('trans_files.*')
+                <div class="alert alert-danger">{{ $message }}</div>
+            @enderror
             <div class="pl-5 pr-5 mt-5" id ="pagination_links">
                 {!! $transmittal->appends(request()->query())->links('pagination::bootstrap-5') !!}
             </div>
@@ -90,8 +85,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" data-dismiss="modal" style="background-color: gray; color: white; border: none; padding: 8px 15px; cursor: pointer; float:right">CLOSE</button>
-                <button type="button" style="border: none; padding: 8px 15px; cursor: pointer; float:right; color:white" class="btn-warning">RETURN</button>
-                <button type="button" style="border: none; padding: 8px 15px; cursor: pointer; float:right" class="btn-success">ACCEPT</button>
+                <!-- <button type="button" style="border: none; padding: 8px 15px; cursor: pointer; float:right; color:white" class="btn-warning">RETURN</button>
+                <button type="button" style="border: none; padding: 8px 15px; cursor: pointer; float:right" class="btn-success">ACCEPT</button> -->
             </div>
         </div>
     </div>
@@ -127,56 +122,30 @@
     </div>
 </div>
 
-<div class="modal fade" id="logbook" tabindex="-1" role="dialog" aria-hidden="true" style="opacity:1">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="text-success" id="title"><i style = "font-size:30px"class="typcn typcn-user-add-outline menu-icon"></i>ADD LOGS</h4><hr />
+<div class="modal fade" id="trans_remarks" role="dialog" style="overflow-y:scroll;">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content" style="border-radius:0px">
+            <div class="modal-header" style="text-align:center">
+                <h3 class="text-success modal-title"><i style="font-size:20px" class="typcn typcn-printer menu-icon"></i>TRANSMITTAL REMARKS</h3>
+            </div>
+            <form action="{{ route('accepted.remarks') }}" method="POST" enctype="multipart/form-data">
                 @csrf
-            </div>
-            <div class="modal_body">
-                <form id="log_form" method="POST" action="{{ route('logbook.save') }}">
-                    <div class="modal-body">
-                        @csrf
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="fname">Control No</label>
-                                    <select class="form-control control_no" style="width:220px;" name="control_no[]" placeholder="Select Control No" multiple required>
-                                        @foreach($control_no as $item)
-                                            <option value="{{ $item}}">{{ $item }}</option>
-                                        @endforeach
-                                    </select>                                
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="lname">Received On</label>
-                                    <input type="date" class="form-control" style="width:220px;" name="received_on" value="{{ now()->format('Y-m-d') }}" required>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="fname">Delivered By</label>
-                                    <input type="text" class="form-control" style="width:220px;" name="delivered_by" oninput="this.value = this.value.toUpperCase()" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="fname">Received By</label>
-                                    <input type="text" class="form-control" style="width:220px;" name="received_by" oninput="this.value = this.value.toUpperCase()" required>
-                                </div>
-                            </div>
-                        </div>
+                <input type="hidden" name="rem_id" class="rem_id">
+                <div class="trans_rem">
+                    <div class="" style="display: flex; align-items: center; padding: 10px;">
+                        <h3 style="width: 10%;">Link:</h3>
+                        <textarea style="width: 90%;" class="form-control" name="trans_link"></textarea>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" id="close_modal" data-dismiss="modal">Close</button>
-                        <button type="submit" id="create_pat_btn" class="btn btn-success">Add</button>
+                    <div class="" style="display: flex; align-items: center; padding: 10px;">
+                        <h3 style="width: 10%;">Files:</h3>
+                        <!-- <input type="file" name="trans_files[]" multiple> -->
+                        <input style="width:90%" class="form-control" id="file-upload" type="file" name="trans_files[]" multiple>
                     </div>
-                </form>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" style="border: none; padding: 8px 15px; cursor: pointer; float:right" class="btn-success">Submit</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -184,49 +153,7 @@
 @endsection
 @section('js')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
-
 <script>
-
-    $('.control_no').select2({
-        tags: true,
-    });
-
-    function addRow(id){
-        $.get("{{ url('transmittal/references/2').'/' }}" + id, function(result){
-            $('.con').append(result);
-        });
-    }
-
-    function accept(id){
-        $.get("{{ url('transmittal/accept').'/' }}" + id, function(result){
-            if(result == 'success'){
-                Swal.fire({
-                    icon: "success",
-                    title: "Success!",
-                    text: "Transmittal was sent!",
-                    timer: 1000,
-                    showConfirmButton: false 
-                }).then(() => {
-                    location.reload(); 
-                });
-            }
-        });
-    }
-    
-    $(document).ready(function () {
-        $(document).on('click', '.remove', function () {
-            $(this).closest('.clone').remove();
-        });
-    });
-
-    function returnTrans(id){
-        $('.id').val(id);
-        $.get("{{ url('transmittal/references/1').'/' }}" + id, function(result){
-            $('.return_body').html(result);
-        });
-    }
-
 
     var trans_id = 0;
     
@@ -238,13 +165,10 @@
         });
     }
 
-    function getPortrait(){
-        window.open('print/portrait/' + trans_id , '_blank');
+    function disRem(id){
+        $('.rem_id').val(id);
+        console.log(id);
     }
 
-    function getLandscape(){
-        window.open('print/landscape/' + trans_id, '_blank');
-    }
-  
 </script>
 @endsection
