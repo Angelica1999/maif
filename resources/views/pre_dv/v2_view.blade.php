@@ -206,7 +206,7 @@
                             <td style="width:14%; border-left: 0 " ></td>
                             <td style="width:14%; border-left: 0 " ></td>
                             <td style="width:14%; border-left: 0; vertical-align:bottom" class= "header" >
-                                <p id="total_amount" style=" margin-top:10px">{{$amount}}</p>
+                                <p id="total_amount" style=" margin-top:10px">{{ number_format($amount, 2,'.',',') }}</p>
                                 <input name="total_amount" type="hidden" value="{{$amount}}">
                                 <input type="hidden" name="total">
                                 <br><br><br><br><br>

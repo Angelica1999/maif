@@ -374,8 +374,8 @@
                 <button id="close_btn" style = "background-color:lightgray" type="button" class="btn btn-sm btn" data-dismiss="modal"><i class="typcn typcn-times"></i>Close</button>
                 @if( $type == 'pending_new')
                     <button type="submit" id="submitBtn" class="btn btn-sm btn-primary"><i class="typcn typcn-tick menu-icon"></i>Obligate</button>
-                @elseif( $type == 'cashier_pending')
-                    <button type="submit" id="submitBtn" class="btn btn-sm btn-primary"><i class="typcn typcn-tick menu-icon"></i>Paid</button>
+                @elseif( $type == 'deferred')
+                    <button type="submit" id="submitBtn" class="btn btn-sm btn-primary"><i class="typcn typcn-tick menu-icon"></i>Pay</button>
                 @endif
 
             </div>

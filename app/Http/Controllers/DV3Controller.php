@@ -310,8 +310,7 @@ class Dv3Controller extends Controller
             
             $facility_id = (string) $dv3->facility_id;
             $add = $dv3->facility_id == 42? '852' : ($dv3->facility_id == 852?'42':0);
-            $add = (string) $add;
-            $info = ProponentInfo::with('facility:id,name,address', 'fundsource:id,alocated_funds,remaining_balance,admin_cost', 'proponent')
+            $info = ProponentInfo::with('facility:id,name,address', 'fundsource:id,saa,alocated_funds:remaining_balance', 'proponent')
                 ->where(function ($query) use ($facility_id, $add) {
                     $query->whereJsonContains('proponent_info.facility_id', '702')
                         ->orWhereJsonContains('proponent_info.facility_id', [$facility_id])
@@ -470,7 +469,7 @@ class Dv3Controller extends Controller
             ->whereNotNull('ors_no')
             ->orderBy('created_at', 'desc');
 
-        }else if($type == 'unpaid'){
+        }else if($type == 'dv3_owed'){
 
             $dv3 = Dv3::              
             with([

@@ -637,7 +637,7 @@ class PrintController extends Controller
 
             return Response::make($file, 200, [
                 'Content-Type' => $type,
-                'Content-Disposition' => 'inline; filename="new_dv-1.png"', // Adjust as needed
+                'Content-Disposition' => 'inline; filename="' . $pre_dv->new_dv->route_no . '.png"',
             ]);  
         }else{
             return 'no data found!';

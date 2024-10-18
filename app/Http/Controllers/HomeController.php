@@ -237,7 +237,7 @@ class HomeController extends Controller
         $on = $on->groupBy(DB::raw('DATE(created_at)'))->pluck(DB::raw('MAX(DATE(created_at))'));
         $all_pat = clone ($patients);
         $proponents_code = Proponent::groupBy('proponent_code')->select(DB::raw('MAX(proponent) as proponent'), DB::raw('MAX(proponent_code) as proponent_code'),DB::raw('MAX(id) as id') )->get();
-
+        // return $patients->paginate(10);
         return view('home', [
             'patients' => $patients->paginate(50),
             'keyword' => $request->keyword,
@@ -842,6 +842,7 @@ class HomeController extends Controller
             $patient->other_barangay = $request->input('other_barangay');
         }
 
+        $patient->date_guarantee_letter = $request->input('date_guarantee_letter');
         $patient->province_id = $request->input('province_id');
         $patient->muncity_id  = $request->input('muncity_id');
         $patient->barangay_id = $request->input('barangay_id');

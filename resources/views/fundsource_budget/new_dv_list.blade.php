@@ -9,7 +9,7 @@ use App\Models\TrackingDetails;
         <div class="card-body">
             <form method="GET" action="">
                 <div class="input-group float-right w-50" style="min-width: 600px;">
-                    <input type="text" class="form-control" name="keyword" placeholder="Facility/Route No" value="{{$keyword}}">
+                    <input type="text" class="form-control" name="keyword" placeholder="Facility/Route No" value="{{ $keyword }}">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
@@ -17,7 +17,7 @@ use App\Models\TrackingDetails;
                     </div>
                 </div>
             </form>
-            <h4 class="card-title">Pre - DV (v2)</h4>
+            <h4 class="card-title">Pre - DVs (v2)</h4>
             <p class="card-description">
                 MAIF-IPP
             </p>
@@ -26,23 +26,23 @@ use App\Models\TrackingDetails;
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th style="padding:5px"></th>
-                            <th>Route</th>
-                            <th>Facility</th>
+                            <th style="padding:5px; min-width:100px"></th>
+                            <th style="min-width:100px">Route</th>
+                            <th style="min-width:300px">Facility</th>
                             <th>Proponent</th>
                             <th>Grand Total</th>
-                            <th>Created By</th>
+                            <th style="min-width:200px">Created By</th>
                         </tr>
                     </thead>
                     <tbody>
                     @foreach($results as $index => $row)
                         <tr>
                             <td class="td" style="padding:5px;text-align:center">
-                                <button type="button" class="btn btn-xs" style="background-color:#165A54;color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$row->new_dv->route_no}}" id="track_load" onclick="openModal()">Track</button>
-                                <a href="{{ route('new_dv.pdf', ['id' => $row->id]) }}" style="background-color:green;color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
+                                <button type="button" class="btn btn-xs" style="background-color:#165A54;color:white;width:50px; border-radius:0px" data-toggle="modal" href="#iframeModal" data-routeId="{{$row->new_dv->route_no}}" id="track_load" onclick="openModal()">Track</button>
+                                <a href="{{ route('new_dv.pdf', ['id' => $row->id]) }}" style="background-color:green;color:white; width:50px; border-radius:0px; margin-top:1px" target="_blank" type="button" class="btn btn-xs">Print</a>
                             </td>
-                            <td><a data-toggle="modal" data-backdrop="static" href="#view_v2" onclick="viewV1({{$row->id}})">{{$row->new_dv->route_no}}</a></td>
-                            <td class="td">{{$row->facility->name}}</td>
+                            <td><a data-toggle="modal" data-backdrop="static" href="#view_v2" onclick="viewV1({{ $row->id }})">{{ $row->new_dv->route_no }}</a></td>
+                            <td class="td">{{ $row->facility->name }}</td>
                             <td class="td">
                                 @foreach($row->extension as $index => $data)
                                     {{$data->proponent->proponent}}
@@ -54,7 +54,7 @@ use App\Models\TrackingDetails;
                                     @endif
                                 @endforeach
                             </td>
-                            <td class="td">{{$row->grand_total}}</td>
+                            <td class="td">{{ number_format($row->grand_total,2,'.',',') }}</td>
                             <td class="td">{{$row->user->lname .', '.$row->user->fname}}</td>
                         </tr>
                     @endforeach

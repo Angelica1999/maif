@@ -138,13 +138,13 @@
         <li class="nav-item">
             <a class="nav-link" href="#">
             <i class="typcn typcn-document menu-icon"></i>
-                <span class="menu-title">Disbursement Voucher (new)</span>
+                <span class="menu-title">Disbursement Vouchers (new)</span>
                 &nbsp;&nbsp;<i class="typcn typcn-arrow-sorted-down menu-icon"></i>
             </a>
             <ul class="nav flex-column sub-menu">
                 <li class="nav-item">
                   <a class="nav-link" href="{{ route('pre_dv_budget', ['type' => 'pending_new']) }}">
-                    <i class="typcn typcn-document-outline menu-icon"></i>
+                    <i class="typcn typcn-th-list menu-icon"></i>
                     <span class="menu-title">Pending DV (new)</span>
                   </a>
                 </li>
@@ -435,7 +435,7 @@
         </ul>
     @endif
     @if($joinedData->section == 7)
-      <ul class="nav flex-column" style=" margin-bottom: 0;">
+      <!-- <ul class="nav flex-column" style=" margin-bottom: 0;">
           <li class="nav-item">
               <a class="nav-link" href="#">
               <i class="typcn typcn-group menu-icon"></i>
@@ -457,6 +457,29 @@
                   </li>
               </ul>
           </li>
+      </ul> -->
+      <ul class="nav flex-column" style="margin-bottom: 0;">
+          <li class="nav-item">
+              <a class="nav-link" href="#">
+                  <i class="typcn typcn-group menu-icon"></i>
+                  <span class="menu-title">Disbursement Voucher (1)</span>
+                  &nbsp;&nbsp;<i class="typcn typcn-arrow-sorted-down menu-icon"></i>
+              </a>
+              <ul class="nav flex-column sub-menu dv-menu-1">
+                  <li class="nav-item">
+                      <a class="nav-link" href="{{ route('cashier', ['type' => 'pending']) }}">
+                          <i class="typcn typcn-film menu-icon"></i>
+                          <span class="menu-title">Pending DV</span>
+                      </a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="{{ route('cashier', ['type' => 'paid']) }}">
+                          <i class="typcn typcn-film menu-icon"></i>
+                          <span class="menu-title">Paid DV</span>
+                      </a>
+                  </li>
+              </ul>
+          </li>
       </ul>
       <li class="nav-item">
           <a class="nav-link" href="{{ route('dv2') }}">
@@ -468,12 +491,12 @@
           <li class="nav-item">
               <a class="nav-link" href="#">
               <i class="typcn typcn-group menu-icon"></i>
-                  <span class="menu-title">Disbursement Voucher (3)</span>
+                  <span class="menu-title">Disbursement Vouchers (3)</span>
                   &nbsp;&nbsp;<i class="typcn typcn-arrow-sorted-down menu-icon"></i>
               </a>
               <ul class="nav flex-column sub-menu">
                   <li class="nav-item">
-                      <a class="nav-link" href="{{ route('budget.dv3', ['type' => 'unpaid']) }}">
+                      <a class="nav-link" href="{{ route('budget.dv3', ['type' => 'dv3_owed']) }}">
                       <i class="typcn typcn-film menu-icon"></i>
                         <span class="menu-title">Pending DV3</span>
                       </a>
@@ -487,25 +510,25 @@
               </ul>
           </li>
       </ul>
-      <ul class="nav flex-column" style=" margin-bottom: 0;">
+      <ul class="nav flex-column" style="margin-bottom: 0;">
           <li class="nav-item">
               <a class="nav-link" href="#">
-              <i class="typcn typcn-document menu-icon"></i>
-                  <span class="menu-title">Disbursement Voucher (new)</span>
+                  <i class="typcn typcn-document menu-icon"></i>
+                  <span class="menu-title">Disbursement Vouchers (new)</span>
                   &nbsp;&nbsp;<i class="typcn typcn-arrow-sorted-down menu-icon"></i>
               </a>
-              <ul class="nav flex-column sub-menu">
+              <ul class="nav flex-column sub-menu dv-menu-2">
                   <li class="nav-item">
-                    <a class="nav-link" href="{{ route('pre_dv_budget', ['type' => 'cashier_pending']) }}">
-                      <i class="typcn typcn-document menu-icon"></i>
-                      <span class="menu-title">Pending DV (new)</span>
-                    </a>
+                      <a class="nav-link" href="{{ route('pre_dv_budget', ['type' => 'deferred']) }}">
+                          <i class="typcn typcn-film menu-icon"></i>
+                          <span class="menu-title">Pending DVs (new)</span>
+                      </a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="{{ route('pre_dv_budget', ['type' => 'cashier_paid']) }}">
-                      <i class="typcn typcn-th-list menu-icon"></i>
-                      <span class="menu-title">Paid DV (new)</span>
-                    </a>
+                      <a class="nav-link" href="{{ route('pre_dv_budget', ['type' => 'disbursed']) }}">
+                          <i class="typcn typcn-th-list menu-icon"></i>
+                          <span class="menu-title">Paid DV (new)</span>
+                      </a>
                   </li>
               </ul>
           </li>
