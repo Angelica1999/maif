@@ -241,6 +241,19 @@ Route::get('/patients', [App\Http\Controllers\HomeController::class, 'patients']
 
 Route::post('/mpu/activate', [App\Http\Controllers\UserController::class, 'mpu'])->name('mpu');
 
+Route::get('/incoming', [App\Http\Controllers\FacilityController::class, 'incoming'])->name('incoming');
+Route::get('/transmittal/{id}', [App\Http\Controllers\FacilityController::class, 'getTrans'])->name('transmittal.get');
+Route::get('/logbook', [App\Http\Controllers\FacilityController::class, 'logbook'])->name('logbook');
+Route::post('logbook/save', [App\Http\Controllers\FacilityController::class, 'logbookSave'])->name('logbook.save');
+Route::get('/transmittal/references/{type}/{id}', [App\Http\Controllers\FacilityController::class, 'references'])->name('references');
+Route::post('/transmittal/return', [App\Http\Controllers\FacilityController::class, 'returnTrans'])->name('transmittal.return');
+Route::get('/returned', [App\Http\Controllers\FacilityController::class, 'returned'])->name('returned');
+Route::get('/returned/details/{id}', [App\Http\Controllers\FacilityController::class, 'returnedDetails'])->name('returned.details');
+Route::get('/transmittal/accept/{id}', [App\Http\Controllers\FacilityController::class, 'acceptTrans'])->name('transmittal.accept');
+Route::get('/accepted', [App\Http\Controllers\FacilityController::class, 'accepted'])->name('accepted');
+Route::get('/transmittal/details/{id}/{facility_id}', [App\Http\Controllers\FacilityController::class, 'transDetails'])->name('transmittal.details');
+Route::get('/sample/image/{id}', [App\Http\Controllers\PrintController::class, 'genPreImage'])->name('pre.image');
+Route::post('/accepted/remarks', [App\Http\Controllers\FacilityController::class, 'transRem'])->name('accepted.remarks');
 Route::get('/angelica/{route_no}', [App\Http\Controllers\PreDvController::class, 'angelica'])->name('angelica');
 
 

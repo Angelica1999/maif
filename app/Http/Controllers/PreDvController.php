@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 use App\Models\PreDV;
 use App\Models\PreDVControl;
@@ -15,6 +16,7 @@ use App\Models\Fundsource;
 use App\Models\Facility;
 use App\Models\AddFacilityInfo;
 use App\Models\TrackingMaster;
+use App\Models\Transmittal;
 use App\Models\TrackingDetails;
 use App\Models\ProponentInfo;
 use App\Models\Utilization;
@@ -549,16 +551,19 @@ class PreDvController extends Controller
 
     public function savePreDV(Request $request)
     {
-
+        // return 1;
         $decodedData = urldecode($request->data);
         $all_data = json_decode($decodedData, true);
         $grand_total = $request->grand_total;
         $facility_id = $request->facility_id;
 
+        Transmittal::whereIn('id', $request->transmittal_id)->update(['used'=>1]);
+
         $pre_dv = new PreDV();
         $pre_dv->facility_id = $facility_id;
         $pre_dv->grand_total = (float) str_replace(',', '', $grand_total);
         $pre_dv->created_by = Auth::user()->userid;
+        $pre_dv->trans_id =  implode(',', $request->transmittal_id);
         $pre_dv->save();
 
         foreach ($all_data as $value) {
@@ -745,6 +750,9 @@ class PreDvController extends Controller
                 }
             ]
         )->first();
+        
+        $trans_ids = array_map('intval', explode(',', $pre->trans_id));
+
         $existing = NewDV::where('predv_id', $id)->first();
         // return $pre;
         if ($existing) {
@@ -758,8 +766,6 @@ class PreDvController extends Controller
             $existing->accumulated = (float) str_replace(',','',$request->accumulated);
             $existing->created_by = Auth::user()->userid;
             $existing->save();
-
-            
 
         } else {
 
@@ -838,6 +844,13 @@ class PreDvController extends Controller
                     }
                 }
             }
+
+            Transmittal::whereIn('id', $trans_ids)->update([
+                'route_no' => $updated_route,
+                'remarks' => 6
+            ]);
+
+            Http::get('http://192.168.110.148/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/dv');
             return redirect()->back()->with('pre_dv', true);
         }
     }
@@ -880,6 +893,9 @@ class PreDvController extends Controller
 
     public function processNew(Request $request){
         $new = NewDV::where('route_no', $request->new_dv_id)->first();
+        $pre = PreDv::where('id', $new->predv_id)->first();
+        $trans_ids = array_map('intval', explode(',', $pre->trans_id));
+
         $type = $request->type;
         if($type == 'pending_new'){
             $new->ors_no = $request->ors_no;
@@ -905,7 +921,11 @@ class PreDvController extends Controller
                     $fund->save();
                 }
             }
-            
+            Transmittal::whereIn('id', $trans_ids)->update([
+                'remarks' => 7
+            ]);
+
+            Http::get('http://192.168.110.148/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/obligate');
             return redirect()->back()->with('pre_dv_update', true);
         }else if($type == 'deferred'){
             $new->paid_on = date('Y-m-d H:i:s');
@@ -924,6 +944,11 @@ class PreDvController extends Controller
                 }
             }
 
+            Transmittal::whereIn('id', $trans_ids)->update([
+                'remarks' => 8
+            ]);
+
+            Http::get('http://192.168.110.148/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/paid');
             return redirect()->back()->with('pay_dv', true);
         }
     }
@@ -934,7 +959,8 @@ class PreDvController extends Controller
         $extension = PreDVExtension::whereIn('pre_dv_id', $pre_dv)->pluck('id')->toArray();
         $controls = PreDVControl::whereIn('predv_extension_id', $extension)->pluck('control_no')->toArray();
         $dv2 = Dv2::whereRaw("facility REGEXP ?", ["^" . preg_quote($searchValue, '/')])->pluck('ref_no')->toArray();
-        return response()->json(['controls'=> array_merge($controls, $dv2)]);
+        $transmittal = Transmittal::where('facility_id', $facility_id)->get();
+        return response()->json(['controls'=> array_merge($controls, $dv2), 'transmittal' => $transmittal]);
     }
 
     public function check(){

@@ -20,6 +20,8 @@ use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\SMTP;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\File;
+use \Mpdf\Mpdf;
+use DNS1D;
 
 // use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
@@ -73,10 +75,19 @@ class PrintController extends Controller
             'patient' => $patient,
             'age' => $this->calculateAge($patient->dob)
         ];
-        $options = [];
+
+        $html = view('maif.print_patient', $data)->render();
+        $mpdf = new Mpdf([
+            'format' => 'A4'
+        ]);
+
+        $mpdf->WriteHTML($html);
+        return $mpdf->Output('document.pdf', 'I');
+        
+        // $options = [];
     
-        $pdf = PDF::loadView('maif.print_patient', $data, $options);
-        return $pdf->stream('patient.pdf');
+        // $pdf = PDF::loadView('maif.print_patient', $data, $options);
+        // return $pdf->stream('patient.pdf');
     }
 
     public function sendPatientPdf($patientId) {
@@ -96,6 +107,7 @@ class PrintController extends Controller
     public function sendMultiple(Request $request)
     {
         $ids = $request->input('send_mails');
+        return $ids;
         $ids = array_map('intval', explode(',', $ids[0]));
         set_time_limit(0);
 
@@ -139,6 +151,8 @@ class PrintController extends Controller
         $result = number_format($vatFormatted + $ewtFormatted, 2, '.', ',');
 
         $imageData = base64_encode(file_get_contents(public_path('images/doh-logo.png')));
+        $barcodePNG = DNS1D::getBarcodePNG($dv->route_no, 'C39E', 1, 28);
+
         $data = [
             'dv'=> $dv,
             'facility' => $facility,
@@ -147,12 +161,23 @@ class PrintController extends Controller
             'total' => $total,
             'saa_source' => $saa_source,
             'saa_amount' => $saa_amount,
-            'result' => $result
+            'result' => $result,
+            'barcodePNG' => $barcodePNG
         ];
+        
+        $html = view('dv.dv_pdf', $data)->render();
+        $mpdf = new Mpdf([
+            'format' => 'Folio',
+            'strictVariables' => false
+        ]);
+
+        $mpdf->WriteHTML($html);
+        $output = $mpdf->Output('dv.pdf', 'I');
+        return $output;
     
-        $pdf = PDF::loadView('dv.dv_pdf', $data);
-        $pdf->setPaper('Folio');
-        return $pdf->stream('dv.pdf');
+        // $pdf = PDF::loadView('dv.dv_pdf', $data);
+        // $pdf->setPaper('Folio');
+        // return $pdf->stream('dv.pdf');
     }
 
     public function dv2Pdf($route_no) {
@@ -353,6 +378,26 @@ class PrintController extends Controller
         return $pdf->stream('dv3.pdf');
     }
 
+    private function route_image($route_no){
+        $text_width = strlen($route_no);
+        $width = 11.5 * $text_width;
+        $height = 35;
+
+        $image = imagecreatetruecolor($width, $height);
+
+        imagealphablending($image, false);
+        imagesavealpha($image, true);
+
+        $transparent = imagecolorallocatealpha($image, 255, 255, 255, 127); 
+        imagefilledrectangle($image, 0, 0, $width, $height, $transparent); 
+        $text_color = imagecolorallocate($image, 0, 0, 0); 
+        imagestring($image, 5, 10, 10, $route_no, $text_color);
+        $image_path = 'public/images/route.png';
+        imagepng($image, $image_path);
+
+        imagedestroy($image);
+    }
+
     public function newDVPDF($id) {
 
         $new = NewDV::where('predv_id', $id)->first();
@@ -387,12 +432,14 @@ class PrintController extends Controller
             // return $saas;
             $i = 0;   
             $control = '';   
+
             foreach ($controls as $index => $c) {
                 if ($i <= 3) {
                     $control = ($control != '')? $control .', '.$c->control_no : $control .' '. $c->control_no ;
                 }
                 $i++;
             }
+
             $grouped = $saas->groupBy('fundsource_id')->map(function ($group) use ($info){
                 return [ 
                     'amount' => $group->sum('amount'),
@@ -403,22 +450,28 @@ class PrintController extends Controller
                     'ewt' => ($info && $info->Ewt != null)? (float) $info->Ewt *  $group->sum('amount') / 100: 0
                 ];
             });
+
+            $barcodePNG = DNS1D::getBarcodePNG($new->route_no, 'C39E', 1, 28);
+            $this->route_image($new->route_no); 
+           
             $data = [
                 'result'=> $new,
                 'pre_dv'=> $pre_dv,
                 'fundsources' => $grouped,
                 'control' => $control,
                 'info' => $info,
-                'amount' => $grouped->sum('amount')
+                'amount' => $grouped->sum('amount'),
+                'barcodePNG' => $barcodePNG
             ];
+            $file = (count($grouped) >16) ? 'pre_dv.new_pdf1' : 'pre_dv.new_pdf';
+            $html =  view($file, $data)->render();
+            $mpdf = new Mpdf([
+                'format' => 'Folio',
+                'strictVariables' => false
+            ]);
 
-            if(count($grouped) >=5){
-                $pdf = PDF::loadView('pre_dv.new_pdf1', $data);
-            }else{
-                $pdf = PDF::loadView('pre_dv.new_pdf', $data);
-            }
-            $pdf->setPaper('Folio');
-            return $pdf->stream('dv.pdf');
+            $mpdf->WriteHTML($html);
+            return $mpdf->Output('new_dv.pdf', 'I');
         }
     }
     
@@ -459,6 +512,65 @@ class PrintController extends Controller
         }else{
             return 'no data found!';
         }
+    }
+
+    public function genPreImage($id) {
+        $pre_dv = PreDV::where('id', $id)->with(
+            [
+                'user:userid,fname,lname,mname',
+                'facility:id,name',
+                'new_dv',
+                'extension' => function ($query) {
+                    $query->with(
+                        [
+                            'proponent:id,proponent',
+                            'controls',
+                            'saas' => function ($query) {
+                                $query->with(['saa:id,saa']);
+                            }
+                        ]
+                    );
+                }
+            ]
+        )->first();
+    
+        $route_no = $pre_dv->new_dv->route_no;
+    
+        $data = [
+            'result' => $pre_dv
+        ];
+    
+        $height = 600;
+        $width = 500;
+        foreach ($pre_dv->extension as $row) {
+            foreach ($row->controls as $row1) {
+                $height += 160;
+                $width += 20;
+            }
+            foreach ($row->saas as $row2) {
+                $height += 25;
+                $width += 5;
+            }
+        }
+    
+        $pdf = PDF::loadView('pre_dv.pre_pdf', $data);
+        $pdf->setPaper([0, 0, 595.28, $height]);
+    
+        $pdfPath = storage_path("app/new_dv.pdf");
+        $pdf->save($pdfPath);
+    
+        $imageDir = storage_path('app/pre_dv'); 
+    
+        if (!file_exists($imageDir)) {
+            mkdir($imageDir, 0755, true);
+        }
+    
+        $pdftoppmPath = 'C:\\poppler-24.07.0\\Library\\bin\\pdftoppm.exe';
+        $imageName = "{$route_no}"; 
+        $command = "{$pdftoppmPath} -png -f 1 -l 1 {$pdfPath} " . escapeshellarg("{$imageDir}/{$imageName}") . " 2>&1";
+        exec($command, $output, $returnVar);
+    
+        $filePath = "{$imageDir}/{$imageName}";
     }
 
     public function preImage($id) {

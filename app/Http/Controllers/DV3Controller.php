@@ -319,7 +319,6 @@ class Dv3Controller extends Controller
                 ->orWhereIn('proponent_info.facility_id', [$facility_id, $add, '702'])
                 ->get();
             $f_info = AddFacilityInfo::where('id', $facility_id)->select('vat', 'ewt')->first();
-            // return $info;
             $section = DB::connection('dohdtr')
                 ->table('users')
                 ->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')

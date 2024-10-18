@@ -136,7 +136,16 @@
                             @endforeach
                         </select>
                     </div>
+                    <div class="text-info" style="width: 100%; display:flex; justify-content: center;text-align:center; margin-top:10px">
+                        <u onclick="displayControl()" class="text-info">Check Available Control No</u>
+                    </div>
+                    <div class="control_option" style="width: 100%; display:none; justify-content: center;text-align:center; margin-top:10px">
+                        <select class="select2 control_id" style="width: 50%;" name="control_id" onchange="getTransmittal($(this).val())">
+                            <option value=''>SELECT AVAILABLE CONTROL</option>
+                        </select>
+                    </div>
                     <div class="facility_div">
+                        <div class="fac_control"></div>
                         <div class="proponent_clone" style="text-align: center; border: 1px solid black; width: 100%; padding: 3%;  margin-top: 10px; ">
                             <div class="card" style="border: none;">
                                 <div class="row" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 4%;">
@@ -224,6 +233,17 @@
 
     <script>
 
+        function displayControl(){
+            $('.control_option').css('display', 'block');
+        }
+        function getTransmittal(trans_id){   
+            // $('.fac_control').empty();
+            $.get("{{ url('transmittal/details').'/' }}" +trans_id+'/'+f_id, function(result){
+                $('.fac_control').append(result);
+                getGrand();
+            });
+        }
+
         $('#gen_btn').on('click', function(){
             $('#generate').val(1);
         });
@@ -304,6 +324,7 @@
             });
         }
         
+
         function getFundsource(facility_id){
 
             var check_vat = $('.facility_id').find(':selected').attr('datavat');
@@ -319,6 +340,15 @@
                 f_id = facility_id;
                 $.get("{{url('pre-dv/control_nos').'/'}}" + f_id, function (result){
                     existing_control = result.controls;   
+                    transmittal = result.transmittal;  
+                    $('.control_id').empty();
+                    $('.control_id').append($('<option>', {value:'', text:'Select Control No'}));
+                    transmittal.forEach(function(optionData) {
+                        $('.control_id').append($('<option>', {
+                            value: optionData.id,
+                            text: optionData.control_no
+                        }));
+                    });
                 });
 
                 $.get("{{ url('fetch/fundsource').'/' }}"+facility_id, function(result) {
@@ -551,6 +581,16 @@
             }
         }
 
+        function getTransId(){
+            var transmittal_ids = [];
+            $('.trans_id').each(function(){
+                transmittal_ids.push($(this).val());
+            });
+
+            return transmittal_ids;
+            console.log('ids', transmittal_ids);
+        }
+
         function getGrand(){
             var grand_total = 0;
             $('.total_amount').each(function(){
@@ -564,9 +604,7 @@
         }
 
 
-
         function cloneProponent(element){
-            console.log('faci', f_id);
             if(f_id){
                 $.get("{{ url('pre-dv/proponent-clone') .'/' }}" + f_id, function (result) {
                     $('.facility_div').append(result);
@@ -608,6 +646,7 @@
         }
 
         var existing_control;
+        var transmittal;
         var new_control = [];
         var hasErrors = false; 
 
@@ -711,23 +750,22 @@
         });
 
         $(document).on('click', '.proponent_clone .btn_pro_remove', function () {
+            // var length = 0;
 
-            var length = 0;
+            // $('.facility_div .proponent_clone').each(function (index, proponent_clone) {
+            //     var proponent = $(proponent_clone).find('.proponent').val();
 
-            $('.facility_div .proponent_clone').each(function (index, proponent_clone) {
-                var proponent = $(proponent_clone).find('.proponent').val();
-                console.log('proponent', proponent);
+            //     if(proponent != ''){
+            //         length = length + 1;
+            //     }
+            // });
 
-                if(proponent != ''){
-                    length = length + 1;
-                }
-            });
-
-            if(length !=1){
+            // if(length !=1){
                 $(this).closest('.proponent_clone').remove();
-            }
-            console.log('length', length);
+            // }
+            // console.log('length', length);
             getGrand();
+            getTransId();
         });
 
         $(document).on('click', '.proponent_clone .saa_clone .saa_clone_btn', function () {
@@ -784,14 +822,11 @@
         });
 
         $(document).on('click', '.proponent_clone .control_div .amount', function () {
-            console.log('here');
         });
 
         $('.pre_form1, #pre_form').submit( function(e){
-            console.log('hereee');
             e.preventDefault();
-
-            console.log('chakabells');
+            var trans_ids = getTransId();
             var facility_id = f_id;
             var grand_total = $('.grand_total').val();
             var all_data = [];
@@ -842,7 +877,6 @@
                         info_id = info_id.find(':selected').attr('dataproponentInfo_id');
                         var saa_id = $(saa_clone).find('.saa_id').val();
                         var saa_amount = $(saa_clone).find('.saa_amount').val();
-                        console.log('saa', saa_amount);
                         saa_total += parseFloat(saa_amount.replace(/,/g, ''));
                         
                         var data1 = {
@@ -887,11 +921,11 @@
                     data: {
                         _token: '{{ csrf_token() }}',
                         data: encodedData,
+                        transmittal_id: trans_ids,
                         facility_id: $('.facility_id').val(),
                         grand_total: $('.grand_total').val()
                     },
                     success: function (response) {
-                        console.log('respose', response);
 
                         Lobibox.notify('success', {
                             msg: "Successfully created pre_dv!",
@@ -914,7 +948,6 @@
 
                     },
                     success: function (response) {
-                        console.log('respose', response);
                         Lobibox.notify('success', {
                             msg: "Successfully created pre_dv!",
                         });

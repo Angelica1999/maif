@@ -854,6 +854,7 @@ class HomeController extends Controller
         $patient->actual_amount = $request->input('actual_amount');
         $patient->remaining_balance = $request->input('remaining_balance');
         $patient->pat_rem = $request->input('pat_rem');
+        $patient->sent_type = $request->input('sent_type');
         $patient->save();
         DB::commit();
         if($val == "upsend"){
@@ -909,8 +910,28 @@ class HomeController extends Controller
 
     public function returnPatient($id, Request $request){
 
-        return  $request->pat_rem;
-        Patients::where('id', $id)->update(['remarks' => $request->pat_rem, 'sent_type' => 3]);
+        $val = $request->input('update_send');
+        
+        $patient_id = $id;
+        $patient = Patients::where('id', $patient_id)->first();
+
+        if(!$patient){
+            return redirect()->back()->with('error', 'Patient not found');
+        }
+
+        DB::beginTransaction();
+
+        $patientLogs = new PatientLogs();
+        $patientLogs->patient_id = $patient->id;
+        $patientLogs->fill(Arr::except($patient->toArray(), ['status', 'sent_type', 'user_type']));
+        unset($patientLogs->id);
+        $patientLogs->save();
+        
+        $patient->pat_rem = $request->input('pat_rem');
+        $patient->sent_type = $request->input('sent_type');
+        $patient->save();
+        DB::commit();
+        
         return redirect()->back()->with('return_gl', true);
     }
 

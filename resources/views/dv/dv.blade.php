@@ -46,7 +46,7 @@
                             </div>
                         </div>
                         <div class = "input-group">
-                            <input type="text" style="text-align:center" class="form-control" id="dates_filter" value="{{$dates_generated}}" name="dates_filter" />
+                            <input type="text" style="text-align:center" class="form-control" id="dates_filter" value="{{ $dates_generated }}" name="dates_filter" />
                             <button type="submit" id="gen_btn" style="background-color:teal; color:white; width:90px; border-radius:0;" class="btn btn-sm"><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
                         </div>
                         <input type="hidden" id="filter_rem" name="filter_rem" value="{{implode(',',$filter_rem)}}"></input>

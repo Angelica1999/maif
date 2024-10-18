@@ -288,6 +288,35 @@
                 </ul>
             </li>
         </ul>
+        <ul class="nav flex-column" style=" margin-bottom: 0;">
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                <i class="typcn typcn-group menu-icon"></i>
+                    <span class="menu-title">Transmittal</span>
+                    &nbsp;&nbsp;<i class="typcn typcn-arrow-sorted-down menu-icon"></i>
+                </a>
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{ route('incoming') }}">
+                        <i class="typcn typcn-document-text menu-icon"></i>
+                        <span class="menu-title">Incomming Send Bills</span>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{ route('returned') }}">
+                        <i class="typcn typcn-document-text menu-icon"></i>
+                        <span class="menu-title">Returned Send Bills</span>
+                      </a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{{ route('accepted') }}">
+                        <i class="typcn typcn-group-outline menu-icon"></i>
+                        <span class="menu-title">Accepted Send Bills</span>
+                      </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
         @if( $id == 2760 || $id == 2680)
             <ul class="nav flex-column" style=" margin-bottom: 0;">
                 <li class="nav-item">
@@ -336,8 +365,14 @@
                 </ul>
             </li>
         </ul>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ route('logbook') }}">
+            <i class="typcn typcn-flow-switch menu-icon"></i>
+            <span class="menu-title">Logbook</span>
+          </a>
+        </li>
 
-        <ul class="nav flex-column" style=" margin-bottom: 0;">
+        <!-- <ul class="nav flex-column" style=" margin-bottom: 0;">
             <li class="nav-item">
                 <a class="nav-link" href="#">
                     <i class="typcn typcn-flow-switch menu-icon"></i>
@@ -353,7 +388,7 @@
                   </li>
                 </ul>
             </li>
-        </ul>
+        </ul> -->
         <li class="nav-item">
           <a class="nav-link" href="{{ route('facility') }}">
             <i class="typcn typcn-flow-switch menu-icon"></i>

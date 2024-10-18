@@ -418,6 +418,18 @@
               msg: 'User was not found!'
            });
         @endif
+        @if(session('logbook'))
+           <?php session()->forget('logbook'); ?>
+           Lobibox.notify('success', {
+              msg: 'Successfully added into log!'
+           });
+        @endif
+        @if(session('trans_return'))
+           <?php session()->forget('trans_return'); ?>
+           Lobibox.notify('error', {
+              msg: 'Successfully return the transmittal!'
+           });
+        @endif
     </script>
     @yield('js')
 </body>
