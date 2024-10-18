@@ -164,7 +164,7 @@ use App\Models\TrackingDetails;
                                         <i class="typcn typcn-tick menu-icon" style="font-size: 24px; width:200px;"></i>
                                     @endif
                                 </td>
-                                <td>{{ $row->new_dv ? ($row->new_dv->status == 0? 'Pending' : ($row->new_dv->status == 1 ? 'Obligated': Paid)):'' }}</td>
+                                <td>{{ $row->new_dv ? ($row->new_dv->status == 0? 'Pending' : ($row->new_dv->status == 1 ? 'Obligated': 'Paid')):'' }}</td>
                                 <td><a data-toggle="modal" data-backdrop="static" href="#view_v2" onclick="viewV1({{$row->id}})">{{$row->facility->name}}</a></td>
                                 <td>
                                     @foreach($row->extension as $index => $data)
@@ -262,6 +262,7 @@ use App\Models\TrackingDetails;
 
     function viewV1(id) {
         $('.pre_body').empty();
+        console.log('id', id);
         $.get("{{ url('pre-dv/v2/').'/' }}" + id, function(result) {
             $('.pre_body').append(result);
         });

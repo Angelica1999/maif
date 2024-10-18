@@ -141,7 +141,7 @@
                             <div class="card" style="border: none;">
                                 <div class="row" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 4%;">
                                     <i class="typcn typcn-minus menu-icon btn_pro_remove" style="width:40px; background-color:red; color:white;border: 1px; padding: 2px;"></i>
-                                    <select style="width: 50%; margin-bottom: 10px;" class="select2 proponent" required>
+                                    <select style="width: 50%; margin-bottom: 10px;" class="select2 proponent" onchange="checkPros(this)" required>
                                         <option value=''>SELECT PROPONENT</option>
                                         @foreach($proponents as $proponent)
                                             <option value="{{$proponent->proponent}}">{{$proponent->proponent}}</option>
@@ -263,6 +263,27 @@
         $('.update_close').on('click', function(){
             location.reload();
         })
+
+        function checkPros(data){
+            console.log('data', data.value);
+            var arr = getPros();
+            var index = arr.indexOf(data.value);
+            if (index !== -1) {
+                arr.splice(index, 1); 
+            }
+            if(arr.includes(data.value)){
+                alert('This proponent has been selected already!');
+            } 
+        }
+
+        function getPros(){
+            var pros = [];
+            $('.proponent').each(function(){
+                pros.push($(this).val());
+            });
+            return pros;
+            console.log('pros', pros);
+        }
         
         var f_id = $('.facility_id').val();
 

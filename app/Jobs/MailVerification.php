@@ -55,12 +55,13 @@ class MailVerification implements ShouldQueue
             $user->gender = $registration->gender;
             $user->birthdate = $registration->birthdate;
             $user->roles = 0;
+            $user->username = $username;
         }else{
             $user = OnlineUser::where('username', $registration->username)->first();
+            $username = $user->username;
         }
 
         $user->pass_change = 0;
-        $user->username = $username;
         $user->password =  Hash::make($password);
 
         try {

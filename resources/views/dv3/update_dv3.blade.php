@@ -109,7 +109,7 @@
                                 &nbsp;&nbsp;&nbsp;&nbsp;<input type="date" asp-for="Date" name="dv3_date"  id="dv3_date" style="width: 150px; height: 28px; font-size:8pt" class="ft15" value="{{(new DateTime())->format('Y-m-d')}}" required>
                                 <br>
                                 <div>
-                                    <span>DV No:</span>
+                                    <span>DV No:{{$dv3->dv_no}}</span>
                                     @if(Auth::user()->userid == 1027 || Auth::user()->userid == 2660)
                                         &nbsp;<input type="text" value="{{$dv3->dv_no}}" name="dv_no" id="dv_no" style="width:150px; height: 28px;" class="ft15" required>
                                     @endif
@@ -365,13 +365,19 @@
                 </div>
             </div>
             <div class="modal-footer" id="dv_footer"> 
-                <button  style = "background-color:lightgray" type="button" class="btn btn-sm btn" data-dismiss="modal"><i class="typcn typcn-times"></i>Close</button>
-                <button type="submit" id="submitBtn" class="btn btn-sm btn-success"><i class="typcn typcn-tick menu-icon"></i>Update</button>
-                @if($row->remarks != 1)
-                    <button type="button" class="btn btn-sm btn-danger" onclick="removeDv3('{{$dv3->route_no}}')">Remove</button>
+
+                @if($section == '6')
+                    <button type="submit" id="submitBtn" class="btn btn-sm btn-success" style="border-radius:0px"><i class="typcn typcn-tick menu-icon"></i>Obligate</button>
+                @elseif($section == '7')
+                    <button type="submit" id="submitBtn" class="btn btn-sm btn-success" style="border-radius:0px"><i class="typcn typcn-tick menu-icon"></i>Pay</button>
+                @else
+                    <button style="background-color:lightgray; border-radius:0px" type="button" class="btn btn-sm btn" data-dismiss="modal"><i class="typcn typcn-times"></i>Close</button>
+                    <button type="submit" id="submitBtn" class="btn btn-sm btn-success" style="border-radius:0px"><i class="typcn typcn-tick menu-icon"></i>Update</button>
+                    @if($row->remarks != 1)
+                        <button type="button" class="btn btn-sm btn-danger" style="border-radius:0px" onclick="removeDv3('{{$dv3->route_no}}')">Remove</button>
+                    @endif
                 @endif
                 <input type="hidden" name="group_id" id="group_id" >
-
             </div>
           </div>
       </div>

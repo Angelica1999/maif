@@ -2,7 +2,7 @@
     <div class="card" style="border: none;">
         <div class="row" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 4%;">
             <i class="typcn typcn-minus menu-icon btn_pro_remove" style="width:40px;background-color:red; color:white;border: 1px; padding: 2px;"></i>
-            <select style="width: 50%; margin-bottom: 10px;" class="select2 proponent" required>
+            <select style="width: 50%; margin-bottom: 10px;" class="select2 proponent" onchange="checkPros(this)" required>
                 <option value=''>SELECT PROPONENT</option>
                 @foreach($proponents as $proponent)
                     <option value="{{$proponent->proponent}}">{{$proponent->proponent}}</option>

@@ -28,6 +28,8 @@ class PreDvController extends Controller
     public function pre_dv(Request $request)
     {
 
+      
+
         NewDV::whereNull('dv_no')
             ->orWhere('dv_no', '')
             ->with('dts')
@@ -96,7 +98,7 @@ class PreDvController extends Controller
         }
 
         $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(50);
-        
+
         return view('pre_dv.pre_dv', [
             'results' => $pre_dv,
             'proponents' => $proponents,
@@ -301,6 +303,24 @@ class PreDvController extends Controller
         $proponents = Proponent::select('proponent')->groupBy('proponent')->get();
         $facilities = Facility::get();
 
+        if($type == 'pending_new'){
+            $pre_dv->whereHas('new_dv', function ($query) {
+                $query->whereNull('ors_no'); 
+            });  
+        }else if($type== 'processed_new'){
+            $pre_dv->whereHas('new_dv', function ($query) {
+                $query->whereNotNull('ors_no'); 
+            });  
+        }else if($type== 'deferred'){
+            $pre_dv->whereHas('new_dv', function ($query) {
+                $query->whereNull('paid_by')->whereNotNull('ors_no');
+            });  
+        }else if($type== 'disbursed'){
+            $pre_dv->whereHas('new_dv', function ($query) {
+                $query->whereNotNull('paid_by')->whereNotNull('ors_no'); 
+            });  
+        }
+
         if($request->viewAll){
             $request->keyword = '';
         }else if($request->keyword){
@@ -311,25 +331,7 @@ class PreDvController extends Controller
                 $query->where('name', 'LIKE', '%' . $keyword . '%');
             });
         }
-
-        if($type == 'pending_new'){
-            $pre_dv->whereHas('new_dv', function ($query) {
-                $query->whereNull('ors_no'); 
-            });  
-        }else if($type== 'processed_new'){
-            $pre_dv->whereHas('new_dv', function ($query) {
-                $query->whereNotNull('ors_no'); 
-            });  
-        }else if($type== 'cashier_pending'){
-            $pre_dv->whereHas('new_dv', function ($query) {
-                $query->whereNull('paid_by')->whereNotNull('ors_no');
-            });  
-        }else if($type== 'cashier_paid'){
-            $pre_dv->whereHas('new_dv', function ($query) {
-                $query->whereNotNull('paid_by')->whereNotNull('ors_no'); 
-            });  
-        }
-
+        
         $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(50);
 
         return view('fundsource_budget.new_dv_list', [
@@ -857,6 +859,25 @@ class PreDvController extends Controller
         return redirect()->back()->with('pre_dv_remove', true);
     }
 
+    public function angelica($route_no){
+        $uts = Utilization::where('div_id', $route_no)->get();
+
+        if($uts){
+            foreach($uts as $u){
+                $fund = Fundsource::where('id', $u->fundsource_id)->first();
+                $u->budget_bbalance = $fund->remaining_balance;
+                $u->budget_utilize = $u->utilize_amount;
+                $u->obligated = 1;
+                $u->obligated_by = '2147';
+                $u->obligated_on = date('Y-m-d H:i:s');
+                $u->save();
+                
+                $fund->remaining_balance = (float) str_replace(',','', $fund->remaining_balance) - (float) str_replace(',','', $u->utilize_amount);
+                $fund->save();
+            }
+        }
+    }
+
     public function processNew(Request $request){
         $new = NewDV::where('route_no', $request->new_dv_id)->first();
         $type = $request->type;
@@ -880,13 +901,13 @@ class PreDvController extends Controller
                     $u->obligated_on = date('Y-m-d H:i:s');
                     $u->save();
                     
-                    $fund->remaining_balance = (float) str_replace(',','', $fund->remaining_balance) + (float) str_replace(',','', $u->utilize_amount);
+                    $fund->remaining_balance = (float) str_replace(',','', $fund->remaining_balance) - (float) str_replace(',','', $u->utilize_amount);
                     $fund->save();
                 }
             }
             
             return redirect()->back()->with('pre_dv_update', true);
-        }else if($type == 'cashier_pending'){
+        }else if($type == 'deferred'){
             $new->paid_on = date('Y-m-d H:i:s');
             $new->paid_by = Auth::user()->userid;
             $new->status = 2;

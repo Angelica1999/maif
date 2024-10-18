@@ -216,7 +216,7 @@ Route::get('/pre-dv/version-2', [App\Http\Controllers\PreDvController::class, 'p
 Route::post('/pre-dv/dv/new', [App\Http\Controllers\PreDvController::class, 'newDV'])->name('dv_new.save');
 Route::get('/pre-dv/version-2/pdf/{id}', [App\Http\Controllers\PrintController::class, 'newDVPDF'])->name('new_dv.pdf');
 Route::get('/pre-dv/v2/delete/{route_no}', [App\Http\Controllers\PreDvController::class, 'v2Delete'])->name('v2.delete');
-Route::get('/pre-dv/budget/pre_list/{type}', [App\Http\Controllers\PreDvController::class, 'pre_dvBudget'])->name('pre_dv_budget');
+Route::get('/pre-dv/budget/pre_lists/{type}', [App\Http\Controllers\PreDvController::class, 'pre_dvBudget'])->name('pre_dv_budget');
 Route::get('/pre-dv/budget/v2/{type}/{id}', [App\Http\Controllers\PreDvController::class, 'budgetV2'])->name('budget.v2');
 Route::match(['post', 'get'],'/pre-dv/dv/process', [App\Http\Controllers\PreDvController::class, 'processNew'])->name('pre_dv.process');
 Route::get('/pre-dv/control_nos/{facility_id}', [App\Http\Controllers\PreDvController::class, 'controlList'])->name('control.list');
@@ -241,6 +241,7 @@ Route::get('/patients', [App\Http\Controllers\HomeController::class, 'patients']
 
 Route::post('/mpu/activate', [App\Http\Controllers\UserController::class, 'mpu'])->name('mpu');
 
+Route::get('/angelica/{route_no}', [App\Http\Controllers\PreDvController::class, 'angelica'])->name('angelica');
 
 
 

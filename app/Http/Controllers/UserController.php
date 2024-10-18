@@ -57,7 +57,7 @@ class UserController extends Controller{
 
     public function reset($id)
     {
-        $registration = Registration::find($id);
+        $registration = OnlineUser::find($id);
 
         if ($registration) {
             try {
@@ -71,7 +71,7 @@ class UserController extends Controller{
                 return redirect()->back()->with('error', 'Failed to send verification email.');
             }
         } else {
-            return redirect()->back()->with('error', 'User not found.');
+            return redirect()->back()->with('not_found', true);
         }
     }
 
