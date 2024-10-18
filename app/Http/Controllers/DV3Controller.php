@@ -309,16 +309,17 @@ class Dv3Controller extends Controller
                 ])->where('route_no', $route_no)->first();
             
             $facility_id = (string) $dv3->facility_id;
-
-            $info = ProponentInfo::with('facility', 'fundsource', 'proponent')
-                ->where(function ($query) use ($facility_id) {
+            $add = $dv3->facility_id == 42? '852' : ($dv3->facility_id == 852?'42':0);
+            $info = ProponentInfo::with('facility:id,name,address', 'fundsource:id,saa,alocated_funds:remaining_balance', 'proponent')
+                ->where(function ($query) use ($facility_id, $add) {
                     $query->whereJsonContains('proponent_info.facility_id', '702')
-                        ->orWhereJsonContains('proponent_info.facility_id', [$facility_id]);
+                        ->orWhereJsonContains('proponent_info.facility_id', [$facility_id])
+                        ->orWhereJsonContains('proponent_info.facility_id', [$add]);
                 })
-                ->orWhereIn('proponent_info.facility_id', [$facility_id, '702'])
+                ->orWhereIn('proponent_info.facility_id', [$facility_id, $add, '702'])
                 ->get();
             $f_info = AddFacilityInfo::where('id', $facility_id)->select('vat', 'ewt')->first();
-
+            // return $info;
             $section = DB::connection('dohdtr')
                 ->table('users')
                 ->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
@@ -469,7 +470,7 @@ class Dv3Controller extends Controller
             ->whereNotNull('ors_no')
             ->orderBy('created_at', 'desc');
 
-        }else if($type == 'unpaid'){
+        }else if($type == 'dv3_owed'){
 
             $dv3 = Dv3::              
             with([

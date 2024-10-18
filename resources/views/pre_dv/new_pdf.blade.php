@@ -142,6 +142,13 @@
                                       <div style="clear: both;"></div>
                                   </div>
                               @endforeach
+                              <span style="float:right">_________________</span><br>
+                              <div style="clear: both;"></div>
+                              <div style="width: 100%;">
+                                  <span class="saa" style="float: left;font-weight:bold">Total:</span>
+                                  <span class="amount" style="float: right;">{{number_format($amount, 2, '.',',')}}</span>
+                                  <div style="clear: both;"></div>
+                              </div>
                               <br>
                               
                               <div style="width: 100%;">   
@@ -350,8 +357,8 @@
                 </div>   -->
                 <div class="barcode-container" style="text-align: center;line-height:1">
                   <br style="line-height:1px">
-                    {!! DNS1D::getBarcodeHTML($result->route_no, 'C39E', 1, 25) !!}
                     <font class="route_no" style="">{{ $result->route_no }}</font>
+                    {!! DNS1D::getBarcodeHTML($result->route_no, 'C39E', 1, 25) !!}
                 </div>
                 @if($d == 1)
                   <div style="page-break-before: always;"></div>

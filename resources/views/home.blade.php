@@ -261,11 +261,15 @@
                                     class="group-mailCheckBox" onclick="itemChecked($(this))">
                             </td>
                             <td style="text-align:center">
-                                @if($patient->remarks == 1 || $patient->status == 1)
+                                <!-- {{ $patient->pat_rem }} -->
+                                @if($patient->remarks == 1)
+                                    <i class="typcn typcn-tick menu-icon">
+                                @endif
+                                <!-- @if($patient->remarks == 1 || $patient->status == 1)
                                     <i class="typcn typcn-tick menu-icon">
                                 @elseif($patient->status == 2)
                                     Returned
-                                @endif
+                                @endif -->
                             </td>
                             <td>
                                 @if($patient->status == 1)

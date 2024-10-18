@@ -25,10 +25,11 @@
                 <input type="hidden" class="all_route" id="all_route" name="all_route">
 
             </form>
-            <h4 class="card-title">Disbursement Voucher V3</h4>
+            <h4 class="card-title">Disbursement Vouchers V3</h4>
             <p class="card-description">
                 MAIF-IPP
             </p>
+            @if(isset($dv3) && $dv3->count() > 0)
                 <div class="table-responsive">
                     <table class="table table-striped">
                     <thead>
@@ -46,65 +47,58 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if(isset($dv3) && $dv3->count() > 0)
-                            @foreach($dv3 as $index=> $row)
-                                <tr>
-                                    <td>
-                                        <button type="button" class="btn btn-xs col-sm-12" style="background-color:#165A54;color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$row->route_no}}" id="track_load" onclick="openModal()">Track</button>
-                                    </td>
-                                    <td>
-                                        <?php
-                                            $routed = TrackingDetails::where('route_no',$row->route_no)
-                                                ->count();
-                                            if($routed){
-                                                $doc_id = TrackingDetails::where('route_no',$row->route_no)
-                                                ->orderBy('id','desc')
-                                                ->first()
-                                                ->id;
-                                            }else{
-                                                $doc_id= 0;
-                                            }
-                                        ?>
-                                        <a data-dvId="{{$row->id}}" href="#create_dv3" onclick="updateDv3('{{$row->route_no}}')" style="background-color:teal;color:white;width:90px;" type="button" class="btn btn-xs" data-backdrop="static" data-toggle="modal">{{ $row->route_no }}</a>
-                                    </td>
-                                    <td>
-                                        @if($row->remarks == 0)
-                                            Pending
-                                        @elseif($row->remarks == 1)
-                                            Obligated
-                                        @elseif($row->remarks == 2)
-                                            Processed
-                                        @endif
-                                    </td>
-                                    <td>{{$row->facility->name}}</td>
-                                    <td>
-                                        @foreach($row->extension as $item)
-                                        <br>
-                                            {{$item->proponentInfo->fundsource->saa}}
-                                        @endforeach
-                                    </td>
-                                    <td>{{$row->extension[0]->proponentInfo->proponent->proponent}}</td>
-                                    <td>{{date('F j, Y', strtotime($row->date))}}</td>
-                                    <td>{{number_format($row->total, 2, '.', ',')}}</td>
-                                    <td>{{date('F j, Y', strtotime($row->created_at))}}</td>
-                                    <td>{{$row->user->lname .', '. $row->user->fname}}</td>
-                                </tr>
-                            @endforeach
-                        @else
+                        @foreach($dv3 as $index=> $row)
                             <tr>
-                                <td colspan="14">
-                                    <div class="alert alert-danger" role="alert" style="width: 100%;">
-                                        <i class="typcn typcn-times menu-icon"></i>
-                                        <strong>No disbursement voucher version 3 found!</strong>
-                                    </div>
+                                <td>
+                                    <button type="button" class="btn btn-xs col-sm-12" style="background-color:#165A54;color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$row->route_no}}" id="track_load" onclick="openModal()">Track</button>
                                 </td>
+                                <td>
+                                    <?php
+                                        $routed = TrackingDetails::where('route_no',$row->route_no)
+                                            ->count();
+                                        if($routed){
+                                            $doc_id = TrackingDetails::where('route_no',$row->route_no)
+                                            ->orderBy('id','desc')
+                                            ->first()
+                                            ->id;
+                                        }else{
+                                            $doc_id= 0;
+                                        }
+                                    ?>
+                                    <a data-dvId="{{$row->id}}" href="#create_dv3" onclick="updateDv3('{{$row->route_no}}')" style="background-color:teal;color:white;width:90px;" type="button" class="btn btn-xs" data-backdrop="static" data-toggle="modal">{{ $row->route_no }}</a>
+                                </td>
+                                <td>
+                                    @if($row->remarks == 0)
+                                        Pending
+                                    @elseif($row->remarks == 1)
+                                        Obligated
+                                    @elseif($row->remarks == 2)
+                                        Processed
+                                    @endif
+                                </td>
+                                <td>{{$row->facility->name}}</td>
+                                <td>
+                                    @foreach($row->extension as $item)
+                                    <br>
+                                        {{$item->proponentInfo->fundsource->saa}}
+                                    @endforeach
+                                </td>
+                                <td>{{$row->extension[0]->proponentInfo->proponent->proponent}}</td>
+                                <td>{{date('F j, Y', strtotime($row->date))}}</td>
+                                <td>{{number_format($row->total, 2, '.', ',')}}</td>
+                                <td>{{date('F j, Y', strtotime($row->created_at))}}</td>
+                                <td>{{$row->user->lname .', '. $row->user->fname}}</td>
                             </tr>
-                            
-                        @endif
+                        @endforeach
                     </tbody>
                     </table>
                 </div>
-           
+                @else
+                    <div class="alert alert-danger" role="alert" style="width: 100%;">
+                        <i class="typcn typcn-times menu-icon"></i>
+                        <strong>No disbursement voucher version 3 found!</strong>
+                    </div>
+                @endif
             <div class="pl-5 pr-5 mt-5">
             </div>
         </div>
@@ -115,7 +109,7 @@
     <div class="modal-dialog modal-lg" role="document" style="width:900px">
         <div class="modal-content">
             <div class="modal-header" style="background-color:#17c964;padding:15px; color:white">
-                <h4 class="modal-title"><i class="fa fa-plus" style="margin-right:auto;"></i> Disbursement Voucher (v3)</h4>
+                <h4 class="modal-title"><i class="fa fa-plus" style="margin-right:auto;"></i> Disbursement Vouchers (v3)</h4>
                 <button type="button" class="close" id="exit" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" style="color:white;">&times;</span></button>
             </div>
             <div class="modal_body">

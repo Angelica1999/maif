@@ -9,6 +9,7 @@ use App\Models\Proponent;
 use App\Models\AddFacilityInfo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;   
 use App\Models\Muncity;
 use App\Models\Barangay;
@@ -96,16 +97,19 @@ class FacilityController extends Controller
     }
     
     public function updateData(){
-        Facility::truncate();
-        $main_facility = DB::connection('cloud_mysql')
-            ->table('facility')
-            ->get();   
-        foreach ($main_facility as $fac) {
-            $f = new Facility();
-            $f->fill(get_object_vars($fac));
-            $f->save();
-        }
 
+        $response = Http::get('http://cvchd7.com/iMkiW5YcHA6D9Gd7BuTteeQPVx4a1UxK');
+        // return $response;
+        if ($response->successful()) { // Check if the request was successful
+            // Facility::truncate();
+            $facilities = $response->json(); // Get the response as an array
+        
+            foreach ($facilities as $fac) {
+                $f = new Facility();
+                $f->fill($fac); // Use the array directly
+                $f->save();
+            }
+        }
         Facility::where('id', 238)->update(['name' => 'Mactan Doctors Hospital']);
 
         Facility::where('id', 246)->update(['name' => 'Allied Care Experts (ACE) Medical Center-Bohol, Inc.']);
