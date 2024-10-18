@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Generate DV PDFdsd</title>
+        <title>Generate new DV PDF</title>
         <!-- <link rel="stylesheet" href="{{ public_path('bootstrap.min.css') }}"> -->
         <style>
       
@@ -137,6 +137,12 @@
                                             <td style="text-align: right; padding: 1px;">{{ number_format(floatval(str_replace(',','',$fund_saa['amount'])), 2, '.', ',') }}</td>
                                         </tr>
                                     @endforeach
+                                </table>
+                                <table style="width: 100%; border-collapse: collapse; margin-top:5px;">
+                                    <tr>
+                                        <td style="text-align: left; padding: 2px;font-weight:bold; width:75%">Total</td>
+                                        <td style="border-top:1px solid black;text-align: right; width:25%">{{ number_format($amount, 2, '.',',') }}</td>
+                                    </tr>
                                 </table>
                                 <table style="width: 500px; border-collapse: collapse; margin-top:5px;">
                                     <tr>
@@ -316,6 +322,15 @@
                             style="transform: rotate(-90deg); writing-mode: vertical-lr; text-align:left;"/>
                         <br><br>
                     </div>
+                    <div class="barcode-container" style="text-align: center; margin-top: -105px; position: absolute; left: 0; margin-right: -780px;">
+                        <img src="{{realpath(__DIR__ . '/../../..').'/public/images/route.png'}}" alt="Barcode" style="margin-top:10px"/>
+                    </div>
+                </div> -->
+                <!-- <div class="barcode-container" style="text-align: center;line-height:1">
+                    <br style="line-height:1px">
+                    <font class="route_no" style="">{{ $result->route_no }}</font>
+                    {!! DNS1D::getBarcodeHTML($result->route_no, 'C39E', 1, 25) !!}
+                </div> -->
                 <div>
                     <div class="barcode-container" style="position:absolute;text-align: center; margin-top: -550px; left: 0; margin-right: -720px;">
                         <img src="{{realpath(__DIR__ . '/../../..').'/public/images/route.png'}}" alt="Barcode"
@@ -325,9 +340,11 @@
                     <div class="barcode-container" style="text-align: center; margin-top: -70px; position: absolute; left: 0; margin-right: -735px;">
                         <img src="data:image/png;base64,{{ $barcodePNG }}" style="transform: rotate(-90deg); writing-mode: vertical-lr; text-align:left; margin-top:30px"/>
                     </div>
-
                 </div>
-  
+                <!-- <div class="barcode-container" style="text-align: center;line-height:1">
+                    <br style="line-height:1px">
+                    <img src="data:image/png;base64,{{ $barcodePNG }}" alt="Barcode"style=""/>
+                </div> -->
                 @if($d == 1)
                   <div style="page-break-before: always;"></div>
                 @endif

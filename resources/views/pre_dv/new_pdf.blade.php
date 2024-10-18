@@ -122,6 +122,7 @@
                             <td style="width:51%; border-right:1px solid black; text-align:center; padding:3px"> Particulars</td>
                             <td style="width:18%; border-right:1px solid black; text-align:center">Responsibility Center</td>
                             <td style="width:14%; border-right:1px solid black; text-align:center">MFO/PAP</td>
+                            <td style="width:17%;">Amount</td>
                         </tr>
                         <tr style="border: 1px solid black; border-top:0px;">
                             <td style="border-right:1px solid black">
@@ -137,6 +138,19 @@
                                         </tr>
                                     @endforeach
                                 </table>
+                                <table style="width: 100%; border-collapse: collapse; margin-top:5px;">
+                                    <tr>
+                                        <td style="text-align: left; padding: 2px;font-weight:bold; width:80%">Total</td>
+                                        <td style="border-top:1px solid black;text-align: right; width:20%">{{ number_format($amount, 2, '.',',') }}</td>
+                                    </tr>
+                                </table>
+                                <!-- <span style="float:right">_________________</span><br>
+                                <div style="clear: both;"></div>
+                                <div style="width: 100%;">
+                                    <span class="saa" style="float: left;font-weight:bold">Total:</span>
+                                    <span class="amount" style="float: right;">{{number_format($amount, 2, '.',',')}}</span>
+                                    <div style="clear: both;"></div>
+                                </div> -->
                                 <table style="width: 500px; border-collapse: collapse; margin-top:5px;">
                                     <tr>
                                         <td style="text-align: left;">{{ floor($info->vat) == 3 ? floor($info->vat) . '%' . ' ' . 'Percentage Tax' : floor($info->vat) . '%' . ' ' . 'VAT' }}</td>
@@ -309,11 +323,21 @@
                         </tr>
                     </table>        
                 </div>
+                <!-- <div>
                     <div class="barcode-container" style="position:absolute;text-align: center; margin-top: -450px; left: 0; margin-right: -735px;background-color:yellow">
                         <img src="data:image/png;base64,{{ $barcodePNG }}" alt="Barcode"
                             style="transform: rotate(-90deg); writing-mode: vertical-lr; text-align:left;"/>
                         <br><br>
                     </div>
+                    <div class="barcode-container" style="text-align: center; margin-top: -105px; position: absolute; left: 0; margin-right: -780px;">
+                        <img src="{{realpath(__DIR__ . '/../../..').'/public/images/route.png'}}" alt="Barcode" style="margin-top:10px"/>
+                    </div>
+                </div> -->
+                <!-- <div class="barcode-container" style="text-align: center;line-height:1">
+                    <br style="line-height:1px">
+                    <font class="route_no" style="">{{ $result->route_no }}</font>
+                    {!! DNS1D::getBarcodeHTML($result->route_no, 'C39E', 1, 25) !!}
+                </div> -->
                 <div>
                     <div class="barcode-container" style="position:absolute;text-align: center; margin-top: -400px; left: 0; margin-right: -720px;">
                         <img src="{{realpath(__DIR__ . '/../../..').'/public/images/route.png'}}" alt="Barcode"
@@ -324,6 +348,10 @@
                         <img src="data:image/png;base64,{{ $barcodePNG }}" style="transform: rotate(-90deg); writing-mode: vertical-lr; text-align:left; margin-top:30px"/>
                     </div>
                 </div>
+                <!-- <div class="barcode-container" style="text-align: center;line-height:1">
+                    <br style="line-height:1px">
+                    <img src="data:image/png;base64,{{ $barcodePNG }}" alt="Barcode"style=""/>
+                </div> -->
                 @if($d == 1)
                   <div style="page-break-before: always;"></div>
                 @endif

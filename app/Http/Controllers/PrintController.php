@@ -107,7 +107,6 @@ class PrintController extends Controller
     public function sendMultiple(Request $request)
     {
         $ids = $request->input('send_mails');
-        return $ids;
         $ids = array_map('intval', explode(',', $ids[0]));
         set_time_limit(0);
 

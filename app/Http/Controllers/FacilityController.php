@@ -19,7 +19,6 @@ use App\Models\BillTracking;
 use App\Models\Transmittal;
 use App\Models\ReturnDetails;
 use App\Models\Logbook;
-use Illuminate\Support\Facades\Http;
 
 class FacilityController extends Controller
 {
