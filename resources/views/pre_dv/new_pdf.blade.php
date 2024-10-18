@@ -138,6 +138,19 @@
                                         </tr>
                                     @endforeach
                                 </table>
+                                <table style="width: 100%; border-collapse: collapse; margin-top:5px;">
+                                    <tr>
+                                        <td style="text-align: left; padding: 2px;font-weight:bold; width:80%">Total</td>
+                                        <td style="border-top:1px solid black;text-align: right; width:20%">{{ number_format($amount, 2, '.',',') }}</td>
+                                    </tr>
+                                </table>
+                                <!-- <span style="float:right">_________________</span><br>
+                                <div style="clear: both;"></div>
+                                <div style="width: 100%;">
+                                    <span class="saa" style="float: left;font-weight:bold">Total:</span>
+                                    <span class="amount" style="float: right;">{{number_format($amount, 2, '.',',')}}</span>
+                                    <div style="clear: both;"></div>
+                                </div> -->
                                 <table style="width: 500px; border-collapse: collapse; margin-top:5px;">
                                     <tr>
                                         <td style="text-align: left;">{{ floor($info->vat) == 3 ? floor($info->vat) . '%' . ' ' . 'Percentage Tax' : floor($info->vat) . '%' . ' ' . 'VAT' }}</td>

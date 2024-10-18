@@ -557,13 +557,15 @@ class PreDvController extends Controller
         $grand_total = $request->grand_total;
         $facility_id = $request->facility_id;
 
-        Transmittal::whereIn('id', $request->transmittal_id)->update(['used'=>1]);
+        if($request->transmittal_id){
+            Transmittal::whereIn('id', $request->transmittal_id)->update(['used'=>1]);
+        }
 
         $pre_dv = new PreDV();
         $pre_dv->facility_id = $facility_id;
         $pre_dv->grand_total = (float) str_replace(',', '', $grand_total);
         $pre_dv->created_by = Auth::user()->userid;
-        $pre_dv->trans_id =  implode(',', $request->transmittal_id);
+        $pre_dv->trans_id =  $request->transmittal_id ? implode(',', $request->transmittal_id) : null;
         $pre_dv->save();
 
         foreach ($all_data as $value) {
