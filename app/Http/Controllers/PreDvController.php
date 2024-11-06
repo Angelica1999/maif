@@ -846,13 +846,15 @@ class PreDvController extends Controller
                     }
                 }
             }
-
-            Transmittal::whereIn('id', $trans_ids)->update([
-                'route_no' => $updated_route,
-                'remarks' => 6
-            ]);
-
-            Http::get('http://192.168.110.148/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/dv');
+            if($pre->trans_id){
+                Transmittal::whereIn('id', $trans_ids)->update([
+                    'route_no' => $updated_route,
+                    'remarks' => 6
+                ]);
+    
+                Http::get('http://gletter.cvchd7.com/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/dv');
+            }
+           
             return redirect()->back()->with('pre_dv', true);
         }
     }
@@ -870,7 +872,10 @@ class PreDvController extends Controller
                 }
             }
             $new_dv->delete();
+            TrackingDetails::where('route_no', $route_no)->delete();
+            TrackingMaster::where('route_no', $route_no)->delete();
         }
+
         return redirect()->back()->with('pre_dv_remove', true);
     }
 
@@ -897,6 +902,9 @@ class PreDvController extends Controller
         $new = NewDV::where('route_no', $request->new_dv_id)->first();
         $pre = PreDv::where('id', $new->predv_id)->first();
         $trans_ids = array_map('intval', explode(',', $pre->trans_id));
+        $trans_ids = array_filter($trans_ids, function($value) {
+            return $value !== 0 && $value !== ''; 
+        });
 
         $type = $request->type;
         if($type == 'pending_new'){
@@ -923,11 +931,14 @@ class PreDvController extends Controller
                     $fund->save();
                 }
             }
-            Transmittal::whereIn('id', $trans_ids)->update([
-                'remarks' => 7
-            ]);
-
-            Http::get('http://192.168.110.148/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/obligate');
+            if(count($trans_ids) > 0){
+                Transmittal::whereIn('id', $trans_ids)->update([
+                    'remarks' => 7
+                ]);
+    
+                Http::get('http://gletter.cvchd7.com/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/obligate');
+            }
+           
             return redirect()->back()->with('pre_dv_update', true);
         }else if($type == 'deferred'){
             $new->paid_on = date('Y-m-d H:i:s');
@@ -945,12 +956,14 @@ class PreDvController extends Controller
                     $u->save();
                 }
             }
-
-            Transmittal::whereIn('id', $trans_ids)->update([
-                'remarks' => 8
-            ]);
-
-            Http::get('http://192.168.110.148/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/paid');
+            if(count($trans_ids) > 0){
+                Transmittal::whereIn('id', $trans_ids)->update([
+                    'remarks' => 8
+                ]);
+    
+                Http::get('http://gletter.cvchd7.com/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/paid');
+            }
+           
             return redirect()->back()->with('pay_dv', true);
         }
     }
