@@ -12,6 +12,6 @@ class Logbook extends Model
     protected $table = 'logbook';
 
     public function r_by(){
-        return $this->belongsTo(User::class, 'userid', 'received_by');
+        return $this->belongsTo(User::class, 'received_by', 'userid');
     }
 }

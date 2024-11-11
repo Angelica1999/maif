@@ -19,7 +19,7 @@
                         </div>
                 </div>
             </form>
-            <h4 class="card-title">Manage FundSource: Budget</h4>
+            <h4 class="card-title">MANAGE FUNDSOURCE: BUDGET</h4>
             <p class="card-description">
                 MAIF-IPP
             </p>
@@ -31,24 +31,32 @@
                                 <div class="card-body">
                                     <div style ="display:flex; justify-content:space-between;">
                                         @if($section == 6)
-                                            <h4 class="card-title text-success" style=" text-align:left">{{ $fund->saa }}</h4>
+                                            <b><h3><a class="card-title text-success" href="#budget_track2" onclick="budgetTracking({{ $fund->id }})" data-toggle="modal">{{$fund->saa}}</a></h3></b>
+                                            <!-- <h4 class="card-title text-success" style=" text-align:left">{{ $fund->saa }}</h4> -->
                                         @else
                                             <b><h3><a class="card-title text-success" href="#update_fundsource" onclick="updateFundsource('{{ $fund->id }}')" data-backdrop="static" data-toggle="modal">{{$fund->saa}}</a></h3></b>
                                         @endif
                                         <!-- <button class="btn btn-sm update_saa" style="cursor: pointer; text-align: right; background-color:#417524; color:white;" data-proponent-id="" data-backdrop="static" data-toggle="modal" onclick="editfundsource()" href="#create_fundsource">Update</button> -->
 
-                                        <button style="width:120px; border-radius:0; border:1px solid teal" id="track" data-fundsource-id="{{  $fund->id }}" data-target="#track_details" onclick="track_details(event)" class='btn btn-sm btn-outline-success track_details'>Track</button>
+                                        <button style="width:105px; border-radius:0; border:1px solid teal" id="track" data-fundsource-id="{{  $fund->id }}" data-target="#track_details" onclick="track_details(event)" class='btn btn-sm btn-outline-success track_details'>Tracking</button>
                                     </div>
-                                        <ul class="list-arrow mt-3">
-                                        <li><span class="ml-3">Allocated Funds: <strong class="text-info">{{ !Empty($fund->alocated_funds)? number_format(floatval(str_replace(',', '',$fund->alocated_funds)), 2, '.', ','):0 }}</strong></span></li>
-                                        <li><span class="ml-3">Administrative Cost: <strong class="text-info">{{!Empty($fund->admin_cost)? number_format(floatval(str_replace(',', '',$fund->admin_cost)), 2, '.', ','):0 }}</strong></span> </li>    
-                                        @if($fund->remaining_balance == 0)
-                                            <li><span class="ml-3">Remaining Balance: <strong class="text-danger">{{!Empty($fund->remaining_balance)? number_format(floatval(str_replace(',', '',$fund->remaining_balance)), 2, '.', ','):0 }}</strong></span> </li>      
-                                        @else
-                                            <li><span class="ml-3">Remaining Balance: <strong class="text-info">{{!Empty($fund->remaining_balance)? number_format(floatval(str_replace(',', '',$fund->remaining_balance)), 2, '.', ','):0 }}</strong></span> </li>      
-                                        @endif
-                                    </ul>
-
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div style="width:70%;">
+                                            <ul class="list-arrow mt-3" style="list-style: none; padding: 0; margin: 0;">
+                                                <li><span class="ml-3">Allocated Funds: <strong class="text-info">{{ !Empty($fund->alocated_funds) ? number_format(floatval(str_replace(',', '',$fund->alocated_funds)), 2, '.', ',') : 0 }}</strong></span></li>
+                                                <li><span class="ml-3">Administrative Cost: <strong class="text-info">{{ !Empty($fund->admin_cost) ? number_format(floatval(str_replace(',', '',$fund->admin_cost)), 2, '.', ',') : 0 }}</strong></span> </li>    
+                                                @if($fund->remaining_balance == 0)
+                                                    <li><span class="ml-3">Remaining Balance: <strong class="text-danger">{{ !Empty($fund->remaining_balance) ? number_format(floatval(str_replace(',', '',$fund->remaining_balance)), 2, '.', ',') : 0 }}</strong></span> </li>      
+                                                @else
+                                                    <li><span class="ml-3">Remaining Balance: <strong class="text-info">{{ !Empty($fund->remaining_balance) ? number_format(floatval(str_replace(',', '',$fund->remaining_balance)), 2, '.', ',') : 0 }}</strong></span> </li>      
+                                                @endif
+                                            </ul>
+                                        </div>
+                                        <div style="display: flex; gap: 5px;">
+                                            <button class="btn btn-sm btn-info" href="#budget_funds" onclick="fundsTracking({{ $fund->id }})" data-toggle="modal" style="border-radius: 0; flex: 1;">&nbsp;&nbsp;Breakdowns of Funds&nbsp;&nbsp;</button>
+                                    <button class="btn btn-sm btn-success" href="" onclick="budgetTracking('{{ $fund->saa }}',{{ $fund->id }}, {{ !Empty($fund->admin_cost) ? floatval(str_replace(',', '',$fund->admin_cost)): 0 }})" data-toggle="modal" style="border-radius: 0; flex: 1;">Breakdowns of Charges</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -96,10 +104,8 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
-
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">Save</button>
@@ -158,265 +164,391 @@
         </div>
     </div>
 </div>
-
-
-
 @include('modal')
-
 @endsection
-
 @section('js')
-    <script>
+<script src="{{ asset('admin/vendors/sweetalert2/sweetalert2.js?v=1') }}"></script>
+<script>
+    var saa;
+    function addCost() {
+        var table = document.getElementById("budget_track2").getElementsByTagName('tbody')[0];
+        var newRow = table.insertRow();
 
-        function updateFundsource(fundsource_id){
-            console.log('id', fundsource_id);
-            $('#update_fundsource2').attr('action', "{{ route('update.fundsource', ['type' => 'save', 'fundsource_id' => ':fundsource_id']) }}".replace(':fundsource_id', fundsource_id));
-            var url = "{{ url('fundsource').'/' }}" +'display' +'/'+ fundsource_id;
+        for (var i = 0; i < 12; i++) {
+            var cell = newRow.insertCell(i);
+            cell.style.border = "1px solid gray";
+            cell.style.padding = "2px";
+            cell.style.textAlign = "center";
+
+            switch (i) {
+                case 0:
+                    cell.innerHTML = '<span style="text-align:center">' + (typeof saa !== 'undefined' ? saa : '') + '</span>';
+                    cell.style.minWidth = "200px";
+                    break;
+                case 1:
+                    cell.innerHTML = '<input type="text" name="pro_name[]" style="width: 100%; border:0px">';
+                    cell.style.maxWidth = "190px";
+                    break;
+                case 2:
+                    cell.innerHTML = '<input type="date" name="ad_date[]" class="ad_date" style="width: 100%; border:0px">';
+                    cell.style.maxWidth = "90px";
+                    break;
+                case 3:
+                    cell.innerHTML = '<input type="text" name="dv_no[]" style="width: 100%; border:0px">';
+                    cell.style.maxWidth = "60px";
+                    break;
+                case 4:
+                    cell.innerHTML = '<input type="text" name="payee[]" style="width: 100%; border:0px">';
+                    cell.style.maxWidth = "150px";
+                    break;
+                case 5:
+                    cell.innerHTML = '<input type="text" name="rec_fc[]" style="width: 100%; border:0px">';
+                    cell.style.maxWidth = "150px";
+                    break;
+                case 6:
+                    cell.innerHTML = '<input type="text" class="ors_no" name="ors_no[]" id="ors_no[]" style="width: 100%; border:0px">';
+                    cell.style.maxWidth = "60px";
+                    break;
+                case 7:
+                    cell.innerHTML = ''; // Empty cell
+                    cell.style.maxWidth = "130px";
+                    break;
+                case 8:
+                    cell.innerHTML = ''; // Empty cell
+                    cell.style.maxWidth = "130px";
+                    break;
+                case 9:
+                    cell.innerHTML = '<input type="text" name="admin_uacs[]" style="width: 100%; border:0px">';
+                    cell.style.maxWidth = "90px";
+                    break;
+                case 10:
+                    cell.innerHTML = '<input type="text" name="admin_cost[]" style="width: 100%; border:0px">';
+                    cell.style.maxWidth = "90px";
+                    break;
+                case 11:
+                    cell.innerHTML = '<i onclick="adminCost($(this))" class="typcn typcn-tick-outline menu-icon text-info" style="font-size: 24px;"></i>';
+                    break;
+            }
+        }
+    }
+
+    function updateFundsource(fundsource_id){
+        console.log('id', fundsource_id);
+        $('#update_fundsource2').attr('action', "{{ route('update.fundsource', ['type' => 'save', 'fundsource_id' => ':fundsource_id']) }}".replace(':fundsource_id', fundsource_id));
+        var url = "{{ url('fundsource').'/' }}" +'display' +'/'+ fundsource_id;
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(result) {
+                $('.saa').val(result.saa);
+                var formattedAmount = result.alocated_funds.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                $('.allocated_funds').val(formattedAmount);
+                $('.admin_cost').val(result.cost_value);
+            }
+        });
+    }
+
+    function adminCost(element){
+        console.log('dhsabv8 bukkuyyy');
+        var df = $('.last_id').val();
+        console.log('dhsabv8 bukkuyyy', df);
+
+    }
+
+    function gen(){
+        var timerInterval;
+        Swal.fire({
+            title: "Generating data!",
+            html: "Closing in <b></b> milliseconds.",
+            timer: 1100,
+            timerProgressBar: true,
+            didOpen: () => {
+                Swal.showLoading();
+                const timer = Swal.getPopup().querySelector("b");
+                timerInterval = setInterval(() => {
+                timer.textContent = `${Swal.getTimerLeft()}`;
+                }, 100);
+            },
+            willClose: () => {
+                clearInterval(timerInterval);
+            }
+        });
+    }
+
+    function fundsTracking(id){
+        console.log('id', id);
+        gen();
+        $.get("{{ url('budget/funds').'/' }}"+id, function (result){
+            $('#budget_track_funds').html(result);
+        });
+    }
+
+    var saa_id;
+
+    function budgetTracking(fundsource, id, amount){
+        saa_id = id;
+        saa = fundsource;
+        console.log('id', id);
+        $('#budget_track_body').empty();
+        $.get("{{ url('budget/fundsource').'/' }}"+id, function(result){
+
+            if(result == 0 && amount == 0){
+                $('#budget_track2').modal('hide');
+                Swal.fire({
+                    title: "No Data Found",
+                    text: "There is no utilization details to display.",
+                    iconHtml: '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"></svg>',
+                    timer: 1000,
+                    timerProgressBar: true,
+                });
+            }else{
+                gen();
+                $('#budget_track_body').html(result);
+                $('#budget_track2').css('display', 'block');
+                $('#budget_track2').modal('show');
+                $('.modal-backdrop').addClass("fade show");
+            }
+        });
+        if(amount == 0){
+            $('.add_cost').css('display', 'none');
+        }else{
+            $('.add_cost').css('display', 'block');
+        }
+    }
+
+    $(document).ready(function () {
+        
+        $(".for_clone").on("click", ".add_saa", function () {
+            var clonedDiv = $(".for_clone .row:first").clone(true);
+            $(clonedDiv).find('#saa').val('');
+            $(clonedDiv).find('#allocated_funds').val('');
+            $(clonedDiv).find(".add_saa").text("-");
+            $(clonedDiv).find(".add_saa").removeClass("add_saa").addClass("remove_saa");
+            $(".for_clone").append(clonedDiv);
+        });
+
+        $(".for_clone").on("click", ".remove_saa", function () {
+            $(this).closest(".row").remove();
+        });
+    
+    });
+
+    var saaE = document.getElementById('saa');
+
+    saaE.addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+    });
+
+    function track_details(event){
+        event.stopPropagation();
+        $('#track_details').modal('show');
+
+        var fundsourceId = event.target.getAttribute('data-fundsource-id');
+        console.log('fundsource',fundsourceId );
+        var i = 0;
+        var type = "for_modal";
+        var url = "{{ url('budget/tracking').'/' }}"+ fundsourceId +'/' + 'for_modal';
+        $.ajax({
+        url: url,
+        type: 'GET',
+        
+            success: function(result) {
+                $('#t_body').empty(); 
+                $('.tracking_footer').empty();
+                console.log('proponent', result);
+                if(result.length > 0){
+                    result.forEach(function(item) {
+                        var saa = item.fund_sourcedata && item.fund_sourcedata.saa !== null ? item.fund_sourcedata.saa : '-';
+                        var proponentName = item.proponentdata && item.proponentdata.proponent !== null ? item.proponentdata.proponent : '-';
+                        var facility = item.facilitydata && item.facilitydata.name !== null ? item.facilitydata.name : '-';
+                        var user = item.user_budget && item.user_budget.lname !== null ? item.user_budget.lname +', '+item.user_budget.fname : '-';
+
+                        var timestamp = item.updated_at;
+                        var date = new Date(timestamp);
+                        var formattedDate = date.toLocaleString('en-US', {
+                            month: 'long',
+                            day: 'numeric',
+                            year: 'numeric'
+                        });
+                        var formattedTime = date.toLocaleTimeString('en-US', {
+                            hour: 'numeric',
+                            minute: 'numeric'
+                        });
+                        var stat='';
+                        if(item.obligated == 1){
+                            stat = 'Obligated';
+                        }else if(item.status == 2){
+                            stat = 'Transfered/Deducted';
+                        }else if(item.status == 3){
+                            stat = 'Transfered/Added';
+                        }
+                        var beg_balance = item.budget_bbalance.replace(',', '');
+                        var utilize = (item.budget_utilize !== null)?number_format(parseFloat(item.budget_utilize.replace(/,/g, '')), 2, '.', ','):'';
+                        console.log("balance", item.div_id);
+                        var route = item.div_id.toString();
+                        var new_row = '<tr style="text-align:center">' +
+                            '<td>' + saa + '</td>' +
+                            '<td>' + proponentName + '</td>' +
+                            '<td>' + facility + '</td>' +
+                            '<td>' + number_format(parseFloat(beg_balance.replace(',', '')), 2, '.', ',') + '</td>' +
+                            '<td>' +(item.div_id != 0 ?'<a class="modal-link" href="#i_frame" data-routeId="'+route+'" onclick="openModal(this)">' + utilize + '</a>' :utilize) +'</td>' +
+                            // '<td>' + (item.div_id != 0 ? '<a href="{{ route("dv", ["keyword" => ""]) }}' + encodeURIComponent(route) + '">' + route + '</a>' : '') + '</td>' +
+                            '<td>' +(item.div_id != 0 ?'<a class="modal-link" href="#obligate" data-backdrop="static" data-toggle="modal" data-dvNo="'+item.dv_no+'" data-routeId="'+route+'" onclick="getDv(this)">' + item.div_id + '</a>' :'') +'</td>' +
+                            '<td>' + item.user_budget.lname +', '+item.user_budget.fname+ '</td>' +
+                            '<td>' + formattedDate+'<br>'+ formattedTime + '</td>' +
+                            '<td>' + stat + '</td>' +
+                            '</tr>';
+                        $('#t_body').append(new_row);
+                        i= i+1;
+                    });
+                    var printButton = $('<a>', { 
+                        href: "{{ url('budget/tracking') }}/" + fundsourceId +'/'+ 'pdf',
+                        target: '_blank',
+                        type: 'button',
+                        class: 'btn btn-success btn-sm',
+                        text: 'PDF'
+                    });
+                $('.tracking_footer').append(printButton);
+                }else{
+                    var new_row = '<tr>' +
+                        '<td colspan ="9">' + "No Data Available" + '</td>' +
+                        '</tr>';
+                    $('#t_body').append(new_row);
+                }
+            }
+        });
+
+    }
+
+    function openModal( link) {
+        var routeNo = $(link).data('routeid');
+        setTimeout(function() {
+            var src = "https://mis.cvchd7.com/dts/document/trackMaif/" + routeNo;
+            $("#track_iframe").attr("src", src);
+            $('#i_frame').modal('show');
+        },100);
+    }
+    function getDv( link) {
+        var route_no = $(link).data('routeid');
+        var dv_no = $(link).data('dvNo');
+
+        console.log('check', dv_no);
+
+        $('.modal_body').html(loading);
+        $('.modal-title').html("Disbursement Voucher");
+        var url = "{{ url('dv').'/' }}"+route_no + '/' +'view';
+        setTimeout(function(){
             $.ajax({
                 url: url,
                 type: 'GET',
                 success: function(result) {
-                    $('.saa').val(result.saa);
-                    var formattedAmount = result.alocated_funds.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                    $('.allocated_funds').val(formattedAmount);
-                    $('.admin_cost').val(result.cost_value);
+                    $('.modal_body').html(result);
                 }
             });
-        }
+        },1000);
+    }
 
-        $(document).ready(function () {
-            
-            $(".for_clone").on("click", ".add_saa", function () {
-                var clonedDiv = $(".for_clone .row:first").clone(true);
-                $(clonedDiv).find('#saa').val('');
-                $(clonedDiv).find('#allocated_funds').val('');
-                $(clonedDiv).find(".add_saa").text("-");
-                $(clonedDiv).find(".add_saa").removeClass("add_saa").addClass("remove_saa");
-                $(".for_clone").append(clonedDiv);
-            });
+    function number_format(number, decimals, decimalSeparator, thousandsSeparator) {
+        decimals = decimals || 0;
+        number = parseFloat(number);
 
-            $(".for_clone").on("click", ".remove_saa", function () {
-                $(this).closest(".row").remove();
-            });
-        
-        });
+        if (!isFinite(number) || !number && number !== 0) return NaN;
 
-        var saaE = document.getElementById('saa');
+        var result = number.toFixed(decimals);
+        result = result.replace('.', decimalSeparator);
 
-        saaE.addEventListener('input', function() {
-            this.value = this.value.toUpperCase();
-        });
+        var parts = result.split(decimalSeparator);
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSeparator);
 
-        function track_details(event){
-            event.stopPropagation();
-            $('#track_details').modal('show');
+        return parts.join(decimalSeparator);
+    }
 
-            var fundsourceId = event.target.getAttribute('data-fundsource-id');
-            console.log('fundsource',fundsourceId );
-            var i = 0;
-            var type = "for_modal";
-            var url = "{{ url('budget/tracking').'/' }}"+ fundsourceId +'/' + 'for_modal';
+
+    function editfundsource(fundsourceId){
+        var proponent_id = event.target.getAttribute('data-proponent-id');
+        $('.modal_body').html(loading);
+        $('.modal-title').html("Update Fundsource");
+        var url = "{{ url('fundsource/edit').'/' }}"+ fundsourceId +'/'+proponent_id;
+        setTimeout(function() {
             $.ajax({
-            url: url,
-            type: 'GET',
-            
-                success: function(result) {
-                    $('#t_body').empty(); 
-                    $('.tracking_footer').empty();
-                    console.log('proponent', result);
-                    if(result.length > 0){
-                        result.forEach(function(item) {
-                            var saa = item.fund_sourcedata && item.fund_sourcedata.saa !== null ? item.fund_sourcedata.saa : '-';
-                            var proponentName = item.proponentdata && item.proponentdata.proponent !== null ? item.proponentdata.proponent : '-';
-                            var facility = item.facilitydata && item.facilitydata.name !== null ? item.facilitydata.name : '-';
-                            var user = item.user_budget && item.user_budget.lname !== null ? item.user_budget.lname +', '+item.user_budget.fname : '-';
-
-                            var timestamp = item.updated_at;
-                            var date = new Date(timestamp);
-                            var formattedDate = date.toLocaleString('en-US', {
-                                month: 'long',
-                                day: 'numeric',
-                                year: 'numeric'
-                            });
-                            var formattedTime = date.toLocaleTimeString('en-US', {
-                                hour: 'numeric',
-                                minute: 'numeric'
-                            });
-                            var stat='';
-                            if(item.obligated == 1){
-                                stat = 'Obligated';
-                            }else if(item.status == 2){
-                                stat = 'Transfered/Deducted';
-                            }else if(item.status == 3){
-                                stat = 'Transfered/Added';
-                            }
-                            var beg_balance = item.budget_bbalance.replace(',', '');
-                            var utilize = (item.budget_utilize !== null)?number_format(parseFloat(item.budget_utilize.replace(/,/g, '')), 2, '.', ','):'';
-                            console.log("balance", item.div_id);
-                            var route = item.div_id.toString();
-                            var new_row = '<tr style="text-align:center">' +
-                                '<td>' + saa + '</td>' +
-                                '<td>' + proponentName + '</td>' +
-                                '<td>' + facility + '</td>' +
-                                '<td>' + number_format(parseFloat(beg_balance.replace(',', '')), 2, '.', ',') + '</td>' +
-                                '<td>' +(item.div_id != 0 ?'<a class="modal-link" href="#i_frame" data-routeId="'+route+'" onclick="openModal(this)">' + utilize + '</a>' :utilize) +'</td>' +
-                                // '<td>' + (item.div_id != 0 ? '<a href="{{ route("dv", ["keyword" => ""]) }}' + encodeURIComponent(route) + '">' + route + '</a>' : '') + '</td>' +
-                                '<td>' +(item.div_id != 0 ?'<a class="modal-link" href="#obligate" data-backdrop="static" data-toggle="modal" data-dvNo="'+item.dv_no+'" data-routeId="'+route+'" onclick="getDv(this)">' + item.div_id + '</a>' :'') +'</td>' +
-                                '<td>' + item.user_budget.lname +', '+item.user_budget.fname+ '</td>' +
-                                '<td>' + formattedDate+'<br>'+ formattedTime + '</td>' +
-                                '<td>' + stat + '</td>' +
-                                '</tr>';
-                            $('#t_body').append(new_row);
-                            i= i+1;
-                        });
-                        var printButton = $('<a>', { 
-                            href: "{{ url('budget/tracking') }}/" + fundsourceId +'/'+ 'pdf',
-                            target: '_blank',
-                            type: 'button',
-                            class: 'btn btn-success btn-sm',
-                            text: 'PDF'
-                        });
-                    $('.tracking_footer').append(printButton);
-                    }else{
-                        var new_row = '<tr>' +
-                            '<td colspan ="9">' + "No Data Available" + '</td>' +
-                            '</tr>';
-                        $('#t_body').append(new_row);
-                    }
+                url: url,
+                type: 'GET',
+                success: function(result){
+                    $('.modal_body').html(result);
                 }
             });
-
-        }
-    
-        function openModal( link) {
-            var routeNo = $(link).data('routeid');
-            setTimeout(function() {
-                var src = "https://mis.cvchd7.com/dts/document/trackMaif/" + routeNo;
-                $("#track_iframe").attr("src", src);
-                $('#i_frame').modal('show');
-            },100);
-        }
-        function getDv( link) {
-            var route_no = $(link).data('routeid');
-            var dv_no = $(link).data('dvNo');
-
-            console.log('check', dv_no);
-
-            $('.modal_body').html(loading);
-            $('.modal-title').html("Disbursement Voucher");
-            var url = "{{ url('dv').'/' }}"+route_no + '/' +'view';
-            setTimeout(function(){
-                $.ajax({
-                    url: url,
-                    type: 'GET',
-                    success: function(result) {
-                        $('.modal_body').html(result);
-                    }
-                });
-            },1000);
-        }
-
-        function number_format(number, decimals, decimalSeparator, thousandsSeparator) {
-            decimals = decimals || 0;
-            number = parseFloat(number);
-
-            if (!isFinite(number) || !number && number !== 0) return NaN;
-
-            var result = number.toFixed(decimals);
-            result = result.replace('.', decimalSeparator);
-
-            var parts = result.split(decimalSeparator);
-            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSeparator);
-
-            return parts.join(decimalSeparator);
-        }
-
-
-        function editfundsource(fundsourceId){
-            var proponent_id = event.target.getAttribute('data-proponent-id');
-            $('.modal_body').html(loading);
-            $('.modal-title').html("Update Fundsource");
-            var url = "{{ url('fundsource/edit').'/' }}"+ fundsourceId +'/'+proponent_id;
-            setTimeout(function() {
-                $.ajax({
-                    url: url,
-                    type: 'GET',
-                    success: function(result){
-                        $('.modal_body').html(result);
-                    }
-                });
-            }, 500);
-        }
-        function transferFunds(fundsourceId){
-            var proponent_id = event.target.getAttribute('data-proponentInfo-id');
-            var facility_id = event.target.getAttribute('data-facility-id');
-            $('.modal_body').html(loading);
-            $('.modal-title').html("Transfer Funds");
-            console.log('fundsourceId', fundsourceId);
-            var url = "{{ url('fundsource/transfer_funds').'/' }}"+ fundsourceId+'/'+proponent_id+'/'+ facility_id;
-            setTimeout(function() {
-                $.ajax({
-                    url: url,
-                    type: 'GET',
-                    success: function(result){
-                        $('.modal_body').html(result);
-                    }
-                });
-            }, 500);
-        }
-
-        // function createFundSource() {
-        //     $('.modal_body').html(loading);
-        //     $('.modal-title').html("Create Fundsource");
-        //     var url = "{{ route('fundsource.create') }}";
-        //     setTimeout(function(){
-        //         $.ajax({
-        //             url: url,
-        //             type: 'GET',
-        //             success: function(result) {
-        //                 $('.modal_body').html(result);
-        //             }
-        //         });
-        //     },500);
-        // }
-
-        function addTransaction() {
-            event.preventDefault();
-            $.get("{{ route('transaction.get') }}",function(result) {
-                $("#transaction-container").append(result);
+        }, 500);
+    }
+    function transferFunds(fundsourceId){
+        var proponent_id = event.target.getAttribute('data-proponentInfo-id');
+        var facility_id = event.target.getAttribute('data-facility-id');
+        $('.modal_body').html(loading);
+        $('.modal-title').html("Transfer Funds");
+        console.log('fundsourceId', fundsourceId);
+        var url = "{{ url('fundsource/transfer_funds').'/' }}"+ fundsourceId+'/'+proponent_id+'/'+ facility_id;
+        setTimeout(function() {
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function(result){
+                    $('.modal_body').html(result);
+                }
             });
+        }, 500);
+    }
+
+    // function createFundSource() {
+    //     $('.modal_body').html(loading);
+    //     $('.modal-title').html("Create Fundsource");
+    //     var url = "{{ route('fundsource.create') }}";
+    //     setTimeout(function(){
+    //         $.ajax({
+    //             url: url,
+    //             type: 'GET',
+    //             success: function(result) {
+    //                 $('.modal_body').html(result);
+    //             }
+    //         });
+    //     },500);
+    // }
+
+    function addTransaction() {
+        event.preventDefault();
+        $.get("{{ route('transaction.get') }}",function(result) {
+            $("#transaction-container").append(result);
+        });
+    }
+    function validateAmount(element) {
+        if (event.keyCode === 32) {
+            event.preventDefault();
         }
-        function validateAmount(element) {
-            if (event.keyCode === 32) {
-                event.preventDefault();
-            }
-            var cleanedValue = element.value.replace(/[^\d.]/g, '');
-            var numericValue = parseFloat(cleanedValue);
-            if (!isNaN(numericValue) || cleanedValue === '' || cleanedValue === '.') {
-                element.value = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-            } else {
-                element.value = ''; 
-            }
+        var cleanedValue = element.value.replace(/[^\d.]/g, '');
+        var numericValue = parseFloat(cleanedValue);
+        if (!isNaN(numericValue) || cleanedValue === '' || cleanedValue === '.') {
+            element.value = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        } else {
+            element.value = ''; 
         }
-        function proponentCode(proponent){
-            
-            if(proponent.val()){
-                var proponent_id = proponent.val()
-                var url = "{{ url('proponent').'/' }}"+ proponent_id;
-                setTimeout(function() {
-                    $.ajax({
-                        url: url,
-                        type: 'GET',
-                        success: function(result){
-                            $("#proponent_code").val(result).prop('readonly', true);
-                            var selectedText = $('#proponent_exist option:selected').text();
-                            $("#proponent").val(selectedText).prop('readonly', true);
-                        }
-                    });
-                }, 500);
-            }else{
-                $("#proponent_code").val('').prop('readonly', false);
-            }   
-        }
-    </script>
+    }
+    function proponentCode(proponent){
+        
+        if(proponent.val()){
+            var proponent_id = proponent.val()
+            var url = "{{ url('proponent').'/' }}"+ proponent_id;
+            setTimeout(function() {
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function(result){
+                        $("#proponent_code").val(result).prop('readonly', true);
+                        var selectedText = $('#proponent_exist option:selected').text();
+                        $("#proponent").val(selectedText).prop('readonly', true);
+                    }
+                });
+            }, 500);
+        }else{
+            $("#proponent_code").val('').prop('readonly', false);
+        }   
+    }
+</script>
 @endsection

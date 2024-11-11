@@ -26,4 +26,7 @@ class NewDV extends Model
     public function details(){
         return $this->hasMany(TrackingDetails::class, 'route_no', 'route_no');
     }
+    public function preDv(){
+        return $this->belongsTo(PreDV::class, 'predv_id', 'id');
+    }
 }

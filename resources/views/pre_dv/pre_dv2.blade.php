@@ -32,7 +32,7 @@ use App\Models\TrackingDetails;
                     </form>
                 </div>
             </div>
-            <h4 class="card-title">Pre - DV (v2)</h4>
+            <h4 class="card-title">PRE - DV (v2)</h4>
             <p class="card-description">
                 MAIF-IPP
             </p>
@@ -190,6 +190,9 @@ use App\Models\TrackingDetails;
                     <strong>No data found!</strong>
                 </div>
             @endif
+            </div>
+            <div class="alert alert-info" role="alert" style="width: 100%; margin-top:5px;">
+                <strong>Total number of data generated: {{ count($results) }}</strong>
             </div>
             <div class="pl-5 pr-5 mt-5">
                 {!! $results->appends(request()->query())->links('pagination::bootstrap-5') !!}

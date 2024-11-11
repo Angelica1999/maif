@@ -14,7 +14,7 @@
                     </div>
                 </div>
             </form>
-            <h4 class="card-title">Admin Cost</h4>
+            <h4 class="card-title">ADMIN COST</h4>
             <p class="card-description">
                 MAIF-IPP
             </p>

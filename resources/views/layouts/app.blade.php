@@ -59,7 +59,6 @@
     </div>
 
     <script src="{{ asset('admin/vendors/js/vendor.bundle.base.js') }}"></script>
-
     <script src="{{ asset('admin/js/off-canvas.js') }}"></script>
     <script src="{{ asset('admin/js/hoverable-collapse.js') }}"></script>
     <script src="{{ asset('admin/js/template.js') }}"></script>
@@ -67,7 +66,9 @@
     <script src="{{ asset('admin/js/todolist.js') }}"></script>
     <script src="{{ asset('admin/vendors/select2/select2.min.js') }}"></script>
     <script src="{{ asset('Lobibox/lobibox.js?v=').date('His') }}"></script>
-    
+    <script src="{{ asset('admin/vendors/sweetalert2/sweetalert2.js?v=1') }}"></script>
+    <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
+
     <!-- <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
       <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
@@ -428,6 +429,12 @@
            <?php session()->forget('trans_return'); ?>
            Lobibox.notify('error', {
               msg: 'Successfully return the transmittal!'
+           });
+        @endif
+        @if(session('process_gl'))
+           <?php session()->forget('process_gl'); ?>
+           Lobibox.notify('success', {
+              msg: 'Successfully process the gl!'
            });
         @endif
     </script>

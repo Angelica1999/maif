@@ -52,7 +52,8 @@
                                             <button onclick="returnTrans({{ $item->id }})" href="#return" style="border-radius:0; color:white" data-toggle="modal" data-backdrop="static" type="button" class="btn btn-warning btn-xs">Return</button>
                                             <button onclick="accept({{ $item->id }})" style="border-radius:0; color:white" type="button" class="btn btn-success btn-xs">Accept</button>
                                         @else
-                                            <i class="text-danger">this transmittal is not yet received</i>
+                                            <!-- <i class="text-danger">this transmittal is not yet received</i> -->
+                                            <a onclick="receive('{{ $item->control_no }}')" style="border-radius:0; color:white" type="button" class="btn btn-success btn-xs">Receive</a>
                                         @endif
                                     </td>
                                     <td><a onclick="displaySum({{ $item->id }})" href="#summary_display" data-toggle="modal" data-backdrop="static">{{ $item->control_no }}</a></td>
@@ -157,23 +158,17 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="fname">Delivered By</label>
-                                    <input type="text" class="form-control" style="width:220px;" name="delivered_by" oninput="this.value = this.value.toUpperCase()" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="fname">Received By</label>
-                                    <input type="text" class="form-control" style="width:220px;" name="received_by" oninput="this.value = this.value.toUpperCase()" required>
+                                    <input type="text" class="form-control" style="width:100%;" name="delivered_by" oninput="this.value = this.value.toUpperCase()" required>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" id="close_modal" data-dismiss="modal">Close</button>
-                        <button type="submit" id="create_pat_btn" class="btn btn-success">Add</button>
+                        <button type="submit" id="create_pat_btn" class="btn btn-success">Receive</button>
                     </div>
                 </form>
             </div>
@@ -183,7 +178,7 @@
 
 @endsection
 @section('js')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{{ asset('admin/vendors/sweetalert2/sweetalert2.js?v=1') }}"></script>
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 
 <script>
@@ -195,6 +190,48 @@
     function addRow(id){
         $.get("{{ url('transmittal/references/2').'/' }}" + id, function(result){
             $('.con').append(result);
+        });
+    }
+
+    function receive(cntrl_no){
+        Swal.fire({
+            title: 'Receive transmittal',
+            input: 'text', 
+            inputLabel: 'Delivered By:',
+            inputPlaceholder: 'Delivery name',
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
+            cancelButtonText: 'Cancel',
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'Please enter the delivery name!';
+                }
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var name = encodeURIComponent(result.value); 
+                var control_no = encodeURIComponent(cntrl_no);
+
+                fetch(`transmittal/received/${control_no}/${name}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}' 
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    Swal.fire('Success!', 'Your data has been submitted.', 'success');
+                })
+                .catch(error => {
+                    Swal.fire('Error!', 'There was an error submitting your data.', 'error');
+                });
+            }
         });
     }
 

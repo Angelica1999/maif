@@ -36,6 +36,30 @@
             @foreach($fundsource[0]->proponents as $index => $pro)
                 <div class="clone">
                     <div class="card" style="border:none;">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <b><label>Proponent (Main):</label></b>
+                            <div class="form-group">
+                                <select class="form-control proponent_main" id="proponent_main{{ $pro->id }}" name="proponent_main[]">
+                                    <option value="">Select/Input Proponent</option>
+                                    @foreach($proponents as $proponent)
+                                        <option value="{{ $proponent->id }}" 
+                                            {{ $pro->proponentInfo->first() && $pro->proponentInfo->first()->main_proponent == $proponent->id ? 'selected' : '' }}>
+                                            {{ $proponent->proponent }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <script>
+                                    $(document).ready(function () {
+                                        $('#proponent_main{{ $pro->id }}').select2();
+                                        $("#"+"{{ $pro->id . $index }}").select2({
+                                            tags: true,
+                                        });
+                                    });
+                                </script>
+                            </div>
+                        </div>
+                    </div>
                         <div class="row">
                             <div class="col-md-5">
                                 <b><label>Proponent:</label></b>
@@ -71,66 +95,65 @@
                             </div>
                         </div>
                         @if($pro->proponentInfo->count() >0)
+                            @foreach($pro->proponentInfo as $index => $proInfo)
+                                <div class="card1">
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                        <label>Facility:</label>
+                                            <div class="form-group">
+                                                <div class="facility_select">
+                                                    <select class="form-control break_fac" id="{{$proInfo->id}}" name="facility_id[id][]" multiple required
+                                                        @if($proInfo->alocated_funds != $proInfo->remaining_balance)
+                                                        
+                                                        @endif >
+                                                        <option value="">Please select facility</option>
 
-                        @foreach($pro->proponentInfo as $index => $proInfo)
-                            <div class="card1">
-                                <div class="row">
-                                    <div class="col-md-5">
-                                    <label>Facility:</label>
-                                        <div class="form-group">
-                                            <div class="facility_select">
-                                                <select class="form-control break_fac" id="{{$proInfo->id}}" name="facility_id[]" multiple required
-                                                    @if($proInfo->alocated_funds != $proInfo->remaining_balance)
-                                                    
-                                                    @endif >
-                                                    <option value="">Please select facility</option>
-
-                                                    @if($proInfo->facility != null)
-                                                        @foreach($facilities as $facility)
-                                                            <option value="{{ $facility->id }}" {{$proInfo->facility_id == $facility->id ? 'selected' :''}}>{{ $facility->name }}</option>
-                                                        @endforeach
-                                                    @else
-                                                        <?php 
-                                                            $facilityIds = array_map('intval', json_decode($proInfo->facility_id));
-                                                        ?>
-                                                        @foreach($facilities as $facility)
-                                                            <option value="{{ $facility->id }}" {{ in_array($facility->id, $facilityIds) ? 'selected' : '' }}>
-                                                                {{ $facility->name }}
-                                                            </option>
-                                                        @endforeach
-                                                    @endif
-                                                </select>
+                                                        @if($proInfo->facility != null)
+                                                            @foreach($facilities as $facility)
+                                                                <option value="{{ $facility->id }}" {{$proInfo->facility_id == $facility->id ? 'selected' :''}}>{{ $facility->name }}</option>
+                                                            @endforeach
+                                                        @else
+                                                            <?php 
+                                                                $facilityIds = array_map('intval', json_decode($proInfo->facility_id));
+                                                            ?>
+                                                            @foreach($facilities as $facility)
+                                                                <option value="{{ $facility->id }}" {{ in_array($facility->id, $facilityIds) ? 'selected' : '' }}>
+                                                                    {{ $facility->name }}
+                                                                </option>
+                                                            @endforeach
+                                                        @endif
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-md-7">
-                                        <label>Allocated Funds:</label>
-                                        <div class="form-group">
-                                            <div class="form-group" style="display: flex; align-items: center;">
-                                                <input type="hidden" class="info_id" value="{{!empty($proInfo->id)?$proInfo->id:0}}">
-                                                <input type="text" class="form-control alocated_funds" id="alocated_funds[]" name="alocated_funds[]" oninput="calculateFunds(this)" onkeyup="validateAmount(this)" value="{{number_format(str_replace(',', '',$proInfo->alocated_funds), 2, '.', ',')}}" style="flex: 1; width:160px;" required
-                                                @if($proInfo->alocated_funds != $proInfo->remaining_balance)
-                                                    
-                                                @endif
-                                                >
-                                                @if($index == 0)
-                                                    <button type="button" class="form-control btn-info clone_facility-btn" style="width: 5px; margin-left: 5px; color:white; background-color:#355E3B">+</button>
-                                                @else
-                                                    <button type="button" class="form-control btn-info remove_fac-clone" onclick="remove({{$proInfo->id}})" style="width: 5px; margin-left: 5px; color:white; background-color:#355E3B">-</button>
-                                                @endif
-                                                <button type="button" id="transfer_funds" href="#transfer_fundsource" onclick="transferFunds({{ $proInfo->id }})" class="form-control btn-info transfer_funds" style="width: 5px; margin-left: 5px; color:white; background-color:#01796F"><i class="typcn typcn-arrow-right-thick menu-icon"></i></button>
+                                        <div class="col-md-7">
+                                            <label>Allocated Funds:</label>
+                                            <div class="form-group">
+                                                <div class="form-group" style="display: flex; align-items: center;">
+                                                    <input type="hidden" class="info_id" value="{{!empty($proInfo->id)?$proInfo->id:0}}">
+                                                    <input type="text" class="form-control alocated_funds" id="alocated_funds[]" name="alocated_funds[]" oninput="calculateFunds(this)" onkeyup="validateAmount(this)" value="{{number_format(str_replace(',', '',$proInfo->alocated_funds), 2, '.', ',')}}" style="flex: 1; width:160px;" required
+                                                    @if($proInfo->alocated_funds != $proInfo->remaining_balance)
+                                                        
+                                                    @endif
+                                                    >
+                                                    @if($index == 0)
+                                                        <button type="button" class="form-control btn-info clone_facility-btn" style="width: 5px; margin-left: 5px; color:white; background-color:#355E3B">+</button>
+                                                    @else
+                                                        <button type="button" class="form-control btn-info remove_fac-clone" onclick="remove({{$proInfo->id}})" style="width: 5px; margin-left: 5px; color:white; background-color:#355E3B">-</button>
+                                                    @endif
+                                                    <button type="button" id="transfer_funds" href="#transfer_fundsource" onclick="transferFunds({{ $proInfo->id }})" class="form-control btn-info transfer_funds" style="width: 5px; margin-left: 5px; color:white; background-color:#01796F"><i class="typcn typcn-arrow-right-thick menu-icon"></i></button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <script>
-                                $(document).ready(function() {
-                                    $("#"+"{{ $proInfo->id}}").select2();
-                                    var count = 0; count++;
-                                });
-                            </script>
-                        @endforeach
+                                <script>
+                                    $(document).ready(function() {
+                                        $("#"+"{{ $proInfo->id}}").select2();
+                                        var count = 0; count++;
+                                    });
+                                </script>
+                            @endforeach
                         @else
                         <div class="card1">
                         <div class="row">
@@ -169,7 +192,22 @@
                 <div class="card" style="border:none;">
                     <div class="row">
                         <div class="col-md-5">
-                            <b><label>Proponent:</label></b>
+                            <b><label>Proponent (Main):</label></b>
+                            <div class="form-group">
+                                <select class="form-control proponent_main" id="proponent_main" name="proponent_main[]">
+                                    <option value="">Select/Input Proponent</option>
+                                    @foreach($proponents as $proponent)
+                                        <option value="{{ $proponent->id }}" data-proponent-code="{{ $proponent->proponent_code }}">
+                                            {{ $proponent->proponent }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <b><label>Proponent (c/o):</label></b>
                             <div class="form-group">
                                 <!-- <input type="text" class="form-control proponent" name="proponent[]" placeholder="Proponent"> -->
                                 <select class="form-control proponent" id="proponent" name="proponent[]"  onchange="proponentCode($(this))" required>
@@ -240,6 +278,7 @@
         $('#proponent').select2({
             tags: true,
         });
+        $('#proponent_main').select2();
     });
 
     function checkCode(element, value) {
@@ -311,11 +350,13 @@
             $('.clone .card').each(function (index, clone) {
                 num++;
                 var proponent = $(clone).find('.proponent').val();
-                var proponent_code = $(clone).find('.proponent_code').val();;
-
+                var proponent_code = $(clone).find('.proponent_code').val();
+                var proponent_main = $(clone).find('.proponent_main').val();
+                console.log('asdsad', $(clone).find('.proponent_main'));
                 $(clone).find('.row').each(function (rowIndex, row) {
                     nu++;
                     var facility_id = $(row).find('.break_fac').val();
+                    
                     if(facility_id !== '' && facility_id !== undefined){
 
                         var allocated_funds = $(row).find('.alocated_funds').val(); 
@@ -325,6 +366,7 @@
                         }
                         var cloneData = {
                             proponent: proponent,
+                            proponent_main: proponent_main,
                             proponent_code: proponent_code,
                             facility_id: facility_id,
                             alocated_funds: allocated_funds,

@@ -35,10 +35,10 @@
                     <tbody>
                         @foreach($logbook as $row)
                             <tr> 
+                                <td>{{ $row->control_no }}</td>
+                                <td>{{ $row->delivered_by }}</td>
+                                <td>{{ $row->r_by->fname.' '.$row->r_by->lname }}</td>
                                 <td>{{ date('F j, Y', strtotime($row->received_on)) }}</td>   
-                                <td>{{ $row->received_on }}</td>
-                                <td>{{ $row->control_no }}</td>
-                                <td>{{ $row->control_no }}</td>
                             </tr>
                         @endforeach
                     </tbody>

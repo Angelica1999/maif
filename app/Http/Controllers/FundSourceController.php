@@ -33,7 +33,7 @@ class FundSourceController extends Controller
                 'proponents' => function ($query) {
                     $query->with([
                         'proponentInfo' => function ($query) {
-                            $query->with('facility');
+                            $query->with('facility','main_pro:id,proponent');
                         }
                     ]);
                 },
@@ -128,7 +128,6 @@ class FundSourceController extends Controller
                 ->where('users.userid', '=', Auth::user()->userid)
                 ->select('users.section')
                 ->first();
-               
         return view('fundsource.fundsource',[
             'fundsources' => $fundsources,
             'keyword' => $request->keyword,
@@ -140,7 +139,6 @@ class FundSourceController extends Controller
 
     public function fundSource2(Request $request) {
         $fundsources = Fundsource:: orderBy('id', 'asc')->paginate(15);
-               
         return view('fundsource_budget.fundsource2',[
             'fundsources' => $fundsources
         ]);
@@ -321,6 +319,7 @@ class FundSourceController extends Controller
         $sum = $proponent_info->sum(function ($info) {
                     return (float) str_replace(',', '', $info->alocated_funds);
                 });
+                // return $fundsource;
         return view('fundsource.breakdowns', [
             'fundsource' => $fundsource,
             'pro_count' => $proponent_info->count(),
@@ -347,26 +346,10 @@ class FundSourceController extends Controller
         $breakdowns = $request->input('breakdowns');
         $fund_id = $request->input('fundsource_id');
         $get_fundsource = Fundsource::where('id', $fund_id)->first();
-        //trapping
-        $check_pro = Proponent::where('fundsource_id', $fund_id)->get();
-        foreach($check_pro as $pro_c){
-            $check_info = ProponentInfo::where('proponent_id', $pro_c->proponent_id)->where('fundsource_id', $pro_c->fundsource_id)->first();
-            if(!$check_info){
-                // $patients = Patients::where('proponent_id', $pro_c->proponent_id)->get();
-                // $name = Proponent::where('id', $patients->proponent_id)->value('proponent');
-                // $pro_c->delete();
-                // if($patients){
-                //     $new_pro = Proponent::where('proponent', $name)->first();
-                //     if($new_pro){
-                //         $patients->update(['proponent_id' => $new_pro->id]);
-                //     }
-                // }
-            }
-        }
-        
+       
         if($breakdowns){
             foreach($breakdowns as $breakdown){
-
+                // return $breakdown['proponent_main'];
                 $pro_exists = Proponent::where('proponent', $breakdown['proponent'])->where('fundsource_id', $breakdown['fundsource_id'])->where('proponent_code', $breakdown['proponent_code'])->first();
                 if(!$pro_exists){
                     $check = Proponent::where('proponent', $breakdown['proponent'])->where('proponent_code', $breakdown['proponent_code'])->first();
@@ -394,11 +377,17 @@ class FundSourceController extends Controller
 
                     if(str_replace(',','',$breakdown['alocated_funds']) != str_replace(',','',$info->alocated_funds)){
                         $info->facility_id = json_encode($breakdown['facility_id']);
+                        $info->main_proponent = json_encode($breakdown['proponent_main']);
                         $info->proponent_id = $proponentId;
                         $info->alocated_funds = $breakdown['alocated_funds'];
                         // if((double)str_replace(',','',$get_fundsource->alocated_funds) >= 1000000){
                         $info->admin_cost =number_format( (double)str_replace(',','',$breakdown['alocated_funds']) * ($get_fundsource->cost_value/100) , 2,'.', ',');
-                        $info->remaining_balance = (double)str_replace(',','',$breakdown['alocated_funds']) - (double)str_replace(',','', $info->admin_cost);
+
+                        $rem =  (double)str_replace(',','',$breakdown['alocated_funds']) - (double)str_replace(',','', $info->admin_cost);
+                        $info->remaining_balance = $rem;
+                        $info->facility_funds = $rem;
+                        $info->proponent_funds = $rem;
+
                         // }else{
                         //     $info->admin_cost = 0;
                         //     $info->remaining_balance = $breakdown['alocated_funds'];
@@ -436,13 +425,18 @@ class FundSourceController extends Controller
                     }
                 }else{
                     $p_info = new ProponentInfo();
+                    $p_info->main_proponent = $breakdown['proponent_main'];
                     $p_info->fundsource_id = $breakdown['fundsource_id'];
                     $p_info->proponent_id = $proponentId;
                     $p_info->facility_id = json_encode($breakdown['facility_id']);
                     $p_info->alocated_funds = $breakdown['alocated_funds'];
                     // if((double)str_replace(',','',$get_fundsource->alocated_funds) >= 1000000){
                     $p_info->admin_cost =number_format((double)str_replace(',','',$breakdown['alocated_funds']) * ($get_fundsource->cost_value/100) , 2,'.', ',');
-                    $p_info->remaining_balance = (double)str_replace(',','',$breakdown['alocated_funds']) - (double)str_replace(',','',$p_info->admin_cost);
+
+                    $rem = (double)str_replace(',','',$breakdown['alocated_funds']) - (double)str_replace(',','',$p_info->admin_cost);
+                    $p_info->remaining_balance = $rem;
+                    $p_info->facility_funds = $rem;
+                    $p_info->proponent_funds = $rem;
                     // }else{
                     //     $p_info->admin_cost = 0;
                     //     $p_info->remaining_balance = $breakdown['alocated_funds'];
@@ -452,7 +446,6 @@ class FundSourceController extends Controller
                 }
             }
         }
-        // return redirect()->back()->with('breakdowns_created', true);
     }
 
     public function updatefundsource(Request $request) {
@@ -682,6 +675,7 @@ class FundSourceController extends Controller
 
         $proponents = Proponent::select( DB::raw('MAX(proponent) as proponent'), DB::raw('MAX(id) as id'))
             ->groupBy('proponent_code') ->whereIn('id', $ids)
+            ->whereNull('status')
             ->get();
         return $proponents;
     }
@@ -700,23 +694,9 @@ class FundSourceController extends Controller
     public function forPatientCode($proponent_id, $facility_id) {
         $user = Auth::user();
         $proponent= Proponent::where('id', $proponent_id)->first();
-        //newly added
         $proponent_ids= Proponent::where('proponent', $proponent->proponent)->pluck('id')->toArray();
-        // $proponent_ids= Proponent::where('pro_group', $proponent->pro_group)->pluck('id')->toArray();
-        // return $proponent_ids;
         $facility = Facility::find($facility_id);
         $patient_code = $proponent->proponent_code.'-'.$this->getAcronym($facility->name).date('YmdHi').$user->id;
-
-        //previous code
-        
-        // $proponent_info = ProponentInfo::where(function ($query) use ($facility_id) {
-        //                         $query->where('facility_id', $facility_id)
-        //                             ->orWhereJsonContains('facility_id', $facility_id);
-        //                     })
-        //                     ->whereIn('proponent_id', $proponent_ids)
-        //                     ->with('fundsource')
-        //                     ->get();
-        
         $proponent_info = ProponentInfo::where(function ($query) use ($facility_id, $proponent_ids) {
                                 $query->where(function ($subquery) use ($facility_id) {
                                     $subquery->whereJsonContains('proponent_info.facility_id', '702')
@@ -940,23 +920,6 @@ class FundSourceController extends Controller
         }
     }
 
-    public function proponentList(Request $req){
-        $proponents = Proponent::select( DB::raw('MAX(id) as id'), DB::raw('MAX(proponent) as proponent'), 
-                        DB::raw('MAX(proponent_code) as proponent_code'))
-                        ->groupBy('proponent_code')
-                        ->orderBy('id', 'desc'); 
-        if($req->viewAll){
-            $req->keyword = '';
-        }else if($req->keyword){
-            $proponents->where('proponent', 'LIKE', "%$req->keyword%")->orWhere('proponent_code', 'LIKE', "%$req->keyword%");
-        } 
-        return view('proponents.proponents', [
-            'proponents' => $proponents->paginate(50),
-            'keyword' => $req->keyword,
-            'all_proponents' => Proponent::get()
-        ]);
-    }
-
     public function generateExcel(){
         $proponents = Proponent::select( DB::raw('MAX(id) as id'), DB::raw('MAX(proponent) as proponent'), 
                         DB::raw('MAX(proponent_code) as proponent_code'))
@@ -985,25 +948,6 @@ class FundSourceController extends Controller
             '<table cellspacing="1" cellpadding="5" border="1">'.$table_body.'</table>';
 
         return $display;
-    }
-
-    public function updateProponent(Request $req){
-        if($req->id){
-            $pro = Proponent::where('id', $req->id)->first();
-            $all = Proponent::where('proponent_code', $pro->proponent_code)->get();
-
-            $exists = Proponent::where('proponent_code', $req->proponent_code)->get();
-            
-            foreach($all as $p){
-                $p->proponent = $req->proponent;
-                $p->proponent_code = $req->proponent_code;
-                $p->save();
-            }
-            
-            return redirect()->back()->with('update_proponent', true);
-        }else{
-            return redirect()->back()->with('unreachable', true);
-        }
     }
 
     public function version2($route_no){

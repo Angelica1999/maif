@@ -64,7 +64,7 @@ Route::get('transaction/get', [App\Http\Controllers\FundSourceController::class,
 Route::post('dv/create/save',  [App\Http\Controllers\DvController::class, 'createDvSave'])->name('dv.create.save');
 Route::get('facility/dv/{facility_id}', [App\Http\Controllers\DvController::class, 'dvfacility'])->name('facility.dv');
 
-Route::get('/fundsource/lists', [App\Http\Controllers\FundSourceController::class, 'fundSource'])->name('fundsource');
+Route::get('/fundsources/mpu', [App\Http\Controllers\FundSourceController::class, 'fundSource'])->name('fundsource');
 Route::get('fundsource/edit/{fundsourceId}/{proponent_id}', [App\Http\Controllers\FundSourceController::class, 'Editfundsource'])->name('fundsource.edit');
 Route::get('/fundsource/saa/get', [App\Http\Controllers\FundSourceController::class, 'fundSourceGet'])->name('fundsource.saa.get');
 Route::get('/fundsource/create', [App\Http\Controllers\FundSourceController::class, 'createFundSource'])->name('fundsource.create');
@@ -135,6 +135,12 @@ Route::post('group/patient/list', [App\Http\Controllers\HomeController::class, '
 Route::get('/fundsource_budget', [App\Http\Controllers\FundSourceController2::class, 'fundSource2'])->name('fundsource_budget');
 Route::post('/fundsource_budget/create', [App\Http\Controllers\FundSourceController2::class, 'createfundSource2'])->name('fundsource_budget.save');
 Route::get('/dvlist/{type}', [App\Http\Controllers\FundSourceController2::class, 'pendingDv'])->name('fundsource_budget.pendingDv');
+Route::get('/budget/fundsource/{id}', [App\Http\Controllers\FundSourceController2::class, 'budgetTracking'])->name('budget.tracking');
+Route::get('/budget/funds/{id}', [App\Http\Controllers\FundSourceController2::class, 'fundsTracking'])->name('funds.tracking');
+Route::get('/budget/confirm/{id}', [App\Http\Controllers\FundSourceController2::class, 'confirmDV'])->name('dv.confirmation');
+Route::get('/confirm/{id}', [App\Http\Controllers\FundSourceController2::class, 'confirm'])->name('dv.confirm');
+Route::get('/admin/cost/{id}', [App\Http\Controllers\FundSourceController2::class, 'addCost'])->name('add.cost');
+
 //creating breakdowns
 Route::get('fundsource/breakdowns/{fundsourceId}', [App\Http\Controllers\FundSourceController::class, 'createBDowns'])->name('fundsource.create_breakdowns');
 Route::match(['get','post'],'fundsource/breakdowns', [App\Http\Controllers\FundSourceController::class, 'saveBDowns'])->name('fundsource.save_breakdowns');
@@ -168,8 +174,14 @@ Route::get('fundsource/proponents/lists/{fundsource_id}',[App\Http\Controllers\F
 Route::get('fundsource/transfer/proponentInfo/{fundsource_id}/{proponent_id}',[App\Http\Controllers\FundSourceController::class, 'fetchInfo'])->name('info.get');
 Route::get('fundsource/transfer/facility/{facility_id}',[App\Http\Controllers\FundSourceController::class, 'fetchFacility'])->name('facility.get');
 
-Route::get('/proponents', [App\Http\Controllers\FundSourceController::class, 'proponentList'])->name('proponents');
-Route::match(['get', 'post'],'proponent/update', [App\Http\Controllers\FundSourceController::class, 'updateProponent'])->name('proponent.update');
+Route::get('/proponents', [App\Http\Controllers\ProponentController::class, 'proponentList'])->name('proponents');
+Route::get('/on-hold', [App\Http\Controllers\ProponentController::class, 'onHold'])->name('on-hold');
+Route::get('/release/{code}', [App\Http\Controllers\ProponentController::class, 'release'])->name('release');
+Route::post('/hold/proponents', [App\Http\Controllers\ProponentController::class, 'holdPro'])->name('hold.proponent');
+Route::match(['get', 'post'],'proponent/update', [App\Http\Controllers\ProponentController::class, 'updateProponent'])->name('proponent.update');
+Route::get('/proponent-fundsource', [App\Http\Controllers\ProponentController::class, 'fundsource'])->name('proponents.fundsource');
+Route::get('/proponent/util/{code}', [App\Http\Controllers\ProponentController::class, 'tracking'])->name('pro.tracking');
+
 Route::match(['get', 'post'],'/proponents/excel/', [App\Http\Controllers\FundSourceController::class, 'generateExcel'])->name('proponent.excel');
 Route::match(['get', 'post'],'/data/update/', [App\Http\Controllers\FacilityController::class, 'updateData'])->name('update.data');
 Route::match(['get', 'post'],'/test/sample/', [App\Http\Controllers\UtilizationController::class, 'test'])->name('test.test');
@@ -255,6 +267,7 @@ Route::get('/transmittal/details/{id}/{facility_id}', [App\Http\Controllers\Faci
 Route::get('/sample/image/{id}', [App\Http\Controllers\PrintController::class, 'genPreImage'])->name('pre.image');
 Route::post('/accepted/remarks', [App\Http\Controllers\FacilityController::class, 'transRem'])->name('accepted.remarks');
 Route::get('/angelica/{route_no}', [App\Http\Controllers\PreDvController::class, 'angelica'])->name('angelica');
+Route::get('/transmittal/received/{control_no}/{name}', [App\Http\Controllers\FacilityController::class, 'received'])->name('received.transmittal');
 
 
 

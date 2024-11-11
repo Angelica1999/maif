@@ -25,7 +25,7 @@
                     </form>
                 </div>
             </div>
-            <h4 class="card-title">Pre - DV (v1)</h4>
+            <h4 class="card-title">PRE - DV (v1)</h4>
             <p class="card-description">
                 MAIF-IPP
             </p>

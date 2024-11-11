@@ -17,7 +17,7 @@ use App\Models\TrackingDetails;
                     </div>
                 </div>
             </form>
-            <h4 class="card-title">Pre - DVs (v2)</h4>
+            <h4 class="card-title">PRE - DV (v2)</h4>
             <p class="card-description">
                 MAIF-IPP
             </p>
@@ -28,36 +28,34 @@ use App\Models\TrackingDetails;
                         <tr>
                             <th style="padding:5px; min-width:100px"></th>
                             <th style="min-width:100px">Route</th>
-                            <th style="min-width:300px">Facility</th>
+                            <th>Facility</th>
                             <th>Proponent</th>
                             <th>Grand Total</th>
-                            <th style="min-width:200px">Created By</th>
+                            <th>Created By</th>
+                            <th>Created On</th>
                         </tr>
                     </thead>
                     <tbody>
-                    @foreach($results as $index => $row)
-                        <tr>
-                            <td class="td" style="padding:5px;text-align:center">
-                                <button type="button" class="btn btn-xs" style="background-color:#165A54;color:white;width:50px; border-radius:0px" data-toggle="modal" href="#iframeModal" data-routeId="{{$row->new_dv->route_no}}" id="track_load" onclick="openModal()">Track</button>
-                                <a href="{{ route('new_dv.pdf', ['id' => $row->id]) }}" style="background-color:green;color:white; width:50px; border-radius:0px; margin-top:1px" target="_blank" type="button" class="btn btn-xs">Print</a>
-                            </td>
-                            <td><a data-toggle="modal" data-backdrop="static" href="#view_v2" onclick="viewV1({{ $row->id }})">{{ $row->new_dv->route_no }}</a></td>
-                            <td class="td">{{ $row->facility->name }}</td>
-                            <td class="td">
-                                @foreach($row->extension as $index => $data)
-                                    {{$data->proponent->proponent}}
-                                    @if($index + 1 % 2 == 0)
-                                    <br>
-                                    @endif
-                                    @if($index < count($row->extension) - 1)
-                                        ,
-                                    @endif
-                                @endforeach
-                            </td>
-                            <td class="td">{{ number_format($row->grand_total,2,'.',',') }}</td>
-                            <td class="td">{{$row->user->lname .', '.$row->user->fname}}</td>
-                        </tr>
-                    @endforeach
+                        @foreach($results as $index => $row)
+                            <tr>
+                                <td class="td" style="padding:5px;text-align:center">
+                                    <button type="button" class="btn btn-xs" style="background-color:#165A54;color:white;width:50px; border-radius:0px" data-toggle="modal" href="#iframeModal" data-routeId="{{$row->new_dv->route_no}}" id="track_load" onclick="openModal()">Track</button>
+                                    <a href="{{ route('new_dv.pdf', ['id' => $row->id]) }}" style="background-color:green;color:white; width:50px; border-radius:0px; margin-top:1px" target="_blank" type="button" class="btn btn-xs">Print</a>
+                                </td>
+                                <td><a class="text-info" data-toggle="modal" data-backdrop="static" onclick="viewV1({{ $row->id }}, {{ $row->new_dv->id }}, '{{ $row->new_dv->confirm }}')">{{ $row->new_dv->route_no }}</a></td>
+                                <td class="td">{{ $row->facility->name }}</td>
+                                <td class="td">
+                                    @foreach($row->extension as $index => $data)
+                                        {{ $data->proponent->proponent }}
+                                        {{ $index < count($row->extension) - 1 ? ',' : '' }}
+                                        {!! ($index + 1) % 3 == 0 ? '<br>' : '' !!}
+                                    @endforeach
+                                </td>
+                                <td class="td">{{ number_format($row->grand_total,2,'.',',') }}</td>
+                                <td class="td">{{ $row->user->lname .', '.$row->user->fname }}</td>
+                                <td class="td">{{ date('F j, Y', strtotime($row->new_dv->created_at)) }}</td>
+                            </tr>
+                        @endforeach
                     </tbody>
                 </table>
             @else
@@ -73,7 +71,38 @@ use App\Models\TrackingDetails;
         </div>
     </div>
 </div>
-
+<div class="modal fade" id="confirm_dv" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" style="border-radius:0px;">
+            <div class="modal-header" style="text-align:center">
+                <h4 class="text-success modal-title">
+                    <i style="font-size:15px" class="typcn typcn-location-arrow menu-icon"></i>
+                    BUDGET TRACKING DETAILS
+                </h4>
+            </div>
+            <div class="table-container budget_container" style="overflow-y: auto; padding:10px">
+                <table class="table table-list table-hover" id="budget_track2">
+                    <thead style="position: sticky; top: 0; background-color: white; z-index: 1;">
+                        <tr style="background-color:#F5F5F5">
+                            <th>ROUTE #</th>
+                            <th>SAA #</th>
+                            <th>PROPONENT</th>
+                            <th>PAYEE</th>
+                            <th>RECIPIENT FACILITY</th>
+                            <th>Utilize Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="confirm_body"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer confirm_footer">
+                <button type="button" class="btn btn-success" onclick="confirm()">Confirm</button>
+                <button type="button" class="btn btn-info" onclick="obligate()">Confirm and Obligate</button>
+                <button style="background-color:lightgray"  class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="modal fade" id="view_v2" role="dialog" style="overflow-y:scroll;">
     <div class="modal-dialog modal-lg" role="document" style="width:1000px">
         <div class="modal-content">
@@ -91,13 +120,59 @@ use App\Models\TrackingDetails;
 @include('modal')
 @endsection
 @section('js')
+<script src="{{ asset('admin/vendors/sweetalert2/sweetalert2.js?v=1') }}"></script>
 <script>
     $('.filter-division').select2();
     $('.filter-section').select2();
 
     var doc_type = @json($type);
-    
-    function viewV1(id) {
+    var dv_id = 0;
+    var id = 0;
+    var con = 0;
+
+    function viewV1(d_id, d_dv_id, confirmation) {
+        dv_id = d_dv_id;
+        id = d_id;
+        console.log('id', id);
+        console.log('dv_id', doc_type);
+        if(confirmation == 'yes' || doc_type == "accomplished" || doc_type == "deferred"){
+            $('#view_v2').modal('show');
+            $('.pre_body').empty();
+            $.get("{{ url('pre-dv/budget/v2/').'/' }}" + doc_type + '/' + id, function(result) {
+                $('.pre_body').append(result);
+            });
+        }else{
+            $('#confirm_dv').modal('show');
+            $.get("{{ url('budget/confirm').'/' }}" + dv_id, function(result) {
+                $('#confirm_body').append(result);
+            });
+        }
+        
+    }
+
+    function confirm(){
+        console.log('sdf', dv_id);
+        $.get("{{ url('confirm').'/' }}" + dv_id, function(result) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Confirmed!',
+                text: 'Disbursement was successfully confirmed!',
+                timer: 1000, 
+                showConfirmButton: false
+            }).then(() => {
+                if(con == 0){
+                    location.reload(); 
+                }
+            });
+        });
+    }
+
+    function obligate(){
+        console.log('sdad', id);
+        $('#confirm_dv').modal('hide');
+        con = 1;
+        confirm();
+        $('#view_v2').modal('show');
         $('.pre_body').empty();
         $.get("{{ url('pre-dv/budget/v2/').'/' }}" + doc_type + '/' + id, function(result) {
             $('.pre_body').append(result);

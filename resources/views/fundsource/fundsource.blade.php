@@ -28,7 +28,9 @@
                     </div>
                 </div>
             </form>
-            <h4 class="card-title">Manage FundSource</h4>
+            <div style="display: flex; align-items: center;">
+                <h4 class="card-title">MANAGE FUNDSOURCE: DV</h4>
+            </div>
             <p class="card-description">
                 MAIF-IPP
             </p>
@@ -53,7 +55,10 @@
                                         @if(count($proponent->proponentInfo)>0)
                                             <!-- <div class="card-body"> -->
                                             <br>
-                                            <b><p class="">{{ $proponent->proponent }}</p></b>
+                                            @if(isset($proponent->proponentInfo->first()->main_pro))
+                                                <b><p class="text-success">{{ $proponent->proponentInfo->first()->main_pro->proponent }} (main)</p></b>
+                                            @endif
+                                            <b><p class="">{{ $proponent->proponent }} (c/o)</p></b>
                                             <ul class="list-arrow mt-3">
                                             <!-- {{count($proponent->proponentInfo)}} -->
 
@@ -135,18 +140,18 @@
     </div>
 </div>
 
-<div class="modal fade" id="track_details2" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="modal fade" id="track_details2" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Tracking Details</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-                </button>
+        <div class="modal-content" style="border-radius:0px;">
+            <div class="modal-header" style="text-align:center">
+                <h4 class="text-success modal-title">
+                    <i style="font-size:15px" class="typcn typcn-location-arrow menu-icon"></i>
+                    TRANSMITTAL TRACKING
+                </h4>
             </div>
-            <div class="table-container">
+            <div class="table-container" style="height: 800px; overflow-y: auto;">
                 <table class="table table-list table-hover table-striped" id="track_details2">
-                    <thead>
+                    <thead style="position: sticky; top: 0; background-color: white; z-index: 1;">
                         <tr style="text-align:center;">
                             <th>FundSource</th>
                             <th>Proponent</th>
@@ -157,20 +162,22 @@
                             <th>Route</th>
                             <th>By</th>
                             <th>On</th>
-                            <!-- <th>Remarks</th> -->
                             <th>Obligated</th>
                             <th>Paid</th>
                             <th>Remarks</th>
                         </tr>
                     </thead>
                     <tbody id="track_body">
+                        <!-- Data rows go here -->
                     </tbody>
                 </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="breakdowns_close" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="version2" tabindex="-2" role="dialog">
     <div class="modal-dialog modal-lg " role="document" style="max-width:600px">
         <div class="modal-content">
@@ -387,7 +394,7 @@
                 
                 }else{
                     var new_row = '<tr>' +
-                        '<td colspan ="11">' + "No Data Available" + '</td>' +
+                        '<td colspan ="12">' + "No Data Available" + '</td>' +
                         '</tr>';
                     $('#track_body').append(new_row);
                 }
