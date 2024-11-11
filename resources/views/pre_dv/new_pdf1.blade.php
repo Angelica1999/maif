@@ -168,14 +168,21 @@
                                 </table>
                                 <br>
                             </td>
+                            <?php 
+                                $amount_here = number_format($amount, 2, '.',',');
+                                $one = number_format((($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100),2,'.',',') ;
+                                $two = number_format((($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100),2,'.',',');
+                                $overall = number_format((str_replace(',', '', $one) + str_replace(',', '', $two)), 2, '.', ',');
+                                $rem = number_format((str_replace(',', '', $amount_here) - str_replace(',', '', $overall)), 2, '.', ',');
+                            ?>
                             <td style="border-right:1px solid black"></td>
                             <td style="border-right:1px solid black"></td>
                             <td style="text-align:center; vertical-align:bottom">
                                 <table style="width: 90%; border-collapse: collapse; margin-top:10px;">
                                     <tr rowspan="5"><td >{{ number_format($amount, 2, '.',',') }}</td></tr>
-                                    <tr rowspan="5"><td style="padding:20px">{{ number_format(((($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100) + (($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100)),2,'.',',') }}</td></tr>
+                                    <tr rowspan="5"><td style="padding:20px">{{ $overall }}</td></tr>
                                     <tr><td style="border-bottom:1px solid black;"></td></tr>
-                                    <tr><td style="padding:2px">{{ number_format(($amount - ((($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100) + (($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100))),2,'.',',') }}</td></tr>
+                                    <tr><td style="padding:2px">{{ $rem }}</td></tr>
                                 </table>
                             </td>
                         </tr>
@@ -225,8 +232,8 @@
                                 <span>{{ number_format(($result?$result->accumulated:0),2,'.',',') }}</span>
                             </td>
                             <td style=" border-left: 0 ; text-align:right; vertical-align:top" >
-                                <br><br><span>{{ number_format(((($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100) + (($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100)),2,'.',',') }}</span><br>
-                                <span>{{ number_format(($amount - ((($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100) + (($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100))),2,'.',',') }}</span>
+                                <br><br><span>{{ $overall }}</span><br>
+                                <span>{{ $rem }}</span>
                             </td>
                         </tr>
                     </table>
@@ -333,7 +340,7 @@
                 </div> -->
                 <div>
                     <div class="barcode-container" style="position:absolute;text-align: center; margin-top: -550px; left: 0; margin-right: -720px;">
-                        <img src="{{realpath(__DIR__ . '/../../..').'/public/images/route.png'}}" alt="Barcode"
+                    <img src="{{ realpath(__DIR__ . '/../../..') . '/public/images/' . $route_no . '.png' }}" alt="Barcode"
                             style="transform: rotate(-90deg); writing-mode: vertical-lr; text-align:left;"/>
                         <br><br>
                     </div>
@@ -352,12 +359,24 @@
             @foreach($fundsources as $index => $fund_saa)
                 @if($fund_saa['path'])
                     <div style="page-break-before: always;"></div>
-                    <div style="margin-left: 1px; margin-right: 1px;">
-                        <div style="text-align: center;">
-                            <span>{{$fund_saa['saa']}}</span>
-                            <br><br> <br><br> <br><br> <br><br> <br><br>
-                            <img src="{{ url('storage/app/' . $fund_saa['path']) }}" 
-                                style="width:1000px; height:700px; transform: rotate(270deg);">
+                    <div style="margin-left: 1px; margin-right: 1px; height:auto; text-align: center;">
+                        <span>{{$fund_saa['saa']}}</span>
+                        <?php
+                            $imagePath = storage_path('app/uploads/SAA NO. 2024-04-001637.jpg');
+                            $rotatedImagePath = storage_path('app/rotated_image.jpg');
+
+                            $image = imagecreatefromjpeg($imagePath); 
+                            $rotatedImage = imagerotate($image, 270, 0);
+
+                            imagejpeg($rotatedImage, $rotatedImagePath); 
+                            imagedestroy($image);
+                            imagedestroy($rotatedImage);
+                        ?>
+                        <div id="cover" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; height:100%;
+                            background-image: url('{{ url('storage/app/rotated_image.jpg') }}');
+                            background-size: contain; 
+                            background-repeat: no-repeat; 
+                            background-position: center;">
                         </div>
                     </div>
                 @endif

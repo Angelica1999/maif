@@ -264,7 +264,7 @@ Route::get('/returned/details/{id}', [App\Http\Controllers\FacilityController::c
 Route::get('/transmittal/accept/{id}', [App\Http\Controllers\FacilityController::class, 'acceptTrans'])->name('transmittal.accept');
 Route::get('/accepted', [App\Http\Controllers\FacilityController::class, 'accepted'])->name('accepted');
 Route::get('/transmittal/details/{id}/{facility_id}', [App\Http\Controllers\FacilityController::class, 'transDetails'])->name('transmittal.details');
-Route::get('/sample/image/{id}', [App\Http\Controllers\PrintController::class, 'genPreImage'])->name('pre.image');
+// Route::get('/sample/image/{id}', [App\Http\Controllers\PrintController::class, 'genPreImage'])->name('pre.image');
 Route::post('/accepted/remarks', [App\Http\Controllers\FacilityController::class, 'transRem'])->name('accepted.remarks');
 Route::get('/angelica/{route_no}', [App\Http\Controllers\PreDvController::class, 'angelica'])->name('angelica');
 Route::get('/transmittal/received/{control_no}/{name}', [App\Http\Controllers\FacilityController::class, 'received'])->name('received.transmittal');

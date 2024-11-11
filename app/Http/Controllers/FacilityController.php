@@ -210,7 +210,7 @@ class FacilityController extends Controller
 
     public function getTrans($id){
 
-        $response = Http::get('http://192.168.110.148/guaranteeletter/transmittal/summary/'.$id);
+        $response = Http::get('http://gletter.cvchd7.com/guaranteeletter/transmittal/summary/'.$id);
         return $response;
     }
 
@@ -240,14 +240,14 @@ class FacilityController extends Controller
                 $log->save();
                 
 
-                Http::get('http://192.168.110.148/guaranteeletter/transmittal/returned/'.$trans->id.'/'.Auth::user()->userid.'/received');
+                Http::get('http://gletter.cvchd7.com/guaranteeletter/transmittal/returned/'.$trans->id.'/'.Auth::user()->userid.'/received');
             }
             return redirect()->back()->with('logbook', true);
         }
     }
 
     public function references($type, $id){
-        $response = Http::get('http://192.168.110.148/guaranteeletter/transmittal/references/'.$id);
+        $response = Http::get('http://gletter.cvchd7.com/guaranteeletter/transmittal/references/'.$id);
         $randomBytes = random_bytes(16); 
 
         return view('facility.return_facility',[
@@ -268,7 +268,7 @@ class FacilityController extends Controller
             $return->save();
         }
 
-        $reponse = Http::get('http://192.168.110.148/guaranteeletter/transmittal/returned/'.$req->id.'/'.Auth::user()->userid.'/returned');
+        $reponse = Http::get('http://gletter.cvchd7.com/guaranteeletter/transmittal/returned/'.$req->id.'/'.Auth::user()->userid.'/returned');
         Transmittal::where('id', $req->id)->update(['status' => 3, 'remarks' => 3]);
         return redirect()->back()->with('trans_return', true);
     }
@@ -281,12 +281,12 @@ class FacilityController extends Controller
     }
 
     public function returnedDetails($id){
-        return Http::get('http://192.168.110.148/guaranteeletter/transmittal/return-remarks/'.$id);
+        return Http::get('http://gletter.cvchd7.com/guaranteeletter/transmittal/return-remarks/'.$id);
     } 
 
     public function acceptTrans($id){
         Transmittal::where('id', $id)->update(['status' => 5, 'remarks' => 5]);
-        $reponse = Http::get('http://192.168.110.148/guaranteeletter/transmittal/returned/'.$id.'/'.Auth::user()->userid.'/accept');
+        $reponse = Http::get('http://gletter.cvchd7.com/guaranteeletter/transmittal/returned/'.$id.'/'.Auth::user()->userid.'/accept');
         return 'success';
     }
 
@@ -298,7 +298,7 @@ class FacilityController extends Controller
     }
 
     public function transDetails($id, $facility_id){
-        $reponse = Http::get('http://192.168.110.148/guaranteeletter/transmittal/details/'.$id.'/'.$facility_id);
+        $reponse = Http::get('http://gletter.cvchd7.com/guaranteeletter/transmittal/details/'.$id.'/'.$facility_id);
         return $reponse;
     }
 

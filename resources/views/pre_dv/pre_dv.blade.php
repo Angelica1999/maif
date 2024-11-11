@@ -41,7 +41,7 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th></th>
+                                <th style="min-width:200px"></th>
                                 <th>Route No</th>
                                 <th class="fc">Facility
                                     <i id="fac_i" class="typcn typcn-filter menu-icon"><i>
@@ -59,6 +59,7 @@
                                         </select>
                                     </div>  
                                 </th>
+                                <th style="min-width:100px">Grand Total</th>
                                 <th>Number of Transmittals</th>
                                 <th>Grand Total</th>
                                 <th class="user">Created By

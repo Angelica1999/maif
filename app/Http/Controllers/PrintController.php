@@ -381,24 +381,29 @@ class PrintController extends Controller
         $text_width = strlen($route_no);
         $width = 11.5 * $text_width;
         $height = 35;
-
+    
         $image = imagecreatetruecolor($width, $height);
-
+    
         imagealphablending($image, false);
         imagesavealpha($image, true);
-
+    
         $transparent = imagecolorallocatealpha($image, 255, 255, 255, 127); 
         imagefilledrectangle($image, 0, 0, $width, $height, $transparent); 
         $text_color = imagecolorallocate($image, 0, 0, 0); 
         imagestring($image, 5, 10, 10, $route_no, $text_color);
-        $image_path = 'public/images/route.png';
+    
+        // Save the image
+        $image_path = 'public/images/' .$route_no.'.png';
         imagepng($image, $image_path);
-
+    
+        // Destroy the image to free up memory
         imagedestroy($image);
-    }
+    
+        return $image_path; // Return the image path so it can be used later
+    }    
 
     public function newDVPDF($id) {
-
+    
         $new = NewDV::where('predv_id', $id)->first();
         if($new){
             $pre_dv = PreDV::where('id', $id)->with(
@@ -451,7 +456,7 @@ class PrintController extends Controller
             });
 
             $barcodePNG = DNS1D::getBarcodePNG($new->route_no, 'C39E', 1, 28);
-            $this->route_image($new->route_no); 
+            $image_path = $this->route_image($new->route_no); 
            
             $data = [
                 'result'=> $new,
@@ -460,17 +465,30 @@ class PrintController extends Controller
                 'control' => $control,
                 'info' => $info,
                 'amount' => $grouped->sum('amount'),
-                'barcodePNG' => $barcodePNG
+                'barcodePNG' => $barcodePNG,
+                'route_no' => $new->route_no
             ];
-            $file = (count($grouped) >16) ? 'pre_dv.new_pdf1' : 'pre_dv.new_pdf';
-            $html =  view($file, $data)->render();
+            // Determine which view to use based on grouped count
+            $file = (count($grouped) > 16) ? 'pre_dv.new_pdf1' : 'pre_dv.new_pdf';
+            $html = view($file, $data)->render();
+
+            // Create the PDF
             $mpdf = new Mpdf([
                 'format' => 'Folio',
-                'strictVariables' => false
+                'strictVariables' => false,
+                'externalImages' => true
             ]);
-
             $mpdf->WriteHTML($html);
-            return $mpdf->Output('new_dv.pdf', 'I');
+
+            // Output the PDF
+            $pdf_output = $mpdf->Output($new->route_no.'.pdf', 'I');
+
+            // Delete the image after PDF generation
+            if (file_exists($image_path)) {
+                unlink($image_path); // Delete the file
+            }
+
+            return $pdf_output;
         }
     }
     
@@ -506,7 +524,9 @@ class PrintController extends Controller
             $pdf = PDF::loadView('pre_dv.pre_pdf', $data);
             $pdf->setPaper('Folio');
             
-            return $pdf->stream('new_dv.pdf');
+            $route = $pre_dv->new_dv->route_no;
+
+            return $pdf->stream($route.'.pdf');
             
         }else{
             return 'no data found!';
