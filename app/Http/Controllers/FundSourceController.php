@@ -707,9 +707,12 @@ class FundSourceController extends Controller
                             ->whereIn('proponent_id', $proponent_ids)
                             ->with('fundsource')
                             ->get();
+        // $sum = $proponent_info->sum(function ($info) {
+        //             return (float) str_replace(',', '', $info->remaining_balance);
+        //         });                                
         $sum = $proponent_info->sum(function ($info) {
-                    return (float) str_replace(',', '', $info->remaining_balance);
-                });                                
+            return $info->in_balance;
+        });    
 
         return [
             'patient_code' => $patient_code,
