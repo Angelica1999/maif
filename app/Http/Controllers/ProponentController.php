@@ -131,14 +131,13 @@ class ProponentController extends Controller
         foreach($proponents as $row){
             $ids = Proponent::where('proponent_code', $row->proponent_code)->pluck('id')->toArray();
             $sum = ProponentInfo::whereIn('proponent_id', $ids) ->sum('in_balance');
+            $util_sum = ProponentUtilizationV1::where('proponent_code', $row->proponent_code)->sum('amount');
             $all_data[] =[
                 'proponent' => $row,
-                'sum' => $sum
+                'sum' => $sum,
+                'rem' => $sum - $util_sum
             ];
         }
-
-        
-
 
         $page = LengthAwarePaginator::resolveCurrentPage();
         $perPage = 51; 

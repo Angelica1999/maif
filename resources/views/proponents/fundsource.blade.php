@@ -35,7 +35,7 @@
                                         <div style="width:70%;">
                                             <ul class="list-arrow mt-3" style="list-style: none; padding: 0; margin: 0;">
                                                 <li><span class="ml-3">Allocated Funds &nbsp;: <strong class="">{{ !Empty($row['sum']) ? number_format($row['sum'], 2, '.', ',') : 0 }}</strong></span></li>
-                                                <li><span class="ml-3">Remaining Funds: <strong class="">{{ !Empty($row['sum']) ? number_format($row['sum'], 2, '.', ',') : 0 }}</strong></span></li>
+                                                <li><span class="ml-3">Remaining Funds: <strong class="">{{ !Empty($row['rem']) ? number_format($row['rem'], 2, '.', ',') : 0 }}</strong></span></li>
                                             </ul>
                                         </div>
                                     </div>
