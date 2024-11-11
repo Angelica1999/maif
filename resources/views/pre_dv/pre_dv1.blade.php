@@ -67,8 +67,8 @@
                                     </select>
                                 </div>  
                             </th>
-                            <th>Grand Total</th>
-                            <th class="user">Created By
+                            <th style="min-width:100px">Grand Total</th>
+                            <th class="user" style="min-width:120px">Created By
                                 <i id="by_i" class="typcn typcn-filter menu-icon"><i>
                                 <div class="filter" id="by_div" style="display:none;">
                                     <select style="width: 120px;" id="by_select" name="by_select" multiple>
@@ -84,7 +84,7 @@
                                     </select>
                                 </div>  
                             </th>
-                            <th>Created On</th>
+                            <th style="min-width:120px">Created On</th>
                         </tr>
                     </thead>
                     <tbody>

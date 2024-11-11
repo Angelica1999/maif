@@ -475,7 +475,8 @@ class PrintController extends Controller
             // Create the PDF
             $mpdf = new Mpdf([
                 'format' => 'Folio',
-                'strictVariables' => false
+                'strictVariables' => false,
+                'externalImages' => true
             ]);
             $mpdf->WriteHTML($html);
 

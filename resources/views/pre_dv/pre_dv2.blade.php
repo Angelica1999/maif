@@ -21,7 +21,7 @@ use App\Models\TrackingDetails;
                             </div>
                         </div>
                         <div class = "input-group">
-                            <input type="text" style="text-align:center" class="form-control" id="dates_filter" value="" name="dates_filter" />
+                            <input type="text" style="text-align:center" class="form-control" id="dates_filter" value="{{ $dates_generated }}" name="dates_filter" />
                             <button type="submit" id="gen_btn" style="background-color:teal; color:white; width:79px; border-radius: 0; font-size:11px" class="btn btn-xs"><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
                         </div>
                         <input type="hidden" id="generate" name="generate" value="{{$generate}}"></input>
@@ -66,7 +66,7 @@ use App\Models\TrackingDetails;
                                 <div class="filter" id="fac_div" style="display:none;">
                                     <select style="width: 120px;" id="fac_select" name="fac_select" multiple>
                                         <?php $check = []; ?>
-                                        @foreach($results as $index => $d)
+                                        @foreach($all_data as $index => $d)
                                             @if(!in_array($d->facility->id, $check))
                                                 <option value="{{ $d->facility->id }}" {{ is_array($f_id) && in_array($d->facility->id, $f_id) ? 'selected' : '' }}>
                                                     {{ $d->facility->name}}
@@ -93,8 +93,8 @@ use App\Models\TrackingDetails;
                                     </select>
                                 </div>  
                             </th>
-                            <th>Grand Total</th>
-                            <th class="user">Created By
+                            <th style="min-width:100px">Grand Total</th>
+                            <th class="user" style="min-width:120px">Created By
                                 <i id="by_i" class="typcn typcn-filter menu-icon"><i>
                                 <div class="filter" id="by_div" style="display:none;">
                                     <select style="width: 120px;" id="by_select" name="by_select" multiple>
