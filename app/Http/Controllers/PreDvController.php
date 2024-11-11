@@ -260,16 +260,19 @@ class PreDvController extends Controller
                 $query->whereIn('status', explode(',', $request->s_id));
             });
         }
-
+        
+        $all_data =  $pre_dv->orderBy('id', 'desc')->get();
         $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(50);
 
         return view('pre_dv.pre_dv2', [
+            'all_data' => $all_data,
             'results' => $pre_dv,
             'proponents' => $proponents,
             'saas' => $saas,
             'facilities' => $facilities,
             'keyword' => $request->keyword,
             'generate' => $request->generate,
+            'dates_generated' => $request->input('dates_filter'),
             'f_id' => explode(',', $request->f_id),
             'p_id' => explode(',', $request->p_id),
             'b_id' => explode(',', $request->b_id),
