@@ -117,7 +117,14 @@ class ProponentController extends Controller
         }
 
         if($keyword){
-            $proponents = Proponent::where('proponent', 'LIKE', "%$keyword%")->get();
+            $proponents = Proponent::where('proponent', 'LIKE', "%$keyword%")
+            ->select(
+                DB::raw('MAX(id) as id'), 
+                DB::raw('MAX(proponent) as proponent'), 
+                DB::raw('MAX(proponent_code) as proponent_code')
+            )
+            ->groupBy('proponent_code')
+            ->get();
         }else{
             $proponents = Proponent::select(
                 DB::raw('MAX(id) as id'), 
