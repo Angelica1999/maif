@@ -15,6 +15,7 @@ use App\Models\Fundsource_Files;
 use App\Models\Dv2;
 use App\Models\NewDV;
 use App\Models\PreDV;
+use App\Models\ProponentUtilizationV1;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -714,10 +715,12 @@ class FundSourceController extends Controller
             return $info->in_balance;
         });    
 
+        $util_sum = ProponentUtilizationV1::where('proponent_code', $proponent->proponent_code)->sum('amount');
+
         return [
             'patient_code' => $patient_code,
             'proponent_info' => $proponent_info,
-            'balance' => $sum,
+            'balance' => $sum-$util_sum,
         ];
     }
 
