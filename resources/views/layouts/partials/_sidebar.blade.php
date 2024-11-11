@@ -203,7 +203,7 @@
             <li class="nav-item">
                 <a class="nav-link" href="#" >
                     <i><img class="menu-icon" src="\maif\public\images\user_account_16.png"></i>
-                    <span class="menu-title" style="margin-left:20px">Proponents</span>
+                    <span class="menu-title" style="margin-left:12px">Proponents</span>
                     <i class="typcn typcn-arrow-sorted-down menu-icon"></i>
                 </a>
                 <ul class="nav flex-column sub-menu">
@@ -211,12 +211,6 @@
                         <a class="nav-link" href="{{ route('proponents') }}">
                             <img src="\maif\public\images\proponents_16.png" style="margin-right:12px">
                             <span class="menu-title">PROPONENTS</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('on-hold') }}">
-                            <img src="\maif\public\images\proponents_16.png" style="margin-right:12px">
-                            <span class="menu-title">HOLD GL</span>
                         </a>
                     </li>
                 </ul>
@@ -351,6 +345,14 @@
                             <a class="nav-link" href="{{ route('users') }}">
                                 <i><img class="menu-icon" src="\maif\public\images\user_accounts_16.png"></i>
                                 <span class="menu-title" style="margin-left:15px">USERS</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('on-hold') }}">
+                                <img src="\maif\public\images\proponents_16.png" style="margin-right:12px">
+                                <span class="menu-title">HOLD GL</span>
                             </a>
                         </li>
                     </ul>

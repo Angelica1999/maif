@@ -59,9 +59,8 @@
                                         </select>
                                     </div>  
                                 </th>
-                                <th style="min-width:100px">Grand Total</th>
                                 <th>Number of Transmittals</th>
-                                <th>Grand Total</th>
+                                <th style="min-width:100px">Grand Total</th>
                                 <th class="user">Created By
                                     <i id="by_i" class="typcn typcn-filter menu-icon"><i>
                                     <div class="filter" id="by_div" style="display:none;">

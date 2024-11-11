@@ -135,18 +135,18 @@ use App\Models\TrackingDetails;
         id = d_id;
         console.log('id', id);
         console.log('dv_id', doc_type);
-        if(confirmation == 'yes' || doc_type == "accomplished" || doc_type == "deferred"){
+        // if(confirmation == 'yes' || doc_type == "accomplished" || doc_type == "deferred"){
             $('#view_v2').modal('show');
             $('.pre_body').empty();
             $.get("{{ url('pre-dv/budget/v2/').'/' }}" + doc_type + '/' + id, function(result) {
                 $('.pre_body').append(result);
             });
-        }else{
-            $('#confirm_dv').modal('show');
-            $.get("{{ url('budget/confirm').'/' }}" + dv_id, function(result) {
-                $('#confirm_body').append(result);
-            });
-        }
+        // }else{
+        //     $('#confirm_dv').modal('show');
+        //     $.get("{{ url('budget/confirm').'/' }}" + dv_id, function(result) {
+        //         $('#confirm_body').append(result);
+        //     });
+        // }
         
     }
 
