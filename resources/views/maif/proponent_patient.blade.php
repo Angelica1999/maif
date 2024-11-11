@@ -259,7 +259,7 @@
                                     class="group-mailCheckBox" onclick="itemChecked($(this))">
                             </td>
                             <td style="text-align:center">
-                                {{ $patient->sent_type == 2 ? 'In Transit from Proponent' : ($patient->sent_type == 3 ? 'Returned back from MPU' : ( $patient->status == 2 ? 'Returned back from Facility' : 'Credentials Check' )) }}
+                                {{ $patient->sent_type == 1 ? 'Sent from Proponent' : ($patient->sent_type == 2 ? 'Returned back to Proponent' : ( $patient->sent_type == 3 ? 'Credentials checked by MPU' : 'Credentials Check' )) }}
                             </td>
                             <td>{{$patient->pat_rem}}</td>
                             <td style="text-align:center;" class="group-amount" data-patient-id="{{ $patient->id }}" data-proponent-id="{{ $patient->proponent_id }}" 
@@ -316,7 +316,7 @@
                                 @endif
                             </td>
                             <td>{{date('F j, Y', strtotime($patient->created_at))}}</td>
-                            <td class="td">{{ $patient->encoded_by? $patient->encoded_by->lname .', '. $patient->encoded_by->fname: ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td>
+                            <td class="td">{{ $patient->user_type == null ? $patient->encoded_by->lname .', '. $patient->encoded_by->fname: ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -353,13 +353,13 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="fname">First Name</label>
-                                    <input type="text" class="form-control fname" style="width:220px;" id="fname" name="fname" oninput="this.value = this.value.toUpperCase()" placeholder="First Name" required>
+                                    <input type="text" class="form-control fname" style="width:220px;" id="fname" name="fname" oninput="this.value = this.value.toUpperCase()" placeholder="First Name" readonly>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="lname">Last Name</label>
-                                    <input type="text" class="form-control lname" style="width:220px;" id="lname" name="lname" placeholder="Last Name" oninput="this.value = this.value.toUpperCase()" required>
+                                    <input type="text" class="form-control lname" style="width:220px;" id="lname" name="lname" placeholder="Last Name" oninput="this.value = this.value.toUpperCase()" readonly>
                                 </div>
                             </div>
                         </div>
@@ -367,13 +367,13 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="fname">Middle Name</label>
-                                    <input type="text" class="form-control mname" style="width:220px;" id="mname" name="mname" oninput="this.value = this.value.toUpperCase()" placeholder="Middle Name">
+                                    <input type="text" class="form-control mname" style="width:220px;" id="mname" name="mname" oninput="this.value = this.value.toUpperCase()" placeholder="Middle Name" readonly>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="lname">Date of Birth</label>
-                                    <input type="date" class="form-control dob" style="width:220px;" id="dob" name="dob" placeholder="Date of Birth">
+                                    <input type="date" class="form-control dob" style="width:220px;" id="dob" name="dob" placeholder="Date of Birth" readonly>
                                 </div>
                             </div>
                         </div>
@@ -381,37 +381,14 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="fname">Region</label>
-                                    <select class="js-example-basic-single region" style="width:220px;" id="region" onchange="othersRegion($(this));" name="region">
-                                        <option value="">Please select region</option>
-                                        <option value="Region 7">Region 7</option>
-                                        <option value="NCR">NCR</option>
-                                        <option value="CAR">CAR</option>
-                                        <option value="Region 1">Region 1</option>
-                                        <option value="Region 2">Region 2</option>
-                                        <option value="Region 3">Region 3</option>
-                                        <option value="Region 4">Region 4</option>
-                                        <option value="Region 5">Region 5</option>
-                                        <option value="Region 6">Region 6</option>
-                                        <option value="Region 8">Region 8</option>
-                                        <option value="Region 9">Region 9</option>
-                                        <option value="Region 10">Region 10</option>
-                                        <option value="Region 11">Region 11</option>
-                                        <option value="Region 12">Region 12</option>
-                                        <option value="Region 13">Region 13</option>
-                                        <option value="BARMM">BARMM</option>
-                                    </select>
+                                    <input type="text" class="form-control region" style="width:220px;" id="region" name="region" readonly>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="lname">Province</label>
                                     <div id="province_body" class="province_body">
-                                        <select class="js-example-basic-single province_id" style="width:220px;" id="province_id" name="province_id" onchange="onchangeProvince($(this))">
-                                            <option value="">Please select province</option>
-                                            @foreach($provinces as $prov)
-                                                <option value="{{ $prov->id }}">{{ $prov->description }}</option>
-                                            @endforeach
-                                        </select>
+                                        <input type="text" class="form-control province_id" style="width:220px;" id="province_id" name="province_id" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -421,9 +398,7 @@
                                 <div class="form-group">
                                     <label for="lname">Municipality</label>
                                     <div id="muncity_body" class="muncity_body">
-                                        <select class="js-example-basic-single muncity_id" style="width:220px;" id="muncity_id" name="muncity_id" onchange="onchangeMuncity($(this))">
-                                            <option value="">Please select Municipality</option>
-                                        </select>
+                                        <input type="text" class="form-control muncity_id" style="width:220px;" id="muncity_id" name="muncity_id" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -431,9 +406,7 @@
                                 <div class="form-group">
                                     <label for="lname">Barangay</label>
                                     <div id="barangay_body" class="barangay_body">
-                                        <select class="js-example-basic-single barangay_id" style="width:220px;" id="barangay_id" name="barangay_id">
-                                            <option value="">Please select Barangay</option>
-                                        </select>
+                                        <input type="text" class="form-control barangay_id" style="width:220px;" id="barangay_id" name="barangay_id" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -442,7 +415,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="fname">Date of Guarantee Letter</label>
-                                    <input type="date" class="form-control date_guarantee_letter" style="width:220px;" id="date_guarantee_letter" name="date_guarantee_letter" placeholder="Date of Guarantee Letter" required>
+                                    <input type="date" class="form-control date_guarantee_letter" style="width:220px;" id="date_guarantee_letter" name="date_guarantee_letter" readonly>
                                 </div>
                             </div>
                         </div>
@@ -450,23 +423,13 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="fname">Facility</label>
-                                    <select class="js-example-basic-single facility_id1" style="width:220px;" id="facility_id" name="facility_id" onchange="onchangeForProponent($(this))" required>
-                                        <option value="">Please select Facility</option>
-                                        @foreach($facilities as $facility)
-                                            <option value="{{ $facility->id }}">{{ $facility->name }}</option>
-                                        @endforeach
-                                    </select>
+                                    <input type="text" class="form-control facility_id1" style="width:220px;" id="facility_id" name="facility_id" readonly>
                                 </div>
                             </div> 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="fname">Proponent</label>
-                                    <select class="js-example-basic-single proponent_id1" style="width:220px;" id="proponent_id" name="proponent_id" onchange="onchangeForPatientCode($(this))" required>
-                                        <option value="">Please select Proponent</option>
-                                        @foreach($proponents as $pro)
-                                            <option value="{{ $pro->id }}">{{ $pro->proponent }}</option>
-                                        @endforeach
-                                    </select>
+                                    <input type="text" class="form-control proponent_id1" style="width:220px;" id="proponent_id" name="proponent_id" readonly>
                                 </div>
                             </div>
                         </div>
@@ -485,13 +448,13 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="fname">Guaranteed Amount</label>
-                                    <input type="text" class="form-control guaranteed_amount" id="guaranteed_amount" style="width:220px;" oninput="check()" onkeyup= "validateAmount(this)" name="guaranteed_amount" placeholder="Guaranteed Amount" required>
+                                    <input type="text" class="form-control guaranteed_amount" id="guaranteed_amount" style="width:220px;" name="guaranteed_amount" readonly>
                                 </div>
                             </div>
                             <div class="col-md-6"  id="actl_amnt">
                                 <div class="form-group">
                                     <label for="fname">Actual Amount</label>
-                                    <input type="number" step="any" class="form-control actual_amount" id="actual_amount" name="actual_amount">
+                                    <input type="number" step="any" class="form-control actual_amount" id="actual_amount" name="actual_amount" readonly>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -514,8 +477,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" id="close_modal" data-dismiss="modal">Close</button>
-                        <button type="submit" id="create_pat_btn" onclick="acceptPatient()" class="btn btn-primary">Process</button>
-                        <button class="btn btn-warning" onclick="returnPatient()" style="display:none; color:white">Return</button>
+                        <button type="submit" id="create_pat_btn" style="display:none;" onclick="acceptPatient()" class="btn btn-primary">Process</button>
+                        <button class="btn btn-warning return_btn" onclick="returnPatient()" style="display:none; color:white">Return</button>
                     </div>
                 </form>
             </div>
@@ -912,7 +875,7 @@
     });
 
     $('.btn-secondary').on('click', function(e) {
-        $('#contractForm')[0].reset();
+        $('#update_form')[0].reset();
         $('#facility_id').val('').trigger('change');
         $('#proponent_id').val('').trigger('change');
 
@@ -1184,21 +1147,6 @@
 
     });
 
-    function validateAmount(element) {
-        if (event.keyCode === 32) {
-            event.preventDefault();
-        }
-        var cleanedValue = element.value.replace(/[^\d.]/g, '');
-        var numericValue = parseFloat(cleanedValue);
-
-        if ((!isNaN(numericValue) || cleanedValue === '' || cleanedValue === '.') &&
-            !(cleanedValue.length === 1 && cleanedValue[0] === '0')) {
-                element.value = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        }else{
-            element.value = '';
-        }
-    }
-
     $('#update_send').on('click', function(){
         $('.loading-container').show();
     });
@@ -1210,41 +1158,41 @@
         var patient;
         $.get("{{url('/gl/update').'/'}}" + id, function(result){
             patient = result;
-            console.log('res', patient.id);
+            console.log('res', patient);
             edit_c = 1;
             var editRoute = `{{ route('patient.return', ['id' => ':id']) }}`;
             editRoute = editRoute.replace(':id', id);
             $('#update_form').attr('action', editRoute);
             console.log('res', patient.fname);
             if(patient){
-               
-                $('.btn.btn-warning').attr('data-id', id).css('display', 'inline-block');
-                $('.create_pat_btn').attr('data-id', id).css('display', 'inline-block');
+
+                $('#btn.btn-warning').attr('data-id', id);
+                $('.create_pat_btn').attr('data-id', id);
 
                 $('.fname').val(patient.fname);
                 $('.lname').val(patient.lname);
                 $('.mname').val(patient.mname);
                 $('.dob').val(patient.dob);
-                console.log('herehere',patient.dob );
-                $('.region').select2().val(patient.region).trigger('change');
-                if(patient.region == "Region 7"){
-                    $('.province_id').select2().val(patient.province_id).trigger('change');
-                    $('.muncity_id').select2().val(patient.muncity_id).trigger('change');
-                    $('.barangay_id').select2().val(patient.barangay_id).trigger('change');
-                }else{
-                    $('.other_province').val(patient.other_province);
-                    $('.other_muncity').val(patient.other_muncity);
-                    $('.other_barangay').val(patient.other_barangay);
-                }
+                $('.region').val(patient.region);
+                $('.province_id').val(patient.province?patient.province.description:'');
+                $('.muncity_id').val(patient.muncity?patient.muncity.description:'');
+                $('.barangay_id').val(patient.barangay?patient.barangay.description:'');
                 $('.date_guarantee_letter').val(patient.date_guarantee_letter);
                 $('.guaranteed_amount').val(patient.guaranteed_amount);
-                $('.actl_amnt').show();
                 $('.actual_amount').val(patient.actual_amount);
-                $('.proponent_id1').val(patient.proponent_id).trigger('change');
-                $('.facility_id1').val(patient.facility_id).trigger('change');
+                $('.proponent_id1').val(patient.proponent_data?patient.proponent_data.proponent   :'');
+                $('.facility_id1').val(patient.facility.name);
                 $('.patient_code').val(patient.patient_code);
                 $('.remaining_balance').val(patient.remaining_balance);
                 $('.pat_rem').val(patient.pat_rem);
+
+                if(patient.sent_type == 1){
+                    $('.btn.btn-warning').css('display', 'block');
+                    $('#create_pat_btn').css('display', 'block');
+                }else{
+                    $('.btn.btn-warning').css('display', 'none');
+                    $('#create_pat_btn').css('display', 'none');
+                }
             }
             edit_c = 0;
         });
@@ -1253,167 +1201,7 @@
     
     var form_type = 'create';
 
-    function othersRegion(data) {
-        if(data.val() != "Region 7"){
-            $(".province_body").html("<input type='text' class='form-control other_province' value='' id='other_province' name='other_province'>");
-            $(".muncity_body").html("<input type='text' class='form-control other_muncity' id='other_muncity' name='other_muncity'>");
-            $(".barangay_body").html("<input type='text' class='form-control other_barangay' id='other_barangay' name='other_barangay'>");
-        }else {
-            
-            $(".province_body").html("<select class=\"js-example-basic-single w-100 province_id\" id=\"province_id\"  name=\"province_id\" onchange=\"onchangeProvince($(this))\">\n" +
-                "\n" + "</select>");
-
-            $('.province_id').append($('<option>', {
-                value: "",
-                text: "Please select a municipality"
-            }));
-
-            jQuery.each(JSON.parse('<?php echo $provinces; ?>'), function(i,val){
-                $('.province_id').append($('<option>', {
-                    value: val.id,
-                    text : val.description
-                }));
-            });
-
-            $(".muncity_body").html("<select class=\"form-control muncity_id\" id=\"muncity_id\" name=\"muncity_id\" onchange=\"onchangeMuncity($(this))\">\n" +
-                "                                        <option value=\"\">Please select municipality</option>\n" +
-                "                                    </select>");
-
-            $(".barangay_body").html("<select class=\"form-control barangay_id\" id=\"barangay_id\" name=\"barangay_id\">\n" +
-                "                                        <option value=\"\">please select barangay</option>\n" +
-                "                                    </select>");
-            if(form_type == 'update'){
-                $(".muncity_id").select2({ width: '220px' });
-                $(".barangay_id").select2({ width: '220px' });
-                $(".province_id").select2({ width: '220px' });
-            }else{
-                $("#muncity_id").select2({ width: '220px' });
-                $("#barangay_id").select2({ width: '220px' });
-                $("#province_id").select2({ width: '220px' });
-            }
-        }
-
-   } 
-
-    function onchangeProvince(data) {
-        $('.muncity_id').empty();
-        $('.barangay_id').empty();
-        var municipalities = @json($municipalities);
-        var muncity = municipalities.filter(item => item.province_id == data.val());
-        $('.muncity_id').append($('<option>', {
-            value: "",
-            text: "Please select a municipality"
-        }));
-        $('.barangay_id').append($('<option>', {
-            value: "",
-            text: "Please select a barangay"
-        }));
-        muncity.forEach(function(optionData) {
-            $('.muncity_id').append($('<option>', {
-                value: optionData.id,
-                text: optionData.description
-            }));
-        });
-    }
-
-    function onchangeMuncity(data) {
-        if(data.val()) {
-            $('.barangay_id').html('');
-            var barangays = @json($barangays);
-            var barangay = barangays.filter(item => item.muncity_id == data.val());
-            $('.barangay_id').append($('<option>', {
-                value: "",
-                text: "Please select a barangay"
-            }));
-            barangay.forEach(function(optionData) {
-                $('.barangay_id').append($('<option>', {
-                    value: optionData.id,
-                    text: optionData.description
-                }));
-            });
-        }
-    }
     var facility_id = 0;
-
-    function onchangeForProponent(data){
-        if(edit_c == 0){
-            if(data.val()){
-                facility_id = data.val();
-                $.get("{{ url('facility/proponent').'/' }}"+data.val(), function(result) {
-
-                    $('#proponent_id').html('');
-                    $('.patient_code').val('');
-                    $('#proponent_id').append($('<option>', {
-                        value: "",
-                        text: "Select Proponent"
-                    }));
-                    $.each(result, function(index, optionData) {
-                        $('#proponent_id').append($('<option>', {
-                            value: result[index].id,
-                            text: result[index].proponent
-                        }));
-                    });
-                    $('#proponent_id').prop('disabled', false); 
-                });
-                $('.proponent_id1').val('').trigger('change');
-            }
-        }
-    }
-
-    function onchangeForPatientCode(data) {
-        // var facility_id = $('#facility_id').val();
-
-        if(facility_id == 0){
-            facility_id = $('#facility_id').val();
-        }
-        console.log('facility', facility_id);
-        if(edit_c == 0){
-            if(data.val()) {
-                $.get("{{ url('patient/code').'/' }}"+data.val()+"/"+facility_id, function(result) {
-                    $(".patient_code").val(result.patient_code);
-                    const formattedBalance = new Intl.NumberFormat('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    }).format(result.balance);
-
-                    $('.remaining_balance').val(formattedBalance);
-                    var suggestions =[];
-                    var res = result.proponent_info;
-
-                    $.each(res, function(index, optionData) {
-                        suggestions.push(res[index].fundsource.saa +' - '+res[index].remaining_balance);
-                    });
-                    var suggestionsDiv = $('.suggestions');
-                    suggestionsDiv.empty();
-
-                    suggestions.forEach(function(suggestion) {
-                        suggestionsDiv.append('<div>' + suggestion + '</div>');
-                    });
-                    suggestionsDiv.show();
-                });
-            }
-        }
-    }
-
-    function parseNumberWithCommas(value) {
-        if(typeof value === 'string'){
-            return parseFloat(value.replace(/,/g, '')) || 0;
-        } else{
-            return parseFloat(value) || 0;
-        }
-    }
-
-    function check(){
-        var rem = parseNumberWithCommas($('#remaining_balance').val());
-        var g_amount = parseNumberWithCommas($('#guaranteed_amount').val());
-        if(g_amount>rem){
-            Lobibox.alert('error', {
-                size: 'mini',
-                msg: 'Inputted amount is greater than the remaning balance!'
-            })
-            $('#guaranteed_amount').val('');
-        }
-    }
 
     function formatDate(item){
         var date = new Date(item);
@@ -1451,13 +1239,11 @@
     }
 
     function returnPatient(){
-        $('.sent_type').val(3);
-        // var id = event.target.getAttribute('data-id');
-        // window.location.href= "patient/return/" + id;
+        $('.sent_type').val(2);
     }
 
-    function updatePatient(){
-        $('.sent_type').val(4);
+    function acceptPatient(){
+        $('.sent_type').val(3);
     }
 
 </script>

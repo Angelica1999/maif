@@ -16,7 +16,7 @@
                     </div>
                 </div>
             </form>
-            <h4 class="card-title">Fundsource Files</h4>
+            <h4 class="card-title">FUNDSOURCE FILES</h4>
             <p class="card-description">
                 MAIF-IPP
             </p>

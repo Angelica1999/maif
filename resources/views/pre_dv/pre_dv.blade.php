@@ -32,7 +32,7 @@
                     </form>
                 </div>
             </div>
-            <h4 class="card-title">Pre - DV</h4>
+            <h4 class="card-title">PRE - DV</h4>
             <p class="card-description">
                 MAIF-IPP
             </p>
@@ -60,6 +60,8 @@
                                     </div>  
                                 </th>
                                 <th style="min-width:100px">Grand Total</th>
+                                <th>Number of Transmittals</th>
+                                <th>Grand Total</th>
                                 <th class="user">Created By
                                     <i id="by_i" class="typcn typcn-filter menu-icon"><i>
                                     <div class="filter" id="by_div" style="display:none;">
@@ -80,6 +82,7 @@
                             </tr>
                         </thead>
                         <tbody>
+                            <?php $overall=0; ?>
                             @foreach($results as $row)
                                 <tr>
                                     <td>
@@ -97,10 +100,20 @@
                                         @endif
                                     </td>
                                     <td><a data-toggle="modal" data-backdrop="static" href="#update_predv" onclick="updatePre( {{$row->id}}, {{$row->new_dv?1:2}} )">{{ $row->facility->name }}</a></td>
+                                    <td>
+                                        <?php
+                                            $total = 0;
+                                            foreach($row->extension as $item){
+                                                $total = $total + count($item->controls);
+                                            }
+                                            echo $total;
+                                        ?>
+                                    </td>
                                     <td>{{ number_format(str_replace(',','',$row->grand_total), 2, '.',',') }}</td>
                                     <td>{{ $row->user->lname .', '.$row->user->fname }}</td>
                                     <td>{{ date('F j, Y', strtotime($row->created_at)) }}</td>
                                 </tr>
+                                <?php $overall= $overall + $total; ?>
                             @endforeach
                         </tbody>
                     </table>
@@ -110,6 +123,14 @@
                         <strong>No data found!</strong>
                     </div>
                 @endif
+            </div>
+            <div class="pl-5 pr-5 mt-5 alert alert-info" role="alert" style="width: 100%; margin-top:5px;">
+                <strong>Total number of data generated: {{ $num_generated }}</strong>
+                <strong style="margin-left: 20px;">|</strong>
+                <strong style="margin-left: 20px;">Total number of transmittals:  {{ $overall }}</strong>
+                <strong style="margin-left: 20px;">|</strong>
+                <strong style="margin-left: 20px;">Total amount:  {{ number_format($grand_amount, 2,'.',',') }}</strong>
+
             </div>
             <div class="pl-5 pr-5 mt-5">
                 {!! $results->appends(request()->query())->links('pagination::bootstrap-5') !!}
@@ -694,8 +715,6 @@
             });
             data.find('.inputted_amount').text(Number(total.toFixed(2)).toLocaleString('en-US', { maximumFractionDigits: 2 }));
         }
-
-
 
         $(document).on('input', '.saa_amount', function(){
             var data = $(this);

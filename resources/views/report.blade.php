@@ -19,7 +19,7 @@
                     </div>
                 </div>
             </form>
-            <h4 class="card-title">Generate Report : Proponent</h4>
+            <h4 class="card-title">GENERATE REPORT: PROPONENT</h4>
             <p class="card-description">
                 MAIF-IPP
             </p>

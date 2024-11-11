@@ -215,7 +215,7 @@ class FacilityController extends Controller
     }
 
     public function logbook(Request $req){
-        $logbook = Logbook::orderBy('id', 'desc')->paginate(100);
+        $logbook = Logbook::with('r_by:fname,lname,mname,userid')->orderBy('id', 'desc')->paginate(100);
         $trans = Transmittal::pluck('control_no')->toArray();
         return view('maif.logbook',[
             'logbook' => $logbook,
@@ -329,5 +329,22 @@ class FacilityController extends Controller
     
         return redirect()->back();
     }
-    
+
+    public function received($control_no, $name){
+
+        $log = new Logbook();
+        $log->received_on = date('Y-m-d',strtotime(now()));
+        $log->received_by = Auth::user()->userid;
+        $log->delivered_by = $name;
+        $log->control_no = $control_no;
+        $log->save();
+        
+        $trans = Transmittal::where('control_no', $control_no)->first();
+        $trans->remarks = 2;
+        $trans->save();
+
+        Http::get('http://192.168.110.148/guaranteeletter/transmittal/returned/'.$trans->id.'/'.Auth::user()->userid.'/received');
+
+        return response()->json(['message' => 'Data submitted successfully']);
+    }
 }

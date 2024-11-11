@@ -29,9 +29,6 @@ class PreDvController extends Controller
 
     public function pre_dv(Request $request)
     {
-
-      
-
         NewDV::whereNull('dv_no')
             ->orWhere('dv_no', '')
             ->with('dts')
@@ -99,8 +96,12 @@ class PreDvController extends Controller
             $pre_dv->whereIn('created_by', explode(',', $request->b_id));
         }
 
-        $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(50);
+        $total = count($pre_dv->get());
 
+        $grand_amount = $pre_dv->sum('grand_total');
+
+        $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(50);
+        
         return view('pre_dv.pre_dv', [
             'results' => $pre_dv,
             'proponents' => $proponents,
@@ -109,7 +110,9 @@ class PreDvController extends Controller
             'keyword' => $request->keyword,
             'f_id' => explode(',', $request->f_id),
             'b_id' => explode(',', $request->b_id),
-            'generate' => $request->generate
+            'generate' => $request->generate,
+            'num_generated' => $total,
+            'grand_amount' => $grand_amount
         ]);
     }
 
@@ -308,11 +311,11 @@ class PreDvController extends Controller
         $proponents = Proponent::select('proponent')->groupBy('proponent')->get();
         $facilities = Facility::get();
 
-        if($type == 'pending_new'){
+        if($type == 'awaiting'){
             $pre_dv->whereHas('new_dv', function ($query) {
                 $query->whereNull('ors_no'); 
             });  
-        }else if($type== 'processed_new'){
+        }else if($type== 'accomplished'){
             $pre_dv->whereHas('new_dv', function ($query) {
                 $query->whereNotNull('ors_no'); 
             });  
@@ -338,7 +341,7 @@ class PreDvController extends Controller
         }
         
         $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(50);
-
+        
         return view('fundsource_budget.new_dv_list', [
             'results' => $pre_dv,
             'proponents' => $proponents,
@@ -555,14 +558,15 @@ class PreDvController extends Controller
     public function savePreDV(Request $request)
     {
         // return 1;
-        $decodedData = urldecode($request->data);
-        $all_data = json_decode($decodedData, true);
-        $grand_total = $request->grand_total;
-        $facility_id = $request->facility_id;
 
         if($request->transmittal_id){
             Transmittal::whereIn('id', $request->transmittal_id)->update(['used'=>1]);
         }
+
+        $decodedData = urldecode($request->data);
+        $all_data = json_decode($decodedData, true);
+        $grand_total = $request->grand_total;
+        $facility_id = $request->facility_id;
 
         $pre_dv = new PreDV();
         $pre_dv->facility_id = $facility_id;
@@ -910,7 +914,7 @@ class PreDvController extends Controller
         });
 
         $type = $request->type;
-        if($type == 'pending_new'){
+        if($type == 'awaiting'){
             $new->ors_no = $request->ors_no;
             $new->obligated_by = Auth::user()->userid;
             $new->obligated_on =  date('Y-m-d H:i:s');
@@ -977,7 +981,7 @@ class PreDvController extends Controller
         $extension = PreDVExtension::whereIn('pre_dv_id', $pre_dv)->pluck('id')->toArray();
         $controls = PreDVControl::whereIn('predv_extension_id', $extension)->pluck('control_no')->toArray();
         $dv2 = Dv2::whereRaw("facility REGEXP ?", ["^" . preg_quote($searchValue, '/')])->pluck('ref_no')->toArray();
-        $transmittal = Transmittal::where('facility_id', $facility_id)->get();
+        $transmittal = Transmittal::where('remarks', 5)->where('facility_id', $facility_id)->get();
         return response()->json(['controls'=> array_merge($controls, $dv2), 'transmittal' => $transmittal]);
     }
 

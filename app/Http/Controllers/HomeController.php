@@ -22,6 +22,8 @@ use App\Models\Utilization;
 use App\Models\TrackingDetails;
 use App\Models\PatientLogs;
 use App\Models\MailHistory;
+use App\Models\ReturnedPatients;
+use App\Models\ProponentUtilizationV1;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Arr;
@@ -64,14 +66,14 @@ class HomeController extends Controller
             'facility:id,name',
             'proponentData:id,proponent',
             'pat_remarks:patient_id,remarks'
-        ]);
+        ])->where('sent_type', null);
        
         //  -- for date range
         if($request->gen){
             $dateRange = explode(' - ', $filter_date);
             $start_date = date('Y-m-d', strtotime($dateRange[0]));
             $end_date = date('Y-m-d', strtotime($dateRange[1]));
-            $patients = $patients ->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59']);
+            $patients = $patients ->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59'])->where('sent_type', null);
         }
 
         // -- for search
@@ -97,43 +99,49 @@ class HomeController extends Controller
 
 
         }else if($request->keyword){
+            // return $patients->where('sent_type', null)->orderBy('id', 'desc')->paginate(50);
+
             $keyword = $request->keyword;
             $patients = $patients->where(function ($query) use ($keyword) {
-                $query->where('fname', 'LIKE', "%$keyword%")
-                      ->orWhere('lname', 'LIKE', "%$keyword%")
-                      ->orWhere('mname', 'LIKE', "%$keyword%")
-                      ->orWhere('region', 'LIKE', "%$keyword%")
-                      ->orWhere('other_province', 'LIKE', "%$keyword%")
-                      ->orWhere('other_muncity', 'LIKE', "%$keyword%")
-                      ->orWhere('other_barangay', 'LIKE', "%$keyword%")
-                      ->orWhere('patient_code', 'LIKE', "%$keyword%");
-            })
-            ->orWhereHas('facility', function ($query) use ($keyword) {
-                $query->where('name', 'LIKE', "%$keyword%");
-            })
-            ->orWhereHas('proponentData', function ($query) use ($keyword) {
-                $query->where('proponent', 'LIKE', "%$keyword%");
-            })
-            ->orWhereHas('barangay', function ($query) use ($keyword) {
-                $query->where('description', 'LIKE', "%$keyword%");
-            })
-            ->orWhereHas('muncity', function ($query) use ($keyword) {
-                $query->where('description', 'LIKE', "%$keyword%");
-            })
-            ->orWhereHas('province', function ($query) use ($keyword) {
-                $query->where('description', 'LIKE', "%$keyword%");
+                $query->where('sent_type', null)
+                    ->where(function ($query) use ($keyword) {
+                        $query->where('fname', 'LIKE', "%$keyword%")
+                            ->orWhere('lname', 'LIKE', "%$keyword%")
+                            ->orWhere('mname', 'LIKE', "%$keyword%")
+                            ->orWhere('region', 'LIKE', "%$keyword%")
+                            ->orWhere('other_province', 'LIKE', "%$keyword%")
+                            ->orWhere('other_muncity', 'LIKE', "%$keyword%")
+                            ->orWhere('other_barangay', 'LIKE', "%$keyword%")
+                            ->orWhere('patient_code', 'LIKE', "%$keyword%");
+                    })
+                    ->orWhereHas('facility', function ($query) use ($keyword) {
+                        $query->where('name', 'LIKE', "%$keyword%");
+                    })
+                    ->orWhereHas('proponentData', function ($query) use ($keyword) {
+                        $query->where('proponent', 'LIKE', "%$keyword%");
+                    })
+                    ->orWhereHas('barangay', function ($query) use ($keyword) {
+                        $query->where('description', 'LIKE', "%$keyword%");
+                    })
+                    ->orWhereHas('muncity', function ($query) use ($keyword) {
+                        $query->where('description', 'LIKE', "%$keyword%");
+                    })
+                    ->orWhereHas('province', function ($query) use ($keyword) {
+                        $query->where('description', 'LIKE', "%$keyword%");
+                    });
             });
         }
 
         // -- for table header sorting
 
         if ($request->sort && $request->input('sort') == 'facility') {
-            $patients = $patients->sortable(['facility.name' => 'asc']);
+            $patients = $patients->sortable(['facility.name' => 'asc'])->where('sent_type', null);
         }else if ($request->sort && $request->input('sort') == 'proponent') {
-            $patients = $patients->sortable(['proponentData.proponent' => 'asc']);
+            $patients = $patients->sortable(['proponentData.proponent' => 'asc'])->where('sent_type', null);
         }else if ($request->sort && $request->input('sort') == 'province') {
             
             $patients = $patients->leftJoin('province', 'province.id', '=', 'patients.province_id')
+                            ->where('sent_type', null)
                             ->orderBy('patients.other_province', $request->input('order'))
                             ->orderBy('province.description', $request->input('order')) 
                             ->select('patients.*');
@@ -141,6 +149,7 @@ class HomeController extends Controller
         }else if ($request->sort && $request->input('sort') == 'municipality') {
             
             $patients = $patients->leftJoin('muncity', 'muncity.id', '=', 'patients.muncity_id')
+                            ->where('sent_type', null)
                             ->orderBy('patients.other_muncity', $request->input('order'))
                             ->orderBy('muncity.description', $request->input('order')) 
                             ->select('patients.*');
@@ -148,6 +157,7 @@ class HomeController extends Controller
         }else if ($request->sort && $request->input('sort') == 'barangay') {
             
             $patients = $patients->leftJoin('barangay', 'barangay.id', '=', 'patients.barangay_id')
+                            ->where('sent_type', null)
                             ->orderBy('patients.other_barangay', $request->input('order'))
                             ->orderBy('barangay.description', $request->input('order')) 
                             ->select('patients.*');
@@ -155,6 +165,7 @@ class HomeController extends Controller
         }else if ($request->sort && $request->input('sort') == 'encoded_by') {
         
             $patients = $patients
+                        ->where('sent_type', null)
                         ->orderBy(
                             \DB::connection('dohdtr')
                                 ->table('users')
@@ -169,48 +180,51 @@ class HomeController extends Controller
 
         // if($request->filter_col){
             if($request->filter_date){
-                $patients = $patients->whereIn('date_guarantee_letter', explode(',',$request->filter_date));
+                $patients = $patients->whereIn('date_guarantee_letter', explode(',',$request->filter_date))->where('sent_type', null);
             }
             if($request->filter_fname){
-                $patients = $patients->whereIn('fname', explode(',',$request->filter_fname));
+                $patients = $patients->whereIn('fname', explode(',',$request->filter_fname))->where('sent_type', null);
             }
             if($request->filter_mname){
-                $patients = $patients->whereIn('mname', explode(',',$request->filter_date));
+                $patients = $patients->whereIn('mname', explode(',',$request->filter_date))->where('sent_type', null);
             }
             if($request->filter_lname){
-                $patients = $patients->whereIn('lname', explode(',',$request->filter_lname));
+                $patients = $patients->whereIn('lname', explode(',',$request->filter_lname))->where('sent_type', null);
             }
             if($request->filter_facility){
-                $patients = $patients->whereIn('facility_id', explode(',',$request->filter_facility));
+                $patients = $patients->whereIn('facility_id', explode(',',$request->filter_facility))->where('sent_type', null);
             }
             if($request->filter_proponent){
-                $patients = $patients->whereIn('proponent_id', explode(',',$request->filter_proponent));
+                $patients = $patients->whereIn('proponent_id', explode(',',$request->filter_proponent))->where('sent_type', null);
             }
             if($request->filter_code){
-                $patients = $patients->whereIn('patient_code', explode(',',$request->filter_code));
+                $patients = $patients->whereIn('patient_code', explode(',',$request->filter_code))->where('sent_type', null);
             }
             if($request->filter_region){
-                $patients = $patients->whereIn('region', explode(',',$request->filter_region));
+                $patients = $patients->whereIn('region', explode(',',$request->filter_region))->where('sent_type', null);
             }
             if($request->filter_province){
                 $patients = $patients->whereIn('province_id', explode(',',$request->filter_province))
-                            ->orWhereIn('other_province', explode(',',$request->filter_province));
+                            ->orWhereIn('other_province', explode(',',$request->filter_province))
+                            ->where('sent_type', null);
             }
             if($request->filter_municipality){
                 $patients = $patients->whereIn('muncity_id', explode(',',$request->filter_municipality))
-                            ->orWhereIn('other_muncity', explode(',',$request->filter_municipality));
+                            ->orWhereIn('other_muncity', explode(',',$request->filter_municipality))
+                            ->where('sent_type', null);
             }
             if($request->filter_barangay){
                 $patients = $patients->whereIn('barangay_id', explode(',',$request->filter_barangay))
-                            ->orWhereIn('other_barangay', explode(',',$request->filter_barangay));
+                            ->orWhereIn('other_barangay', explode(',',$request->filter_barangay))
+                            ->where('sent_type', null);
             }
             if($request->filter_on){
-                $patients = $patients->whereIn(DB::raw('DATE(created_at)'), explode(',',$request->filter_on));
+                $patients = $patients->whereIn(DB::raw('DATE(created_at)'), explode(',',$request->filter_on))->where('sent_type', null);
                 // return  $request->filter_on;
             }
             if($request->filter_by){
                 // return explode(',',$request->filter_by);
-                $patients = $patients->whereIn('created_by', explode(',',$request->filter_by));
+                $patients = $patients->whereIn('created_by', explode(',',$request->filter_by))->where('sent_type', null);
             }
         // }
 
@@ -228,7 +242,7 @@ class HomeController extends Controller
         $on = clone ($patients);
         $by = clone ($patients);
 
-        $fc_list = Facility::whereIn('id', $facs->groupBy('facility_id')->pluck('facility_id'))->select('id','name')->get();;
+        $fc_list = Facility::whereIn('id', $facs->groupBy('facility_id')->pluck('facility_id'))->select('id','name')->get();
         $pros = Proponent::whereIn('id', $proponent->groupBy('proponent_id')->pluck('proponent_id'))->select('id','proponent')->get();
         $users = User::whereIn('userid', $by->groupBy('created_by')->pluck('created_by'))->select('userid','lname', 'fname')->get();
         $brgy = Barangay::whereIn('id', $barangay->groupBy('barangay_id')->pluck('barangay_id'))->select('id','description')->get();
@@ -239,7 +253,7 @@ class HomeController extends Controller
         $proponents_code = Proponent::groupBy('proponent_code')->select(DB::raw('MAX(proponent) as proponent'), DB::raw('MAX(proponent_code) as proponent_code'),DB::raw('MAX(id) as id') )->get();
         // return $patients->paginate(10);
         return view('home', [
-            'patients' => $patients->paginate(50),
+            'patients' => $patients->where('sent_type', null)->paginate(50),
             'keyword' => $request->keyword,
             'provinces' => Province::get(),
             'municipalities' => Muncity::get(),
@@ -291,7 +305,7 @@ class HomeController extends Controller
     }
 
     public function updateGl($id){
-        return Patients::where('id', $id)->first();
+        return Patients::where('id', $id)->with('facility:id,name','province:id,description','muncity:id,description','barangay:id,description', 'proponentData:id,proponent')->first();
     }
 
     public function report(Request $request){
@@ -720,7 +734,7 @@ class HomeController extends Controller
 
     public function createPatientSave(Request $request) {
         $data = $request->all();
-        Patients::create($request->all());
+        $patient = Patients::create($data);
         $patientCount = Patients::where('fname', $request->fname)
             ->where('lname', $request->lname)
             ->where('mname', $request->mname)
@@ -734,6 +748,13 @@ class HomeController extends Controller
         }else{
             session()->flash('patient_save', true);
         }
+
+        $util = new ProponentUtilizationV1();
+        $util->patient_id = $patient->id;
+        $util->proponent_id = $patient->proponent_id;
+        $util->amount = (float) str_replace(',','', $patient->guaranteed_amount);
+        $util->proponent_code = Proponent::where('id', $patient->proponent_id)->value('proponent_code');
+        $util->save();
 
         return redirect()->back();
     }
@@ -909,30 +930,21 @@ class HomeController extends Controller
     }   
 
     public function returnPatient($id, Request $request){
-
-        $val = $request->input('update_send');
-        
         $patient_id = $id;
-        $patient = Patients::where('id', $patient_id)->first();
+        $patient = Patients::where('id', $id)->first();
 
         if(!$patient){
             return redirect()->back()->with('error', 'Patient not found');
         }
-
-        DB::beginTransaction();
-
-        $patientLogs = new PatientLogs();
-        $patientLogs->patient_id = $patient->id;
-        $patientLogs->fill(Arr::except($patient->toArray(), ['status', 'sent_type', 'user_type']));
-        unset($patientLogs->id);
-        $patientLogs->save();
+        Patients::where('id', $id)->update(['sent_type' => $request->sent_type]);
+        ReturnedPatients::insert([
+            'patient_id' => $id, 
+            'remarks' => $request->pat_rem,
+            'status' => $request->sent_type,
+            'remarks_by' => Auth::user()->userid
+        ]);
         
-        $patient->pat_rem = $request->input('pat_rem');
-        $patient->sent_type = $request->input('sent_type');
-        $patient->save();
-        DB::commit();
-        
-        return redirect()->back()->with('return_gl', true);
+        return redirect()->back()->with($request->sent_type == 2? 'return_gl' : 'process_gl', true);
     }
 
     public function patients(Request $request){
@@ -941,8 +953,7 @@ class HomeController extends Controller
         $order = $request->input('order', 'asc');
 
 
-        $patients = Patients::where('user_type', 1)
-            ->where('sent_type','!=', 1)->with([
+        $patients = Patients::with([
             'province:id,description',
             'muncity:id,description',
             'barangay:id,description',
@@ -951,14 +962,14 @@ class HomeController extends Controller
             'facility:id,name',
             'proponentData:id,proponent',
             'pat_remarks:patient_id,remarks'
-        ]);
+        ])->whereNotNull('sent_type');
        
         //  -- for date range
         if($request->gen){
             $dateRange = explode(' - ', $filter_date);
             $start_date = date('Y-m-d', strtotime($dateRange[0]));
             $end_date = date('Y-m-d', strtotime($dateRange[1]));
-            $patients = $patients ->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59']);
+            $patients = $patients ->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59'])->whereNotNull('sent_type');
         }
 
         // -- for search
@@ -984,46 +995,49 @@ class HomeController extends Controller
 
 
         }else if($request->keyword){
+            // return $patients->where('sent_type', null)->orderBy('id', 'desc')->paginate(50);
+
             $keyword = $request->keyword;
-            
-            $patients = $patients->where('user_type', 1)->where('sent_type','!=', 1)->where(function ($query) use ($keyword) {
-                $query->where('fname', 'LIKE', "%$keyword%")
-                      ->orWhere('lname', 'LIKE', "%$keyword%")
-                      ->orWhere('mname', 'LIKE', "%$keyword%")
-                      ->orWhere('region', 'LIKE', "%$keyword%")
-                      ->orWhere('other_province', 'LIKE', "%$keyword%")
-                      ->orWhere('other_muncity', 'LIKE', "%$keyword%")
-                      ->orWhere('other_barangay', 'LIKE', "%$keyword%")
-                      ->orWhere('patient_code', 'LIKE', "%$keyword%");
-            })
-            ->orWhere(function ($query) use ($keyword) {
-                $query->whereHas('facility', function ($query) use ($keyword) {
-                    $query->where('name', 'LIKE', "%$keyword%");
-                })
-                ->orWhereHas('proponentData', function ($query) use ($keyword) {
-                    $query->where('proponent', 'LIKE', "%$keyword%");
-                })
-                ->orWhereHas('barangay', function ($query) use ($keyword) {
-                    $query->where('description', 'LIKE', "%$keyword%");
-                })
-                ->orWhereHas('muncity', function ($query) use ($keyword) {
-                    $query->where('description', 'LIKE', "%$keyword%");
-                })
-                ->orWhereHas('province', function ($query) use ($keyword) {
-                    $query->where('description', 'LIKE', "%$keyword%");
-                });
+            $patients = $patients->where(function ($query) use ($keyword) {
+                $query->whereNotNull('sent_type')
+                    ->where(function ($query) use ($keyword) {
+                        $query->where('fname', 'LIKE', "%$keyword%")
+                            ->orWhere('lname', 'LIKE', "%$keyword%")
+                            ->orWhere('mname', 'LIKE', "%$keyword%")
+                            ->orWhere('region', 'LIKE', "%$keyword%")
+                            ->orWhere('other_province', 'LIKE', "%$keyword%")
+                            ->orWhere('other_muncity', 'LIKE', "%$keyword%")
+                            ->orWhere('other_barangay', 'LIKE', "%$keyword%")
+                            ->orWhere('patient_code', 'LIKE', "%$keyword%");
+                    })
+                    ->orWhereHas('facility', function ($query) use ($keyword) {
+                        $query->where('name', 'LIKE', "%$keyword%");
+                    })
+                    ->orWhereHas('proponentData', function ($query) use ($keyword) {
+                        $query->where('proponent', 'LIKE', "%$keyword%");
+                    })
+                    ->orWhereHas('barangay', function ($query) use ($keyword) {
+                        $query->where('description', 'LIKE', "%$keyword%");
+                    })
+                    ->orWhereHas('muncity', function ($query) use ($keyword) {
+                        $query->where('description', 'LIKE', "%$keyword%");
+                    })
+                    ->orWhereHas('province', function ($query) use ($keyword) {
+                        $query->where('description', 'LIKE', "%$keyword%");
+                    });
             });
         }
 
         // -- for table header sorting
 
         if ($request->sort && $request->input('sort') == 'facility') {
-            $patients = $patients->sortable(['facility.name' => 'asc']);
+            $patients = $patients->sortable(['facility.name' => 'asc'])->whereNotNull('sent_type');
         }else if ($request->sort && $request->input('sort') == 'proponent') {
-            $patients = $patients->sortable(['proponentData.proponent' => 'asc']);
+            $patients = $patients->sortable(['proponentData.proponent' => 'asc'])->whereNotNull('sent_type');
         }else if ($request->sort && $request->input('sort') == 'province') {
             
             $patients = $patients->leftJoin('province', 'province.id', '=', 'patients.province_id')
+                            ->whereNotNull('sent_type')
                             ->orderBy('patients.other_province', $request->input('order'))
                             ->orderBy('province.description', $request->input('order')) 
                             ->select('patients.*');
@@ -1031,6 +1045,7 @@ class HomeController extends Controller
         }else if ($request->sort && $request->input('sort') == 'municipality') {
             
             $patients = $patients->leftJoin('muncity', 'muncity.id', '=', 'patients.muncity_id')
+                            ->whereNotNull('sent_type')
                             ->orderBy('patients.other_muncity', $request->input('order'))
                             ->orderBy('muncity.description', $request->input('order')) 
                             ->select('patients.*');
@@ -1038,6 +1053,7 @@ class HomeController extends Controller
         }else if ($request->sort && $request->input('sort') == 'barangay') {
             
             $patients = $patients->leftJoin('barangay', 'barangay.id', '=', 'patients.barangay_id')
+                            ->whereNotNull('sent_type')
                             ->orderBy('patients.other_barangay', $request->input('order'))
                             ->orderBy('barangay.description', $request->input('order')) 
                             ->select('patients.*');
@@ -1045,6 +1061,7 @@ class HomeController extends Controller
         }else if ($request->sort && $request->input('sort') == 'encoded_by') {
         
             $patients = $patients
+                        ->whereNotNull('sent_type')
                         ->orderBy(
                             \DB::connection('dohdtr')
                                 ->table('users')
@@ -1059,48 +1076,51 @@ class HomeController extends Controller
 
         // if($request->filter_col){
             if($request->filter_date){
-                $patients = $patients->whereIn('date_guarantee_letter', explode(',',$request->filter_date));
+                $patients = $patients->whereIn('date_guarantee_letter', explode(',',$request->filter_date))->whereNotNull('sent_type');
             }
             if($request->filter_fname){
-                $patients = $patients->whereIn('fname', explode(',',$request->filter_fname));
+                $patients = $patients->whereIn('fname', explode(',',$request->filter_fname))->whereNotNull('sent_type');
             }
             if($request->filter_mname){
-                $patients = $patients->whereIn('mname', explode(',',$request->filter_date));
+                $patients = $patients->whereIn('mname', explode(',',$request->filter_date))->whereNotNull('sent_type');
             }
             if($request->filter_lname){
-                $patients = $patients->whereIn('lname', explode(',',$request->filter_lname));
+                $patients = $patients->whereIn('lname', explode(',',$request->filter_lname))->whereNotNull('sent_type');
             }
             if($request->filter_facility){
-                $patients = $patients->whereIn('facility_id', explode(',',$request->filter_facility));
+                $patients = $patients->whereIn('facility_id', explode(',',$request->filter_facility))->whereNotNull('sent_type');
             }
             if($request->filter_proponent){
-                $patients = $patients->whereIn('proponent_id', explode(',',$request->filter_proponent));
+                $patients = $patients->whereIn('proponent_id', explode(',',$request->filter_proponent))->whereNotNull('sent_type');
             }
             if($request->filter_code){
-                $patients = $patients->whereIn('patient_code', explode(',',$request->filter_code));
+                $patients = $patients->whereIn('patient_code', explode(',',$request->filter_code))->whereNotNull('sent_type');
             }
             if($request->filter_region){
-                $patients = $patients->whereIn('region', explode(',',$request->filter_region));
+                $patients = $patients->whereIn('region', explode(',',$request->filter_region))->whereNotNull('sent_type');
             }
             if($request->filter_province){
                 $patients = $patients->whereIn('province_id', explode(',',$request->filter_province))
-                            ->orWhereIn('other_province', explode(',',$request->filter_province));
+                            ->orWhereIn('other_province', explode(',',$request->filter_province))
+                            ->whereNotNull('sent_type');
             }
             if($request->filter_municipality){
                 $patients = $patients->whereIn('muncity_id', explode(',',$request->filter_municipality))
-                            ->orWhereIn('other_muncity', explode(',',$request->filter_municipality));
+                            ->orWhereIn('other_muncity', explode(',',$request->filter_municipality))
+                            ->whereNotNull('sent_type');
             }
             if($request->filter_barangay){
                 $patients = $patients->whereIn('barangay_id', explode(',',$request->filter_barangay))
-                            ->orWhereIn('other_barangay', explode(',',$request->filter_barangay));
+                            ->orWhereIn('other_barangay', explode(',',$request->filter_barangay))
+                            ->whereNotNull('sent_type');
             }
             if($request->filter_on){
-                $patients = $patients->whereIn(DB::raw('DATE(created_at)'), explode(',',$request->filter_on));
+                $patients = $patients->whereIn(DB::raw('DATE(created_at)'), explode(',',$request->filter_on))->whereNotNull('sent_type');
                 // return  $request->filter_on;
             }
             if($request->filter_by){
                 // return explode(',',$request->filter_by);
-                $patients = $patients->whereIn('created_by', explode(',',$request->filter_by));
+                $patients = $patients->whereIn('created_by', explode(',',$request->filter_by))->whereNotNull('sent_type');
             }
         // }
 
@@ -1118,7 +1138,7 @@ class HomeController extends Controller
         $on = clone ($patients);
         $by = clone ($patients);
 
-        $fc_list = Facility::whereIn('id', $facs->groupBy('facility_id')->pluck('facility_id'))->select('id','name')->get();;
+        $fc_list = Facility::whereIn('id', $facs->groupBy('facility_id')->pluck('facility_id'))->select('id','name')->get();
         $pros = Proponent::whereIn('id', $proponent->groupBy('proponent_id')->pluck('proponent_id'))->select('id','proponent')->get();
         $users = User::whereIn('userid', $by->groupBy('created_by')->pluck('created_by'))->select('userid','lname', 'fname')->get();
         $brgy = Barangay::whereIn('id', $barangay->groupBy('barangay_id')->pluck('barangay_id'))->select('id','description')->get();
@@ -1126,12 +1146,10 @@ class HomeController extends Controller
         $prvnc = Province::whereIn('id', $province->groupBy('province_id')->pluck('province_id'))->select('id','description')->get();
         $on = $on->groupBy(DB::raw('DATE(created_at)'))->pluck(DB::raw('MAX(DATE(created_at))'));
         $all_pat = clone ($patients);
-        $proponents_code = Proponent::groupBy('proponent_code')->select(DB::raw('MAX(proponent) as proponent'), DB::raw('MAX(proponent_code) as proponent_code'),
-            DB::raw('MAX(id) as id') )->get();
-     
-            // return $patients;   
+        $proponents_code = Proponent::groupBy('proponent_code')->select(DB::raw('MAX(proponent) as proponent'), DB::raw('MAX(proponent_code) as proponent_code'),DB::raw('MAX(id) as id') )->get();
+        // return $patients->paginate(10);
         return view('maif.proponent_patient', [
-            'patients' => $patients->where('patients.user_type', 1)->where('sent_type','!=', 1)->paginate(50),
+            'patients' => $patients->whereNotNull('sent_type')->paginate(50),
             'keyword' => $request->keyword,
             'provinces' => Province::get(),
             'municipalities' => Muncity::get(),

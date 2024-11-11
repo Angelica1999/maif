@@ -14,7 +14,7 @@
                     </div>
                 </div>
             </form>
-            <h4 class="card-title">Patients Group</h4>
+            <h4 class="card-title">PATIENTS GROUP</h4>
             <p class="card-description">
                 MAIF-IPP
             </p>

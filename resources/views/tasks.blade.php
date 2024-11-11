@@ -14,7 +14,7 @@
                     </div>
                 </div>
             </form>
-            <h4 class="card-title">Notes</h4>
+            <h4 class="card-title">NOTES</h4>
             <p class="card-description">
                 MAIF-IPP
             </p>

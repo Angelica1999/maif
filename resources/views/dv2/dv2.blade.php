@@ -17,7 +17,7 @@
                     </div>
                 </div>
             </form>
-            <h4 class="card-title">Disbursement Voucher V2</h4>
+            <h4 class="card-title">DISBURSEMENT VOUCHER V2</h4>
             <p class="card-description">
                 MAIF-IPP
             </p>

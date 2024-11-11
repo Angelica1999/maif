@@ -25,7 +25,7 @@
                 <input type="hidden" class="all_route" id="all_route" name="all_route">
 
             </form>
-            <h4 class="card-title">Disbursement Vouchers V3</h4>
+            <h4 class="card-title">DISBURSEMENT VERSION V3</h4>
             <p class="card-description">
                 MAIF-IPP
             </p>

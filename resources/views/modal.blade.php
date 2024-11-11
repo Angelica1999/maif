@@ -1,3 +1,11 @@
+<style>
+    .budget_th{
+        vertical-align:middle; 
+        border:1px solid black;
+        border-bottom:1px solid black
+    }
+</style>
+
 <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true" >
     <div class="modal-dialog modal-sm" style="background-color: #17c964; color:white">
         <div class="modal-content">
@@ -18,18 +26,18 @@
     </div>
 </div>
 <!--end-->
-<div class="modal fade" id="track_details" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="modal fade" id="track_details" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="text-success modal-title" id="exampleModalLabel"><b><i class="typcn typcn-location menu-icon"></i>Tracking Details</b></h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-                </button>
+        <div class="modal-content" style="border-radius:0px;">
+            <div class="modal-header" style="text-align:center">
+                <h4 class="text-success modal-title">
+                    <i style="font-size:15px" class="typcn typcn-location-arrow menu-icon"></i>
+                    TRACKING DETAILS
+                </h4>
             </div>
-            <div class="table-container">
+            <div class="table-container" style="height: 800px; overflow-y: auto;">
                 <table class="table table-list table-hover table-striped" id="track_details">
-                    <thead>
+                    <thead style="position: sticky; top: 0; background-color: white; z-index: 1;">
                         <tr style="text-align:center;">
                             <th>FundSource</th>
                             <th>Proponent</th>
@@ -43,6 +51,7 @@
                         </tr>
                     </thead>
                     <tbody id="t_body">
+                        <!-- Data rows go here -->
                     </tbody>
                 </table>
             </div>
@@ -50,14 +59,95 @@
                 <button style = "background-color:lightgray"  class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> Close</button>
             </div>
         </div>
-       
+    </div>
+</div>
+<div class="modal fade" id="budget_track2" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" style="border-radius:0px;">
+            <div class="modal-header" style="text-align:center">
+                <h4 class="text-success modal-title">
+                    <i style="font-size:15px" class="typcn typcn-location-arrow menu-icon"></i>
+                    BUDGET TRACKING DETAILS
+                </h4>
+            </div>
+            <div class="table-container budget_container" style="height: 700px; overflow-y: auto; padding:10px">
+                <table class="table table-list table-hover" id="budget_track2">
+                    <thead style="position: sticky; top: 0; z-index: 1;">
+                        <tr style="text-align:center;">
+                            <th class="budget_th" style="border:1px solid black; vertical-align:middle; background-color:#CEAB60" colspan="12">BREAKDOWN OF CHARGES</th>
+                        </tr>
+                        <tr style="text-align:center; background-color:#F5F5F5">
+                            <th class="budget_th" style="min-width:200px; border:1px solid black; vertical-align:middle">SAA #</th>
+                            <th class="budget_th" style="max-width:190px; border:1px solid black; vertical-align:middle">PROPONENT</th>
+                            <th class="budget_th" style="max-width:90px; border:1px solid black; vertical-align:middle">DATE OF OBLIGATION</th>
+                            <th class="budget_th" style="max-width:60px; border:1px solid black; vertical-align:middle">DV #</th>
+                            <th class="budget_th" style="max-width:150px; border:1px solid black; vertical-align:middle">PAYEE</th>
+                            <th class="budget_th" style="max-width:150px; border:1px solid black; vertical-align:middle">RECIPIENT FACILITY</th>
+                            <th class="budget_th" style="max-width:60px; border:1px solid black; vertical-align:middle">ORS #</th>
+                            <th class="budget_th" style="max-width:130px; border:1px solid black; vertical-align:middle">MAIFIPP SUBSIDY/ FINANCIAL ASSISTANCE UACS EXPENSE</th>
+                            <th class="budget_th" style="max-width:130px; border:1px solid black; vertical-align:middle">MAIFIPP SUBSIDY/ FINANCIAL ASSISTANCE AMOUNT</th>
+                            <th class="budget_th" style="max-width:90px; border:1px solid black; vertical-align:middle">MAIFIPP ADMIN COST UACS EXPENSE</th>
+                            <th class="budget_th" style="max-width:90px; border:1px solid black; vertical-align:middle">MAIFIPP ADMIN COST AMOUNT</th>
+                            <th class="budget_th" style="border:1px solid black; vertical-align:middle"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="budget_track_body">
+                        <!-- Data rows go here -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer budget_track_footer">
+                <button style="background-color:lightgray" class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> CLOSE</button>
+                <button style="display:none" type="button" style="" class="btn btn-info add_cost" onclick="addCost()"><i class="typcn typcn-tick menu-icon"></i> ADD ADMIN COST</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="budget_funds" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" style="border-radius:0px;">
+            <div class="modal-header" style="text-align:center">
+                <h4 class="text-success modal-title">
+                    <i style="font-size:15px" class="typcn typcn-location-arrow menu-icon"></i>
+                    BUDGET TRACKING DETAILS
+                </h4>
+            </div>
+            <div class="table-container budget_container" style="height: 500px; overflow-y: auto; padding:10px">
+                <table class="table table-list table-hover" id="budget_funds">
+                    <thead style="position: sticky; top: 0; background-color: white; z-index: 1;">
+                        <tr style="text-align:center;">
+                            <th class="budget_th" style="border:1px solid black; vertical-align:middle; background-color:#CEAB60" colspan="3">BREAKDOWN OF FUNDS</th>
+                            <th class="budget_th" style="border:1px solid black; vertical-align:middle; background-color:#C9C9C9" colspan="3">MAIFIPP</th>
+                            <th class="budget_th" style="border:1px solid black; vertical-align:middle; background-color:#9BC2E6" colspan="3">ADMIN COST</th>
+                        </tr>
+                        <tr style="text-align:center; background-color:#F5F5F5">
+                            <th class="budget_th" style="min-width:200px; border:1px solid black; vertical-align:middle">PRIMARY PROPONENT</th>
+                            <th class="budget_th" style="min-width:200px; border:1px solid black; vertical-align:middle">C/O PROPONENT</th>
+                            <th class="budget_th" style="min-width:200px; border:1px solid black; vertical-align:middle">NAME OF HOSPITAL | RECIPIENT FACILITY</th>
+                            <th class="budget_th" style="min-width:80px; border:1px solid black; vertical-align:middle">TOTAL ALLOCATED AMOUNT</th>
+                            <th class="budget_th" style="min-width:130px; border:1px solid black; vertical-align:middle">AMOUNT OBLIGATED FOR MAIFIPP</th>
+                            <th class="budget_th" style="min-width:130px; border:1px solid black; vertical-align:middle">UNOBLIGATED ALLOTMENT FOR MAIFIPP (BALANCE)</th>
+                            <th class="budget_th" style="min-width:80px; border:1px solid black; vertical-align:middle">ALLOWABLE ADMIN COST (1%)</th>
+                            <th class="budget_th" style="min-width:130px; border:1px solid black; vertical-align:middle">AMOUNT OBLIGATED FOR ADMIN COST</th>
+                            <th class="budget_th" style="min-width:100px; border:1px solid black; vertical-align:middle">UNOBLIGATED ALLOTMENT FOR ADMIN COST (BALANCE)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="budget_track_funds">
+                        <!-- Data rows go here -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer budget_track_footer">
+                <button style = "background-color:lightgray"  class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> Close</button>
+            </div>
+        </div>
     </div>
 </div>
 <!--end budget--> 
 <!--end maif-->
 <div class="modal fade" id="obligate" role="dialog" style="overflow-y:scroll;">
     <div class="modal-dialog modal-lg" role="document" style="width:900px">
-    <div class="modal-content">
+        <div class="modal-content">
             <div class="modal-header" style="background-color:#17c964;padding:15px; color:white">
                 <h4 class="modal-title"><i class="fa fa-plus" style="margin-right:auto;"></i> Disbursement Voucher</h4>
                 <button type="button" class="close" id="exit" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" style="color:white;">&times;</span></button>
@@ -70,20 +160,20 @@
 </div>
 <!--end-->
 <div class="modal" id="iframeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="text-success modal-title" id="exampleModalLabel"><b><i class="typcn typcn-location menu-icon"></i>Tracking Details</b></h4>
-      </div>
-      <div class="modal-body">
-        <!-- Embed iframe with dynamic src -->
-        <iframe id="trackIframe" width="100%" height="400" frameborder="0"></iframe>
-      </div>
-      <div class="modal-footer">
-        <button style = "background-color:lightgray"  class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> Close</button>
-      </div>
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="text-success modal-title" id="exampleModalLabel"><b><i class="typcn typcn-location menu-icon"></i>Tracking Details</b></h4>
+            </div>
+            <div class="modal-body">
+                <!-- Embed iframe with dynamic src -->
+                <iframe id="trackIframe" width="100%" height="400" frameborder="0"></iframe>
+            </div>
+            <div class="modal-footer">
+                <button style = "background-color:lightgray"  class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> Close</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 <!--end-->
 <div class="modal fade" id="i_frame" tabindex="-2" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" >
