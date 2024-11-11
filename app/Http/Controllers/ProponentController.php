@@ -117,7 +117,14 @@ class ProponentController extends Controller
         }
 
         if($keyword){
-            $proponents = Proponent::where('proponent', 'LIKE', "%$keyword%")->get();
+            $proponents = Proponent::where('proponent', 'LIKE', "%$keyword%")
+            ->select(
+                DB::raw('MAX(id) as id'), 
+                DB::raw('MAX(proponent) as proponent'), 
+                DB::raw('MAX(proponent_code) as proponent_code')
+            )
+            ->groupBy('proponent_code')
+            ->get();
         }else{
             $proponents = Proponent::select(
                 DB::raw('MAX(id) as id'), 
@@ -131,14 +138,13 @@ class ProponentController extends Controller
         foreach($proponents as $row){
             $ids = Proponent::where('proponent_code', $row->proponent_code)->pluck('id')->toArray();
             $sum = ProponentInfo::whereIn('proponent_id', $ids) ->sum('in_balance');
+            $util_sum = ProponentUtilizationV1::where('proponent_code', $row->proponent_code)->sum('amount');
             $all_data[] =[
                 'proponent' => $row,
-                'sum' => $sum
+                'sum' => $sum,
+                'rem' => $sum - $util_sum
             ];
         }
-
-        
-
 
         $page = LengthAwarePaginator::resolveCurrentPage();
         $perPage = 51; 
