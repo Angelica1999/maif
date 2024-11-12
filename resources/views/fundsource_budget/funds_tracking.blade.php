@@ -34,7 +34,7 @@
                 {{ number_format(str_replace(',','',$row['info']->alocated_funds) - $row['obligated'],2,'.',',') }}
             </td>
             <td style="border:1px solid gray; vertical-align:middle">
-                {{ number_format(str_replace(',','',$row['info']->admin_cost), 2,'.',',') }}
+                {{ number_format(str_replace(',','',$saa->admin_cost), 2,'.',',') }}
             </td>
             <td style="border:1px solid gray; vertical-align:middle">
 

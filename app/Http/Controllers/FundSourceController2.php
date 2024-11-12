@@ -245,7 +245,8 @@ class FundSourceController2 extends Controller{
             }
             return view('fundsource_budget.funds_tracking',[
                 'result' => $data,
-                'facilities' => Facility::get()->select('id','name')
+                'facilities' => Facility::get()->select('id','name'),
+                'saa' => $saa
             ]);
         }
     }
