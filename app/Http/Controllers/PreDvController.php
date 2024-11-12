@@ -70,6 +70,8 @@ class PreDvController extends Controller
         
         }
 
+        $data = $pre_dv->get();
+
         $saas = Fundsource::get();
         $proponents = Proponent::select('proponent')->groupBy('proponent')->get();
         $facilities = Facility::with('addFacilityInfo')->get();
@@ -103,6 +105,7 @@ class PreDvController extends Controller
         $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(50);
         
         return view('pre_dv.pre_dv', [
+            'data' => $data,
             'results' => $pre_dv,
             'proponents' => $proponents,
             'saas' => $saas,
