@@ -7,7 +7,7 @@
                 {{ $row->fundSourcedata->saa }}
             </td>
             <td class="budget_td" style="max-width:190px; border:1px solid gray; vertical-align:middle">
-                {{ $row->proponentdata->proponent }}
+                {{ $row->proponentdata? $row->proponentdata->proponent:'' }}
             </td>
             <td class="budget_td" style="max-width:90px; border:1px solid gray; vertical-align:middle">
                 {{ $row->obligated_on? date('F j, Y', strtotime($row->obligated_on)):'' }}

@@ -186,27 +186,27 @@
                     cell.style.minWidth = "200px";
                     break;
                 case 1:
-                    cell.innerHTML = '<input type="text" name="pro_name[]" style="width: 100%; border:0px">';
+                    cell.innerHTML = '<input type="text" name="pro_name[]" class="pro_name" style="width: 100%; border:0px">';
                     cell.style.maxWidth = "190px";
                     break;
                 case 2:
-                    cell.innerHTML = '<input type="date" name="ad_date[]" class="ad_date" style="width: 100%; border:0px">';
+                    cell.innerHTML = '<input type="date" name="ad_date[]" value="{{(new DateTime())->format('Y-m-d')}}" class="ad_date" style="width: 100%; border:0px">';
                     cell.style.maxWidth = "90px";
                     break;
                 case 3:
-                    cell.innerHTML = '<input type="text" name="dv_no[]" style="width: 100%; border:0px">';
+                    cell.innerHTML = '<input type="text" name="dv_no[]" class="dv_no" style="width: 100%; border:0px">';
                     cell.style.maxWidth = "60px";
                     break;
                 case 4:
-                    cell.innerHTML = '<input type="text" name="payee[]" style="width: 100%; border:0px">';
+                    cell.innerHTML = '<input type="text" name="payee[]" class="payee" style="width: 100%; border:0px">';
                     cell.style.maxWidth = "150px";
                     break;
                 case 5:
-                    cell.innerHTML = '<input type="text" name="rec_fc[]" style="width: 100%; border:0px">';
+                    cell.innerHTML = '<input type="text" name="rec_fc[]" class="rec_fc" style="width: 100%; border:0px">';
                     cell.style.maxWidth = "150px";
                     break;
                 case 6:
-                    cell.innerHTML = '<input type="text" class="ors_no" name="ors_no[]" id="ors_no[]" style="width: 100%; border:0px">';
+                    cell.innerHTML = '<input type="text" class="ors_no" name="ors_no[]" class="ors_no" style="width: 100%; border:0px">';
                     cell.style.maxWidth = "60px";
                     break;
                 case 7:
@@ -218,11 +218,11 @@
                     cell.style.maxWidth = "130px";
                     break;
                 case 9:
-                    cell.innerHTML = '<input type="text" name="admin_uacs[]" style="width: 100%; border:0px">';
+                    cell.innerHTML = '<input type="text" class="admin_uacs" name="admin_uacs[]" onkeyup="validateAmount(this)" style="width: 100%; border:0px">';
                     cell.style.maxWidth = "90px";
                     break;
                 case 10:
-                    cell.innerHTML = '<input type="text" name="admin_cost[]" style="width: 100%; border:0px">';
+                    cell.innerHTML = '<input type="text" class="admin_cost" name="admin_cost[]" onkeyup="validateAmount(this)" style="width: 100%; border:0px">';
                     cell.style.maxWidth = "90px";
                     break;
                 case 11:
@@ -249,10 +249,51 @@
     }
 
     function adminCost(element){
-        console.log('dhsabv8 bukkuyyy');
-        var df = $('.last_id').val();
-        console.log('dhsabv8 bukkuyyy', df);
+        var l_id = $('.last_id').val();
+        var row = $(element).closest('tr');
+        var uacs = row.find('.admin_uacs').val();
+        var cost = row.find('.admin_cost').val();
+        var ors = row.find('.ors_no').val();
+        var fc = row.find('.rec_fc').val();
+        var payee = row.find('.payee').val();
+        var date = row.find('.ad_date').val();
+        var pro = row.find('.pro_name').val();
 
+        var data = 
+            {
+                l_id: l_id,
+                uacs: uacs,
+                cost: cost,
+                ors: ors,
+                fc: fc,
+                payee: payee,
+                date: date,
+                pro: pro,
+                saa_id: saa_id
+            };
+
+        $.ajax({
+                type: 'POST',
+                url: '{{ route("save.cost") }}',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    data: data
+                },
+                success: function (response) {
+                    console.log('sadsd', response);
+                },
+                error: function (error) {
+                    if (error.status) {
+                        console.error('Status Code:', error.status);
+                    }
+
+                    if (error.responseJSON) {
+                        console.error('Response JSON:', error.responseJSON);
+                    }
+
+                }
+            });
+    
     }
 
     function gen(){
@@ -292,7 +333,7 @@
         $('#budget_track_body').empty();
         $.get("{{ url('budget/fundsource').'/' }}"+id, function(result){
 
-            if(result == 0 && amount == 0){
+            if(result == 'No data available!' && amount == 0){
                 $('#budget_track2').modal('hide');
                 Swal.fire({
                     title: "No Data Found",

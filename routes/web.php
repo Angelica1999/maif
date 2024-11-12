@@ -140,6 +140,7 @@ Route::get('/budget/funds/{id}', [App\Http\Controllers\FundSourceController2::cl
 Route::get('/budget/confirm/{id}', [App\Http\Controllers\FundSourceController2::class, 'confirmDV'])->name('dv.confirmation');
 Route::get('/confirm/{id}', [App\Http\Controllers\FundSourceController2::class, 'confirm'])->name('dv.confirm');
 Route::get('/admin/cost/{id}', [App\Http\Controllers\FundSourceController2::class, 'addCost'])->name('add.cost');
+Route::post('/cost/save', [App\Http\Controllers\FundSourceController2::class, 'saveCost'])->name('save.cost');
 
 //creating breakdowns
 Route::get('fundsource/breakdowns/{fundsourceId}', [App\Http\Controllers\FundSourceController::class, 'createBDowns'])->name('fundsource.create_breakdowns');

@@ -210,6 +210,7 @@ class FundSourceController2 extends Controller{
                         ]);
                     }
                     ])->where('status', 0)->get();
+
                     // return $util;
 
             if(count($util) > 0){
@@ -219,7 +220,7 @@ class FundSourceController2 extends Controller{
                     'last' => $util->last()
                 ]);
             }else{
-                return 0;
+                return 'No data available!';
             }
           
         }else{
@@ -283,5 +284,22 @@ class FundSourceController2 extends Controller{
 
             Utilization::where('div_id', $dv->route_no)->where('status', 0)->update(['confirm' => 'yes']);
         }
+    }
+
+    public function saveCost(Request $request){
+        $data = $request->data;
+        if($data){
+            
+        }
+        // l_id: l_id,
+        //         uacs: uacs,
+        //         cost: cost,
+        //         ors: ors,
+        //         fc: fc,
+        //         payee: payee,
+        //         date: date,
+        //         pro: pro,
+        //         saa_id: saa_id
+        return $data;
     }
 }
