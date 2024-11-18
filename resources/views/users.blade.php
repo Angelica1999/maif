@@ -98,9 +98,11 @@
                 <thead>
                     <tr>
                         <th>Name</th>
+                        <th>Birthdate</th>
                         <th>Type</th>
                         <th>Account</th>
                         <th>Email</th>
+                        <th>Contact #</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -108,6 +110,7 @@
                     @foreach($users as $row)
                         <tr>
                             <td class="td">{{$row->fname .' '.$row->lname}}</td>
+                            <td>{{ date('F j, Y', strtotime($row->birthdate)) }} </td>
                             <td class="td">
                                 {{ 
                                     $row->user_type == 1 ? 'Proponent' : 
@@ -121,6 +124,7 @@
                                 }}
                             </td>
                             <td class="td">{{$row->email}}</td>
+                            <td>{{ $row->contact_no }}</td>
                             <td class="td">
                                 <a href="{{ route('reset.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-success" style="">Reset</a>
                             </td>
@@ -228,12 +232,13 @@
     </div>
 </div>
 @endsection
-<script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
-<script>
-    // $('#gender').select2();
-    function cancel(id){
-        $('#user_cancel').modal('show');
-        $('#cancel_user').attr('action', '{{ route("cancel.user", [":id"]) }}'.replace(':id', id));
-    }
-
-</script>
+@section('js')
+    <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
+    <script>
+        // $('#gender').select2();
+        function cancel(id){
+            $('#user_cancel').modal('show');
+            $('#cancel_user').attr('action', '{{ route("cancel.user", [":id"]) }}'.replace(':id', id));
+        }
+    </script>
+@endsection
