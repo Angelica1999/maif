@@ -171,9 +171,9 @@ Route::post('/fundsource/files', [App\Http\Controllers\FundSourceController::cla
 Route::match(['get', 'post'],'/fundsources/remove/{id}', [App\Http\Controllers\FundSourceController::class, 'removeImage'])->name('image.remove');
 Route::match(['get', 'post'],'/dv2/remove/{route_no}', [App\Http\Controllers\Dv2Controller::class, 'removeDv2'])->name('dv2.remove');
 Route::match(['get', 'post'],'/dv1/remove/{route_no}', [App\Http\Controllers\DvController::class, 'removeDv'])->name('remove.dv');
-Route::get('fundsource/proponents/lists/{fundsource_id}',[App\Http\Controllers\FundSourceController::class, 'fetchFundsource'])->name('fundsource.get');
-Route::get('fundsource/transfer/proponentInfo/{fundsource_id}/{proponent_id}',[App\Http\Controllers\FundSourceController::class, 'fetchInfo'])->name('info.get');
-Route::get('fundsource/transfer/facility/{facility_id}',[App\Http\Controllers\FundSourceController::class, 'fetchFacility'])->name('facility.get');
+Route::get('fundsources/proponents/lists/{fundsource_id}',[App\Http\Controllers\FundSourceController::class, 'fetchFundsource'])->name('fundsource.get');
+Route::get('fundsources/transfer/proponentInfo/{fundsource_id}/{proponent_id}',[App\Http\Controllers\FundSourceController::class, 'fetchInfo'])->name('info.get');
+Route::get('fundsources/transfer/facility/{facility_id}',[App\Http\Controllers\FundSourceController::class, 'fetchFacility'])->name('facility.get');
 
 Route::get('/proponents', [App\Http\Controllers\ProponentController::class, 'proponentList'])->name('proponents');
 Route::get('/on-hold', [App\Http\Controllers\ProponentController::class, 'onHold'])->name('on-hold');
