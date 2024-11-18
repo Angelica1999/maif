@@ -107,54 +107,6 @@ class ProponentController extends Controller
     public function release($code){
         Proponent::where('proponent_code', $code)->update(['status' => null]);
     }
-//     public function fundsource(Request $req)
-// {
-
-//     if(Auth::user()->userid != 2760){
-//         return 'ongoing updates';
-//     }
-//     $keyword = $req->viewAll ? '' : $req->keyword;
-
-//     // Build base query with aggregations
-//     $proponentsQuery = Proponent::query()
-//         ->leftJoin('proponent_info', 'proponent.id', '=', 'proponent_info.proponent_id')
-//         ->leftJoin('patients', 'proponent.id', '=', 'patients.proponent_id')
-//         ->select(
-//             'proponent.proponent_code',
-//             DB::raw('MAX(proponent.id) as id'),
-//             DB::raw('MAX(proponent.proponent) as proponent'),
-//             DB::raw('SUM(COALESCE(CAST(REPLACE(proponent_info.alocated_funds, ",", "") AS DECIMAL(10,2)), 0) 
-//                       - COALESCE(CAST(REPLACE(proponent_info.admin_cost, ",", "") AS DECIMAL(10,2)), 0)) as total_sum'),
-//             DB::raw('SUM(COALESCE(CAST(REPLACE(patients.guaranteed_amount, ",", "") AS DECIMAL(10,2)), 0)) as total_util_sum')
-//         )
-//         ->groupBy('proponent.proponent_code');
-
-//     // Apply keyword filter if provided
-//     if (!empty($keyword)) {
-//         $proponentsQuery->where('proponent.proponent', 'LIKE', "%$keyword%");
-//     }
-
-//     // Paginate results
-//     $perPage = 51;
-//     $proponents = $proponentsQuery->paginate($perPage);
-
-//     // Calculate remaining funds and format the result
-//     $all_data = $proponents->map(function ($row) {
-//         $total_sum = (float) $row->total_sum;
-//         $util_sum = (float) $row->total_util_sum;
-//         return [
-//             'proponent' => $row,
-//             'sum' => $total_sum,
-//             'rem' => $total_sum - $util_sum,
-//         ];
-//     });
-    
-//     // Pass data to the view
-//     return view('proponents.fundsource', [
-//         'data' => $all_data,
-//         'keyword' => $keyword,
-//     ]);
-// }
 
 
     // public function fundsource(Request $req){
@@ -224,9 +176,6 @@ class ProponentController extends Controller
 
     public function fundsource(Request $request)
     {
-        // if (Auth::user()->userid != 2760) {
-        //     return 'ongoing updates';
-        // }
 
         $keyword = $request->viewAll ? '' : $request->keyword;
         $perPage = 51;
@@ -234,19 +183,19 @@ class ProponentController extends Controller
         $query = Proponent::select([
             DB::raw('MAX(id) as id'),
             DB::raw('MAX(proponent) as proponent'),
-            'proponent_code'
+            'proponent'
         ])
         ->when($keyword, function ($query) use ($keyword) {
             return $query->where('proponent', 'LIKE', "%{$keyword}%");
         })
-        ->groupBy('proponent_code');
+        ->groupBy('proponent');
 
         $proponents = $query->get();
 
-        $proponentIdMap = Proponent::whereIn('proponent_code', $proponents->pluck('proponent_code'))
-            ->select('id', 'proponent_code')
+        $proponentIdMap = Proponent::whereIn('proponent', $proponents->pluck('proponent'))
+            ->select('id', 'proponent')
             ->get()
-            ->groupBy('proponent_code');
+            ->groupBy('proponent');
 
         $fundsData = ProponentInfo::whereIn('proponent_id', $proponentIdMap->flatten()->pluck('id'))
             ->select(
@@ -267,7 +216,7 @@ class ProponentController extends Controller
             ->groupBy('proponent_id');
 
         $allData = $proponents->map(function ($proponent) use ($proponentIdMap, $fundsData, $utilizationData) {
-            $proponentIds = $proponentIdMap->get($proponent->proponent_code)->pluck('id');
+            $proponentIds = $proponentIdMap->get($proponent->proponent)->pluck('id');
             
             $totalFunds = $proponentIds->sum(function ($id) use ($fundsData) {
                 return $fundsData->get($id)?->first()?->total_amount ?? 0;
@@ -309,8 +258,7 @@ class ProponentController extends Controller
         //             ]);
         //         }
         //     ])->get();
-        $proponent = Proponent::where('proponent_code', $code)->first();
-        $ids = Proponent::where('proponent', $proponent->proponent)->pluck('id')->toArray();
+        $ids = Proponent::where('proponent', $code)->pluck('id')->toArray();
         $tracking = Patients::whereIn('proponent_id', $ids)->with('facility:id,name','encoded_by:userid,fname,lname,mname', 'gl_user:username,fname,lname')->get();
 
         if(count($tracking) > 0){
