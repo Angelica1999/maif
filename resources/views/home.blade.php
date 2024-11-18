@@ -1593,21 +1593,35 @@
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                     }).format(result.balance);
+                    console.log('for', result.balance);
+                    if(result.balance == 0 || result.balance < 0){
 
-                    $('.remaining_balance').val(formattedBalance);
-                    var suggestions =[];
-                    var res = result.proponent_info;
+                        data.val('').trigger('change');
+                        $('#patient_code').val('');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Insufficient Balance!',
+                            text: 'Unavailable balance!',
+                            timer: 1000, 
+                            showConfirmButton: false
+                        });
+                    }else{
+                        $('.remaining_balance').val(formattedBalance);
+                        var suggestions =[];
+                        var res = result.proponent_info;
 
-                    $.each(res, function(index, optionData) {
-                        suggestions.push(res[index].fundsource.saa +' - '+res[index].remaining_balance);
-                    });
-                    var suggestionsDiv = $('.suggestions');
-                    suggestionsDiv.empty();
+                        $.each(res, function(index, optionData) {
+                            suggestions.push(res[index].fundsource.saa +' - '+res[index].remaining_balance);
+                        });
+                        var suggestionsDiv = $('.suggestions');
+                        suggestionsDiv.empty();
 
-                    suggestions.forEach(function(suggestion) {
-                        suggestionsDiv.append('<div>' + suggestion + '</div>');
-                    });
-                    suggestionsDiv.show();
+                        suggestions.forEach(function(suggestion) {
+                            suggestionsDiv.append('<div>' + suggestion + '</div>');
+                        });
+                        suggestionsDiv.show();
+                    }
+                   
                 });
             }
         }
