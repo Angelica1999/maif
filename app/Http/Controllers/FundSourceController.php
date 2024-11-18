@@ -726,7 +726,7 @@ class FundSourceController extends Controller
         });  
 
         // $util_sum = ProponentUtilizationV1::where('proponent_code', $proponent->proponent_code)->sum('amount');
-        $util_sum = Patients::whereIn('id', $proponent_ids)
+        $util_sum = Patients::whereIn('proponent_id', $proponent_ids)
             ->get()
             ->sum(function ($patient) {
                 return (float) str_replace(',', '', $patient->guaranteed_amount);
