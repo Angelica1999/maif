@@ -137,8 +137,19 @@ class ProponentController extends Controller
         $all_data = [];
         foreach($proponents as $row){
             $ids = Proponent::where('proponent_code', $row->proponent_code)->pluck('id')->toArray();
-            $sum = ProponentInfo::whereIn('proponent_id', $ids) ->sum('in_balance');
-            $util_sum = ProponentUtilizationV1::where('proponent_code', $row->proponent_code)->sum('amount');
+            $sum = ProponentInfo::whereIn('proponent_id', $ids)
+                ->get()
+                ->sum(function ($sum) {
+                    return (float) str_replace(',','', $sum->alocated_funds) - (float) str_replace(',','', $sum->admin_cost);
+                });
+            $util_sum = Patients::whereIn('id', $ids)
+                ->get()
+                ->sum(function ($util_sum) {
+                    return (float) str_replace(',', '', $util_sum->guaranteed_amount);
+                });
+        
+            // $sum = ProponentInfo::whereIn('proponent_id', $ids) ->sum('in_balance');
+            // $util_sum = ProponentUtilizationV1::where('proponent_code', $row->proponent_code)->sum('amount');
             $all_data[] =[
                 'proponent' => $row,
                 'sum' => $sum,
@@ -164,16 +175,19 @@ class ProponentController extends Controller
     }
 
     public function tracking($code){
-        $tracking = ProponentUtilizationV1::where('proponent_code', $code)
-            ->with([
-                'proponent:id,proponent',
-                'patient' => function($query){
-                    $query->with([
-                        'facility:id,name',
-                        'encoded_by:userid,fname,lname'
-                    ]);
-                }
-            ])->get();
+        // $tracking = ProponentUtilizationV1::where('proponent_code', $code)
+        //     ->with([
+        //         'proponent:id,proponent',
+        //         'patient' => function($query){
+        //             $query->with([
+        //                 'facility:id,name',
+        //                 'encoded_by:userid,fname,lname'
+        //             ]);
+        //         }
+        //     ])->get();
+        $proponent = Proponent::where('proponent_code', $code)->first();
+        $ids = Proponent::where('proponent', $proponent->proponent)->pluck('id')->toArray();
+        $tracking = Patients::where('proponent_id', $ids)->with('facility:id,name','encoded_by:userid,fname,lname,mname', 'gl_user:username,fname,lname')->get();
 
         if(count($tracking) > 0){
             return view('proponents.proponent_util',[

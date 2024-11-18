@@ -13,12 +13,12 @@
         <tbody>
             @foreach($data as $row)
                 <tr style="text-align:center;">
-                    <td>{{ $row->patient->patient_code }}</td>
-                    <td>{{ $row->patient->lname .', '.$row->patient->fname.' '.$row->patient->mname }}</td>
-                    <td>{{ number_format($row->amount, 2,'.',',') }}</td>
-                    <td>{{ $row->patient->facility->name }}</td>
-                    <td>{{ $row->patient->encoded_by->lname .', '.$row->patient->encoded_by->fname  }}</td>
-                    <td>{{ date('F j, Y', strtotime($row->patient->created_at)) }}</td>
+                    <td>{{ $row->patient_code }}</td>
+                    <td>{{ $row->lname .', '.$row->fname.' '.$row->mname }}</td>
+                    <td>{{ number_format(str_replace(',','',$row->guaranteed_amount), 2,'.',',') }}</td>
+                    <td>{{ $row->facility->name }}</td>
+                    <td>{{ $row->encoded_by? $row->encoded_by->lname .', '.$row->encoded_by->fname : $row->gl_user->lname .', '.$row->gl_user->fname   }}</td>
+                    <td>{{ date('F j, Y', strtotime($row->created_at)) }}</td>
                 </tr>
             @endforeach
         </tbody>

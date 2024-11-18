@@ -698,25 +698,40 @@ class FundSourceController extends Controller
         $proponent_ids= Proponent::where('proponent', $proponent->proponent)->pluck('id')->toArray();
         $facility = Facility::find($facility_id);
         $patient_code = $proponent->proponent_code.'-'.$this->getAcronym($facility->name).date('YmdHi').$user->id;
-        $proponent_info = ProponentInfo::where(function ($query) use ($facility_id, $proponent_ids) {
-                                $query->where(function ($subquery) use ($facility_id) {
-                                    $subquery->whereJsonContains('proponent_info.facility_id', '702')
-                                            ->orWhereJsonContains('proponent_info.facility_id', [$facility_id]);
-                                })
-                                ->orWhereIn('proponent_info.facility_id', [$facility_id, '702']);
-                            })
-                            ->whereIn('proponent_id', $proponent_ids)
-                            ->with('fundsource')
-                            ->get();
+        // $proponent_info = ProponentInfo::where(function ($query) use ($facility_id, $proponent_ids) {
+        //                         $query->where(function ($subquery) use ($facility_id) {
+        //                             $subquery->whereJsonContains('proponent_info.facility_id', '702')
+        //                                     ->orWhereJsonContains('proponent_info.facility_id', [$facility_id]);
+        //                         })
+        //                         ->orWhereIn('proponent_info.facility_id', [$facility_id, '702']);
+        //                     })
+        //                     ->whereIn('proponent_id', $proponent_ids)
+        //                     ->with('fundsource')
+        //                     ->get();                         
         // $sum = $proponent_info->sum(function ($info) {
-        //             return (float) str_replace(',', '', $info->remaining_balance);
-        //         });                                
+        //     return $info->in_balance;
+        // });    
+        $proponent_info = ProponentInfo::where(function ($query) use ($facility_id, $proponent_ids) {
+                    $query->where(function ($subquery) use ($facility_id) {
+                        $subquery->whereJsonContains('proponent_info.facility_id', '702')
+                                ->orWhereJsonContains('proponent_info.facility_id', [$facility_id]);
+                    })
+                    ->orWhereIn('proponent_info.facility_id', [$facility_id, '702']);
+                })
+                ->whereIn('proponent_id', $proponent_ids)
+                ->with('fundsource')
+                ->get();                         
         $sum = $proponent_info->sum(function ($info) {
-            return $info->in_balance;
-        });    
+            return (float) str_replace(',','', $info->alocated_funds) - (float) str_replace(',','', $info->admin_cost);
+        });  
 
-        $util_sum = ProponentUtilizationV1::where('proponent_code', $proponent->proponent_code)->sum('amount');
-
+        // $util_sum = ProponentUtilizationV1::where('proponent_code', $proponent->proponent_code)->sum('amount');
+        $util_sum = Patients::whereIn('id', $proponent_ids)
+            ->get()
+            ->sum(function ($patient) {
+                return (float) str_replace(',', '', $patient->guaranteed_amount);
+            });
+    
         return [
             'patient_code' => $patient_code,
             'proponent_info' => $proponent_info,
