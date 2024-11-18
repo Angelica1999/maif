@@ -29,7 +29,7 @@
                             <div class="card">
                                 <div class="card-body">
                                     <div style ="display:flex; justify-content:space-between;">
-                                        <b><h3><a href="" data-toggle="modal" onclick="disUtil('{{ $row['proponent']['proponent_code'] }}')">{{ $row['proponent']['proponent'] }}</a></h3></b>
+                                        <b><h3><a href="" data-toggle="modal" onclick="disUtil('{{ $row['proponent']['proponent'] }}')">{{ $row['proponent']['proponent'] }}</a></h3></b>
                                     </div>
                                     <div style="display: flex; justify-content: space-between; align-items: center;">
                                         <div style="width:70%;">
