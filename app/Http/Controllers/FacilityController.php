@@ -104,7 +104,7 @@ class FacilityController extends Controller
         $response = Http::get('http://cvchd7.com/iMkiW5YcHA6D9Gd7BuTteeQPVx4a1UxK');
         // return $response;
         if ($response->successful()) { // Check if the request was successful
-            // Facility::truncate();
+            Facility::truncate();
             $facilities = $response->json(); // Get the response as an array
         
             foreach ($facilities as $fac) {

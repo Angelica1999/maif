@@ -1616,13 +1616,14 @@
                         $('.remaining_balance').val(formattedBalance);
                         var suggestions =[];
                         var res = result.proponent_info;
-                        var over_all = result.overall;
+                        var over_all = parseFloat(result.overall).toFixed(2);
 
                         $.each(res, function(index, optionData) {
-                            if(over_all >= res[index].remaining_balance ){
-                                over_all = over_all - res[index].remaining_balance;
+                            var amount = parseFloat(res[index].alocated_funds.replace(/,/g, '')) - parseFloat(res[index].admin_cost.replace(/,/g, ''));
+                            if(over_all >= amount){
+                                over_all = over_all - amount;
                             }else{
-                                var total = res[index].remaining_balance - over_all;
+                                var total =amount - over_all;
                                 over_all = 0;
                                 suggestions.push(res[index].fundsource.saa +' - '+formatBalance(total));
                             }
