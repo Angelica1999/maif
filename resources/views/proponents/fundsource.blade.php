@@ -97,6 +97,58 @@
 @endsection
 @section('js')
 <script>
+    
+    function updateAmount(id){
+        Swal.fire({
+            title: 'Update Supplemental Funds',
+            input: 'text', 
+            inputLabel: 'Amount:',
+            inputPlaceholder: '0.00',
+            showCancelButton: true,
+            confirmButtonText: 'Update',
+            cancelButtonText: 'Cancel',
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'Please enter the amount!';
+                }
+            },
+            didOpen: () => {
+                var inputElement = Swal.getInput();
+                inputElement.oninput = function () {
+                    var cleanedValue = this.value.replace(/[^\d.]/g, '');
+                    var formattedValue = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                    this.value = formattedValue;
+                };
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var amount = result.value; 
+                var amount = parseFloat(amount.replace(/,/g, ''));
+                fetch(`proponent/sup-update/${id}/${amount}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}' 
+                    }
+                })
+                .then(async (response) => {
+                    if (!response.ok) {
+                        var errorDetails = await response.json().catch(() => null); 
+                        throw new Error(errorDetails?.message || `HTTP Error: ${response.status}`); 
+                    }
+                    return response.json(); 
+                })
+                .then(data => {
+                    Swal.fire('Success!', 'Your data has been submitted.', 'success');
+                    location.reload();
+                })
+                .catch(error => {
+                    Swal.fire('Error!', error.message, 'error');
+                });
+
+            }
+        });
+    }
 
     function addBalance(proponent){
         console.log('proponent', proponent);
@@ -106,7 +158,7 @@
             inputLabel: 'Amount:',
             inputPlaceholder: '0.00',
             showCancelButton: true,
-            confirmButtonText: 'Submit',
+            confirmButtonText: 'Add',
             cancelButtonText: 'Cancel',
             inputValidator: (value) => {
                 if (!value) {
