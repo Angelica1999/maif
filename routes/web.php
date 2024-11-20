@@ -182,6 +182,8 @@ Route::post('/hold/proponents', [App\Http\Controllers\ProponentController::class
 Route::match(['get', 'post'],'proponent/update', [App\Http\Controllers\ProponentController::class, 'updateProponent'])->name('proponent.update');
 Route::get('/proponent-fundsource', [App\Http\Controllers\ProponentController::class, 'fundsource'])->name('proponents.fundsource');
 Route::get('/proponent/util/{code}', [App\Http\Controllers\ProponentController::class, 'tracking'])->name('pro.tracking');
+Route::get('/proponent/supplemental/{proponent}/{amount}', [App\Http\Controllers\ProponentController::class, 'supplemental'])->name('proponent.supplemental');
+Route::get('/proponent/sup-details/{proponent}', [App\Http\Controllers\ProponentController::class, 'supDetails'])->name('details.supplemental');
 
 Route::match(['get', 'post'],'/proponents/excel/', [App\Http\Controllers\FundSourceController::class, 'generateExcel'])->name('proponent.excel');
 Route::match(['get', 'post'],'/data/update/', [App\Http\Controllers\FacilityController::class, 'updateData'])->name('update.data');

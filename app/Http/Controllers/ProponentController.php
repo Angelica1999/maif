@@ -16,8 +16,8 @@ use App\Models\Dv2;
 use App\Models\Group;
 use App\Models\ProponentInfo;
 use App\Models\ProponentUtilizationV1;
+use App\Models\SupplementalFunds;
 use Illuminate\Pagination\LengthAwarePaginator;
-
 
 class ProponentController extends Controller
 {
@@ -176,7 +176,6 @@ class ProponentController extends Controller
 
     public function fundsource(Request $request)
     {
-
         $keyword = $request->viewAll ? '' : $request->keyword;
         $perPage = 51;
 
@@ -214,10 +213,9 @@ class ProponentController extends Controller
             ->groupBy('proponent_id')
             ->get()
             ->groupBy('proponent_id');
-
+        
         $allData = $proponents->map(function ($proponent) use ($proponentIdMap, $fundsData, $utilizationData) {
             $proponentIds = $proponentIdMap->get($proponent->proponent)->pluck('id');
-            
             $totalFunds = $proponentIds->sum(function ($id) use ($fundsData) {
                 return $fundsData->get($id)?->first()?->total_amount ?? 0;
             });
@@ -226,10 +224,20 @@ class ProponentController extends Controller
                 return $utilizationData->get($id)?->first()?->total_utilized ?? 0;
             });
 
+            $supp = SupplementalFunds::whereIn('proponent', $proponentIdMap->get($proponent->proponent)->pluck('proponent'))->sum('amount');
+            $rem = $totalFunds - $totalUtilized;
+            
+            if($supp == 0){
+                $all_rem = $rem;
+            }else{
+                $all_rem = $rem + $supp;
+            }
+
             return [
                 'proponent' => $proponent,
                 'sum' => $totalFunds,
-                'rem' => $totalFunds - $totalUtilized
+                'rem' => $all_rem,
+                'supp' => $supp
             ];
         });
 
@@ -270,4 +278,26 @@ class ProponentController extends Controller
         }
       
     }
+
+    public function supplemental($proponent, $amount)
+    {
+        $supplemental = new SupplementalFunds();
+        $supplemental->proponent = $proponent;
+        $supplemental->amount = (float) str_replace(',', '', $amount);
+        $supplemental->added_by = Auth::user()->userid;
+        $supplemental->save();
+
+        return response()->json([
+            'message' => 'Supplemental fund added successfully',
+            'data' => $supplemental,
+        ], 200);
+    }
+
+    public function supDetails($proponent){
+        $supp = SupplementalFunds::where('proponent', $proponent)->with('user:userid,fname,lname')->get();
+        return view('proponents.proponent_supplemental', [
+            'data' => $supp
+        ]);
+    }
+    
 }

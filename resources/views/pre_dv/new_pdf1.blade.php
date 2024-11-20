@@ -5,43 +5,46 @@
         <!-- <link rel="stylesheet" href="{{ public_path('bootstrap.min.css') }}"> -->
         <style>
       
-          .header{
-            font-size: 11px;
-            font-weight: normal;
-            text-align:center;
-          }
-          table td{
-            font-size: 11px;
-          }
-          /* .box-container {
-            display: flex;
-          }
-          .box {
-              width: 10px;
-              height: 5px;
-              border: 1px solid black;
-              margin-left: 7px;
-              display: inline-block;
-              vertical-align: middle;
-              margin-top: 1px;
-              margin-bottom: 1px;
-              line-height:1;
-          }
-          .label {
-              font-size: 11px;
-              display: inline-block;
-              margin-right: 8px;
-              margin-left: 5px;
-              line-height: 1;
-          } */
-          /* .barcode-container {
-              position: absolute;
-              right: 0; 
-              top: 45%; 
-              transform: translateY(-50%) rotate(-90deg); 
-              transform-origin: right center; 
-              margin-top: 1px;
-          } */
+            .header{
+                font-size: 11px;
+                font-weight: normal;
+                text-align:center;
+            }
+            table td{
+                font-size: 11px;
+            }
+            @page {
+                margin-bottom: 0.25in; /* Set bottom margin to 0.25in */
+            }
+            /* .box-container {
+                display: flex;
+            }
+            .box {
+                width: 10px;
+                height: 5px;
+                border: 1px solid black;
+                margin-left: 7px;
+                display: inline-block;
+                vertical-align: middle;
+                margin-top: 1px;
+                margin-bottom: 1px;
+                line-height:1;
+            }
+            .label {
+                font-size: 11px;
+                display: inline-block;
+                margin-right: 8px;
+                margin-left: 5px;
+                line-height: 1;
+            } */
+            /* .barcode-container {
+                position: absolute;
+                right: 0; 
+                top: 45%; 
+                transform: translateY(-50%) rotate(-90deg); 
+                transform-origin: right center; 
+                margin-top: 1px;
+            } */
       </style>
     </head>
     <body>
@@ -339,15 +342,16 @@
                     {!! DNS1D::getBarcodeHTML($result->route_no, 'C39E', 1, 25) !!}
                 </div> -->
                 <div>
-                    <div class="barcode-container" style="position:absolute;text-align: center; margin-top: -550px; left: 0; margin-right: -720px;">
-                    <img src="{{ realpath(__DIR__ . '/../../..') . '/public/images/' . $route_no . '.png' }}" alt="Barcode"
+                    <div class="barcode-container" style="position:absolute;text-align: center; margin-top: -500px; left: 0; margin-right: -765px;">
+                        <img src="data:image/png;base64,{{ $barcodePNG }}" alt="Barcode"
                             style="transform: rotate(-90deg); writing-mode: vertical-lr; text-align:left;"/>
                         <br><br>
                     </div>
-                    <div class="barcode-container" style="text-align: center; margin-top: -70px; position: absolute; left: 0; margin-right: -735px;">
-                        <img src="data:image/png;base64,{{ $barcodePNG }}" style="transform: rotate(-90deg); writing-mode: vertical-lr; text-align:left; margin-top:30px"/>
+                    <div class="barcode-container" style="text-align: center; margin-top: -60px; position: absolute; left: 0; margin-right: -718px;">
+                        <img src="{{ realpath(__DIR__ . '/../../..') . '/public/images/' . $route_no . '.png' }}" alt="Barcode"
+                            style="transform: rotate(-90deg); writing-mode: vertical-lr; text-align:left;"/>
                     </div>
-                </div>
+                </div> 
                 <!-- <div class="barcode-container" style="text-align: center;line-height:1">
                     <br style="line-height:1px">
                     <img src="data:image/png;base64,{{ $barcodePNG }}" alt="Barcode"style=""/>

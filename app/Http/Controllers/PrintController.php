@@ -457,7 +457,6 @@ class PrintController extends Controller
 
             $barcodePNG = DNS1D::getBarcodePNG($new->route_no, 'C39E', 1, 28);
             $image_path = $this->route_image($new->route_no); 
-           
             $data = [
                 'result'=> $new,
                 'pre_dv'=> $pre_dv,
@@ -466,7 +465,8 @@ class PrintController extends Controller
                 'info' => $info,
                 'amount' => $grouped->sum('amount'),
                 'barcodePNG' => $barcodePNG,
-                'route_no' => $new->route_no
+                'route_no' => $new->route_no,
+                'total_count' => count($grouped)
             ];
             // Determine which view to use based on grouped count
             $file = (count($grouped) > 16) ? 'pre_dv.new_pdf1' : 'pre_dv.new_pdf';
