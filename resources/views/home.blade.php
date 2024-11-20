@@ -1576,6 +1576,13 @@
             }
         }
     }
+    
+    function formatBalance(balance) {
+        return new Intl.NumberFormat('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }).format(balance);
+    }
 
     function onchangeForPatientCode(data) {
 
@@ -1607,19 +1614,29 @@
                         });
                     }else{
                         $('.remaining_balance').val(formattedBalance);
-                        // var suggestions =[];
-                        // var res = result.proponent_info;
+                        var suggestions =[];
+                        var res = result.proponent_info;
+                        var over_all = result.overall;
 
-                        // $.each(res, function(index, optionData) {
-                        //     suggestions.push(res[index].fundsource.saa +' - '+res[index].remaining_balance);
-                        // });
-                        // var suggestionsDiv = $('.suggestions');
-                        // suggestionsDiv.empty();
+                        $.each(res, function(index, optionData) {
+                            if(over_all >= res[index].remaining_balance ){
+                                over_all = over_all - res[index].remaining_balance;
+                            }else{
+                                var total = res[index].remaining_balance - over_all;
+                                over_all = 0;
+                                suggestions.push(res[index].fundsource.saa +' - '+formatBalance(total));
+                            }
+                        });
+                        if(result.supplemental != 0){
+                            suggestions.push('Supplemental Funds - ' + formatBalance(result.supplemental));
+                        }
+                        var suggestionsDiv = $('.suggestions');
+                        suggestionsDiv.empty();
 
-                        // suggestions.forEach(function(suggestion) {
-                        //     suggestionsDiv.append('<div>' + suggestion + '</div>');
-                        // });
-                        // suggestionsDiv.show();
+                        suggestions.forEach(function(suggestion) {
+                            suggestionsDiv.append('<div>' + suggestion + '</div>');
+                        });
+                        suggestionsDiv.show();
                     }
                    
                 });

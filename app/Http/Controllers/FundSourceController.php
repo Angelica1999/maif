@@ -798,6 +798,9 @@ class FundSourceController extends Controller
                 })
                 ->whereIn('proponent_id', $proponent_ids)
                 ->with('fundsource')
+                ->orderByRaw("
+                    (JSON_CONTAINS(proponent_info.facility_id, '702') OR proponent_info.facility_id = '702') DESC
+                ")
                 ->get();
         $overall_sum = $overall_info->sum(function ($info) {
             return (float) str_replace(',','', $info->alocated_funds) - (float) str_replace(',','', $info->admin_cost);
@@ -808,7 +811,9 @@ class FundSourceController extends Controller
         return [
             'patient_code' => $patient_code,
             'proponent_info' => $overall_info,
-            'balance' => round($balance, 2)
+            'balance' => round($balance, 2),
+            'overall' => $overall,
+            'supplemental' => $supplemental
         ];   
     }
 
