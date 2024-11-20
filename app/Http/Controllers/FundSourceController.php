@@ -813,6 +813,7 @@ class FundSourceController extends Controller
             'proponent_info' => $overall_info,
             'balance' => round($balance, 2),
             'overall' => $overall,
+            'overall_sum' => $overall_sum,
             'supplemental' => $supplemental
         ];   
     }
