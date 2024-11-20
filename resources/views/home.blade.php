@@ -1601,25 +1601,25 @@
                         Swal.fire({
                             icon: 'error',
                             title: 'Insufficient Balance!',
-                            text: 'Unavailable balance!',
-                            timer: 1000, 
+                            text: 'Remaining balance is now ' + formattedBalance,
+                            timer: 2000, 
                             showConfirmButton: false
                         });
                     }else{
                         $('.remaining_balance').val(formattedBalance);
-                        var suggestions =[];
-                        var res = result.proponent_info;
+                        // var suggestions =[];
+                        // var res = result.proponent_info;
 
-                        $.each(res, function(index, optionData) {
-                            suggestions.push(res[index].fundsource.saa +' - '+res[index].remaining_balance);
-                        });
-                        var suggestionsDiv = $('.suggestions');
-                        suggestionsDiv.empty();
+                        // $.each(res, function(index, optionData) {
+                        //     suggestions.push(res[index].fundsource.saa +' - '+res[index].remaining_balance);
+                        // });
+                        // var suggestionsDiv = $('.suggestions');
+                        // suggestionsDiv.empty();
 
-                        suggestions.forEach(function(suggestion) {
-                            suggestionsDiv.append('<div>' + suggestion + '</div>');
-                        });
-                        suggestionsDiv.show();
+                        // suggestions.forEach(function(suggestion) {
+                        //     suggestionsDiv.append('<div>' + suggestion + '</div>');
+                        // });
+                        // suggestionsDiv.show();
                     }
                    
                 });

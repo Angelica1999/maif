@@ -343,7 +343,7 @@ class FacilityController extends Controller
         $trans->remarks = 2;
         $trans->save();
 
-        Http::get('http://192.168.110.148/guaranteeletter/transmittal/returned/'.$trans->id.'/'.Auth::user()->userid.'/received');
+        Http::get('http://cvchd7.gletter.com/guaranteeletter/transmittal/returned/'.$trans->id.'/'.Auth::user()->userid.'/received');
 
         return response()->json(['message' => 'Data submitted successfully']);
     }

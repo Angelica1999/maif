@@ -16,6 +16,7 @@ use App\Models\Dv2;
 use App\Models\NewDV;
 use App\Models\PreDV;
 use App\Models\ProponentUtilizationV1;
+use App\Models\SupplementalFunds;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -675,7 +676,7 @@ class FundSourceController extends Controller
                     ->pluck('proponent_id')->toArray();
 
         $proponents = Proponent::select( DB::raw('MAX(proponent) as proponent'), DB::raw('MAX(id) as id'))
-            ->groupBy('proponent_code') ->whereIn('id', $ids)
+            ->groupBy('proponent') ->whereIn('id', $ids)
             ->whereNull('status')
             ->get();
         return $proponents;
@@ -747,21 +748,26 @@ class FundSourceController extends Controller
                 ->get();
         $overall = 0;
         $check = [];
-        foreach($patients as $row){
+        $ids = [];
+        foreach($patients as $index => $row){
             if($row->facility_id != $facility_id ){
-                $facility_id = (string) $row->facility_id;
-                $proponent_info = ProponentInfo::where(function ($query) use ($facility_id, $proponent_ids) {
-                    $query->where(function ($subquery) use ($facility_id) {
-                        $subquery->whereJsonContains('proponent_info.facility_id', $facility_id)
-                                ->orWhereJsonContains('proponent_info.facility_id', [$facility_id]);
+                $fac_id = (string) $row->facility_id;
+                $proponent_info = ProponentInfo::where(function ($query) use ($fac_id, $proponent_ids) {
+                    $query->where(function ($subquery) use ($fac_id) {
+                        $subquery->whereJsonContains('proponent_info.facility_id', $fac_id)
+                                ->orWhereJsonContains('proponent_info.facility_id', [$fac_id]);
                     })
-                    ->orWhereIn('proponent_info.facility_id', [$facility_id]);
+                    ->orWhereIn('proponent_info.facility_id', [$fac_id]);
                 })
                 ->whereIn('proponent_id', $proponent_ids)
-                // ->with('fundsource')
+                ->whereNotIn('id', $ids) 
+                ->with('fundsource')
                 ->get(); 
-    
+
                 if(count($proponent_info) >0){
+                    foreach($proponent_info as $id){
+                        $ids[] = $id->id;
+                    }
                     $sum = $proponent_info->sum(function ($info) {
                         return (float) str_replace(',','', $info->alocated_funds) - (float) str_replace(',','', $info->admin_cost);
                     }); 
@@ -779,11 +785,10 @@ class FundSourceController extends Controller
 
             $check[] = [
                 'overall' => $overall,
-                'info' => $proponent_info,
                 'total' => $row->total_guaranteed_amount
             ];
         }
-// return $check;
+
         $overall_info = ProponentInfo::where(function ($query) use ($facility_id, $proponent_ids) {
                     $query->where(function ($subquery) use ($facility_id) {
                         $subquery->whereJsonContains('proponent_info.facility_id', '702')
@@ -793,16 +798,18 @@ class FundSourceController extends Controller
                 })
                 ->whereIn('proponent_id', $proponent_ids)
                 ->with('fundsource')
-                ->get();                         
+                ->get();
         $overall_sum = $overall_info->sum(function ($info) {
             return (float) str_replace(',','', $info->alocated_funds) - (float) str_replace(',','', $info->admin_cost);
         });  
-                    
+
+        $supplemental = SupplementalFunds::where('proponent', $proponent->proponent)->sum('amount');
+        $balance = ($overall_sum - $overall) + $supplemental;
         return [
             'patient_code' => $patient_code,
             'proponent_info' => $overall_info,
-            'balance' => round($overall_sum - $overall, 2)
-        ];
+            'balance' => round($balance, 2)
+        ];   
     }
 
     public function forPatientFacilityCode($fundsource_id) {
