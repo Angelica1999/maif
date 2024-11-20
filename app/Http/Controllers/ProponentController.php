@@ -299,5 +299,22 @@ class ProponentController extends Controller
             'data' => $supp
         ]);
     }
+
+    public function supUpdate($id, $amount){
+        $supplemental = SupplementalFunds::where('id', $id)->first();
+    
+        if($supplemental){
+            $supplemental->amount = (float) str_replace(',', '', $amount);
+            $supplemental->added_by = Auth::user()->userid;
+            $supplemental->save();
+
+            return response()->json([
+                'message' => 'Supplemental fund added successfully'
+            ], 200);
+        }
+        
+
+        
+    }
     
 }

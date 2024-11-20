@@ -1,5 +1,5 @@
 @if(count($data)>0)
-    <div class="table-container" style="height: 800px; overflow-y: auto; padding:10px">
+    <div class="table-container" style="height: 500px; overflow-y: auto; padding:10px">
         <table class="table table-list table-hover table-striped" id="track_details">
             <thead style="position: sticky; top: 0; background-color: white; z-index: 1;">
                 <tr style="text-align:center; background-color:gray; color:white">
@@ -15,7 +15,9 @@
             <tbody>
                 @foreach($data as $row)
                     <tr style="text-align:center;">
-                        <td>{{ number_format($row->amount, 2,'.',',') }}</td>
+                        <td>
+                            <a href="#" onclick="updateAmount({{ $row->id }})">{{ number_format($row->amount, 2,'.',',') }}</a>
+                        </td>
                         <td>{{ $row->user->fname .' '.$row->user->lname }}</td>
                         <td>{{ date('F j, Y', strtotime($row->created_at)) }}</td>
                     </tr>
