@@ -41,6 +41,7 @@ Route::get('/patient', [App\Http\Controllers\HomeController::class, 'fetchAdditi
 Route::get('/group/remove_patient/{id}', [App\Http\Controllers\HomeController::class, 'groupRemovePatient'])->name('patient.group_remove');
 Route::get('/patient/send-to-facility/{id}', [App\Http\Controllers\HomeController::class, 'facilitySend'])->name('facility.send');
 Route::match(['get', 'post'],'/patient/return/{id}', [App\Http\Controllers\HomeController::class, 'returnPatient'])->name('patient.return');
+Route::get('/patient/accept/{id}', [App\Http\Controllers\HomeController::class, 'acceptPat'])->name('patient.accept');
 
 Route::get('/mail/history/{id}', [App\Http\Controllers\HomeController::class, 'mailHistory'])->name('mail.history');
 Route::get('/patient/history/{id}', [App\Http\Controllers\HomeController::class, 'patientHistory'])->name('patient.history');
@@ -141,6 +142,7 @@ Route::get('/budget/confirm/{id}', [App\Http\Controllers\FundSourceController2::
 Route::get('/confirm/{id}', [App\Http\Controllers\FundSourceController2::class, 'confirm'])->name('dv.confirm');
 Route::get('/admin/cost/{id}', [App\Http\Controllers\FundSourceController2::class, 'addCost'])->name('add.cost');
 Route::post('/cost/save', [App\Http\Controllers\FundSourceController2::class, 'saveCost'])->name('save.cost');
+Route::get('/confirm-budget/{id}', [App\Http\Controllers\FundSourceController2::class, 'confirmBudget'])->name('confirm.budget');
 
 //creating breakdowns
 Route::get('fundsource/breakdowns/{fundsourceId}', [App\Http\Controllers\FundSourceController::class, 'createBDowns'])->name('fundsource.create_breakdowns');
@@ -272,7 +274,8 @@ Route::get('/transmittal/details/{id}/{facility_id}', [App\Http\Controllers\Faci
 Route::post('/accepted/remarks', [App\Http\Controllers\FacilityController::class, 'transRem'])->name('accepted.remarks');
 Route::get('/angelica/{route_no}', [App\Http\Controllers\PreDvController::class, 'angelica'])->name('angelica');
 Route::get('/transmittal/received/{control_no}/{name}', [App\Http\Controllers\FacilityController::class, 'received'])->name('received.transmittal');
-
+//sample
+Route::get('/proposal', [App\Http\Controllers\SampleController::class, 'proposal'])->name('proposal');
 
 
 

@@ -114,8 +114,9 @@ class MailVerification implements ShouldQueue
             $mail->isHTML(true);    
             $mail->Subject = 'System Account Credentials';
             $mail->addEmbeddedImage('public\images\maipp_banner.png', 'unique_cid_for_image', 'image.jpg');
-            $link = "https://gletter.cvchd7.com/guaranteeletter";                              //Set email format to HTML
-     
+            // $link = "https://gletter.cvchd7.com/guaranteeletter";                              //Set email format to HTML
+            $link = "http://localhost/guaranteeletter";                              //Set email format to HTML
+
             $mail->Body =
                 '<html><body>
                 <span style="text-align:right;">Username: '.$username.'<span><br>

@@ -195,7 +195,7 @@
                                     <input class="form-control total_amount" style="width: 60%; text-align: center;" placeholder="TOTAL AMOUNT PER PROPONENT" readonly>
                                 </div>
                                 <div class="saa_clone" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 2%;">
-                                    <select style="width: 50%;" class="select2 saa_id" required>
+                                    <select style="width: 50%;" class="select2 saa_id" onchange="autoDeduct($(this))" required>
                                         <option value=''>SELECT SAA</option>
                                         <!-- @foreach($saas as $saa)
                                             <option value="{{$saa->id}}" data-balance="{{$saa->alocated_funds}}">{{$saa->saa}}</option>
@@ -251,741 +251,775 @@
 <script src="{{ asset('admin/vendors/daterangepicker-master/moment.min.js?v=1') }}"></script>
 <script src="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.js?v=1') }}"></script>
 
-    <script>
+<script>
 
-        function displayControl(){
-            $('.control_option').css('display', 'block');
-        }
-        function getTransmittal(trans_id){   
-            // $('.fac_control').empty();
-            $.get("{{ url('transmittal/details').'/' }}" +trans_id+'/'+f_id, function(result){
-                $('.fac_control').append(result);
-                getGrand();
-            });
-        }
-
-        $('#gen_btn').on('click', function(){
-            $('#generate').val(1);
+    function displayControl(){
+        $('.control_option').css('display', 'block');
+    }
+    function getTransmittal(trans_id){   
+        // $('.fac_control').empty();
+        $.get("{{ url('transmittal/details').'/' }}" +trans_id+'/'+f_id, function(result){
+            $('.fac_control').append(result);
+            getGrand();
         });
-        
-        $('.select2').select2();
-        $('#fac_select').select2();
-        $('#by_select').select2();
+    }
 
-        $('#dates_filter').daterangepicker();
+    $('#gen_btn').on('click', function(){
+        $('#generate').val(1);
+    });
+    
+    $('.select2').select2();
+    $('#fac_select').select2();
+    $('#by_select').select2();
 
-        $('.fc').on('click', function(){
-            $('#fac_div').css('display', 'block');
-        });
+    $('#dates_filter').daterangepicker();
 
-        $('.user').on('click', function(){
-            $('#by_div').css('display', 'block');
-        });
+    $('.fc').on('click', function(){
+        $('#fac_div').css('display', 'block');
+    });
 
-        $('.filter').on('click', function(){
-            $('#filt_dv').css('display', 'block');
-        });
+    $('.user').on('click', function(){
+        $('#by_div').css('display', 'block');
+    });
 
-        $('#filt_dv').on('click', function(){
-            $('.fc_id').val($('#fac_select').val());
-            $('.user_id').val($('#by_select').val());
-            console.log('data', $('#by_select').val());
-        }); 
+    $('.filter').on('click', function(){
+        $('#filt_dv').css('display', 'block');
+    });
 
-        $('#create_predv').on('hidden.bs.modal', function () {
-            $(this).find('form')[0].reset(); 
-            $('.facility_div .proponent_clone:not(:first)').remove();
-            $('.facility_div .proponent_clone .control_clone:not(:first)').remove();
-            $('.facility_div .saa_clone:not(:first)').remove();
-            $('.facility_id, .proponent, .saa_id').val('').trigger('change');
-            $('.inputted_amount').text('');
-        });
+    $('#filt_dv').on('click', function(){
+        $('.fc_id').val($('#fac_select').val());
+        $('.user_id').val($('#by_select').val());
+        console.log('data', $('#by_select').val());
+    }); 
 
-        $('.update_close').on('click', function(){
-            location.reload();
-        })
+    $('#create_predv').on('hidden.bs.modal', function () {
+        $(this).find('form')[0].reset(); 
+        $('.facility_div .proponent_clone:not(:first)').remove();
+        $('.facility_div .proponent_clone .control_clone:not(:first)').remove();
+        $('.facility_div .saa_clone:not(:first)').remove();
+        $('.facility_id, .proponent, .saa_id').val('').trigger('change');
+        $('.inputted_amount').text('');
+    });
 
-        function checkPros(data){
-            console.log('data', data.value);
-            var arr = getPros();
-            var index = arr.indexOf(data.value);
-            if (index !== -1) {
-                arr.splice(index, 1); 
-            }
-            if(arr.includes(data.value)){
-                alert('This proponent has been selected already!');
-            } 
+    $('.update_close').on('click', function(){
+        location.reload();
+    })
+
+    function checkPros(data){
+        console.log('data', data.value);
+        var arr = getPros();
+        var index = arr.indexOf(data.value);
+        if (index !== -1) {
+            arr.splice(index, 1); 
         }
+        if(arr.includes(data.value)){
+            alert('This proponent has been selected already!');
+        } 
+    }
 
-        function getPros(){
-            var pros = [];
-            $('.proponent').each(function(){
-                pros.push($(this).val());
-            });
-            return pros;
-            console.log('pros', pros);
-        }
-        
-        var f_id = $('.facility_id').val();
+    function getPros(){
+        var pros = [];
+        $('.proponent').each(function(){
+            pros.push($(this).val());
+        });
+        return pros;
+        console.log('pros', pros);
+    }
+    
+    var f_id = $('.facility_id').val();
 
-        function openModal() {
-            var routeNoo = event.target.getAttribute('data-routeId'); 
-            var src = "https://mis.cvchd7.com/dts/document/trackMaif/" + routeNoo;
-            // $('.modal-body').html(loading);
-            setTimeout(function() {
-                $("#trackIframe").attr("src", src);
-                $("#iframeModal").css("display", "block");
-            }, 150);
-        }
+    function openModal() {
+        var routeNoo = event.target.getAttribute('data-routeId'); 
+        var src = "https://mis.cvchd7.com/dts/document/trackMaif/" + routeNoo;
+        // $('.modal-body').html(loading);
+        setTimeout(function() {
+            $("#trackIframe").attr("src", src);
+            $("#iframeModal").css("display", "block");
+        }, 150);
+    }
 
-        function error(){
+    function error(){
+        Lobibox.alert('error', {
+            size: 'mini',
+            msg: 'Select facility first!'
+        });
+    }
+    
+
+    function getFundsource(facility_id){
+
+        var check_vat = $('.facility_id').find(':selected').attr('datavat');
+
+        if(check_vat == 0){
             Lobibox.alert('error', {
                 size: 'mini',
-                msg: 'Select facility first!'
+                msg: 'Please add vat and ewt first!'
             });
+            $('.facility_id').val('').trigger('change');
+        }else if(check_vat == 1){
+
+            f_id = facility_id;
+            $.get("{{url('pre-dv/control_nos').'/'}}" + f_id, function (result){
+                existing_control = result.controls;   
+                transmittal = result.transmittal;  
+                $('.control_id').empty();
+                $('.control_id').append($('<option>', {value:'', text:'Select Control No'}));
+                transmittal.forEach(function(optionData) {
+                    $('.control_id').append($('<option>', {
+                        value: optionData.id,
+                        text: optionData.control_no
+                    }));
+                });
+            });
+
+            $.get("{{ url('fetch/fundsource').'/' }}"+facility_id, function(result) {
+                var data_result = result.info;
+                var text_display;
+
+                var first = [],
+                    sec = [],
+                    third = [],
+                    fourth = [],
+                    fifth = [],
+                    six = [];
+                $.each(data_result, function(index, optionData){
+                    var rem_balance = parseFloat(optionData.remaining_balance.replace(/,/g, '')).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+
+                    // arrangement:
+                    //     - conap specific hospitals
+                    //     - conap cvchd
+                    //     - specific hospitals
+                    //     - cvchd
+                    //     - no funds conap
+                    //     - no funds saa 2024
+
+                    var check_p = 0;  
+
+                    var id = optionData.facility_id;
+                
+                    if(optionData.facility !== null){
+                        if(optionData.facility.id == facility_id){
+                            text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - SF - ' + rem_balance;
+                        }else{
+                            text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + optionData.facility.name + ' - ' + rem_balance;
+                            check_p = 1;
+                        } 
+                    }else{
+                        if(id.includes('702')){
+                            check_p = 1;
+                            text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + 'DOH CVCHD' + ' - ' + rem_balance;
+                        }else{
+                            text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - SF - ' + rem_balance;
+                        }
+                    }
+
+                    var color = '';
+                    if(rem_balance == '0' || rem_balance == '0.00'){
+                        color = 'red';
+                        if(optionData.fundsource.saa.includes('CONAP')){
+                                obj = {
+                                    value: optionData.fundsource_id,
+                                    text: text_display,
+                                    dataval: optionData.remaining_balance,
+                                    dataproponentInfo_id: optionData.id,
+                                    dataprogroup: optionData.proponent.pro_group,
+                                    dataproponent: optionData.proponent.id,
+                                    d_color: color
+                                }
+                                fifth.push(obj);
+                            }else{
+                                obj = {
+                                    value: optionData.fundsource_id,
+                                    text: text_display,
+                                    dataval: optionData.remaining_balance,
+                                    dataproponentInfo_id: optionData.id,
+                                    dataprogroup: optionData.proponent.pro_group,
+                                    dataproponent: optionData.proponent.id,
+                                    d_color: color
+                                }
+                                six.push(obj);
+                            }
+                    }else{
+
+                        color = 'normal';
+
+                        if(optionData.fundsource.saa.includes('CONAP')){
+                            if(check_p == 1){
+                                obj = {
+                                    value: optionData.fundsource_id,
+                                    text: text_display,
+                                    dataval: optionData.remaining_balance,
+                                    dataproponentInfo_id: optionData.id,
+                                    dataprogroup: optionData.proponent.pro_group,
+                                    dataproponent: optionData.proponent.id,
+                                    d_color: color
+                                }
+                                sec.push(obj);
+                            }else{
+                                obj = {
+                                    value: optionData.fundsource_id,
+                                    text: text_display,
+                                    dataval: optionData.remaining_balance,
+                                    dataproponentInfo_id: optionData.id,
+                                    dataprogroup: optionData.proponent.pro_group,
+                                    dataproponent: optionData.proponent.id,
+                                    d_color: color
+                                }
+                                first.push(obj);
+                            }
+                        }else{
+                            if(check_p == 1){
+                                obj = {
+                                    value: optionData.fundsource_id,
+                                    text: text_display,
+                                    dataval: optionData.remaining_balance,
+                                    dataproponentInfo_id: optionData.id,
+                                    dataprogroup: optionData.proponent.pro_group,
+                                    dataproponent: optionData.proponent.id,
+                                    d_color: color
+                                }
+                                fourth.push(obj);
+                            }else{
+                                obj = {
+                                    value: optionData.fundsource_id,
+                                    text: text_display,
+                                    dataval: optionData.remaining_balance,
+                                    dataproponentInfo_id: optionData.id,
+                                    dataprogroup: optionData.proponent.pro_group,
+                                    dataproponent: optionData.proponent.id,
+                                    d_color: color
+                                }
+                                third.push(obj);
+                            }
+                        }
+                    }
+
+                    $('.saa_id').select2({
+                        templateResult: function (data) {
+                            if ($(data.element).data('color') === 'red') {
+                                return $('<span style="color: red;">' + data.text + '</span>');
+                            }
+                            return data.text;
+                        }
+                    });
+                });
+
+                addOption(first);
+                addOption(sec);
+                addOption(third);
+                addOption(fourth);
+                addOption(fifth);
+                addOption(six);
+
+                $('.saa_id').prop('disabled', false);
+            });
+
+        }
+    } 
+
+    function addOption(data){
+        data.forEach(function(item) {
+            var option = $('<option>', {
+                value: item.value,
+                text: item.text,
+                dataval: item.dataval,
+                dataproponentInfo_id: item.dataproponentInfo_id,
+                dataprogroup: item.dataprogroup,
+                dataproponent: item.dataproponent,
+                'data-color': item.d_color
+            });
+
+            $('.saa_id').append(option.clone());
+        });
+    }
+
+    function deletePre(){
+        var id = $('#pre_id').val();
+
+        Lobibox.alert('error',
+            {
+                size: 'mini',
+                msg: '<div style="text-align:center;"><i class="typcn typcn-delete menu-icon" style="color:red; font-size:30px"></i>Are you sure you want to remove this?</div>',
+                buttons:{
+                    ok:{
+                        'class': 'lobibox-btn lobibox-btn-ok',
+                        text: 'Delete',
+                        closeOnClick: true
+                    },
+                    cancel: {
+                        'class': 'lobibox-btn lobibox-btn-cancel',
+                        text: 'Cancel',
+                        closeOnClick: true
+                    }
+                },
+                callback: function(lobibox, type){
+                    if (type == "ok"){
+                        window.location.href="delete/" + id;
+                    }
+                }
+            }
+        );
+
+    }
+
+    function updatePre(id, data){
+        $('.form_body').html(loading);
+        $.get("{{ url('pre-dv/update/').'/' }}"+id, function(result) {
+            $('.form_body').html(result);
+            if(data == 1){
+                $('.delete_btn').css('display', 'none');
+                $('.submit_btn').css('display', 'none');
+            }else{
+                $('.delete_btn').css('display', 'block');
+                $('.submit_btn').css('display', 'block');
+            }
+            f_id = $('#facility_id').val();
+            $.get("{{url('pre-dv/control_nos').'/'}}" + f_id, function (result){
+                existing_control = result.controls; 
+            }); 
+        });
+    }
+
+    function validateAmount(element) {
+        if (event.keyCode === 32) {
+            event.preventDefault(); 
+        }
+
+        var cleanedValue = element.value.replace(/[^\d.]/g, ''); 
+        var numericValue = parseFloat(cleanedValue);
+
+        if (!isNaN(numericValue) || cleanedValue === '' || cleanedValue === '.') {
+            var parts = cleanedValue.split('.');
+            if (parts.length > 1) {
+                parts[1] = parts[1].substring(0, 2); 
+            }
+
+            cleanedValue = parts.join('.'); 
+
+            element.value = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        } else {
+            element.value = ''; 
+        }
+    }
+
+    function getTransId(){
+        var transmittal_ids = [];
+        $('.trans_id').each(function(){
+            transmittal_ids.push($(this).val());
+        });
+
+        return transmittal_ids;
+        console.log('ids', transmittal_ids);
+    }
+
+    function getGrand(){
+        var grand_total = 0;
+        $('.total_amount').each(function(){
+            grand_total += parseFloat(($(this).val()).replace(/,/g, '')) || 0;
+        });
+        $('.grand_total').val(Number(grand_total.toFixed(2)).toLocaleString('en-US', { maximumFractionDigits: 2 }));
+    }
+
+    function checkAmount(element, value){
+        var element = element.closest
+    }
+
+
+    function cloneProponent(element){
+        if(f_id){
+            $.get("{{ url('pre-dv/proponent-clone') .'/' }}" + f_id, function (result) {
+                $('.facility_div').append(result);
+            });
+        }else{
+            error();
         }
         
+    }
 
-        function getFundsource(facility_id){
+    function calculateAmount(data){
+        var total = 0;
+        data.find('.amount').each(function(){
+            var amount = parseFloat(($(this).val()).replace(/,/g, '')) || 0;
+            total += amount;
+        });
+        data.find('.total_amount').val(Number(total.toFixed(2)).toLocaleString('en-US', { maximumFractionDigits: 2 }));
+        getGrand();
+    }
 
-            var check_vat = $('.facility_id').find(':selected').attr('datavat');
+    function evaluateSAA(data){
+        var total_saa = 0;
+        var total_pro = parseFloat(data.find('.total_amount').val().replace(/,/g, ''));
+        data.find('.saa_amount').each(function(){
 
-            if(check_vat == 0){
-                Lobibox.alert('error', {
-                    size: 'mini',
-                    msg: 'Please add vat and ewt first!'
-                });
-                $('.facility_id').val('').trigger('change');
-            }else if(check_vat == 1){
+            var amount = parseFloat($(this).val().replace(/,/g, '')) || 0;
+            total_saa = parseFloat(total_saa) || 0; 
+            total_saa = total_saa.toFixed(2);
+            total_saa = Number(total_saa) + Number(amount);
+            total_saa = total_saa.toFixed(2);
 
-                f_id = facility_id;
-                $.get("{{url('pre-dv/control_nos').'/'}}" + f_id, function (result){
-                    existing_control = result.controls;   
-                    transmittal = result.transmittal;  
-                    $('.control_id').empty();
-                    $('.control_id').append($('<option>', {value:'', text:'Select Control No'}));
-                    transmittal.forEach(function(optionData) {
-                        $('.control_id').append($('<option>', {
-                            value: optionData.id,
-                            text: optionData.control_no
-                        }));
-                    });
-                });
-
-                $.get("{{ url('fetch/fundsource').'/' }}"+facility_id, function(result) {
-                    var data_result = result.info;
-                    var text_display;
-
-                    var first = [],
-                        sec = [],
-                        third = [],
-                        fourth = [],
-                        fifth = [],
-                        six = [];
-                    $.each(data_result, function(index, optionData){
-                        var rem_balance = parseFloat(optionData.remaining_balance.replace(/,/g, '')).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
-
-                        // arrangement:
-                        //     - conap specific hospitals
-                        //     - conap cvchd
-                        //     - specific hospitals
-                        //     - cvchd
-                        //     - no funds conap
-                        //     - no funds saa 2024
-
-                        var check_p = 0;  
-
-                        var id = optionData.facility_id;
-                    
-                        if(optionData.facility !== null){
-                            if(optionData.facility.id == facility_id){
-                                text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - SF - ' + rem_balance;
-                            }else{
-                                text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + optionData.facility.name + ' - ' + rem_balance;
-                                check_p = 1;
-                            } 
-                        }else{
-                            if(id.includes('702')){
-                                check_p = 1;
-                                text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + 'DOH CVCHD' + ' - ' + rem_balance;
-                            }else{
-                                text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - SF - ' + rem_balance;
-                            }
-                        }
-
-                        var color = '';
-                        if(rem_balance == '0' || rem_balance == '0.00'){
-                            color = 'red';
-                            if(optionData.fundsource.saa.includes('CONAP')){
-                                    obj = {
-                                        value: optionData.fundsource_id,
-                                        text: text_display,
-                                        dataval: optionData.remaining_balance,
-                                        dataproponentInfo_id: optionData.id,
-                                        dataprogroup: optionData.proponent.pro_group,
-                                        dataproponent: optionData.proponent.id,
-                                        d_color: color
-                                    }
-                                    fifth.push(obj);
-                                }else{
-                                    obj = {
-                                        value: optionData.fundsource_id,
-                                        text: text_display,
-                                        dataval: optionData.remaining_balance,
-                                        dataproponentInfo_id: optionData.id,
-                                        dataprogroup: optionData.proponent.pro_group,
-                                        dataproponent: optionData.proponent.id,
-                                        d_color: color
-                                    }
-                                    six.push(obj);
-                                }
-                        }else{
-
-                            color = 'normal';
-
-                            if(optionData.fundsource.saa.includes('CONAP')){
-                                if(check_p == 1){
-                                    obj = {
-                                        value: optionData.fundsource_id,
-                                        text: text_display,
-                                        dataval: optionData.remaining_balance,
-                                        dataproponentInfo_id: optionData.id,
-                                        dataprogroup: optionData.proponent.pro_group,
-                                        dataproponent: optionData.proponent.id,
-                                        d_color: color
-                                    }
-                                    sec.push(obj);
-                                }else{
-                                    obj = {
-                                        value: optionData.fundsource_id,
-                                        text: text_display,
-                                        dataval: optionData.remaining_balance,
-                                        dataproponentInfo_id: optionData.id,
-                                        dataprogroup: optionData.proponent.pro_group,
-                                        dataproponent: optionData.proponent.id,
-                                        d_color: color
-                                    }
-                                    first.push(obj);
-                                }
-                            }else{
-                                if(check_p == 1){
-                                    obj = {
-                                        value: optionData.fundsource_id,
-                                        text: text_display,
-                                        dataval: optionData.remaining_balance,
-                                        dataproponentInfo_id: optionData.id,
-                                        dataprogroup: optionData.proponent.pro_group,
-                                        dataproponent: optionData.proponent.id,
-                                        d_color: color
-                                    }
-                                    fourth.push(obj);
-                                }else{
-                                    obj = {
-                                        value: optionData.fundsource_id,
-                                        text: text_display,
-                                        dataval: optionData.remaining_balance,
-                                        dataproponentInfo_id: optionData.id,
-                                        dataprogroup: optionData.proponent.pro_group,
-                                        dataproponent: optionData.proponent.id,
-                                        d_color: color
-                                    }
-                                    third.push(obj);
-                                }
-                            }
-                        }
-
-                        $('.saa_id').select2({
-                            templateResult: function (data) {
-                                if ($(data.element).data('color') === 'red') {
-                                    return $('<span style="color: red;">' + data.text + '</span>');
-                                }
-                                return data.text;
-                            }
-                        });
-                    });
-
-                    addOption(first);
-                    addOption(sec);
-                    addOption(third);
-                    addOption(fourth);
-                    addOption(fifth);
-                    addOption(six);
-
-                    $('.saa_id').prop('disabled', false);
-                });
-
+            if(total_saa > total_pro){
+                alert('Mismatch total amount!');
+                $(this).val('');
             }
-        } 
+        });
+        
+        getGrand();
+    }
 
-        function addOption(data){
-            data.forEach(function(item) {
-                var option = $('<option>', {
-                    value: item.value,
-                    text: item.text,
-                    dataval: item.dataval,
-                    dataproponentInfo_id: item.dataproponentInfo_id,
-                    dataprogroup: item.dataprogroup,
-                    dataproponent: item.dataproponent,
-                    'data-color': item.d_color
-                });
+    var existing_control;
+    var transmittal;
+    var new_control = [];
+    var hasErrors = false; 
 
-                $('.saa_id').append(option.clone());
-            });
+    function controls(){
+        var cons = [];
+        $('.control_clone').each(function (index, clone) {
+            var control_no = $(clone).find('.control_no').val();
+            cons.push(control_no);
+        });
+        return cons;
+    }
+
+    $(document).on('input', '.control_no', function(){
+        var control_clone = $(this).closest('.control_clone');
+        var control_no = $(control_clone).find('.control_no').val();  
+        var cons = controls();
+        var index = cons.findIndex(item => item === control_no);
+        if (index > -1) {
+            cons.splice(index, 1); 
+        }            
+        var exist = existing_control.find(item => item === control_no);
+
+        if (cons.includes(control_no) || exist) {
+            alert('Control no ' +control_no+ ' existed already!')
+            // $(control_clone).find('.control_no').val('');
+            return false;
+        }
+    });
+
+    $(document).on('input', '.amount', function(){
+        var p_clone = $(this).closest('.proponent_clone');
+        calculateAmount(p_clone);
+    });
+
+    $(document).on('input', '.saa_amount', function(){
+        var p_clone = $(this).closest('.proponent_clone');
+        inputted_fundsource(p_clone);
+    });
+
+    function inputted_fundsource(data){
+        var total = 0;
+        data.find('.saa_amount').each(function(){
+            var amount = parseFloat(($(this).val()).replace(/,/g, '')) || 0;
+            total += amount;
+        });
+        data.find('.inputted_amount').text(Number(total.toFixed(2)).toLocaleString('en-US', { maximumFractionDigits: 2 }));
+    }
+
+    function autoDeduct(element){
+        var w_pro = element.closest('.proponent_clone');
+        var m_amount = 0;
+        w_pro.find('.saa_amount').each(function(){
+            var amount = $(this).val().replace(/,/g, ''); // Remove commas
+            m_amount += parseFloat(amount) || 0;
+        });
+
+        var w_amount = element.closest('.saa_clone').find('.saa_amount');
+        var w_total = element.closest('.card').find('.total_amount');
+        var amount_overall = parseFloat((w_total.val() || "0").replace(/,/g, ''));
+
+        var dataval = element
+            .closest('.saa_clone')
+            .find('.saa_id')
+            .find(':selected')
+            .attr('dataval');
+        var saa_rem = parseFloat(dataval.replace(/,/g, ''));
+        var total_result = amount_overall - m_amount;
+        console.log('a', saa_rem);
+        console.log('b', total_result);
+
+        if(saa_rem >= total_result){
+            console.log('total_result', total_result);
+            w_amount.val(total_result.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}));
+        }else{
+            console.log('saa', saa_rem);
+            w_amount.val(saa_rem.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}));
         }
 
-        function deletePre(){
-            var id = $('#pre_id').val();
+    }
 
-            Lobibox.alert('error',
-                {
-                    size: 'mini',
-                    msg: '<div style="text-align:center;"><i class="typcn typcn-delete menu-icon" style="color:red; font-size:30px"></i>Are you sure you want to remove this?</div>',
-                    buttons:{
-                        ok:{
-                            'class': 'lobibox-btn lobibox-btn-ok',
-                            text: 'Delete',
-                            closeOnClick: true
+    $(document).on('input', '.saa_amount', function(){
+        var data = $(this);
+        var clone_pro = data.closest('.proponent_clone');
+        var clone_saa =  data.closest('.saa_clone');
+        var input_value =  parseFloat(data.val().replace(/,/g, ''));
+
+        var saa_value = clone_saa.find('.saa_id').find(':selected').attr('dataval');
+        var saa_balance = parseFloat(saa_value.replace(/,/g, ''));
+        // var saa_balance = parseFloat((clone_saa.find('.saa_id').find(':selected').attr('dataval')).replace(/,/g, ''));
+    
+        if(saa_balance != '' || saa_balance != undefined){
+
+            if(input_value > saa_balance){
+                Lobibox.alert('error',{
+                    size : 'mini',
+                    msg : 'Insufficient balance is not enough, would you like to use another saa?',
+                    buttons : {
+                        yes: {
+                            'class': 'btn-xs btn-success',
+                            text: 'ADD',
+                            closeOnClick:true
                         },
-                        cancel: {
-                            'class': 'lobibox-btn lobibox-btn-cancel',
-                            text: 'Cancel',
-                            closeOnClick: true
+                        no: {
+                            'class': 'btn-xs btn-warning',
+                            text: 'NO',
+                            closeOnClick:true
                         }
                     },
-                    callback: function(lobibox, type){
-                        if (type == "ok"){
-                            window.location.href="delete/" + id;
+                    callback: function (lobibox, type){
+                        if(type == 'yes'){
+                            $.get("{{ url('pre-dv/saa-clone').'/' }}" + f_id, function (result) {
+
+                                var clonedElement = clone_saa.last().after(result).next();
+
+                                clonedElement.find('.saa_clone_btn')
+                                    .removeClass('saa_clone_btn btn-info typcn typcn-plus menu-icon')
+                                    .addClass('saa_remove_btn btn-danger')
+                                    .css('background-color', 'red')
+                                    .text('')
+                                    .html('<span class="typcn typcn-minus menu-icon"></span>');
+                            }); 
+                            data.val(saa_balance.toFixed(2));
+                        }else{
+                            data.val('');
+                            inputted_fundsource(clone_pro)
                         }
                     }
-                }
-            );
-
-        }
-
-        function updatePre(id, data){
-            $('.form_body').html(loading);
-            $.get("{{ url('pre-dv/update/').'/' }}"+id, function(result) {
-                $('.form_body').html(result);
-                if(data == 1){
-                    $('.delete_btn').css('display', 'none');
-                    $('.submit_btn').css('display', 'none');
-                }else{
-                    $('.delete_btn').css('display', 'block');
-                    $('.submit_btn').css('display', 'block');
-                }
-                f_id = $('#facility_id').val();
-                $.get("{{url('pre-dv/control_nos').'/'}}" + f_id, function (result){
-                    existing_control = result.controls; 
-                }); 
-            });
-        }
-
-        function validateAmount(element) {
-            if (event.keyCode === 32) {
-                event.preventDefault(); 
-            }
-
-            var cleanedValue = element.value.replace(/[^\d.]/g, ''); 
-            var numericValue = parseFloat(cleanedValue);
-
-            if (!isNaN(numericValue) || cleanedValue === '' || cleanedValue === '.') {
-                var parts = cleanedValue.split('.');
-                if (parts.length > 1) {
-                    parts[1] = parts[1].substring(0, 2); 
-                }
-
-                cleanedValue = parts.join('.'); 
-
-                element.value = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-            } else {
-                element.value = ''; 
+                });     
             }
         }
+        evaluateSAA(clone_pro);
+        inputted_fundsource(clone_pro)
+    });
 
-        function getTransId(){
-            var transmittal_ids = [];
-            $('.trans_id').each(function(){
-                transmittal_ids.push($(this).val());
+    $(document).on('click', '.proponent_clone .btn_pro_remove', function () {
+        // var length = 0;
+
+        // $('.facility_div .proponent_clone').each(function (index, proponent_clone) {
+        //     var proponent = $(proponent_clone).find('.proponent').val();
+
+        //     if(proponent != ''){
+        //         length = length + 1;
+        //     }
+        // });
+
+        // if(length !=1){
+            $(this).closest('.proponent_clone').remove();
+        // }
+        // console.log('length', length);
+        getGrand();
+        getTransId();
+    });
+
+    $(document).on('click', '.proponent_clone .saa_clone .saa_clone_btn', function () {
+        if(f_id){
+            var button = $(this);
+
+            $.get("{{ url('pre-dv/saa-clone').'/' }}" + f_id, function (result) {
+                var clonedElement = button.closest('.proponent_clone').find('.saa_clone').last().after(result).next();
+
+                clonedElement.find('.saa_clone_btn')
+                    .removeClass('saa_clone_btn btn-info typcn typcn-plus menu-icon')
+                    .addClass('saa_remove_btn btn-danger')
+                    .css('background-color', 'red')
+                    .text('')
+                    .html('<span class="typcn typcn-minus menu-icon"></span>');
+
             });
-
-            return transmittal_ids;
-            console.log('ids', transmittal_ids);
+        }else{
+            error();
         }
+    });
 
-        function getGrand(){
-            var grand_total = 0;
-            $('.total_amount').each(function(){
-                grand_total += parseFloat(($(this).val()).replace(/,/g, '')) || 0;
+    $(document).on('click', '.proponent_clone .saa_clone .saa_remove_btn', function () {
+        // $(this).closest('.saa_clone').remove();  
+        var element = $(this);
+        var p_clone = element.closest('.proponent_clone');
+        element.closest('.saa_clone').remove();  
+        inputted_fundsource(p_clone); 
+    });
+
+    $(document).on('click', '.proponent_clone .control_div .control_clone_btn', function () {
+
+        if(f_id){
+            var button = $(this);
+            $.get("{{ route('clone.control') }}", function (result) {
+                var clonedElement = $(result).appendTo(button.closest('.control_div')).last();
+
+                clonedElement.find('.control_clone_btn')                
+                    .removeClass('control_clone_btn btn-info typcn typcn-plus menu-icon')
+                    .addClass('control_remove_btn btn-danger')
+                    .css('background-color','red')
+                    .text('')                    
+                    .html('<span class="typcn typcn-minus menu-icon"></span>');
             });
-            $('.grand_total').val(Number(grand_total.toFixed(2)).toLocaleString('en-US', { maximumFractionDigits: 2 }));
+        }else{
+            error();
         }
+    });
 
-        function checkAmount(element, value){
-            var element = element.closest
-        }
+    $(document).on('click', '.control_remove_btn', function () {
+        var p_clone = $(this).closest('.proponent_clone');
+        $(this).closest('.control_clone').remove();  
+        calculateAmount(p_clone);
+    });
 
+    $(document).on('click', '.proponent_clone .control_div .amount', function () {
+    });
 
-        function cloneProponent(element){
-            if(f_id){
-                $.get("{{ url('pre-dv/proponent-clone') .'/' }}" + f_id, function (result) {
-                    $('.facility_div').append(result);
-                });
-            }else{
-                error();
-            }
-            
-        }
+    $('.pre_form1, #pre_form').submit( function(e){
+        e.preventDefault();
+        var trans_ids = getTransId();
+        var facility_id = f_id;
+        var grand_total = $('.grand_total').val();
+        var all_data = [];
 
-        function calculateAmount(data){
-            var total = 0;
-            data.find('.amount').each(function(){
-                var amount = parseFloat(($(this).val()).replace(/,/g, '')) || 0;
-                total += amount;
-            });
-            data.find('.total_amount').val(Number(total.toFixed(2)).toLocaleString('en-US', { maximumFractionDigits: 2 }));
-            getGrand();
-        }
+        $('.facility_div .proponent_clone').each(function (index, proponent_clone) {
+            var proponent = $(proponent_clone).find('.proponent').val();
+            hasErrors = false; 
 
-        function evaluateSAA(data){
-            var total_saa = 0;
-            var total_pro = parseFloat(data.find('.total_amount').val().replace(/,/g, ''));
-            data.find('.saa_amount').each(function(){
+            if(proponent != ''){
+                var total_amount = $(proponent_clone).find('.total_amount').val();
+                var pro_clone = [];
+                var control_total = 0;
+                $(proponent_clone).find('.control_clone').each(function (index, control_clone){
+                    var control_no = $(control_clone).find('.control_no').val();
+                    var patient_1 = $(control_clone).find('.patient_1').val();
+                    var patient_2 = $(control_clone).find('.patient_2').val();
+                    var amount = $(control_clone).find('.amount').val();
+                    var saa_number = $(control_clone).find('.saa_number').val();
+                    var exist = existing_control.find(item => item.includes(control_no));
 
-                var amount = parseFloat($(this).val().replace(/,/g, '')) || 0;
-                total_saa = parseFloat(total_saa) || 0; 
-                total_saa = total_saa.toFixed(2);
-                total_saa = Number(total_saa) + Number(amount);
-                total_saa = total_saa.toFixed(2);
+                    // if ((new_control.includes(control_no) || exist) && (saa_number != 0) ) {
+                    //     Lobibox.alert('error',{
+                    //         size: 'mini',
+                    //         msg: 'Duplicate control no, kindly check!'
+                    //     });
+                    //    $(control_clone).find('.control_no').val('');
+                    //    hasErrors = true;
+                    //    return false;
+                    // }else{
+                    //     new_control.push(control_no);
+                    // }
 
-                if(total_saa > total_pro){
-                    alert('Mismatch total amount!');
-                    $(this).val('');
-                }
-            });
-            
-            getGrand();
-        }
-
-        var existing_control;
-        var transmittal;
-        var new_control = [];
-        var hasErrors = false; 
-
-        function controls(){
-            var cons = [];
-            $('.control_clone').each(function (index, clone) {
-                var control_no = $(clone).find('.control_no').val();
-                cons.push(control_no);
-            });
-            return cons;
-        }
-
-        $(document).on('input', '.control_no', function(){
-            var control_clone = $(this).closest('.control_clone');
-            var control_no = $(control_clone).find('.control_no').val();  
-            var cons = controls();
-            var index = cons.findIndex(item => item === control_no);
-            if (index > -1) {
-                cons.splice(index, 1); 
-            }            
-            var exist = existing_control.find(item => item === control_no);
-
-            if (cons.includes(control_no) || exist) {
-                alert('Control no ' +control_no+ ' existed already!')
-                // $(control_clone).find('.control_no').val('');
-                return false;
-            }
-        });
-
-        $(document).on('input', '.amount', function(){
-            var p_clone = $(this).closest('.proponent_clone');
-            calculateAmount(p_clone);
-        });
-
-        $(document).on('input', '.saa_amount', function(){
-            var p_clone = $(this).closest('.proponent_clone');
-            inputted_fundsource(p_clone);
-        });
-
-        function inputted_fundsource(data){
-            var total = 0;
-            data.find('.saa_amount').each(function(){
-                var amount = parseFloat(($(this).val()).replace(/,/g, '')) || 0;
-                total += amount;
-            });
-            data.find('.inputted_amount').text(Number(total.toFixed(2)).toLocaleString('en-US', { maximumFractionDigits: 2 }));
-        }
-
-        $(document).on('input', '.saa_amount', function(){
-            var data = $(this);
-            var clone_pro = data.closest('.proponent_clone');
-            var clone_saa =  data.closest('.saa_clone');
-            var input_value =  parseFloat(data.val().replace(/,/g, ''));
-
-            var saa_balance = parseFloat((clone_saa.find('.saa_id').find(':selected').attr('dataval')).replace(/,/g, ''));
-       
-            if(saa_balance != '' || saa_balance != undefined){
-
-                if(input_value > saa_balance){
-                    Lobibox.alert('error',{
-                        size : 'mini',
-                        msg : 'Insufficient balance is not enough, would you like to use another saa?',
-                        buttons : {
-                            yes: {
-                                'class': 'btn-xs btn-success',
-                                text: 'ADD',
-                                closeOnClick:true
-                            },
-                            no: {
-                                'class': 'btn-xs btn-warning',
-                                text: 'NO',
-                                closeOnClick:true
-                            }
-                        },
-                        callback: function (lobibox, type){
-                            if(type == 'yes'){
-                                $.get("{{ url('pre-dv/saa-clone').'/' }}" + f_id, function (result) {
-
-                                    var clonedElement = clone_saa.last().after(result).next();
-
-                                    clonedElement.find('.saa_clone_btn')
-                                        .removeClass('saa_clone_btn btn-info typcn typcn-plus menu-icon')
-                                        .addClass('saa_remove_btn btn-danger')
-                                        .css('background-color', 'red')
-                                        .text('')
-                                        .html('<span class="typcn typcn-minus menu-icon"></span>');
-                                }); 
-                                data.val(saa_balance.toFixed(2));
-                            }else{
-                                data.val('');
-                                inputted_fundsource(clone_pro)
-                            }
-                        }
-                    });     
-                }
-            }
-            evaluateSAA(clone_pro);
-            inputted_fundsource(clone_pro)
-        });
-
-        $(document).on('click', '.proponent_clone .btn_pro_remove', function () {
-            // var length = 0;
-
-            // $('.facility_div .proponent_clone').each(function (index, proponent_clone) {
-            //     var proponent = $(proponent_clone).find('.proponent').val();
-
-            //     if(proponent != ''){
-            //         length = length + 1;
-            //     }
-            // });
-
-            // if(length !=1){
-                $(this).closest('.proponent_clone').remove();
-            // }
-            // console.log('length', length);
-            getGrand();
-            getTransId();
-        });
-
-        $(document).on('click', '.proponent_clone .saa_clone .saa_clone_btn', function () {
-            if(f_id){
-                var button = $(this);
-
-                $.get("{{ url('pre-dv/saa-clone').'/' }}" + f_id, function (result) {
-                    var clonedElement = button.closest('.proponent_clone').find('.saa_clone').last().after(result).next();
-
-                    clonedElement.find('.saa_clone_btn')
-                        .removeClass('saa_clone_btn btn-info typcn typcn-plus menu-icon')
-                        .addClass('saa_remove_btn btn-danger')
-                        .css('background-color', 'red')
-                        .text('')
-                        .html('<span class="typcn typcn-minus menu-icon"></span>');
-
-                });
-            }else{
-                error();
-            }
-        });
-
-        $(document).on('click', '.proponent_clone .saa_clone .saa_remove_btn', function () {
-            // $(this).closest('.saa_clone').remove();  
-            var element = $(this);
-            var p_clone = element.closest('.proponent_clone');
-            element.closest('.saa_clone').remove();  
-            inputted_fundsource(p_clone); 
-        });
-
-        $(document).on('click', '.proponent_clone .control_div .control_clone_btn', function () {
-
-            if(f_id){
-                var button = $(this);
-                $.get("{{ route('clone.control') }}", function (result) {
-                    var clonedElement = $(result).appendTo(button.closest('.control_div')).last();
-
-                    clonedElement.find('.control_clone_btn')                
-                        .removeClass('control_clone_btn btn-info typcn typcn-plus menu-icon')
-                        .addClass('control_remove_btn btn-danger')
-                        .css('background-color','red')
-                        .text('')                    
-                        .html('<span class="typcn typcn-minus menu-icon"></span>');
-                });
-            }else{
-                error();
-            }
-        });
-
-        $(document).on('click', '.control_remove_btn', function () {
-            var p_clone = $(this).closest('.proponent_clone');
-            $(this).closest('.control_clone').remove();  
-            calculateAmount(p_clone);
-        });
-
-        $(document).on('click', '.proponent_clone .control_div .amount', function () {
-        });
-
-        $('.pre_form1, #pre_form').submit( function(e){
-            e.preventDefault();
-            var trans_ids = getTransId();
-            var facility_id = f_id;
-            var grand_total = $('.grand_total').val();
-            var all_data = [];
-
-            $('.facility_div .proponent_clone').each(function (index, proponent_clone) {
-                var proponent = $(proponent_clone).find('.proponent').val();
-                hasErrors = false; 
-
-                if(proponent != ''){
-                    var total_amount = $(proponent_clone).find('.total_amount').val();
-                    var pro_clone = [];
-                    var control_total = 0;
-                    $(proponent_clone).find('.control_clone').each(function (index, control_clone){
-                        var control_no = $(control_clone).find('.control_no').val();
-                        var patient_1 = $(control_clone).find('.patient_1').val();
-                        var patient_2 = $(control_clone).find('.patient_2').val();
-                        var amount = $(control_clone).find('.amount').val();
-                        var saa_number = $(control_clone).find('.saa_number').val();
-                        var exist = existing_control.find(item => item.includes(control_no));
-
-                        // if ((new_control.includes(control_no) || exist) && (saa_number != 0) ) {
-                        //     Lobibox.alert('error',{
-                        //         size: 'mini',
-                        //         msg: 'Duplicate control no, kindly check!'
-                        //     });
-                        //    $(control_clone).find('.control_no').val('');
-                        //    hasErrors = true;
-                        //    return false;
-                        // }else{
-                        //     new_control.push(control_no);
-                        // }
-
-                        var data = {
-                            control_no : control_no,
-                            patient_1 : patient_1,
-                            patient_2 : patient_2,
-                            amount : amount
-                        };
-                        pro_clone.push(data);
-                    });
-
-                    // if (hasErrors) return false;
-                    var fundsource_clone = [];
-                    var saa_total = 0;
-
-                    $(proponent_clone).find('.saa_clone').each(function (index, saa_clone){
-                        var info_id = $(saa_clone).find('.saa_id');
-                        info_id = info_id.find(':selected').attr('dataproponentInfo_id');
-                        var saa_id = $(saa_clone).find('.saa_id').val();
-                        var saa_amount = $(saa_clone).find('.saa_amount').val();
-                        saa_total += parseFloat(saa_amount.replace(/,/g, ''));
-                        
-                        var data1 = {
-                            saa_id : saa_id,
-                            saa_amount : saa_amount,
-                            info_id : info_id
-                        };
-                        fundsource_clone.push(data1);
-                    });
-
-                    saa_total = saa_total.toFixed(2);
-                
-                    if(saa_total != parseFloat(total_amount.replace(/,/g, ''))){
-                        Lobibox.alert('error',{
-                            size: 'mini',
-                            msg: 'Mismatch amount, kindly check!'
-                        });
-                        $(proponent_clone).find('.saa_clone').find('.saa_amount').val('');
-                        hasErrors = true; // Set error flag
-                        return false;
-                    }
-
-                    var data2 = {
-                        proponent : proponent,
-                        pro_clone : pro_clone,
-                        fundsource_clone : fundsource_clone,
-                        total_amount : total_amount
+                    var data = {
+                        control_no : control_no,
+                        patient_1 : patient_1,
+                        patient_2 : patient_2,
+                        amount : amount
                     };
-                    all_data.push(data2);
+                    pro_clone.push(data);
+                });
+
+                // if (hasErrors) return false;
+                var fundsource_clone = [];
+                var saa_total = 0;
+
+                $(proponent_clone).find('.saa_clone').each(function (index, saa_clone){
+                    var info_id = $(saa_clone).find('.saa_id');
+                    info_id = info_id.find(':selected').attr('dataproponentInfo_id');
+                    var saa_id = $(saa_clone).find('.saa_id').val();
+                    var saa_amount = $(saa_clone).find('.saa_amount').val();
+                    saa_total += parseFloat(saa_amount.replace(/,/g, ''));
+                    
+                    var data1 = {
+                        saa_id : saa_id,
+                        saa_amount : saa_amount,
+                        info_id : info_id
+                    };
+                    fundsource_clone.push(data1);
+                });
+
+                saa_total = saa_total.toFixed(2);
+            
+                if(saa_total != parseFloat(total_amount.replace(/,/g, ''))){
+                    Lobibox.alert('error',{
+                        size: 'mini',
+                        msg: 'Mismatch amount, kindly check!'
+                    });
+                    $(proponent_clone).find('.saa_clone').find('.saa_amount').val('');
+                    hasErrors = true; // Set error flag
+                    return false;
                 }
-            });  
 
-            if (hasErrors) return;
-            var jsonData = JSON.stringify(all_data);
-            var encodedData = encodeURIComponent(jsonData);
-
-            if($('#pre_id').val() == undefined){
-                // $('.pre_form').attr('action', "{{ route('pre_dv.save') }}".replace(':data', encodedData));
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ route("pre_dv.save") }}',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        data: encodedData,
-                        transmittal_id: trans_ids,
-                        facility_id: $('.facility_id').val(),
-                        grand_total: $('.grand_total').val()
-                    },
-                    success: function (response) {
-
-                        Lobibox.notify('success', {
-                            msg: "Successfully created pre_dv!",
-                        });
-                        location.reload();
-                    }
-                });
-            }else{
-                // $('.pre_form').attr('action', "{{ route('pre_update.save') }}".replace(':data', encodedData));
-                // $('.updated_submit').trigger('click');
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ route("pre_update.save") }}',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        data: encodedData,
-                        facility_id: $('#facility_id').val(),
-                        grand_total: $('#grand_total').val(),
-                        pre_id: $('#pre_id').val()
-
-                    },
-                    success: function (response) {
-                        Lobibox.notify('success', {
-                            msg: "Successfully created pre_dv!",
-                        });
-                        location.reload();
-                    },
-                    error: function (error) {
-                        if (error.status) {
-                            console.error('Status Code:', error.status);
-                        }
-
-                        if (error.responseJSON) {
-                            console.error('Response JSON:', error.responseJSON);
-                        }
-
-                    }
-                });
+                var data2 = {
+                    proponent : proponent,
+                    pro_clone : pro_clone,
+                    fundsource_clone : fundsource_clone,
+                    total_amount : total_amount
+                };
+                all_data.push(data2);
             }
-        });
+        });  
 
-    </script>
+        if (hasErrors) return;
+        var jsonData = JSON.stringify(all_data);
+        var encodedData = encodeURIComponent(jsonData);
+
+        if($('#pre_id').val() == undefined){
+            // $('.pre_form').attr('action', "{{ route('pre_dv.save') }}".replace(':data', encodedData));
+            $.ajax({
+                type: 'POST',
+                url: '{{ route("pre_dv.save") }}',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    data: encodedData,
+                    transmittal_id: trans_ids,
+                    facility_id: $('.facility_id').val(),
+                    grand_total: $('.grand_total').val()
+                },
+                success: function (response) {
+
+                    Lobibox.notify('success', {
+                        msg: "Successfully created pre_dv!",
+                    });
+                    location.reload();
+                }
+            });
+        }else{
+            // $('.pre_form').attr('action', "{{ route('pre_update.save') }}".replace(':data', encodedData));
+            // $('.updated_submit').trigger('click');
+            $.ajax({
+                type: 'POST',
+                url: '{{ route("pre_update.save") }}',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    data: encodedData,
+                    facility_id: $('#facility_id').val(),
+                    grand_total: $('#grand_total').val(),
+                    pre_id: $('#pre_id').val()
+
+                },
+                success: function (response) {
+                    Lobibox.notify('success', {
+                        msg: "Successfully created pre_dv!",
+                    });
+                    location.reload();
+                },
+                error: function (error) {
+                    if (error.status) {
+                        console.error('Status Code:', error.status);
+                    }
+
+                    if (error.responseJSON) {
+                        console.error('Response JSON:', error.responseJSON);
+                    }
+
+                }
+            });
+        }
+    });
+
+</script>
     
 @endsection

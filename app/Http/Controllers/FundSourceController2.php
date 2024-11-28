@@ -12,8 +12,11 @@ use App\Models\User;
 use App\Models\Dv;
 use App\Models\NewDV;
 use App\Models\PreDv;
+use App\Models\AdminCostUtilization;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 class FundSourceController2 extends Controller{
 
@@ -211,13 +214,26 @@ class FundSourceController2 extends Controller{
                     }
                     ])->where('status', 0)->get();
 
+            $admin_c = AdminCostUtilization::with('fundSourcedata:id,saa')->get();
+            $combi = $util->merge($admin_c);
+            $combi = $combi->sortByDesc('updated_at'); // Change to 'updated_by' if needed
+            // return $combi;
                     // return $util;
+            $perPage = 10;
+            $data = new LengthAwarePaginator(
+                $combi->forPage(LengthAwarePaginator::resolveCurrentPage(), $perPage),
+                $combi->count(),
+                $perPage,
+                null,
+                ['path' => LengthAwarePaginator::resolveCurrentPath()]
+            );
 
-            if(count($util) > 0){
+
+            if(count($combi) > 0){
                 return view('fundsource_budget.budget_tracking',[
-                    'result' => $util,
+                    'result' => $data,
                     'facilities' => Facility::get(),
-                    'last' => $util->last()
+                    'last' => $combi->last()
                 ]);
             }else{
                 return 'No data available!';
@@ -244,8 +260,19 @@ class FundSourceController2 extends Controller{
                     'info' => $info
                 ];
             }
+
+            $perPage = 10;
+            $dataCollection = collect($data); 
+            $all_data = new LengthAwarePaginator(
+                $dataCollection->forPage(LengthAwarePaginator::resolveCurrentPage(), $perPage),
+                $dataCollection->count(),
+                $perPage,
+                null,
+                ['path' => LengthAwarePaginator::resolveCurrentPath()]
+            );
+
             return view('fundsource_budget.funds_tracking',[
-                'result' => $data,
+                'result' => $all_data,
                 'facilities' => Facility::get()->select('id','name'),
                 'saa' => $saa
             ]);
@@ -289,17 +316,69 @@ class FundSourceController2 extends Controller{
     public function saveCost(Request $request){
         $data = $request->data;
         if($data){
-            
+            $util = new AdminCostUtilization();
+            $util->util_id = $data['l_id'];
+            $util->fundsource_id = $data['saa_id'];
+            $util->proponent = $data['pro'];
+            $util->dv_no = $data['dv_no'];
+            $util->payee = $data['payee'];
+            $util->ors_no = $data['ors'];
+            $util->recipient = $data['fc'];
+            $util->admin_uacs = $data['uacs'];
+            $util->admin_cost = (float) str_replace(',','',$data['cost']);
+            $util->created_by = Auth::user()->userid;
+            $util->save();
+            return 'success';
         }
-        // l_id: l_id,
-        //         uacs: uacs,
-        //         cost: cost,
-        //         ors: ors,
-        //         fc: fc,
-        //         payee: payee,
-        //         date: date,
-        //         pro: pro,
-        //         saa_id: saa_id
-        return $data;
+    }
+
+    public function confirmBudget($id){
+       
+        $util = Utilization::where('id', $id)
+            ->with([
+                'fundSourcedata:id,saa,remaining_balance,alocated_funds,admin_cost',
+                'proponentdata:id,proponent',
+                'infoData:id,facility_id',
+                'facilitydata:id,name',
+                'dv' => function($query){
+                    $query->with('facility:id,name');
+                },
+                'dv3' => function($query){
+                    $query->with('facility:id,name');
+                },
+                'newDv' => function($query){    
+                    $query->with([
+                        'preDv' => function($query){
+                            $query->with('facility:id,name');
+                        }
+                    ]);
+                }
+            ])->where('status', 0)->paginate(10);
+
+        // $admin_c = AdminCostUtilization::with('fundSourcedata:id,saa')->get();
+        // $combi = $util->merge($admin_c);
+        // $combi = $combi->sortByDesc('updated_at'); // Change to 'updated_by' if needed
+        // return $combi;
+                // return $util;
+        // $perPage = 10;
+        // $data = new LengthAwarePaginator(
+        //     $util->forPage(LengthAwarePaginator::resolveCurrentPage(), $perPage),
+        //     $combi->count(),
+        //     $perPage,
+        //     null,
+        //     ['path' => LengthAwarePaginator::resolveCurrentPath()]
+        // );
+
+
+        if(count($util) > 0){
+            return view('fundsource_budget.budget_tracking',[
+                'result' => $util,
+                'facilities' => Facility::get(),
+                'last' => $util->last()
+            ]);
+        }else{
+            return 'No data available!';
+        }
+       
     }
 }

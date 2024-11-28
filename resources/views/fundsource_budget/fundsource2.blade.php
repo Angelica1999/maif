@@ -128,9 +128,7 @@
             <form id="update_fundsource2">
                 @csrf    
                 <div class="modal_body">
-
                     <div class="card" style="padding:10px">
-
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -168,7 +166,45 @@
 @endsection
 @section('js')
 <script src="{{ asset('admin/vendors/sweetalert2/sweetalert2.js?v=1') }}"></script>
+<script src="{{ asset('admin/vendors/x-editable/bootstrap-editable.min.js?v=1') }}"></script>
 <script>
+
+    $(document).on('click', '.budget_track_pag a', function(e) {
+        e.preventDefault(); 
+        let url = $(this).attr('href');
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(response) {
+                var newRows = $(response).filter('tr');
+                $('#budget_track_body').html(response);
+            },
+            error: function(xhr) {
+                console.error('Error:', xhr.responseText);
+            }
+        });
+    });
+
+    $(document).on('click', '.funds_pagination a', function(e) {
+        e.preventDefault(); 
+        let url = $(this).attr('href');
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(response) {
+                var newRows = $(response).filter('tr');
+                console.log('response', newRows);
+                $('#budget_track_funds').html(response);
+            },
+            error: function(xhr) {
+                console.error('Error:', xhr.responseText);
+            }
+        });
+    });
+
+
     var saa;
     function addCost() {
         var table = document.getElementById("budget_track2").getElementsByTagName('tbody')[0];
@@ -190,7 +226,7 @@
                     cell.style.maxWidth = "190px";
                     break;
                 case 2:
-                    cell.innerHTML = '<input type="date" name="ad_date[]" value="{{(new DateTime())->format('Y-m-d')}}" class="ad_date" style="width: 100%; border:0px">';
+                    cell.innerHTML = '<span name="ad_date[]" class="ad_date" style="width: 100%; border:0px">{{(new DateTime())->format('Y-m-d')}}</span>';
                     cell.style.maxWidth = "90px";
                     break;
                 case 3:
@@ -218,7 +254,7 @@
                     cell.style.maxWidth = "130px";
                     break;
                 case 9:
-                    cell.innerHTML = '<input type="text" class="admin_uacs" name="admin_uacs[]" onkeyup="validateAmount(this)" style="width: 100%; border:0px">';
+                    cell.innerHTML = '<input type="text" class="admin_uacs" name="admin_uacs[]" style="width: 100%; border:0px">';
                     cell.style.maxWidth = "90px";
                     break;
                 case 10:
@@ -258,6 +294,7 @@
         var payee = row.find('.payee').val();
         var date = row.find('.ad_date').val();
         var pro = row.find('.pro_name').val();
+        var dv_no = row.find('.dv_no').val();
 
         var data = 
             {
@@ -269,7 +306,8 @@
                 payee: payee,
                 date: date,
                 pro: pro,
-                saa_id: saa_id
+                saa_id: saa_id,
+                dv_no: dv_no
             };
 
         $.ajax({
@@ -280,7 +318,15 @@
                     data: data
                 },
                 success: function (response) {
-                    console.log('sadsd', response);
+                    console.log('response', response);
+                    Swal.fire({
+                        icon: 'success',            
+                        title: 'Success!',
+                        text: 'Operation completed successfully.', 
+                        timer: 1000,                
+                        timerProgressBar: true,     
+                        showConfirmButton: false   
+                    });
                 },
                 error: function (error) {
                     if (error.status) {

@@ -394,7 +394,6 @@
     var vat = 0, ewt = 0;
     $(document).ready(function() {
         var type = $('.identifier').val();
-        console.log('chaki', type);
         if(type == "processed" || type == "done"){
             $('.ors_no').css('display', 'none');
             $('.btn-success').css('display', 'none');

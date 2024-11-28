@@ -74,7 +74,6 @@
             var answer = confirm('Are you sure you wanted to remove this patient from this group?');
             if(answer){
                 $.get("{{ url('group/remove_patient').'/' }}"+patient_id, function(result) {
-                    console.log('chaki', result);
                 });
                 to_remove.remove();
                 $('.amount_total').val(formatNumberWithCommas(result));

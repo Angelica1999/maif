@@ -936,7 +936,10 @@ class HomeController extends Controller
         if(!$patient){
             return redirect()->back()->with('error', 'Patient not found');
         }
-        Patients::where('id', $id)->update(['sent_type' => $request->sent_type]);
+        Patients::where('id', $id)->update([
+            'sent_type' => $request->sent_type, 
+            'fc_status' => $request->sent_type == 3 ? 'referred' : null, 
+        ]);
         ReturnedPatients::insert([
             'patient_id' => $id, 
             'remarks' => $request->pat_rem,
@@ -945,6 +948,13 @@ class HomeController extends Controller
         ]);
         
         return redirect()->back()->with($request->sent_type == 2? 'return_gl' : 'process_gl', true);
+    }
+
+    public function acceptPat($id){
+        Patients::where('id', $id)->update([
+            'fc_status' => 'referred'
+        ]);
+        return redirect()->back()->with('process_gl', true);
     }
 
     public function patients(Request $request){

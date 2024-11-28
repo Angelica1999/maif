@@ -171,9 +171,6 @@
         $('#release_btn').val(ids);
         $('#all_route').val(routes);
 
-        console.log('chakiii', ids);
-        console.log('chakiii', routes);
-
     });
 
     @if($user == 1027 || $user == 2660)
@@ -485,9 +482,7 @@
                     $('#inputValue3').val(formatNumberWithCommas(rem2));
                 }
             }
-        // }
-        
-        console.log('chaki', $('#saa2').val());
+        // }   
     }
 
     function resetFields(facility_id) {
@@ -788,7 +783,6 @@
             $('#pro_id1').val($('#saa1').find(':selected').attr('dataproponent'));
             $('#pro_id2').val($('#saa2').find(':selected').attr('dataproponent'));
             $('#pro_id3').val($('#saa3').find(':selected').attr('dataproponent'));
-            console.log('chakibells',  $('#saa1_infoId').val());
 
             if(facility_id !== null && facility_id !== undefined && facility_id !== ''){
                 // $.get("{{ url('/getallocated').'/' }}" +facility_id, function(result) {
@@ -1193,7 +1187,6 @@
                         $('#facilityDropdown').val(facility).trigger('change');
                         $('#for_facility_id').val(facility);
                         onchangeSaa($('#saa1'), result.proponentInfo[0].id, result.proponentInfo[0].pro_group);
-                        console.log('chakii',result.dv.facility.name);        
                         counter = 0;
                         var vat=1;
                         if(result.dv.deduction1>3){

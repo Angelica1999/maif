@@ -20,6 +20,7 @@ use App\Models\Dv3;
 use App\Models\Dv3Fundsource;
 use App\Models\TrackingMaster;
 use App\Models\TrackingDetails;
+use App\Models\NewDV;
 
 class Dv3Controller extends Controller
 {
@@ -509,10 +510,24 @@ class Dv3Controller extends Controller
             ->orderBy('created_at', 'desc');
 
         }
+
+        if($request->viewAll){
+            $request->keyword = '';
+        }else if($request->keyword){
+            $keyword = $request->keyword;
+            $dv3->where('route_no', 'LIKE', "%$keyword%")->orWhere('dv_no', 'LIKE', "%$keyword%");
+            if ($dv3->count() >= 0) {
+                $new = NewDV::where('route_no', 'LIKE', "%$keyword%")->orWhere('dv_no', 'LIKE', "%$keyword%")->get();
+                if(count($new)> 0){
+                    return redirect()->route('pre_dv_budget', ['type' => 'awaiting', 'keyword' => $keyword]);
+                }
+            }
+        }
         
         return view('fundsource_budget.dv3_list', [
           'dv3' => $dv3->paginate(50),
-          'type' => $type
+          'type' => $type,
+          'keyword' => $request->keyword
         ]);
     }
 

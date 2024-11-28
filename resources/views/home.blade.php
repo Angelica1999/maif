@@ -137,7 +137,7 @@
                                 </button>
                             </div>
                         </th>
-                        <th>@sortablelink('remarks', 'Status')</th>
+                        <th style="min-width:80px">@sortablelink('remarks', 'Status')</th>
                         <th>Remarks</th>
                         <th style="min-width:10px; text-align:center;">Group</th>
                         <th style="min-width:140px">Actual Amount</th>
@@ -246,9 +246,24 @@
                                 </div> -->
                             </td>
                             <td class="td">
-                                <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}" style="border-radius:0; background-color:teal;color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
-                                <a href="{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}" type="button" style="margin-top:1px; border-radius:0; width:50px;" class="btn btn-success btn-xs" id="send_btn">Send</a>
-                            
+                                <div style="display: flex; align-items: center; gap: 5px;">
+                                    <div>
+                                        <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}" 
+                                        style="border-radius:0; background-color:teal; color:white; width:50px;" 
+                                        target="_blank" 
+                                        type="button" 
+                                        class="btn btn-xs">Print</a>
+                                        <a href="{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}" 
+                                        type="button" 
+                                        style="margin-top:1px; border-radius:0; width:50px;" 
+                                        class="btn btn-success btn-xs" 
+                                        id="send_btn">Send</a>
+                                    </div>
+                                    <a href="{{ route('patient.accept', ['id' => $patient->id]) }}" style="margin-left:10px">
+                                        <i class="fa fa-paper-plane"></i>
+                                    </a>
+                                </div>
+
                                 <!-- @if($patient->status == 1)
                                     <i style="font-size:20px" class="typcn typcn-home menu-icon"></i>
                                 @else

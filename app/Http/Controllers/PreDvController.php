@@ -861,8 +861,8 @@ class PreDvController extends Controller
                     'route_no' => $updated_route,
                     'remarks' => 6
                 ]);
-    
-                Http::get('http://gletter.cvchd7.com/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/dv');
+                Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/dv');
+                // Http::get('http://gletter.cvchd7.com/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/dv');
             }
            
             return redirect()->back()->with('pre_dv', true);
@@ -922,6 +922,7 @@ class PreDvController extends Controller
             $new->obligated_by = Auth::user()->userid;
             $new->obligated_on =  date('Y-m-d H:i:s');
             $new->status = 1;
+            $new->confirm = 1;
             $new->save();
 
             $uts = Utilization::where('div_id', $new->route_no)->get();
@@ -945,8 +946,8 @@ class PreDvController extends Controller
                 Transmittal::whereIn('id', $trans_ids)->update([
                     'remarks' => 7
                 ]);
-    
-                Http::get('http://gletter.cvchd7.com/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/obligate');
+                Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/obligate');
+                // Http::get('http://gletter.cvchd7.com/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/obligate');
             }
            
             return redirect()->back()->with('pre_dv_update', true);
@@ -970,8 +971,9 @@ class PreDvController extends Controller
                 Transmittal::whereIn('id', $trans_ids)->update([
                     'remarks' => 8
                 ]);
-    
-                Http::get('http://gletter.cvchd7.com/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/paid');
+
+                Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/paid');
+                // Http::get('http://gletter.cvchd7.com/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/paid');
             }
            
             return redirect()->back()->with('pay_dv', true);

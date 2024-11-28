@@ -435,9 +435,6 @@
             $('#release_btn').val(ids);
             $('#all_route').val(routes);
 
-            console.log('chakiii', ids);
-            console.log('chakiii', routes);
-
         });
 
         $('.filter-division').on('change',function(){

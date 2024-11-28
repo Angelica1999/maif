@@ -227,6 +227,9 @@
                 })
                 .then(data => {
                     Swal.fire('Success!', 'Your data has been submitted.', 'success');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
                 })
                 .catch(error => {
                     Swal.fire('Error!', 'There was an error submitting your data.', 'error');

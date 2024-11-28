@@ -477,7 +477,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" id="close_modal" data-dismiss="modal">Close</button>
-                        <button type="submit" id="create_pat_btn" style="display:none;" onclick="acceptPatient()" class="btn btn-primary">Process</button>
+                        <button type="submit" id="create_pat_btn" style="display:none;" onclick="acceptPatient()" class="btn btn-primary">Process  & Sent to Facility</button>
                         <button class="btn btn-warning return_btn" onclick="returnPatient()" style="display:none; color:white">Return</button>
                     </div>
                 </form>
