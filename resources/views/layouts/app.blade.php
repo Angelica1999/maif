@@ -10,6 +10,7 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- base:css -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('admin/vendors/typicons.font/font/typicons.css') }}">
     <link rel="stylesheet" href="{{ asset('admin/vendors/css/vendor.bundle.base.css') }}">
     <!-- endinject --> 

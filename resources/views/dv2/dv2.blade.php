@@ -95,7 +95,6 @@
     <script>
         function openModal() {
             var routeNoo = event.target.getAttribute('data-routeId'); 
-            console.log('chaki', routeNoo);
             var src = "https://mis.cvchd7.com/dts/document/trackMaif/" + routeNoo;
             // $('.modal-body').html(loading);
             setTimeout(function() {

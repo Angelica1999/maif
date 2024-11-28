@@ -70,31 +70,8 @@
                     BUDGET TRACKING DETAILS
                 </h4>
             </div>
-            <div class="table-container budget_container" style="height: 700px; overflow-y: auto; padding:10px">
-                <table class="table table-list table-hover" id="budget_track2">
-                    <thead style="position: sticky; top: 0; z-index: 1;">
-                        <tr style="text-align:center;">
-                            <th class="budget_th" style="border:1px solid black; vertical-align:middle; background-color:#CEAB60" colspan="12">BREAKDOWN OF CHARGES</th>
-                        </tr>
-                        <tr style="text-align:center; background-color:#F5F5F5">
-                            <th class="budget_th" style="min-width:200px; border:1px solid black; vertical-align:middle">SAA #</th>
-                            <th class="budget_th" style="max-width:190px; border:1px solid black; vertical-align:middle">PROPONENT</th>
-                            <th class="budget_th" style="max-width:90px; border:1px solid black; vertical-align:middle">DATE OF OBLIGATION</th>
-                            <th class="budget_th" style="max-width:60px; border:1px solid black; vertical-align:middle">DV #</th>
-                            <th class="budget_th" style="max-width:150px; border:1px solid black; vertical-align:middle">PAYEE</th>
-                            <th class="budget_th" style="max-width:150px; border:1px solid black; vertical-align:middle">RECIPIENT FACILITY</th>
-                            <th class="budget_th" style="max-width:60px; border:1px solid black; vertical-align:middle">ORS #</th>
-                            <th class="budget_th" style="max-width:130px; border:1px solid black; vertical-align:middle">MAIFIPP SUBSIDY/ FINANCIAL ASSISTANCE UACS EXPENSE</th>
-                            <th class="budget_th" style="max-width:130px; border:1px solid black; vertical-align:middle">MAIFIPP SUBSIDY/ FINANCIAL ASSISTANCE AMOUNT</th>
-                            <th class="budget_th" style="max-width:90px; border:1px solid black; vertical-align:middle">MAIFIPP ADMIN COST UACS EXPENSE</th>
-                            <th class="budget_th" style="max-width:90px; border:1px solid black; vertical-align:middle">MAIFIPP ADMIN COST AMOUNT</th>
-                            <th class="budget_th" style="border:1px solid black; vertical-align:middle"></th>
-                        </tr>
-                    </thead>
-                    <tbody id="budget_track_body">
-                        <!-- Data rows go here -->
-                    </tbody>
-                </table>
+            <div class="table-container budget_container" style="padding:10px">
+                <div id="budget_track_body"></div>
             </div>
             <div class="modal-footer budget_track_footer">
                 <button style="background-color:lightgray" class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> CLOSE</button>
@@ -112,30 +89,8 @@
                     BUDGET TRACKING DETAILS
                 </h4>
             </div>
-            <div class="table-container budget_container" style="height: 500px; overflow-y: auto; padding:10px">
-                <table class="table table-list table-hover" id="budget_funds">
-                    <thead style="position: sticky; top: 0; background-color: white; z-index: 1;">
-                        <tr style="text-align:center;">
-                            <th class="budget_th" style="border:1px solid black; vertical-align:middle; background-color:#CEAB60" colspan="3">BREAKDOWN OF FUNDS</th>
-                            <th class="budget_th" style="border:1px solid black; vertical-align:middle; background-color:#C9C9C9" colspan="3">MAIFIPP</th>
-                            <th class="budget_th" style="border:1px solid black; vertical-align:middle; background-color:#9BC2E6" colspan="3">ADMIN COST</th>
-                        </tr>
-                        <tr style="text-align:center; background-color:#F5F5F5">
-                            <th class="budget_th" style="min-width:200px; border:1px solid black; vertical-align:middle">PRIMARY PROPONENT</th>
-                            <th class="budget_th" style="min-width:200px; border:1px solid black; vertical-align:middle">C/O PROPONENT</th>
-                            <th class="budget_th" style="min-width:200px; border:1px solid black; vertical-align:middle">NAME OF HOSPITAL | RECIPIENT FACILITY</th>
-                            <th class="budget_th" style="min-width:80px; border:1px solid black; vertical-align:middle">TOTAL ALLOCATED AMOUNT</th>
-                            <th class="budget_th" style="min-width:130px; border:1px solid black; vertical-align:middle">AMOUNT OBLIGATED FOR MAIFIPP</th>
-                            <th class="budget_th" style="min-width:130px; border:1px solid black; vertical-align:middle">UNOBLIGATED ALLOTMENT FOR MAIFIPP (BALANCE)</th>
-                            <th class="budget_th" style="min-width:80px; border:1px solid black; vertical-align:middle">ALLOWABLE ADMIN COST (1%)</th>
-                            <th class="budget_th" style="min-width:130px; border:1px solid black; vertical-align:middle">AMOUNT OBLIGATED FOR ADMIN COST</th>
-                            <th class="budget_th" style="min-width:100px; border:1px solid black; vertical-align:middle">UNOBLIGATED ALLOTMENT FOR ADMIN COST (BALANCE)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="budget_track_funds">
-                        <!-- Data rows go here -->
-                    </tbody>
-                </table>
+            <div class="table-container budget_container" style="padding:10px">
+                <div id="budget_track_funds"></div>
             </div>
             <div class="modal-footer budget_track_footer">
                 <button style = "background-color:lightgray"  class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> Close</button>

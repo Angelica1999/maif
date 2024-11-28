@@ -339,7 +339,6 @@
     $('.dv3_saa').select2();
     $(document).ready(function() {
         $(document).off('click', '.container .clone_saa .add_more').on('click', '.container .clone_saa .add_more', function () {
-            console.log('chaki');
             $('.loading-container').show();
             var $this = $(this);
             setTimeout(function () {

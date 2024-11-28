@@ -533,7 +533,7 @@ class PrintController extends Controller
         }
     }
 
-    public function genPreImage($id) {
+    private function genPreImage($id) {
         $pre_dv = PreDV::where('id', $id)->with(
             [
                 'user:userid,fname,lname,mname',
@@ -593,7 +593,7 @@ class PrintController extends Controller
     }
 
     public function preImage($id) {
-
+        $this->genPreImage($id); 
         $pre_dv = PreDV::where('id', $id)->with(
             [
                 'user:userid,fname,lname,mname',

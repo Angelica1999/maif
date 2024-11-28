@@ -31,7 +31,7 @@ use App\Models\TrackingDetails;
                         <input type="hidden" name="s_id" class="stat_id" value="{{ implode(',',$s_id) }}">
                     </form>
                 </div>
-            </div>
+            </div>  
             <h4 class="card-title">PRE - DV (v2)</h4>
             <p class="card-description">
                 MAIF-IPP
@@ -355,10 +355,6 @@ use App\Models\TrackingDetails;
         }
         $('#release_btn').val(ids);
         $('#all_route').val(routes);
-
-        console.log('chakiii', ids);
-        console.log('chakiii', routes);
-
     });
 
 </script>

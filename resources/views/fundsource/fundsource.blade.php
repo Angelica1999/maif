@@ -60,10 +60,7 @@
                                             @endif
                                             <b><p class="">{{ $proponent->proponent }} (c/o)</p></b>
                                             <ul class="list-arrow mt-3">
-                                            <!-- {{count($proponent->proponentInfo)}} -->
-
                                                 @foreach($proponent->proponentInfo as $proponentInfo)
-
                                                     @if( $proponentInfo->facility !== null)
                                                         <li><b>{{ $proponentInfo->facility->name }}</b></li>
                                                     @else
@@ -83,24 +80,24 @@
 
                                                     @endif
 
-                                                        <div class="d-flex justify-content-between align-items-center">
-                                                            <span class="ml-3">Allocated Funds &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->alocated_funds)), 2, '.', ',') }}</strong></span>
-                                                            <button style="min-width:90px; border-radius:0;" id="track" data-backdrop="static" data-proponentInfo-id="{{ $proponentInfo->id }}" data-toggle="modal" href="#track_details2" onclick="track_details2(event)" class='btn btn-sm btn-outline-info track_details2'>Track</button>
-                                                        </div>
-                                                        <div class="d-flex justify-content-between align-items-center">
-                                                            <span class="ml-3">Administrative Cost : <strong class="text-info">{{ $proponentInfo->admin_cost}}</strong></span>
-                                                            @if($user->section != 6)
-                                                                <button style="min-width:90px; border-radius:0; margin-top:1px" id="transfer_funds" data-backdrop="static" data-toggle="modal" href="#transfer_fundsource" onclick="transferFunds({{ $proponentInfo->id }})" style="width:100px" class='btn btn-sm btn-outline-success ml-2 transfer_funds'>Transfer</button>
-                                                            @endif
-                                                        </div>
-                                                        <div class="d-flex justify-content-between align-items-center">
-                                                            @if( $proponentInfo->remaining_balance == 0)
-                                                                <span class="ml-3">Remaining Balance &nbsp;: <strong class="text-danger">{{ number_format(floatval(str_replace(',', '', $proponentInfo->remaining_balance)), 2, '.', ',') }}</strong></span>
-                                                            @else
-                                                                <span class="ml-3">Remaining Balance &nbsp;: <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->remaining_balance)), 2, '.', ',') }}</strong></span>
-                                                            @endif
-                                                        </div>
-                                                        <div class="d-flex justify-content-end mt-2"></div>
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <span class="ml-3">Allocated Funds &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->alocated_funds)), 2, '.', ',') }}</strong></span>
+                                                        <button style="min-width:90px; border-radius:0;" id="track" data-backdrop="static" data-proponentInfo-id="{{ $proponentInfo->id }}" data-toggle="modal" href="#track_details2" onclick="track_details2(event)" class='btn btn-sm btn-outline-info track_details2'>Track</button>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <span class="ml-3">Administrative Cost : <strong class="text-info">{{ $proponentInfo->admin_cost}}</strong></span>
+                                                        @if($user->section != 6)
+                                                            <button style="min-width:90px; border-radius:0; margin-top:1px" id="transfer_funds" data-backdrop="static" data-toggle="modal" href="#transfer_fundsource" onclick="transferFunds({{ $proponentInfo->id }})" style="width:100px" class='btn btn-sm btn-outline-success ml-2 transfer_funds'>Transfer</button>
+                                                        @endif
+                                                    </div>
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        @if( $proponentInfo->remaining_balance == 0)
+                                                            <span class="ml-3">Remaining Balance &nbsp;: <strong class="text-danger">{{ number_format(floatval(str_replace(',', '', $proponentInfo->remaining_balance)), 2, '.', ',') }}</strong></span>
+                                                        @else
+                                                            <span class="ml-3">Remaining Balance &nbsp;: <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->remaining_balance)), 2, '.', ',') }}</strong></span>
+                                                        @endif
+                                                    </div>
+                                                    <div class="d-flex justify-content-end mt-2"></div>
                                                 @endforeach
                                             </ul>
                                             <!-- <div> -->
@@ -480,7 +477,6 @@
         }
 
         function createFundSource() {
-            console.log('chaki');
             $('.modal_body').html(loading);
             $('.modal-title').html("Create Fundsource");
             var url = "{{ route('fundsource.create') }}";

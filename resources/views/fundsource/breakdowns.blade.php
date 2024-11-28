@@ -380,9 +380,7 @@
                     
                 });
             });
-            console.log('chaki', nu);
             nu = nu/5;
-            console.log('chaki1', nu);
             formData = formData.filter(function (data, index, array) {
                 return (
                     data.proponent !== "" &&

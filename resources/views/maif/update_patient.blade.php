@@ -222,7 +222,6 @@
             $('#proponent_id').prop('disabled', false);
         });
         if (patientRegion !== "Region 7"){
-            console.log('chaki');
             var patientProvinceDescription = "{{ $patient->other_province }}"; 
             var patientMuncity = "{{ $patient->other_muncity }}";
             var patientBarangay = "{{$patient->other_barangay}}";

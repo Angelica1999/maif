@@ -30,7 +30,7 @@ use App\Models\TrackingDetails;
                             <th style="min-width:100px">Route</th>
                             <th>Facility</th>
                             <th>Proponent</th>
-                            <th>Grand Total</th>
+                            <th style="min-width:100px">Grand Total</th>
                             <th>Created By</th>
                             <th>Created On</th>
                         </tr>
@@ -90,15 +90,16 @@ use App\Models\TrackingDetails;
                             <th>PAYEE</th>
                             <th>RECIPIENT FACILITY</th>
                             <th>Utilize Amount</th>
+                            <th>Confirm</th>
                         </tr>
                     </thead>
                     <tbody id="confirm_body"></tbody>
                 </table>
             </div>
             <div class="modal-footer confirm_footer">
-                <button type="button" class="btn btn-success" onclick="confirm()">Confirm</button>
-                <button type="button" class="btn btn-info" onclick="obligate()">Confirm and Obligate</button>
-                <button style="background-color:lightgray"  class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> Close</button>
+                <!-- <button type="button" class="btn btn-success" onclick="confirm()">Confirm</button> -->
+                <button type="button" class="btn btn-info budget_obligate" style="display:none" onclick="obligate()">Obligate</button>
+                <button style="background-color:lightgray;" class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> Close</button>
             </div>
         </div>
     </div>
@@ -116,6 +117,25 @@ use App\Models\TrackingDetails;
         </div>
     </div>
 </div>
+<div class="modal fade" id="budget_confirm" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" style="border-radius:0px;">
+            <div class="modal-header" style="text-align:center">
+                <h4 class="text-success modal-title">
+                    <i style="font-size:15px" class="typcn typcn-location-arrow menu-icon"></i>
+                    BUDGET TRACKING DETAILS
+                </h4>
+            </div>
+            <div class="table-container budget_container" style="padding:10px">
+                <div id="confirm_budget"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-sm btn-info" data-dismiss="modal" onclick="confirmed()">CONFIRM</button>
+                <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">CLOSE</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @include('modal')
 @endsection
@@ -129,29 +149,48 @@ use App\Models\TrackingDetails;
     var dv_id = 0;
     var id = 0;
     var con = 0;
+    var util_id = 0;
+
+    function confirmed(){
+        $('#checkbox_' + util_id).prop('checked', true);
+
+        var checkboxes = $('.confirm_check');
+        var allChecked = checkboxes.filter(':not(:checked)').length == 0;
+
+        if (allChecked) {
+            $('.budget_obligate').css('display', 'block');
+        } else {
+            $('.budget_obligate').css('display', 'none');
+        }
+    }
+
+    function displayFunds(route_no, proponent, id){
+        util_id = id;
+        console.log('sd', id);
+        $('#budget_confirm').modal('show');
+        $.get("{{ url('confirm-budget').'/' }}" + id, function(result) {
+            $('#confirm_budget').html(result);
+        });
+    }
 
     function viewV1(d_id, d_dv_id, confirmation) {
         dv_id = d_dv_id;
         id = d_id;
-        console.log('id', id);
-        console.log('dv_id', doc_type);
-        // if(confirmation == 'yes' || doc_type == "accomplished" || doc_type == "deferred"){
+        if(doc_type == "accomplished" || doc_type == "deferred"){
             $('#view_v2').modal('show');
             $('.pre_body').empty();
             $.get("{{ url('pre-dv/budget/v2/').'/' }}" + doc_type + '/' + id, function(result) {
                 $('.pre_body').append(result);
             });
-        // }else{
-        //     $('#confirm_dv').modal('show');
-        //     $.get("{{ url('budget/confirm').'/' }}" + dv_id, function(result) {
-        //         $('#confirm_body').append(result);
-        //     });
-        // }
-        
+        }else{
+            $('#confirm_dv').modal('show');
+            $.get("{{ url('budget/confirm').'/' }}" + dv_id, function(result) {
+                $('#confirm_body').html(result);
+            });
+        } 
     }
 
     function confirm(){
-        console.log('sdf', dv_id);
         $.get("{{ url('confirm').'/' }}" + dv_id, function(result) {
             Swal.fire({
                 icon: 'success',

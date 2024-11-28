@@ -46,7 +46,6 @@
                 $('#facilityDropdown').val(facility).trigger('change');
                 $('#for_facility_id').val(facility);
                 onchangeSaa($('#saa1'), result.proponent[0].id, result.proponent[0].pro_group);
-                console.log('chakii',result.facility.name);        
                 counter = 0;
                 var vat=1;
                 if(result.dv.deduction1>3){

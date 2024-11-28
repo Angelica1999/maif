@@ -515,7 +515,6 @@
         if (event.target.type === 'checkbox') {
             inputElement.value = formatNumberWithCommas(getSelectedItems(dropdownContent));
             fundAmount();
-            console.log('chakichaki');
         }
       };
     }
