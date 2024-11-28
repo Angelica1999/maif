@@ -18,6 +18,7 @@ use App\Models\ProponentInfo;
 use App\Models\ProponentUtilizationV1;
 use App\Models\SupplementalFunds;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Log;
 
 class ProponentController extends Controller
 {
@@ -255,6 +256,19 @@ class ProponentController extends Controller
         ]);
     }
 
+    public function delGL($id){
+        $patient = Patients::where('id', $id)->first();
+
+        if (!$patient) {
+            Log::warning("Patient with ID {$id} not found for deletion.");
+            return response()->json(['success' => false]);
+        }
+
+        Log::info("Deleting patient record: ", $patient->toArray());
+        $patient->delete();
+        return response()->json(['success' => true]);
+      }
+
     public function tracking($code){
         // $tracking = ProponentUtilizationV1::where('proponent_code', $code)
         //     ->with([
@@ -267,7 +281,7 @@ class ProponentController extends Controller
         //         }
         //     ])->get();
         $ids = Proponent::where('proponent', $code)->pluck('id')->toArray();
-        $tracking = Patients::whereIn('proponent_id', $ids)->with('facility:id,name','encoded_by:userid,fname,lname,mname', 'gl_user:username,fname,lname')->get();
+        $tracking = Patients::whereIn('proponent_id', $ids)->with('facility:id,name','encoded_by:userid,fname,lname,mname', 'gl_user:username,fname,lname')->paginate(20);
 
         if(count($tracking) > 0){
             return view('proponents.proponent_util',[

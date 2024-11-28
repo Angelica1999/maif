@@ -259,7 +259,7 @@
                                         class="btn btn-success btn-xs" 
                                         id="send_btn">Send</a>
                                     </div>
-                                    <a href="{{ route('patient.accept', ['id' => $patient->id]) }}" style="margin-left:10px">
+                                    <a href="{{ route('patient.accept', ['id' => $patient->id]) }}" style="margin-left:10px; font-size:14px" title="Send this GL to facility">
                                         <i class="fa fa-paper-plane"></i>
                                     </a>
                                 </div>

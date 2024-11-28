@@ -62,22 +62,24 @@
         </div>
     </div>
 </div>
-
-<div class="modal fade" id="pro_util" role="dialog">
+<div class="modal fade" id="gl_tracking" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content" style="border-radius:0px;">
             <div class="modal-header" style="text-align:center">
                 <h4 class="text-success modal-title">
                     <i style="font-size:15px" class="typcn typcn-location-arrow menu-icon"></i>
-                    TRACKING DETAILS
+                    PROPONENT TRACKING DETAILS (guarantee letters)
                 </h4>
             </div>
-            <div class="pro_body">
+            <div class="table-container budget_container" style="padding:10px">
+                <div id="gl_body"></div>
+            </div>
+            <div class="modal-footer budget_track_footer">
+                <button style="background-color:lightgray" class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> CLOSE</button>
             </div>
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="supp_tracking" role="dialog">
     <div class="modal-dialog modal-md" role="document">
         <div class="modal-content" style="border-radius:0px;">
@@ -97,7 +99,80 @@
 @endsection
 @section('js')
 <script>
-    
+    $(document).on('click', '.pro_util_pages a', function(e) {
+        e.preventDefault(); 
+        let url = $(this).attr('href');
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(response) {
+                var newRows = $(response).filter('tr');
+                $('#gl_body').html(response);
+            },
+            error: function(xhr) {
+                console.error('Error:', xhr.responseText);
+            }
+        });
+    });
+
+    function deletePatient(rowId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to delete this patient record?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `proponent/patient-delete/${rowId}`, 
+                    type: 'GET', 
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: 'Deleted!',
+                                text: 'The patient record has been successfully deleted.',
+                                icon: 'success',
+                                timer: 1000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                $(".gl_"+rowId).remove();
+                                console.log('sd',$(".gl_"+rowId).remove() );
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: response.message || 'Failed to delete the record.',
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'An error occurred while trying to delete the record.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                });
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                Swal.fire({
+                    title: 'Cancelled',
+                    text: 'Deletion has been cancelled.',
+                    icon: 'info',
+                    timer: 1000,
+                    showConfirmButton: false
+                });
+            }
+        });
+    }
+
     function updateAmount(id){
         Swal.fire({
             title: 'Update Supplemental Funds',
@@ -223,7 +298,8 @@
 
     function disUtil(code){
         console.log('data', code);
-        $('.pro_body').html(loading);
+        // $('.pro_body').html(loading);
+        $('#gl_body').html(loading);
         $.get("{{ url('proponent/util').'/' }}"+code, function(result){
             if(result == 0){
                 $('#pro_util').modal('hide');
@@ -235,9 +311,9 @@
                     timerProgressBar: true,
                 });
             }else{
-                $('.pro_body').html(result);
-                $('#pro_util').css('display', 'block');
-                $('#pro_util').modal('show');
+                $('#gl_body').html(result);
+                $('#gl_tracking').css('display', 'block');
+                $('#gl_tracking').modal('show');
                 $('.modal-backdrop').addClass("fade show");
             }
         });
