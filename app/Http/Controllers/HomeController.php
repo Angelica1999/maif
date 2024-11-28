@@ -1156,7 +1156,7 @@ class HomeController extends Controller
         $prvnc = Province::whereIn('id', $province->groupBy('province_id')->pluck('province_id'))->select('id','description')->get();
         $on = $on->groupBy(DB::raw('DATE(created_at)'))->pluck(DB::raw('MAX(DATE(created_at))'));
         $all_pat = clone ($patients);
-        $proponents_code = Proponent::groupBy('proponent_code')->select(DB::raw('MAX(proponent) as proponent'), DB::raw('MAX(proponent_code) as proponent_code'),DB::raw('MAX(id) as id') )->get();
+        $proponents_code = Proponent::groupBy('proponent')->select(DB::raw('MAX(proponent) as proponent'), DB::raw('MAX(proponent_code) as proponent_code'),DB::raw('MAX(id) as id') )->get();
         // return $patients->paginate(10);
         return view('maif.proponent_patient', [
             'patients' => $patients->whereNotNull('sent_type')->paginate(50),

@@ -1,3 +1,4 @@
+<?php use App\Models\Facility;?>
 <style>
     .custom-dropdown {
       position: relative;
@@ -195,16 +196,29 @@
                                                                 $text_display = $item->fundsource->saa . ' - ' . $item->proponent->proponent . ' - ' . $item->facility->name . ' - ' . $rem_balance;
                                                             } 
                                                         }else{
-                                                            if (str_contains($item->facility_id, '702')) {
-                                                                $text_display = $item->fundsource->saa . ' - ' . $item->proponent->proponent . ' - ' . 'DOH CVCHD' . ' - ' . $rem_balance;
-                                                            }else{
-                                                                $text_display = $item->fundsource->saa . ' - ' . $item->proponent->proponent . ' - SF - ' . $rem_balance;
+
+                                                            $facilityIds = json_decode($item->facility_id);
+
+                                                            $f_name = '';
+
+                                                            foreach($facilityIds as $f_id){
+                                                                $facility = Facility::where('id', $f_id)->first();  
+                                                                $f_name = $f_name .' - '.$facility->name.' - ';
                                                             }
+                                                            
+                                                            $text_display = $item->fundsource->saa . ' - ' . $item->proponent->proponent . ' - '.$f_name . $rem_balance;
+
+
+                                                            // if (str_contains($item->facility_id, '702')) {
+                                                            //     $text_display = $item->fundsource->saa . ' - ' . $item->proponent->proponent . ' - ' . 'DOH CVCHD' . ' - ' . $rem_balance;
+                                                            // }else{
+                                                            //     $text_display = $item->fundsource->saa . ' - ' . $item->proponent->proponent . ' - SF - ' . $rem_balance;
+                                                            // }
                                                         }
                                                     ?>
                                                     <option value="{{$item->fundsource_id}}" dataproponentInfo_id="{{$item->id}}" dataprogroup="{{$item->proponent->pro_group}}" data-facilities=""
                                                         dataproponent="{{$item->proponent->id}}" d_color="{{($rem_balance == 0)?'red':'normal'}}" style="background-color:green"
-                                                        {{($row->info_id == $item->id)?'selected':''}}>{{$text_display}} /// {{$item->id}} // {{$row->info_id}}</option>
+                                                        {{($row->info_id == $item->id)?'selected':''}}>{{$text_display}}</option>
                                                 @endforeach
                                             </select> 
                                             <input type="hidden" name="info_id[]" id="info_id" class="info_id" value="{{$row->info_id}}">

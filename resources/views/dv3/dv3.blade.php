@@ -28,7 +28,7 @@
                         </div>
                         <div class="input-group">
                             <input type="text" style="text-align:center" style="width:100px" class="form-control" id="filter_dates" value="{{($generated_dates)?$generated_dates:''}}" name="filter_dates" />
-                            <button type="submit" id="gen3_btn" style="background-color:teal; color:white; width:107px" class=""><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
+                            <button type="submit" id="gen3_btn" style="background-color:teal; color:white; width:91px" class=""><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
                         </div>
                         <input type="hidden" class="all_route" id="all_route" name="all_route">
                         <input type="hidden" id="filter_rem3" name="filter_rem3" value="{{implode(',', $filter_rem3)}}"></input>
@@ -241,7 +241,7 @@
                             @endforeach
                         @else
                             <tr>
-                                <td colspan="14">
+                                <td colspan="15">
                                     <div class="alert alert-danger" role="alert" style="width: 100%;">
                                         <i class="typcn typcn-times menu-icon"></i>
                                         <strong>No disbursement voucher version 3 found!</strong>
@@ -403,6 +403,7 @@
         }
 
         function updateDv3(route_no){
+            $('.modal_body').html(loading);
             $.get("{{url('dv3/update').'/'}}"+route_no, function(result){
                 $('.modal_body').html(result);
             });

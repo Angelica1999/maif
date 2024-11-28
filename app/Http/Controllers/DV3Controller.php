@@ -311,14 +311,16 @@ class Dv3Controller extends Controller
             
             $facility_id = (string) $dv3->facility_id;
             $add = $dv3->facility_id == 42? '852' : ($dv3->facility_id == 852?'42':0);
-            $info = ProponentInfo::with('facility:id,name,address', 'fundsource:id,saa,alocated_funds:remaining_balance', 'proponent')
-                ->where(function ($query) use ($facility_id, $add) {
-                    $query->whereJsonContains('proponent_info.facility_id', '702')
-                        ->orWhereJsonContains('proponent_info.facility_id', [$facility_id])
-                        ->orWhereJsonContains('proponent_info.facility_id', [$add]);
-                })
-                ->orWhereIn('proponent_info.facility_id', [$facility_id, $add, '702'])
-                ->get();
+            // $info = ProponentInfo::with('facility:id,name,address', 'fundsource:id,saa,alocated_funds:remaining_balance', 'proponent')
+            //     ->where(function ($query) use ($facility_id, $add) {
+            //         $query->whereJsonContains('proponent_info.facility_id', '702')
+            //             ->orWhereJsonContains('proponent_info.facility_id', [$facility_id])
+            //             ->orWhereJsonContains('proponent_info.facility_id', [$add]);
+            //     })
+            //     ->orWhereIn('proponent_info.facility_id', [$facility_id, $add, '702'])
+            //     ->get();
+
+            $info = ProponentInfo::with('facility:id,name,address', 'fundsource:id,saa,alocated_funds:remaining_balance', 'proponent')->get();
             $f_info = AddFacilityInfo::where('id', $facility_id)->select('vat', 'ewt')->first();
             $section = DB::connection('dohdtr')
                 ->table('users')
@@ -429,7 +431,8 @@ class Dv3Controller extends Controller
         $randomBytes = random_bytes(16); 
         return view('dv3.saa_clone',[
             'uniqueCode' => bin2hex($randomBytes),
-            'id' => $id
+            'id' => $id,
+            'facilities' => Facility::get()
         ]);
     }
 

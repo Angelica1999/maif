@@ -18,6 +18,7 @@
     $(document).ready(function() {
         handleChangesF({{$id}});
     });
+    var all_facilities = @json($facilities);
     function addOption(data){
         data.forEach(function(item) {
             var option = $('<option>', {
@@ -51,17 +52,24 @@
                
                 if(optionData.facility !== null){
                     if(optionData.facility.id == facility_id){
-                        text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - SF - ' + rem_balance;
+                        text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + optionData.facility.name + ' - ' + rem_balance;
                     }else{
                         text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + optionData.facility.name + ' - ' + rem_balance;
                         check_p = 1;
                     } 
                 }else{
+                    var data_id = JSON.parse(optionData.facility_id).map(id => parseInt(id, 10));
+                    var f_name = '';
+                    data_id.forEach(id => {
+                        var facility = all_facilities.find(facility => facility.id === id);
+                        f_name = f_name + ' - ' + facility.name + ' - ';
+                    });
+                    
                     if(id.includes('702')){
                         check_p = 1;
-                        text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + 'DOH CVCHD' + ' - ' + rem_balance;
+                        text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + f_name + rem_balance;
                     }else{
-                        text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - SF - ' + rem_balance;
+                        text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + f_name + rem_balance;
                     }
                 }
 
