@@ -723,8 +723,8 @@
             var amount = $(this).val().replace(/,/g, ''); // Remove commas
             m_amount += parseFloat(amount) || 0;
         });
-
-        var w_amount = element.closest('.saa_clone').find('.saa_amount');
+        var w_saa = element.closest('.saa_clone');
+        var w_amount = w_saa.find('.saa_amount');
         var w_total = element.closest('.card').find('.total_amount');
         var amount_overall = parseFloat((w_total.val() || "0").replace(/,/g, ''));
 
@@ -744,8 +744,41 @@
         }else{
             console.log('saa', saa_rem);
             w_amount.val(saa_rem.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}));
-        }
 
+            Lobibox.alert('error',{
+                size : 'mini',
+                msg : 'Insufficient balance, would you like to use another saa?',
+                buttons : {
+                    yes: {
+                        'class': 'btn-xs btn-success',
+                        text: 'ADD',
+                        closeOnClick:true
+                    },
+                    no: {
+                        'class': 'btn-xs btn-warning',
+                        text: 'NO',
+                        closeOnClick:true
+                    }
+                },
+                callback: function (lobibox, type){
+                    if(type == 'yes'){
+                        $.get("{{ url('pre-dv/saa-clone').'/' }}" + f_id, function (result) {
+
+                            var clonedElement = w_saa.last().after(result).next();
+
+                            clonedElement.find('.saa_clone_btn')
+                                .removeClass('saa_clone_btn btn-info typcn typcn-plus menu-icon')
+                                .addClass('saa_remove_btn btn-danger')
+                                .css('background-color', 'red')
+                                .text('')
+                                .html('<span class="typcn typcn-minus menu-icon"></span>');
+                        }); 
+                        // w_amount.val(saa_balance.toFixed(2));
+                    }
+                }
+            }); 
+        }
+        inputted_fundsource(w_pro);  
     }
 
     $(document).on('input', '.saa_amount', function(){
@@ -763,7 +796,7 @@
             if(input_value > saa_balance){
                 Lobibox.alert('error',{
                     size : 'mini',
-                    msg : 'Insufficient balance is not enough, would you like to use another saa?',
+                    msg : 'Insufficient balance, would you like to use another saa?',
                     buttons : {
                         yes: {
                             'class': 'btn-xs btn-success',
