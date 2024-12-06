@@ -76,6 +76,8 @@
             </div>
             <div class="modal-footer budget_track_footer">
                 <button style="background-color:lightgray" class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> CLOSE</button>
+                <a href="#" id="printButton" class="btn btn-success">Print</a>
+                <button style="display:none" class="btn btn-info filter_btn" onclick="filterData()"><i class="typcn typcn-tick menu-icon"></i> FILTER</button>
             </div>
         </div>
     </div>
@@ -99,6 +101,45 @@
 @endsection
 @section('js')
 <script>
+
+    document.getElementById('printButton').addEventListener('click', function(e) {
+        e.preventDefault(); 
+        var code = pro_code;  
+        var f_id = $('#facility').val();  
+        console.log('chaki', f_id );
+        f_id = (Array.isArray(f_id) && f_id.length === 0) ? 0: f_id;
+        var url = `proponent/patient-print/${code}/${f_id}`;
+        window.location.href = url;
+    });
+
+
+    function displayFilter(){
+        console.log('sdasd');
+        $('.filter_btn').css('display', 'block');
+    }
+
+    function filterData(){
+        var f_id = $('#facility').val(); 
+        f_id = (Array.isArray(f_id) && f_id.length === 0) ? f_id.push(undefined) : f_id;
+
+        $('#gl_body').html(loading);
+
+        $.ajax({
+            url: 'proponent/patient-sort/'+encodeURIComponent(pro_code)+'/'+f_id+'/0/0', 
+            type: 'GET',
+            data: {
+                pro_code: pro_code,
+                f_id: f_id
+            },
+            success: function (response) {
+                $('#gl_body').html(response);
+            },
+            error: function () {
+                alert('Error fetching data.');
+            }
+        });
+    }
+
     $(document).on('click', '.pro_util_pages a', function(e) {
         e.preventDefault(); 
         let url = $(this).attr('href');
@@ -295,9 +336,10 @@
             element.value = '';
         }
     }
-
+    var pro_code;
     function disUtil(code){
         console.log('data', code);
+        pro_code = code;
         // $('.pro_body').html(loading);
         $('#gl_body').html(loading);
         $.get("{{ url('proponent/util').'/' }}"+code, function(result){

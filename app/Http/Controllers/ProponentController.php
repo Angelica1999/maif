@@ -270,27 +270,36 @@ class ProponentController extends Controller
       }
 
     public function tracking($code){
-        // $tracking = ProponentUtilizationV1::where('proponent_code', $code)
-        //     ->with([
-        //         'proponent:id,proponent',
-        //         'patient' => function($query){
-        //             $query->with([
-        //                 'facility:id,name',
-        //                 'encoded_by:userid,fname,lname'
-        //             ]);
-        //         }
-        //     ])->get();
         $ids = Proponent::where('proponent', $code)->pluck('id')->toArray();
         $tracking = Patients::whereIn('proponent_id', $ids)->with('facility:id,name','encoded_by:userid,fname,lname,mname', 'gl_user:username,fname,lname')->paginate(20);
-
+        $facilities = Facility::whereIn('id', Patients::whereIn('proponent_id', $ids)->pluck('facility_id')->toArray())->select('id', 'name')->get(); 
         if(count($tracking) > 0){
             return view('proponents.proponent_util',[
-                'data' => $tracking
+                'data' => $tracking,
+                'facilities' => $facilities
             ]);
         }else{
             return 0;
         }
       
+    }
+
+    public function filterData(Request $request){
+        $f_ids = $request->f_id;
+        $pro_code = $request->pro_code;
+        $ids = Proponent::where('proponent', $pro_code)->pluck('id')->toArray();
+        if (in_array("all", $f_ids)) {
+            $tracking = Patients::whereIn('proponent_id', $ids)
+                ->with('facility:id,name','encoded_by:userid,fname,lname,mname', 'gl_user:username,fname,lname')->paginate(20);
+        }else{
+            $tracking = Patients::whereIn('proponent_id', $ids)->whereIn('facility_id', $f_ids)
+                ->with('facility:id,name','encoded_by:userid,fname,lname,mname', 'gl_user:username,fname,lname')->paginate(20);
+        }
+        $facilities = Facility::whereIn('id', Patients::whereIn('proponent_id', $ids)->pluck('facility_id')->toArray())->select('id', 'name')->get(); 
+        return view('proponents.proponent_util',[
+            'data' => $tracking,
+            'facilities' => $facilities
+        ]);
     }
 
     public function supplemental($proponent, $amount)
@@ -326,9 +335,72 @@ class ProponentController extends Controller
                 'message' => 'Supplemental fund added successfully'
             ], 200);
         }
-        
+    }
 
-        
+    public function excelData($code, $ids){
+        $pro = Proponent::where('proponent', $code)->get();
+        $id = $pro->pluck('id')->toArray();
+
+        if($ids == 0){
+            $patients = Patients::whereIn('proponent_id', $id)->with([
+                'facility:id,name',
+                'encoded_by:userid,fname,lname,mname',
+                'gl_user:username,fname,lname'
+            ])->get();
+        }else{
+            $patients = Patients::whereIn('proponent_id', $id)
+            ->whereIn('facility_id', $ids)->with([
+                'facility:id,name',
+                'encoded_by:userid,fname,lname,mname',
+                'gl_user:username,fname,lname'
+            ])->get();
+        }
+
+        $title = $pro[0]->proponent;
+        $filename = $title.'.xls';
+        header("Content-Type: application/xls");
+        header("Content-Disposition: attachment; filename=$filename");
+        header("Pragma: no-cache");
+        header("Expires: 0");
+        $table_body = "<tr>
+                <th>Patient Code</th>
+                <th>Name</th>
+                <th>Guaranteed Amount</th>
+                <th>Actual Amount</th>
+                <th>Facility</th>
+                <th>Created By</th>
+                <th>Created On</th>
+            </tr>";
+
+        if(count($patients) > 0){
+            foreach($patients as $row){
+                $name = $row->lname .', '.$row->fname.' '.$row->mname;
+                $guaranteed = number_format(str_replace(',','',$row->guaranteed_amount), 2,'.',',');
+                $actual = number_format($row->actual_amount, 2,'.',',');
+                $facility = $row->facility->name;
+                $user = !Empty($row->encoded_by) ? $row->encoded_by->lname .', '.$row->encoded_by->fname : 
+                        (!Empty($row->gl_user) ? $row->gl_user->lname.', '.$row->gl_user->fname : '');
+                $on = date('F j, Y', strtotime($row->created_at));
+                $table_body .= "<tr>
+                    <td style='vertical-align:top;'>$row->patient_code</td>
+                    <td style='vertical-align:top;'>$name</td>
+                    <td style='vertical-align:top;'>$guaranteed</td>
+                    <td style='vertical-align:top;'>$actual</td>
+                    <td style='vertical-align:top;'>$facility</td>
+                    <td style='vertical-align:top;'>$user</td>
+                    <td style='vertical-align:top;'>$on</td>
+                </tr>";
+            }
+        }else{
+            $table_body .= "<tr>
+                <td colspan=7 style='vertical-align:top;'>No Data Available</td>
+            </tr>";
+        }
+        $display =
+            '<h1>'.$title.'</h1>'.
+            '<table cellspacing="1" cellpadding="5" border="1">'.$table_body.'</table>';
+
+        return $display;
     }
     
 }

@@ -143,6 +143,8 @@ Route::get('/confirm/{id}', [App\Http\Controllers\FundSourceController2::class, 
 Route::get('/admin/cost/{id}', [App\Http\Controllers\FundSourceController2::class, 'addCost'])->name('add.cost');
 Route::post('/cost/save', [App\Http\Controllers\FundSourceController2::class, 'saveCost'])->name('save.cost');
 Route::get('/confirm-budget/{id}', [App\Http\Controllers\FundSourceController2::class, 'confirmBudget'])->name('confirm.budget');
+Route::post('util/ors_no', [App\Http\Controllers\FundSourceController2::class, 'orsNo'])->name('add.ors');
+Route::post('util/uacs', [App\Http\Controllers\FundSourceController2::class, 'uacs'])->name('add.uacs');
 
 //creating breakdowns
 Route::get('fundsource/breakdowns/{fundsourceId}', [App\Http\Controllers\FundSourceController::class, 'createBDowns'])->name('fundsource.create_breakdowns');
@@ -188,6 +190,9 @@ Route::get('/proponent/supplemental/{proponent}/{amount}', [App\Http\Controllers
 Route::get('/proponent/sup-details/{proponent}', [App\Http\Controllers\ProponentController::class, 'supDetails'])->name('details.supplemental');
 Route::get('/proponent/sup-update/{id}/{amount}', [App\Http\Controllers\ProponentController::class, 'supUpdate'])->name('update.supplemental');
 Route::get('/proponent/patient-delete/{id}', [App\Http\Controllers\ProponentController::class, 'delGL'])->name('delete.gl');
+Route::get('/proponent/patient-sort/{code}/{id}/{userid}/{on}', [App\Http\Controllers\ProponentController::class, 'filterData'])->name('filter.gl');
+Route::get('/proponent/patient-print/{code}/{ids}', [App\Http\Controllers\ProponentController::class, 'excelData'])->name('excel.gl');
+
 
 Route::match(['get', 'post'],'/proponents/excel/', [App\Http\Controllers\FundSourceController::class, 'generateExcel'])->name('proponent.excel');
 Route::match(['get', 'post'],'/data/update/', [App\Http\Controllers\FacilityController::class, 'updateData'])->name('update.data');
@@ -271,7 +276,7 @@ Route::get('/returned/details/{id}', [App\Http\Controllers\FacilityController::c
 Route::get('/transmittal/accept/{id}', [App\Http\Controllers\FacilityController::class, 'acceptTrans'])->name('transmittal.accept');
 Route::get('/accepted', [App\Http\Controllers\FacilityController::class, 'accepted'])->name('accepted');
 Route::get('/transmittal/details/{id}/{facility_id}', [App\Http\Controllers\FacilityController::class, 'transDetails'])->name('transmittal.details');
-// Route::get('/sample/image/{id}', [App\Http\Controllers\PrintController::class, 'genPreImage'])->name('pre.image');
+Route::get('/sample/image/{id}', [App\Http\Controllers\PrintController::class, 'genPreImage'])->name('pre.image');
 Route::post('/accepted/remarks', [App\Http\Controllers\FacilityController::class, 'transRem'])->name('accepted.remarks');
 Route::get('/angelica/{route_no}', [App\Http\Controllers\PreDvController::class, 'angelica'])->name('angelica');
 Route::get('/transmittal/received/{control_no}/{name}', [App\Http\Controllers\FacilityController::class, 'received'])->name('received.transmittal');

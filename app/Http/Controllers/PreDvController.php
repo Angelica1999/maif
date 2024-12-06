@@ -358,6 +358,8 @@ class PreDvController extends Controller
     public function budgetV2(Request $request, $type, $id){
         $pre_dv = PreDV::where('id', $id)->with('facility')->first();
         $new_dv = NewDV::where('predv_id', $id)->with('dts')->first();
+        $ors = Utilization::where('div_id', $new_dv->route_no)->pluck('ors_no')->implode(', ');
+        // return $ors;
         $extension = PreDVExtension::where('pre_dv_id', $pre_dv->id)->pluck('id');
         $saas = PreDVSAA::whereIn('predv_extension_id', $extension)->with('saa:id,saa')->get();
         $info = AddFacilityInfo::where('facility_id', $pre_dv->facility_id)->first();
@@ -386,7 +388,8 @@ class PreDvController extends Controller
                 'info' => $info,
                 'control' => $control,
                 'new_dv' => $new_dv,
-                'type' => $type
+                'type' => $type,
+                'ors' =>  $ors
             ]);
         }
     }
@@ -862,7 +865,7 @@ class PreDvController extends Controller
                     'remarks' => 6
                 ]);
                 // Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/dv');
-                Http::get('http://gletter.cvchd7.com/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/dv');
+                Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/dv');
             }
            
             return redirect()->back()->with('pre_dv', true);
@@ -947,7 +950,7 @@ class PreDvController extends Controller
                     'remarks' => 7
                 ]);
                 // Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/obligate');
-                Http::get('http://gletter.cvchd7.com/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/obligate');
+                Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/obligate');
             }
            
             return redirect()->back()->with('pre_dv_update', true);
@@ -973,7 +976,7 @@ class PreDvController extends Controller
                 ]);
 
                 // Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/paid');
-                Http::get('http://gletter.cvchd7.com/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/paid');
+                Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/paid');
             }
            
             return redirect()->back()->with('pay_dv', true);

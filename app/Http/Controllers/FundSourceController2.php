@@ -233,7 +233,8 @@ class FundSourceController2 extends Controller{
                 return view('fundsource_budget.budget_tracking',[
                     'result' => $data,
                     'facilities' => Facility::get(),
-                    'last' => $combi->last()
+                    'last' => $combi->last(),
+                    'confirm' => 0
                 ]);
             }else{
                 return 'No data available!';
@@ -242,6 +243,20 @@ class FundSourceController2 extends Controller{
         }else{
             return 'No data found';
         }
+    }
+
+    public function orsNo(Request $request){
+        if($request->id){
+            Utilization::where('id', $request->id)->update(['ors_no' => $request->ors_no]);
+        }
+        return true;
+    }
+
+    public function uacs(Request $request){
+        if($request->id){
+            Utilization::where('id', $request->id)->update(['uacs' => $request->uacs]);
+        }
+        return true;
     }
 
     public function fundsTracking($id){
@@ -374,7 +389,8 @@ class FundSourceController2 extends Controller{
             return view('fundsource_budget.budget_tracking',[
                 'result' => $util,
                 'facilities' => Facility::get(),
-                'last' => $util->last()
+                'last' => $util->last(),
+                'confirm' => 1
             ]);
         }else{
             return 'No data available!';
