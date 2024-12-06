@@ -73,7 +73,7 @@
             <div class="table-container budget_container" style="padding:10px">
                 <div id="budget_track_body"></div>
             </div>
-            <div class="modal-footer budget_track_footer">
+            <div class="modal-footer">
                 <button style="background-color:lightgray" class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> CLOSE</button>
                 <button style="display:none" type="button" style="" class="btn btn-info add_cost" onclick="addCost()"><i class="typcn typcn-tick menu-icon"></i> ADD ADMIN COST</button>
             </div>

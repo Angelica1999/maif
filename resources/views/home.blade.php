@@ -1435,16 +1435,20 @@
     var edit_c = 0;
 
     function editPatient(id) {
+        console.log('id', id);
         form_type='update';
         var patient;
         $.get("{{url('/gl/update').'/'}}" + id, function(result){
-            patient = result;
-            console.log('res', patient.id);
+            patient = result.patients;
+            ids = result.ids;
+            id = patient.id
             edit_c = 1;
             var editRoute = `{{ route('patient.update', ['id' => ':id']) }}`;
             editRoute = editRoute.replace(':id', id);
+            console.log('asd0', id);
+            console.log('asd0', editRoute);
+
             $('#update_form').attr('action', editRoute);
-            console.log('res', patient.fname);
             if(patient){
                 if(patient.group_id == null || patient.group_id == null){
                     var removeRoute = `{{ route('patient.remove', ['id' => ':id']) }}`;
@@ -1457,7 +1461,6 @@
                 $('.lname').val(patient.lname);
                 $('.mname').val(patient.mname);
                 $('.dob').val(patient.dob);
-                console.log('herehere',patient.dob );
                 $('.region').select2().val(patient.region).trigger('change');
                 if(patient.region == "Region 7"){
                     $('.province_id').select2().val(patient.province_id).trigger('change');
@@ -1472,8 +1475,19 @@
                 $('.guaranteed_amount').val(patient.guaranteed_amount);
                 $('.actl_amnt').show();
                 $('.actual_amount').val(patient.actual_amount);
-                $('.proponent_id1').val(patient.proponent_id).trigger('change');
-                $('.facility_id1').val(patient.facility_id).trigger('change');
+                // $('.proponent_id1').val(patient.proponent_id).trigger('change');
+
+                var $proponentSelect = $('.proponent_id1'); 
+
+                for (var i = 0; i < ids.length; i++) {
+                    var id = ids[i]; 
+                    if ($proponentSelect.find('option[value="' + id + '"]').length > 0) {
+                        $proponentSelect.val(id).trigger('change');
+                        break; 
+                    }
+                }
+
+                $('.facility_id1').val(patient.facility_id).trigger('change').select2();
                 $('.patient_code').val(patient.patient_code);
                 $('.remaining_balance').val(patient.remaining_balance);
                 $('.pat_rem').val(patient.pat_rem);

@@ -362,12 +362,6 @@ class PrintController extends Controller
                         );
                     }
                 ])->first();
-        // $info = AddFacilityInfo::where('facility_id', $dv3->facility_id)->first();
-        // if($info->vat > 3){
-        //     $total = ($dv3->total/ 1.12 * $info->vat / 100) + ($dv3->total/ 1.12 * $info->ewt / 100);
-        // }else{
-        //     $total = ($dv3->total * $info->vat / 100) + ($dv3->total * $info->ewt / 100);
-        // }
         $data = [
             'dv3'=> $dv3,
             'total' => $dv3->total
@@ -403,7 +397,8 @@ class PrintController extends Controller
     }    
 
     public function newDVPDF($id) {
-    
+        $this->genPreImage($id);
+       
         $new = NewDV::where('predv_id', $id)->first();
         if($new){
             $pre_dv = PreDV::where('id', $id)->with(
@@ -514,7 +509,7 @@ class PrintController extends Controller
                 }
             ]
         )->first();
-        // return $pre_dv;
+
         if($pre_dv){
 
             $data = [
@@ -578,8 +573,9 @@ class PrintController extends Controller
         $pdfPath = storage_path("app/new_dv.pdf");
         $pdf->save($pdfPath);
     
-        $imageDir = storage_path('app/pre_dv'); 
-    
+        // $imageDir = storage_path('app/pre_dv'); 
+        $imageDir = 'C:/Apache24/htdocs/guaranteeletter/storage/app/pre_dv';
+
         if (!file_exists($imageDir)) {
             mkdir($imageDir, 0755, true);
         }
@@ -590,10 +586,11 @@ class PrintController extends Controller
         exec($command, $output, $returnVar);
     
         $filePath = "{$imageDir}/{$imageName}";
+        // return $filePath;
     }
 
     public function preImage($id) {
-        $this->genPreImage($id); 
+        // $this->genPreImage($id); 
         $pre_dv = PreDV::where('id', $id)->with(
             [
                 'user:userid,fname,lname,mname',

@@ -305,7 +305,23 @@ class HomeController extends Controller
     }
 
     public function updateGl($id){
-        return Patients::where('id', $id)->with('facility:id,name','province:id,description','muncity:id,description','barangay:id,description', 'proponentData:id,proponent')->first();
+
+        // if(Auth::user()->userid == 2760){
+            $patients = Patients::where('id', $id)->with([
+                'facility:id,name','province:id,description',
+                'muncity:id,description',
+                'barangay:id,description',
+                'proponentData:id,proponent'
+                ])->first();
+            $pro = Proponent::where('proponent', Proponent::where('id', $patients->proponent_id)->value('proponent'))->pluck('id')->toArray();
+            return $data=[
+                'ids' => $pro,
+                'patients' => $patients
+            ];
+        // }else{
+        //     return Patients::where('id', $id)->with('facility:id,name','province:id,description','muncity:id,description','barangay:id,description', 'proponentData:id,proponent')->first();
+        // }
+
     }
 
     public function report(Request $request){
@@ -834,7 +850,6 @@ class HomeController extends Controller
  
     public function updatePatient($id, Request $request){
         $val = $request->input('update_send');
-        
         $patient_id = $id;
         $patient = Patients::where('id', $patient_id)->first();
 
@@ -846,7 +861,7 @@ class HomeController extends Controller
 
         $patientLogs = new PatientLogs();
         $patientLogs->patient_id = $patient->id;
-        $patientLogs->fill(Arr::except($patient->toArray(), ['status', 'sent_type', 'user_type', 'transd_id']));
+        $patientLogs->fill(Arr::except($patient->toArray(), ['status', 'sent_type', 'user_type', 'transd_id', 'fc_status', 'expired']));
         unset($patientLogs->id);
         $patientLogs->save();
         

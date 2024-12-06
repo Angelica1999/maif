@@ -56,7 +56,7 @@
                                             <a onclick="receive('{{ $item->control_no }}')" style="border-radius:0; color:white" type="button" class="btn btn-success btn-xs">Receive</a>
                                         @endif
                                     </td>
-                                    <td><a onclick="displaySum({{ $item->id }})" href="#summary_display" data-toggle="modal" data-backdrop="static">{{ $item->control_no }}</a></td>
+                                    <td><a onclick="displaySum({{ $item->id }}, {{ $item->remarks }})" href="#summary_display" data-toggle="modal" data-backdrop="static">{{ $item->control_no }}</a></td>
                                     <td></td>
                                     <td>{{ date('F j, Y', strtotime($item->prepared_date)) }}</td>
                                     <td>{{ number_format($item->total, 2, '.', ',') }}</td>
@@ -91,8 +91,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" data-dismiss="modal" style="background-color: gray; color: white; border: none; padding: 8px 15px; cursor: pointer; float:right">CLOSE</button>
-                <button type="button" style="border: none; padding: 8px 15px; cursor: pointer; float:right; color:white" class="btn-warning">RETURN</button>
-                <button type="button" style="border: none; padding: 8px 15px; cursor: pointer; float:right" class="btn-success">ACCEPT</button>
+                <button type="button" style="border: none; padding: 8px 15px; cursor: pointer; float:right; color:white; display:none" class="btn-warning sum_return">RETURN</button>
+                <button type="button" style="border: none; padding: 8px 15px; cursor: pointer; float:right; display:none" class="btn-success sum_return">ACCEPT</button>
             </div>
         </div>
     </div>
@@ -262,6 +262,7 @@
 
     function returnTrans(id){
         $('.id').val(id);
+        $('.return_body').html(loading);
         $.get("{{ url('transmittal/references/1').'/' }}" + id, function(result){
             $('.return_body').html(result);
         });
@@ -270,11 +271,21 @@
 
     var trans_id = 0;
     
-    function displaySum(id){
+    function displaySum(id, remarks){
         trans_id = id;
         console.log('id', id);
+        $('.summary_body').html(loading);
         $.get("{{ url('transmittal').'/' }}" + id, function(result){
             $('.summary_body').html(result);
+            $('#sum_footer').css('display', 'none');
+            console.log('remarks', remarks);
+            if(remarks != 2){
+                $('.sum_return').css('display', 'none');
+                $('.sum_accept').css('display', 'none');
+            }else{
+                $('.sum_return').css('display', 'block');
+                $('.sum_accept').css('display', 'block');
+            }
         });
     }
 

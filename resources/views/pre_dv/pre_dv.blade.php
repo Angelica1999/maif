@@ -259,7 +259,7 @@
     function getTransmittal(trans_id){   
         // $('.fac_control').empty();
         $.get("{{ url('transmittal/details').'/' }}" +trans_id+'/'+f_id, function(result){
-            $('.fac_control').append(result);
+            $('.fac_control').html(result);
             getGrand();
         });
     }
@@ -836,20 +836,9 @@
     });
 
     $(document).on('click', '.proponent_clone .btn_pro_remove', function () {
-        // var length = 0;
-
-        // $('.facility_div .proponent_clone').each(function (index, proponent_clone) {
-        //     var proponent = $(proponent_clone).find('.proponent').val();
-
-        //     if(proponent != ''){
-        //         length = length + 1;
-        //     }
-        // });
-
-        // if(length !=1){
-            $(this).closest('.proponent_clone').remove();
-        // }
-        // console.log('length', length);
+   
+        $(this).closest('.proponent_clone').remove();
+        
         getGrand();
         getTransId();
     });
@@ -933,18 +922,6 @@
                     var saa_number = $(control_clone).find('.saa_number').val();
                     var exist = existing_control.find(item => item.includes(control_no));
 
-                    // if ((new_control.includes(control_no) || exist) && (saa_number != 0) ) {
-                    //     Lobibox.alert('error',{
-                    //         size: 'mini',
-                    //         msg: 'Duplicate control no, kindly check!'
-                    //     });
-                    //    $(control_clone).find('.control_no').val('');
-                    //    hasErrors = true;
-                    //    return false;
-                    // }else{
-                    //     new_control.push(control_no);
-                    // }
-
                     var data = {
                         control_no : control_no,
                         patient_1 : patient_1,
@@ -954,7 +931,6 @@
                     pro_clone.push(data);
                 });
 
-                // if (hasErrors) return false;
                 var fundsource_clone = [];
                 var saa_total = 0;
 

@@ -48,130 +48,73 @@
         </style>
     </head>
     <body style="margin-right:20px, margin-left:20px">
-        <table cellpadding="0" cellspacing="0" width="100%" style="border:0px">
-            <tr style="border:0px">
-                <td width="15%" style="text-align: center; border-right:none">
-                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/doh-logo.png'))) }}" alt="Logo" width="50" height="50">
-                </td>
-                <td width="72%" style="text-align:center; line-height:1.5">
-                        <p>Republic of the Philippines<br>
-                            Department of Health<br>
-                            <span class="col text-center" style="font-size: 12px"><strong>MAIFIP - Medical Assistance to Indigent and Financially - Incapacitated Patients</strong></span>
-                        </p>
-                </td>
-                <td width="10%" style="text-align: right; border-left:none;"></td>
-            </tr>
-        </table>
-
-        <div class="form-group ml-1" style="margin-right:20px;">
-            <p class="date">{{ $patient['date_guarantee_letter'] ? \Carbon\Carbon::parse($patient->date_guarantee_letter)->format('jS F Y') : " " }}</p>
-        </div>
-        <p style="text-align:center; margin-top:1px" id="certificate"><strong>CERTIFICATION</strong></p>
-        <div style="margin-left:20px; margin-right:20px">
-            @if($patient->barangay == null)
-                @if($patient->region == null)
-                    <p>This is to certify that patient <strong>{{ $patient->fname . ' ' . $patient->mname . ' ' . $patient->lname}}</strong>, {{ $age }}, was extended by this office, a total of {{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }} medical assistance stated below based on the existing guidelines of Administrative Order No. 2023 - 0016, dated August 11, 2023:</p>
-                @else
-                    <p>This is to certify that patient <strong>{{ $patient->fname . ' ' . $patient->mname . ' ' . $patient->lname}}</strong>, {{ $age }}, of {{$patient->other_barangay . ', '. $patient->other_muncity . ', '. $patient->other_province}}, was extended by this office, a total of {{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }} medical assistance stated below based on the existing guidelines of Administrative Order No. 2023 - 0016, dated August 11, 2023:</p>
-                @endif
-            @else
-                <p>This is to certify that patient <strong>{{ $patient->fname . ' ' . $patient->mname . ' ' . $patient->lname}}</strong>, {{ $age }}, of {{$patient->barangay->description . ', '. $patient->muncity->description . ', '. $patient->province->description}}, was extended by this office, a total of {{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }} medical assistance stated below based on the existing guidelines of Administrative Order No. 2023 - 0016, dated August 11, 2023:</p>
-            @endif
-
-            <table class="table table-white" style="border-collapse: collapse; width: 100%;">
-                <thead>
-                    <tr>
-                        <th scope="col" style="font-size: 12px; border-top: 1px solid lightgray; padding:15px">Type of Assistance</th>
-                        <th scope="col" style="font-size: 12px; border-top: 1px solid lightgray;">Guaranteed Amount</th>
-                        <th scope="col" style="font-size: 12px; border-top: 1px solid lightgray;">Date/Time</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr style="border: 1px solid lightgray;">
-                        <td style="border: 1px solid lightgray; padding:14px">Hospital Bills / laboratory / Procedures / Medicine</td>
-                        <td class="text-center" style="border: 1px solid lightgray;">{{ number_format(str_replace(',', '', $patient->guaranteed_amount), 2, '.', ',') }}</td>
-                        <td style="border: 1px solid lightgray;">{{$patient->created_at}}</td>
-                    </tr>
-                </tbody>
+        @foreach(range(1, 2) as $iteration)
+            <table cellpadding="0" cellspacing="0" width="100%" style="border:0px">
+                <tr style="border:0px">
+                    <td width="15%" style="text-align: center; border-right:none">
+                        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/doh-logo.png'))) }}" alt="Logo" width="50" height="50">
+                    </td>
+                    <td width="72%" style="text-align:center; line-height:1.5">
+                            <p>Republic of the Philippines<br>
+                                Department of Health<br>
+                                <span class="col text-center" style="font-size: 12px"><strong>MAIFIP - Medical Assistance to Indigent and Financially - Incapacitated Patients</strong></span>
+                            </p>
+                    </td>
+                    <td width="10%" style="text-align: right; border-left:none;"></td>
+                </tr>
             </table>
 
-            <p class="ml-3" ><strong>Total Amount:</strong>
-                <span class="static-data"><strong>P {{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }}</strong></span>
-            </p>
-            <div class="row align-items-start ml-1"> 
-                <p class="ml-1">{{$patient->patient_code}}<br><br>
-                    Notes:<br>
-                    <i>50% maximum applicable for PF</i><br>
-                    Non-Convertible to cash<br><br>
-                    Encoded by: {{$patient->created_by}}
-                </p>
+            <div class="form-group ml-1" style="margin-right:20px;">
+                <p class="date">{{ $patient['date_guarantee_letter'] ? \Carbon\Carbon::parse($patient->date_guarantee_letter)->format('jS F Y') : " " }}</p>
             </div>
-            <table class="table table-white" style="border-collapse: collapse; width: 100%; margin-top:20px;">
-                <thead>
-                    <tr>
-                        <th scope="col" style="font-size: 12px; border-top: 1px solid lightgray; padding:15px"></th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
-        <table cellpadding="0" cellspacing="0" width="100%" style="border:0px">
-            <tr style="border:0px">
-                <td width="15%" style="text-align: center; border-right:none">
-                    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/doh-logo.png'))) }}" alt="Logo" width="50" height="50">
-                </td>
-                <td width="72%" style="text-align:center; line-height:1.5">
-                        <p>Republic of the Philippines<br>
-                            Department of Health<br>
-                            <span class="col text-center" style="font-size: 12px"><strong>MAIFIP - Medical Assistance to Indigent and Financially - Incapacitated Patients</strong></span>
-                        </p>
-                </td>
-                <td width="10%" style="text-align: right; border-left:none;"></td>
-            </tr>
-        </table>
-
-        <div class="form-group ml-1" style="margin-right:20px">
-            <p class="date">{{ $patient['date_guarantee_letter'] ? \Carbon\Carbon::parse($patient->date_guarantee_letter)->format('jS F Y') : " " }}</p>
-        </div>
-        <p style="text-align:center; margin-top:1px" id="certificate"><strong>CERTIFICATION</strong></p> <!-- Corrected typo in ID -->
-        <div style="margin-left:20px; margin-right:20px">
-            @if($patient->barangay == null)
-                @if($patient->region == null)
-                    <p>This is to certify that patient <strong>{{ $patient->fname . ' ' . $patient->mname . ' ' . $patient->lname}}</strong>, {{ $age }}, was extended by this office, a total of {{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }} medical assistance stated below based on the existing guidelines of Administrative Order No. 2023 - 0016, dated August 11, 2023:</p>
+            <p style="text-align:center; margin-top:1px" id="certificate"><strong>CERTIFICATION</strong></p>
+            <div style="margin-left:20px; margin-right:20px">
+                @if($patient->barangay == null)
+                    @if($patient->region == null)
+                        <p>This is to certify that patient <strong>{{ $patient->fname . ' ' . $patient->mname . ' ' . $patient->lname}}</strong>, {{ $age }}, was extended by this office, a total of {{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }} medical assistance stated below based on the existing guidelines of Administrative Order No. 2023 - 0016, dated August 11, 2023:</p>
+                    @else
+                        <p>This is to certify that patient <strong>{{ $patient->fname . ' ' . $patient->mname . ' ' . $patient->lname}}</strong>, {{ $age }}, of {{$patient->other_barangay . ', '. $patient->other_muncity . ', '. $patient->other_province}}, was extended by this office, a total of {{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }} medical assistance stated below based on the existing guidelines of Administrative Order No. 2023 - 0016, dated August 11, 2023:</p>
+                    @endif
                 @else
-                    <p>This is to certify that patient <strong>{{ $patient->fname . ' ' . $patient->mname . ' ' . $patient->lname}}</strong>, {{ $age }}, of {{$patient->other_barangay . ', '. $patient->other_muncity . ', '. $patient->other_province}}, was extended by this office, a total of {{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }} medical assistance stated below based on the existing guidelines of Administrative Order No. 2023 - 0016, dated August 11, 2023:</p>
+                    <p>This is to certify that patient <strong>{{ $patient->fname . ' ' . $patient->mname . ' ' . $patient->lname}}</strong>, {{ $age }}, of {{$patient->barangay->description . ', '. $patient->muncity->description . ', '. $patient->province->description}}, was extended by this office, a total of {{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }} medical assistance stated below based on the existing guidelines of Administrative Order No. 2023 - 0016, dated August 11, 2023:</p>
                 @endif
-            @else
-                <p>This is to certify that patient <strong>{{ $patient->fname . ' ' . $patient->mname . ' ' . $patient->lname}}</strong>, {{ $age }}, of {{$patient->barangay->description . ', '. $patient->muncity->description . ', '. $patient->province->description}}, was extended by this office, a total of {{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }} medical assistance stated below based on the existing guidelines of Administrative Order No. 2023 - 0016, dated August 11, 2023:</p>
-            @endif
 
-            <table class="table table-white" style="border-collapse: collapse; width: 100%;">
-                <thead>
-                    <tr>
-                        <th scope="col" style="font-size: 12px; border-top: 1px solid lightgray; padding:15px">Type of Assistance</th>
-                        <th scope="col" style="font-size: 12px; border-top: 1px solid lightgray;">Guaranteed Amount</th>
-                        <th scope="col" style="font-size: 12px; border-top: 1px solid lightgray;">Date/Time</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr style="border: 1px solid lightgray;">
-                        <td style="border: 1px solid lightgray; padding:14px">Hospital Bills / laboratory / Procedures / Medicine</td>
-                        <td class="text-center" style="border: 1px solid lightgray;">{{ number_format(str_replace(',', '', $patient->guaranteed_amount), 2, '.', ',') }}</td>
-                        <td style="border: 1px solid lightgray;">{{$patient->created_at}}</td>
-                    </tr>
-                </tbody>
-            </table>
+                <table class="table table-white" style="border-collapse: collapse; width: 100%;">
+                    <thead>
+                        <tr>
+                            <th scope="col" style="font-size: 12px; border-top: 1px solid lightgray; padding:15px">Type of Assistance</th>
+                            <th scope="col" style="font-size: 12px; border-top: 1px solid lightgray;">Guaranteed Amount</th>
+                            <th scope="col" style="font-size: 12px; border-top: 1px solid lightgray;">Date/Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border: 1px solid lightgray;">
+                            <td style="border: 1px solid lightgray; padding:14px">Hospital Bills / laboratory / Procedures / Medicine</td>
+                            <td class="text-center" style="border: 1px solid lightgray;">{{ number_format(str_replace(',', '', $patient->guaranteed_amount), 2, '.', ',') }}</td>
+                            <td style="border: 1px solid lightgray;">{{$patient->created_at}}</td>
+                        </tr>
+                    </tbody>
+                </table>
 
-            <p class="ml-3" ><strong>Total Amount:</strong>
-                <span class="static-data"><strong>P {{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }}</strong></span>
-            </p>
-            <div class="row align-items-start ml-1"> 
-                <p class="ml-1">{{$patient->patient_code}}<br><br>
-                    Notes:<br>
-                    <i>50% maximum applicable for PF</i><br>
-                    Non-Convertible to cash<br><br>
-                    Encoded by: {{$patient->created_by}}
+                <p class="ml-3" ><strong>Total Amount:</strong>
+                    <span class="static-data"><strong>P {{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }}</strong></span>
                 </p>
+                <div class="row align-items-start ml-1"> 
+                    <p class="ml-1">{{$patient->patient_code}}<br><br>
+                        Notes:<br>
+                        <i>50% maximum applicable for PF</i><br>
+                        Non-Convertible to cash<br><br>
+                        Encoded by: {{$patient->created_by}}
+                    </p>
+                </div>
+                <table class="table table-white" style="border-collapse: collapse; width: 100%; margin-top:10px;">
+                    <thead>
+                        <tr>
+                            <th scope="col" style="font-size: 12px; border-top: 1px solid lightgray; padding:15px"></th>
+                        </tr>
+                    </thead>
+                </table>
             </div>
-        </div>
+        @endforeach
     </body>
 </html>

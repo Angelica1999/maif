@@ -142,9 +142,10 @@
                                 </td>
                                 <td style="width:27%; border-left: 0 " >
                                     @if( $type == 'awaiting')
-                                        <span>ORS/BURS No. : <span class="text-danger">*</span>
-                                            <input name="ors_no" style="width:150px; display:inline-block" class="form-control" required>
-                                        </span>
+                                        <div style="display: flex; align-items: center;">
+                                            <span style="vertical-align: middle;">ORS/BURS No. : *</span>
+                                            <textarea name="ors_no" style="width:150px; height:30px; margin-left: 10px;" class="form-control" required>{{ $ors }}</textarea>
+                                        </div>
                                     @else
                                         <span>ORS/BURS No. : {{$new_dv->ors_no}}</span>
                                     @endif

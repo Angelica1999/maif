@@ -1,4 +1,5 @@
-<table class="table table-list table-hover" id="budget_track2">
+@csrf
+<table class="table table-list table-hover" id="">
     <thead style="position: sticky; top: 0; background-color: white; z-index: 1;">
         <tr style="text-align:center;">
             <th class="budget_th" style="border:1px solid black; vertical-align:middle; background-color:#CEAB60" colspan="12">BREAKDOWN OF CHARGES</th>
@@ -60,11 +61,25 @@
                         <td class="budget_td" style="max-width:150px; border:1px solid gray; vertical-align:middle">
                             {{ $row->dv? $row->dv->facility->name: ($row->dv3? $row->dv3->facility->name:($row->newDv? $row->newDv->preDv->facility->name:'')) }}
                         </td>
-                        <td class="budget_td" style="max-width:60px; border:1px solid gray; vertical-align:middle">
-                            {{ $row->dv? $row->dv->ors_no:''  }}
+                        <td class="budget_td" style="max-width:60px; border:1px solid gray; vertical-align:middle; text-align:center">
+                            @if($confirm == 0)
+                                {{ $row->dv? $row->dv->ors_no:''  }}
+                            @else
+                                <input type="text" 
+                                    class="editable-input" 
+                                    data-id="{{ $row->id }}" 
+                                    value="{{ $row->ors_no ? $row->ors_no : '' }}" 
+                                    style="width: 100%; border: none; text-align: center;" 
+                                    placeholder="Enter ORS No" required>
+                            @endif
                         </td>
                         <td class="budget_td" style="max-width:130px; border:1px solid gray; vertical-align:middle">
-                            <a href="#" class="text_editable"  title="UCS NO" id="{{ $row->id }}">''</a>
+                            <input type="text" 
+                                class="editable-uacs" 
+                                data-id="{{ $row->id }}" 
+                                value="{{ $row->uacs ? $row->uacs : '' }}" 
+                                style="width: 100%; border: none; text-align: center;" 
+                                placeholder="Enter UACS">
                         </td>
                         <td class="budget_td" style="max-width:130px; border:1px solid gray; vertical-align:middle">
                             {{ number_format($row->utilize_amount, 2,'.',',') }}
@@ -98,5 +113,105 @@
 <div class="pl-6 pr-6 mt-6 budget_track_pag" style="margin-top:20px">
     {!! $result->appends(request()->query())->links('pagination::bootstrap-5') !!}
 </div>
+<script>
+    $(document).on('change', '.editable-input', function () {
+        console.log('here1');
+        const orsNo = $(this).val();
+        const rowId = $(this).data('id'); 
+        const input = $(this);
+
+        if (orsNo.trim() === '') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'ORS No cannot be empty!',
+                timer: 1500,
+                showConfirmButton: false
+            });
+            return;
+        }
+
+        $.ajax({
+            url: '/maif/util/ors_no', 
+            type: 'POST',
+            data: {
+                id: rowId,
+                ors_no: orsNo,
+                _token: $('meta[name="csrf-token"]').attr('content') 
+            },
+            success: function (response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Saved',
+                    text: 'ORS No has been updated successfully!',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                input.prop('readonly', true);
+            },
+            error: function (xhr, status, error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to save the ORS No. Please try again!',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                console.error(error);
+            }
+        });
+    });
+
+    $(document).on('change', '.editable-uacs', function () {
+        console.log('here2');
+
+        const uacsNo = $(this).val();
+        const rowId = $(this).data('id'); 
+        const input = $(this);
+
+        if (uacsNo.trim() === '') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'UACS cannot be empty!',
+                timer: 1500,
+                showConfirmButton: false
+            });
+            return;
+        }
+
+        $.ajax({
+
+            url: '/maif/util/uacs', 
+            type: 'POST',
+            data: {
+                id: rowId,
+                uacs: uacsNo,
+                _token: $('meta[name="csrf-token"]').attr('content') 
+            },
+            success: function (response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Saved',
+                    text: 'UACS has been updated successfully!',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                input.prop('readonly', true);
+            },
+            error: function (xhr, status, error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to save the UACS. Please try again!',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                console.error(error);
+            }
+        });
+    });
+
+</script>
                     
 

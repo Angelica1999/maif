@@ -80,21 +80,7 @@ use App\Models\TrackingDetails;
                     BUDGET TRACKING DETAILS
                 </h4>
             </div>
-            <div class="table-container budget_container" style="overflow-y: auto; padding:10px">
-                <table class="table table-list table-hover" id="budget_track2">
-                    <thead style="position: sticky; top: 0; background-color: white; z-index: 1;">
-                        <tr style="background-color:#F5F5F5">
-                            <th>ROUTE #</th>
-                            <th>SAA #</th>
-                            <th>PROPONENT</th>
-                            <th>PAYEE</th>
-                            <th>RECIPIENT FACILITY</th>
-                            <th>Utilize Amount</th>
-                            <th>Confirm</th>
-                        </tr>
-                    </thead>
-                    <tbody id="confirm_body"></tbody>
-                </table>
+            <div class="table-container" id="confirmation_main" style="overflow-y: auto; padding:10px">
             </div>
             <div class="modal-footer confirm_footer">
                 <!-- <button type="button" class="btn btn-success" onclick="confirm()">Confirm</button> -->
@@ -126,11 +112,11 @@ use App\Models\TrackingDetails;
                     BUDGET TRACKING DETAILS
                 </h4>
             </div>
-            <div class="table-container budget_container" style="padding:10px">
-                <div id="confirm_budget"></div>
+            <div class="table-container confirm_budget" style="padding:10px">
+                <!-- <div id="confirm_budget"></div> -->
             </div>
             <div class="modal-footer">
-                <button type="submit" class="btn btn-sm btn-info" data-dismiss="modal" onclick="confirmed()">CONFIRM</button>
+                <button type="submit" class="btn btn-sm btn-info" onclick="confirmed()">CONFIRM</button>
                 <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">CLOSE</button>
             </div>
         </div>
@@ -152,24 +138,39 @@ use App\Models\TrackingDetails;
     var util_id = 0;
 
     function confirmed(){
-        $('#checkbox_' + util_id).prop('checked', true);
 
-        var checkboxes = $('.confirm_check');
-        var allChecked = checkboxes.filter(':not(:checked)').length == 0;
+        var cs = $('.editable-input').val();
+        if(cs == ''){
+            Swal.fire({
+                icon: "error",
+                title: "Empty ORS No",
+                text: " Ors no is required to confirm this data",
+                timer: 1000,
+                showConfirmButton: false
+            });
+        }else{
+            $('#checkbox_' + util_id).prop('checked', true);
 
-        if (allChecked) {
-            $('.budget_obligate').css('display', 'block');
-        } else {
-            $('.budget_obligate').css('display', 'none');
+            var checkboxes = $('.confirm_check');
+            var allChecked = checkboxes.filter(':not(:checked)').length == 0;
+
+            if (allChecked) {
+                $('.budget_obligate').css('display', 'block');
+            } else {
+                $('.budget_obligate').css('display', 'none');
+            }
+            $('#budget_confirm').modal('hide');
         }
+       
     }
 
     function displayFunds(route_no, proponent, id){
         util_id = id;
         console.log('sd', id);
         $('#budget_confirm').modal('show');
+        $('.confirm_budget').html(loading);
         $.get("{{ url('confirm-budget').'/' }}" + id, function(result) {
-            $('#confirm_budget').html(result);
+            $('.confirm_budget').html(result);
         });
     }
 
@@ -178,14 +179,15 @@ use App\Models\TrackingDetails;
         id = d_id;
         if(doc_type == "accomplished" || doc_type == "deferred"){
             $('#view_v2').modal('show');
-            $('.pre_body').empty();
+            $('.pre_body').html(loading);
             $.get("{{ url('pre-dv/budget/v2/').'/' }}" + doc_type + '/' + id, function(result) {
-                $('.pre_body').append(result);
+                $('.pre_body').html(result);
             });
         }else{
             $('#confirm_dv').modal('show');
+            $('#confirmation_main').html(loading);
             $.get("{{ url('budget/confirm').'/' }}" + dv_id, function(result) {
-                $('#confirm_body').html(result);
+                $('#confirmation_main').html(result);
             });
         } 
     }
@@ -212,9 +214,9 @@ use App\Models\TrackingDetails;
         con = 1;
         confirm();
         $('#view_v2').modal('show');
-        $('.pre_body').empty();
+        $('.pre_body').html(loading);
         $.get("{{ url('pre-dv/budget/v2/').'/' }}" + doc_type + '/' + id, function(result) {
-            $('.pre_body').append(result);
+            $('.pre_body').html(result);
         });
     }
 

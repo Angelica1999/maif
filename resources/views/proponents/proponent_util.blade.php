@@ -1,3 +1,6 @@
+<style>
+    <link rel="stylesheet" href="{{ asset('admin/vendors/select2/select2.min.css') }}">
+</style>
 <div class="table-container" style="">
     <table class="table table-list table-hover table-striped" id="track_details">
         <thead style="position: sticky; top: 0; background-color: white; z-index: 1;">
@@ -5,7 +8,15 @@
                 <th>Code</th>
                 <th>Patient</th>
                 <th>Guaranteed Amount</th>
-                <th>Facility</th>
+                <th>
+                    <select id="facility" class="form-control facility" style="text-align:center" multiple onchange="displayFilter()">
+                        <option></option>
+                        <option value="all">All</option>
+                        @foreach($facilities as $row)
+                            <option value="{{ $row->id }}">{{ $row->name }}</option>
+                        @endforeach
+                    </select>
+                </th>
                 <th>Created By</th>
                 <th>Created On</th>
                 <th></th>
@@ -25,28 +36,21 @@
             @endforeach
         </tbody>
     </table>
+
 </div>
 <div class="pl-6 pr-6 mt-6 pro_util_pages" style="margin-top:20px">
     {!! $data->appends(request()->query())->links('pagination::bootstrap-5') !!}
 </div>
-@section('js')
 <script>
-    // $(document).on('click', '.pro_util_pages a', function(e) {
-    //     console.log('hsd');
-    //     e.preventDefault(); 
-    //     let url = $(this).attr('href');
+    
+    $(document).ready(function () {
+        $('#facility').select2({
+            placeholder: "Facility", 
+            allowClear: true           
+        });
+    });
+    $('.select2').select2(); 
+    console.log('hereee');
 
-    //     $.ajax({
-    //         url: url,
-    //         type: 'GET',
-    //         success: function(response) {
-    //             var newRows = $(response).filter('tr');
-    //             $('#pro_body').html(response);
-    //         },
-    //         error: function(xhr) {
-    //             console.error('Error:', xhr.responseText);
-    //         }
-    //     });
-    // });
 </script>
-@endsection
+    
