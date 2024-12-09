@@ -232,9 +232,6 @@
       @endif
       @if(session('releaseAdded'))
          <?php session()->forget('releaseAdded'); ?>
-      //   <div class="alert alert-success">
-      //       <i class="fa fa-check"></i> Successfully released!
-      //    </div>
          Lobibox.notify('success', {
             msg: ' Successfully released! '
          });
