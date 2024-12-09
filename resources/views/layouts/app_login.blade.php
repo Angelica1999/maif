@@ -9,10 +9,10 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
     <style>
-      html {
-         font-size: 12px; /* Increasing this will scale everything using rem or em */
-      }
-   </style>
+        html {
+            font-size: 12px; /* Increasing this will scale everything using rem or em */
+        }
+    </style>
     <!-- base:css -->
     <link rel="stylesheet" href="{{ asset('admin/vendors/typicons.font/font/typicons.css') }}">
     <link rel="stylesheet" href="{{ asset('admin/vendors/css/vendor.bundle.base.css') }}">
@@ -46,7 +46,6 @@
         </div>
         <!-- container-scroller -->
     </div>
-
     <!-- base:js -->
     <script src="{{ asset('admin/vendors/js/vendor.bundle.base.js') }}"></script>
     <!-- endinject -->
