@@ -30,18 +30,23 @@
                                 <div class="card-body">
                                     <div style ="display:flex; justify-content:space-between;">
                                         <b><h3><a href="" data-toggle="modal" class="text-success" onclick="disUtil('{{ $row['proponent']['proponent'] }}')">{{ $row['proponent']['proponent'] }}</a></h3></b>
-                                        <button class="btn btn-sm update_saa" style="min-width:110px; cursor: pointer; text-align:center; color:white; background-color:#417524; border-radius:0;" onclick="addBalance('{{ $row['proponent']['proponent'] }}')">Add Funds</button>                                      
+                                        <button class="btn btn-sm update_saa" style="min-width:110px; cursor: pointer; text-align:center; color:white; background-color:#417524; border-radius:0;" onclick="addBalance('{{ $row['proponent']['proponent'] }}')">Manage Funds</button>                                      
                                     </div>
                                     <div style="display: flex; justify-content: space-between; align-items: center;">
                                         <div style="width:70%;">
                                             <ul class="list-arrow mt-3" style="list-style: none; padding: 0; margin: 0;">
-                                                <li><span class="ml-3">Allocated Funds &nbsp;: <strong class="">{{ !Empty($row['sum']) ? number_format($row['sum'], 2, '.', ',') : 0 }}</strong></span></li>
+                                                <li><span class="ml-3">Allocated Funds &nbsp;: <strong class="">{{ !Empty($row['sum']) ? number_format($row['sum'], 2, '.', ',') : 0.00 }}</strong></span></li>
                                                 <li><span class="ml-3">
                                                     <a href="#supp_tracking" data-toggle="modal" onclick="supDetails('{{ $row['proponent']['proponent'] }}')">
-                                                        Supplemental Funds: <strong class="">{{ !Empty($row['supp']) ? number_format($row['supp'], 2, '.', ',') : 0 }}</strong>
+                                                        Supplemental Funds: <strong class="">{{ !Empty($row['supp']) ? number_format($row['supp'], 2, '.', ',') : 0.00 }}</strong>
                                                     </a>
                                                     </span></li>
-                                                <li><span class="ml-3">Remaining Funds: <strong class="">{{ !Empty($row['rem']) ? number_format($row['rem'], 2, '.', ',') : 0 }}</strong></span></li>
+                                                <li><span class="ml-3">
+                                                    <a href="#sub_tracking" data-toggle="modal" onclick="subDetails('{{ $row['proponent']['proponent'] }}')">
+                                                        Negative Amount: <strong class="">{{ !Empty($row['sub']) ? number_format($row['sub'], 2, '.', ',') : 0.00 }}</strong>
+                                                    </a>
+                                                    </span></li>
+                                                <li><span class="ml-3">Remaining Funds: <strong class="">{{ !Empty($row['rem']) ? number_format($row['rem'], 2, '.', ',') : 0.00 }}</strong></span></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -92,6 +97,20 @@
                 </h4>
             </div>
             <div class="sup_body">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="sub_tracking" role="dialog">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content" style="border-radius:0px;">
+            <div class="modal-header" style="text-align:center">
+                <h4 class="text-success modal-title">
+                    <i style="font-size:15px" class="typcn typcn-location-arrow menu-icon"></i>
+                    SUBTRACTED FUNDS DETAILS
+                </h4>
+            </div>
+            <div class="sub_body">
             </div>
         </div>
     </div>
@@ -214,6 +233,58 @@
         });
     }
 
+    function updateNegation(id){
+        Swal.fire({
+            title: 'Update Supplemental Funds',
+            input: 'text', 
+            inputLabel: 'Amount:',
+            inputPlaceholder: '0.00',
+            showCancelButton: true,
+            confirmButtonText: 'Update',
+            cancelButtonText: 'Cancel',
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'Please enter the amount!';
+                }
+            },
+            didOpen: () => {
+                var inputElement = Swal.getInput();
+                inputElement.oninput = function () {
+                    var cleanedValue = this.value.replace(/[^\d.]/g, '');
+                    var formattedValue = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                    this.value = formattedValue;
+                };
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var amount = result.value; 
+                var amount = parseFloat(amount.replace(/,/g, ''));
+                fetch(`proponent/sub-update/${id}/${amount}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}' 
+                    }
+                })
+                .then(async (response) => {
+                    if (!response.ok) {
+                        var errorDetails = await response.json().catch(() => null); 
+                        throw new Error(errorDetails?.message || `HTTP Error: ${response.status}`); 
+                    }
+                    return response.json(); 
+                })
+                .then(data => {
+                    Swal.fire('Success!', 'Your data has been submitted.', 'success');
+                    location.reload();
+                })
+                .catch(error => {
+                    Swal.fire('Error!', error.message, 'error');
+                });
+
+            }
+        });
+    }
+
     function updateAmount(id){
         Swal.fire({
             title: 'Update Supplemental Funds',
@@ -266,15 +337,19 @@
         });
     }
 
-    function addBalance(proponent){
+    var input_amount;
+
+    function addBalance(proponent) {
         console.log('proponent', proponent);
         Swal.fire({
             title: 'Supplemental Funds',
-            input: 'text', 
+            input: 'text',
             inputLabel: 'Amount:',
             inputPlaceholder: '0.00',
             showCancelButton: true,
+            showDenyButton: true, // Add a Deny button
             confirmButtonText: 'Add',
+            denyButtonText: 'Negate', // Label for the Deny button
             cancelButtonText: 'Cancel',
             inputValidator: (value) => {
                 if (!value) {
@@ -290,25 +365,27 @@
                 };
             }
         }).then((result) => {
+            var pro = encodeURIComponent(proponent);
+            var inputElement = Swal.getInput();
+            var rawAmount = inputElement ? inputElement.value : '0';
+            var amount = parseFloat(rawAmount.replace(/,/g, '')) || 0;
+
             if (result.isConfirmed) {
-                var amount = result.value; 
-                var amount = parseFloat(amount.replace(/,/g, ''));
-                var pro = encodeURIComponent(proponent);
-                console.log('proponent', amount);
+                // var amount = parseFloat(result.value.replace(/,/g, ''));
 
                 fetch(`proponent/supplemental/${pro}/${amount}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}' 
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     }
                 })
                 .then(async (response) => {
                     if (!response.ok) {
-                        var errorDetails = await response.json().catch(() => null); 
-                        throw new Error(errorDetails?.message || `HTTP Error: ${response.status}`); 
+                        var errorDetails = await response.json().catch(() => null);
+                        throw new Error(errorDetails?.message || `HTTP Error: ${response.status}`);
                     }
-                    return response.json(); 
+                    return response.json();
                 })
                 .then(data => {
                     Swal.fire('Success!', 'Your data has been submitted.', 'success');
@@ -318,6 +395,31 @@
                     Swal.fire('Error!', error.message, 'error');
                 });
 
+            } else if (result.isDenied) {
+                // console.log('fdsfds', result);
+                // var amount = parseFloat(result.value.replace(/,/g, ''));
+
+                fetch(`proponent/subtracted/${pro}/${amount}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(async (response) => {
+                    if (!response.ok) {
+                        var errorDetails = await response.json().catch(() => null);
+                        throw new Error(errorDetails?.message || `HTTP Error: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    Swal.fire('Success!', 'The balance has been negated.', 'success');
+                    location.reload();
+                })
+                .catch(error => {
+                    Swal.fire('Error!', error.message, 'error');
+                });
             }
         });
     }
@@ -367,5 +469,13 @@
             $('.sup_body').html(result);
         });
     }
+
+    function subDetails(proponent){
+        $('.sub_body').html(loading);
+        $.get("{{ url('proponent/sub-details').'/' }}"+proponent, function(result){
+            $('.sub_body').html(result);
+        });
+    }
+
 </script>
 @endsection

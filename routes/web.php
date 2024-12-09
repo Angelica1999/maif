@@ -187,12 +187,14 @@ Route::match(['get', 'post'],'proponent/update', [App\Http\Controllers\Proponent
 Route::get('/proponent-fundsource', [App\Http\Controllers\ProponentController::class, 'fundsource'])->name('proponents.fundsource');
 Route::get('/proponent/util/{code}', [App\Http\Controllers\ProponentController::class, 'tracking'])->name('pro.tracking');
 Route::get('/proponent/supplemental/{proponent}/{amount}', [App\Http\Controllers\ProponentController::class, 'supplemental'])->name('proponent.supplemental');
+Route::get('/proponent/subtracted/{proponent}/{amount}', [App\Http\Controllers\ProponentController::class, 'subtracted'])->name('proponent.subtracted');
 Route::get('/proponent/sup-details/{proponent}', [App\Http\Controllers\ProponentController::class, 'supDetails'])->name('details.supplemental');
 Route::get('/proponent/sup-update/{id}/{amount}', [App\Http\Controllers\ProponentController::class, 'supUpdate'])->name('update.supplemental');
 Route::get('/proponent/patient-delete/{id}', [App\Http\Controllers\ProponentController::class, 'delGL'])->name('delete.gl');
 Route::get('/proponent/patient-sort/{code}/{id}/{userid}/{on}', [App\Http\Controllers\ProponentController::class, 'filterData'])->name('filter.gl');
 Route::get('/proponent/patient-print/{code}/{ids}', [App\Http\Controllers\ProponentController::class, 'excelData'])->name('excel.gl');
-
+Route::get('/proponent/sub-details/{proponent}', [App\Http\Controllers\ProponentController::class, 'subDetails'])->name('details.subtracted');
+Route::get('/proponent/sub-update/{id}/{amount}', [App\Http\Controllers\ProponentController::class, 'subUpdate'])->name('update.subtraction');
 
 Route::match(['get', 'post'],'/proponents/excel/', [App\Http\Controllers\FundSourceController::class, 'generateExcel'])->name('proponent.excel');
 Route::match(['get', 'post'],'/data/update/', [App\Http\Controllers\FacilityController::class, 'updateData'])->name('update.data');
