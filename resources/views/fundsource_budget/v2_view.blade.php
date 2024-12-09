@@ -365,11 +365,11 @@
                     </div>
                 </div>
                 <div class="modal-footer" id="dv_footer"> 
-                    <button id="close_btn" style = "background-color:lightgray" type="button" class="btn btn-sm btn" data-dismiss="modal"><i class="typcn typcn-times"></i>Close</button>
+                    <button id="close_btn" style="background-color:lightgray; border-radius:0px" type="button" class="btn btn-sm btn" data-dismiss="modal"><i class="typcn typcn-times"></i>Close</button>
                     @if( $type == 'awaiting')
-                        <button type="submit" id="submitBtn" class="btn btn-sm btn-primary"><i class="typcn typcn-tick menu-icon"></i>Obligate</button>
+                        <button type="submit" style="border-radius:0px" id="submitBtn" class="btn btn-sm btn-primary"><i class="typcn typcn-tick menu-icon"></i>Obligate</button>
                     @elseif( $type == 'deferred')
-                        <button type="submit" id="submitBtn" class="btn btn-sm btn-primary"><i class="typcn typcn-tick menu-icon"></i>Pay</button>
+                        <button type="submit" style="border-radius:0px" id="submitBtn" class="btn btn-sm btn-primary"><i class="typcn typcn-tick menu-icon"></i>Pay</button>
                     @endif
                 </div>
             </div>

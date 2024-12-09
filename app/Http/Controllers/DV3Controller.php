@@ -322,6 +322,8 @@ class Dv3Controller extends Controller
 
             $info = ProponentInfo::with('facility:id,name,address', 'fundsource:id,saa,alocated_funds:remaining_balance', 'proponent')->get();
             $f_info = AddFacilityInfo::where('id', $facility_id)->select('vat', 'ewt')->first();
+            $ors = Utilization::where('div_id', $route_no)->where('status', 0)->pluck('ors_no')->implode(', ');
+            
             $section = DB::connection('dohdtr')
                 ->table('users')
                 ->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
@@ -333,7 +335,8 @@ class Dv3Controller extends Controller
                 'info' => $info,
                 'dv3' => $dv3,
                 'f_info' => $f_info,
-                'section' => $section
+                'section' => $section,
+                'ors' => $ors
             ]);
         }
     }

@@ -150,10 +150,14 @@
                                 <span?>Tin/Employee No. :</span>
                             </td>
                             <td style="width:27%; border-left: 0 " >
-                                <span>ORS/BURS No. :{{$dv3->ors_no}}</span>
-                                @if($section == '6')
-                                    <input name="ors_no" class="ors_no" id="ors_no" required>
-                                @endif
+
+                                <div style="display: flex; align-items: center;">
+                                    <span  style="vertical-align: middle;">ORS/BURS No. : {{ $dv3->ors_no }}</span>
+                                    @if($section == '6')
+                                        <textarea name="ors_no" style="width:140px; height:30px; margin-left: 10px;" class="form-control ors_no" id="ors_no" required>{{ $dv3->ors_no != null ? $dv3->ors_no : $ors }}</textarea>
+                                    @endif
+                                    <!-- <textarea name="ors_no" style="width:150px; height:30px; margin-left: 10px;" class="form-control" required>{{ $ors }}</textarea> -->
+                                </div>
                             </td>
                           </tr>
                     </table>
@@ -391,6 +395,7 @@
                         <button type="button" class="btn btn-sm btn-danger" style="border-radius:0px" onclick="removeDv3('{{$dv3->route_no}}')">Remove</button>
                     @endif
                 @endif
+                <button style="background-color:lightgray;border-radius:0px" class="btn btn-sm" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> Close</button>
                 <input type="hidden" name="group_id" id="group_id" >
             </div>
           </div>

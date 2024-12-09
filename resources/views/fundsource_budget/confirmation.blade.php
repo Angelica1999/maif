@@ -13,7 +13,7 @@
     </thead>
     <tbody id="confirm_body">
         @foreach($data as $row)
-            <tr>
+            <tr style="font-weight:normal">
                 <td><a href="#" data-toggle="modal" onclick="displayFunds('{{ $dv->route_no }}','{{ $row->proponentData->proponent }}', {{ $row->id }})">{{ $dv->route_no }}</a></td>
                 <td>{{ $row->saaData->saa }}</td>
                 <td>{{ $row->proponentData->proponent }}</td>
@@ -33,7 +33,7 @@
                         @endif
                     @endforeach
                 </td>
-                <td>{{ $dv->preDv->facility->name }}</td>
+                <td>{{ $row->facilitydata->name }}</td>
                 <td>{{ number_format(str_replace(',','', $row->utilize_amount), 2,'.',',') }}</td>
                 <td>
                     <input type="checkbox" id="checkbox_{{ $row->id }}" class="confirm_check" style="width: 50px; height: 15px;" disabled>
