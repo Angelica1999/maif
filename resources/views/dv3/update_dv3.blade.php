@@ -383,13 +383,11 @@
                 </div>
             </div>
             <div class="modal-footer" id="dv_footer"> 
-
                 @if($section == '6')
                     <button type="submit" id="submitBtn" class="btn btn-sm btn-success" style="border-radius:0px"><i class="typcn typcn-tick menu-icon"></i>Obligate</button>
                 @elseif($section == '7')
                     <button type="submit" id="submitBtn" class="btn btn-sm btn-success" style="border-radius:0px"><i class="typcn typcn-tick menu-icon"></i>Pay</button>
                 @else
-                    <button style="background-color:lightgray; border-radius:0px" type="button" class="btn btn-sm btn" data-dismiss="modal"><i class="typcn typcn-times"></i>Close</button>
                     <button type="submit" id="submitBtn" class="btn btn-sm btn-success" style="border-radius:0px"><i class="typcn typcn-tick menu-icon"></i>Update</button>
                     @if($row->remarks != 1)
                         <button type="button" class="btn btn-sm btn-danger" style="border-radius:0px" onclick="removeDv3('{{$dv3->route_no}}')">Remove</button>
