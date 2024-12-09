@@ -17,6 +17,7 @@ use App\Models\Group;
 use App\Models\ProponentInfo;
 use App\Models\ProponentUtilizationV1;
 use App\Models\SupplementalFunds;
+use App\Models\SubtractedFunds;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Log;
 
@@ -227,7 +228,8 @@ class ProponentController extends Controller
 
             $supp = SupplementalFunds::whereIn('proponent', $proponentIdMap->get($proponent->proponent)->pluck('proponent'))->sum('amount');
             $rem = $totalFunds - $totalUtilized;
-            
+            $sub = SubtractedFunds::whereIn('proponent', $proponentIdMap->get($proponent->proponent)->pluck('proponent'))->sum('amount');
+
             if($supp == 0){
                 $all_rem = $rem;
             }else{
@@ -237,8 +239,9 @@ class ProponentController extends Controller
             return [
                 'proponent' => $proponent,
                 'sum' => $totalFunds,
-                'rem' => $all_rem,
-                'supp' => $supp
+                'rem' => $all_rem - $sub,
+                'supp' => $supp,
+                'sub' => $sub
             ];
         });
 
@@ -316,10 +319,31 @@ class ProponentController extends Controller
         ], 200);
     }
 
+    public function subtracted($proponent, $amount)
+    {
+        $subtracted = new SubtractedFunds();
+        $subtracted->proponent = $proponent;
+        $subtracted->amount = (float) str_replace(',', '', $amount);
+        $subtracted->subtracted_by = Auth::user()->userid;
+        $subtracted->save();
+
+        return response()->json([
+            'message' => 'Funds was successfully deducted!',
+            'data' => $subtracted,
+        ], 200);
+    }
+
     public function supDetails($proponent){
         $supp = SupplementalFunds::where('proponent', $proponent)->with('user:userid,fname,lname')->get();
         return view('proponents.proponent_supplemental', [
             'data' => $supp
+        ]);
+    }
+
+    public function subDetails($proponent){
+        $sub = SubtractedFunds::where('proponent', $proponent)->with('user:userid,fname,lname')->get();
+        return view('proponents.proponent_subtracted', [
+            'data' => $sub
         ]);
     }
 
@@ -333,6 +357,20 @@ class ProponentController extends Controller
 
             return response()->json([
                 'message' => 'Supplemental fund added successfully'
+            ], 200);
+        }
+    }
+
+    public function subUpdate($id, $amount){
+        $subtracted = SubtractedFunds::where('id', $id)->first();
+    
+        if($subtracted){
+            $subtracted->amount = (float) str_replace(',', '', $amount);
+            $subtracted->subtracted_by = Auth::user()->userid;
+            $subtracted->save();
+
+            return response()->json([
+                'message' => 'success'
             ], 200);
         }
     }
