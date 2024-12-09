@@ -10,6 +10,7 @@ use App\Models\ProponentInfo;
 use App\Models\Fundsource;
 use App\Models\User;
 use App\Models\Dv;
+use App\Models\Dv3;
 use App\Models\NewDV;
 use App\Models\PreDv;
 use App\Models\AdminCostUtilization;
@@ -295,18 +296,19 @@ class FundSourceController2 extends Controller{
     }
 
     public function confirmDV($id){
-        $dv = NewDV::where('id', $id)->with([
-            'preDv' => function($query){
-                $query->with('facility:id,name');
-            }
-        ]
-        )->first();
+        $dv = NewDV::where('id', $id)->first();
+
+        if (empty($dv)) {
+            $dv = Dv3::where('route_no', $id)->first();
+        }
+
         if($dv){
             $util = Utilization::where('div_id', $dv->route_no)->where('status', 0)
                     ->with([
                         'infoData:id,facility_id',
                         'saaData:id,saa',
-                        'proponentdata:id,proponent'
+                        'proponentdata:id,proponent',
+                        'facilitydata:id,name'
                     ])->get();
 
             return view('fundsource_budget.confirmation',[

@@ -323,8 +323,8 @@
                 </div>
             </div>
             <div class="modal-footer" id="dv_footer"> 
-                <button  style = "background-color:lightgray" type="button" class="btn btn-sm btn" data-dismiss="modal"><i class="typcn typcn-times"></i>Close</button>
-                <button type="submit" id="submitBtn" class="btn btn-sm btn-success"><i class="typcn typcn-tick menu-icon"></i>Submit</button>
+                <button style="background-color:lightgray; border-radius:0px" type="button" class="btn btn-sm btn" data-dismiss="modal"><i class="typcn typcn-times"></i>Close</button>
+                <button style="border-radius:0px" type="submit" id="submitBtn" class="btn btn-sm btn-success"><i class="typcn typcn-tick menu-icon"></i>Submit</button>
                 <input type="hidden" name="group_id" id="group_id" >
             </div>
           </div>

@@ -309,7 +309,44 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 <!--end-->
+<div class="modal fade" id="confirm_dv" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" style="border-radius:0px;">
+            <div class="modal-header" style="text-align:center">
+                <h4 class="text-success modal-title">
+                    <i style="font-size:15px" class="typcn typcn-location-arrow menu-icon"></i>
+                    BUDGET TRACKING DETAILS
+                </h4>
+            </div>
+            <div class="table-container" id="confirmation_main" style="overflow-y: auto; padding:10px">
+            </div>
+            <div class="modal-footer confirm_footer">
+                <!-- <button type="button" class="btn btn-success" onclick="confirm()">Confirm</button> -->
+                <button type="button" class="btn btn-info budget_obligate" style="display:none" onclick="obligate()">Obligate</button>
+                <button style="background-color:lightgray;" class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 <!--empty-->
-
+<div class="modal fade" id="budget_confirm" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" style="border-radius:0px;">
+            <div class="modal-header" style="text-align:center">
+                <h4 class="text-success modal-title">
+                    <i style="font-size:15px" class="typcn typcn-location-arrow menu-icon"></i>
+                    BUDGET TRACKING DETAILS
+                </h4>
+            </div>
+            <div class="table-container confirm_budget" style="padding:10px">
+                <!-- <div id="confirm_budget"></div> -->
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-sm btn-info" onclick="confirmed()">CONFIRM</button>
+                <button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">CLOSE</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 

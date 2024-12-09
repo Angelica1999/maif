@@ -362,9 +362,9 @@
                 </div>
             </div>
             <div class="modal-footer" id="dv_footer"> 
-                <button id="close_btn" style = "background-color:lightgray" type="button" class="btn btn-sm btn" data-dismiss="modal"><i class="typcn typcn-times"></i>Close</button>
-                <button type="submit" id="submitBtn" class="btn btn-sm btn-primary"><i class="typcn typcn-tick menu-icon"></i>Submit</button>
-                <a type="button" style="color:white" onclick="removePre()" class="btn btn-sm btn-danger"><i class="typcn typcn-close menu-icon"></i>Delete</a>
+                <button id="close_btn" style="background-color:lightgray; border-radius:0px" type="button" class="btn btn-sm btn" data-dismiss="modal"><i class="typcn typcn-times"></i>Close</button>
+                <button type="submit" style="border-radius:0px" id="submitBtn" class="btn btn-sm btn-primary"><i class="typcn typcn-tick menu-icon"></i>Submit</button>
+                <a type="button" style="border-radius:0px" style="color:white" onclick="removePre()" class="btn btn-sm btn-danger"><i class="typcn typcn-close menu-icon"></i>Delete</a>
                 <input type="hidden" name="group_id" id="group_id" >
             </div>
           </div>

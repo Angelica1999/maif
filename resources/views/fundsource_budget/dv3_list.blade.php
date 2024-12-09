@@ -19,7 +19,6 @@
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
-                        <button type="button" href="#create_dv3" onclick="createDv3()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
                     </div>
                 </div>
                 <input type="hidden" class="all_route" id="all_route" name="all_route">
@@ -65,7 +64,7 @@
                                             $doc_id= 0;
                                         }
                                     ?>
-                                    <a data-dvId="{{$row->id}}" href="#create_dv3" onclick="updateDv3('{{$row->route_no}}')" style="background-color:teal;color:white;width:90px;" type="button" class="btn btn-xs" data-backdrop="static" data-toggle="modal">{{ $row->route_no }}</a>
+                                    <a data-dvId="{{$row->id}}" onclick="updateDv3('{{$row->route_no}}')" style="background-color:teal;color:white;width:90px;" type="button" class="btn btn-xs" data-backdrop="static" data-toggle="modal">{{ $row->route_no }}</a>
                                 </td>
                                 <td>
                                     @if($row->remarks == 0)
@@ -112,7 +111,7 @@
                 <h4 class="modal-title"><i class="fa fa-plus" style="margin-right:auto;"></i> Disbursement Vouchers (v3)</h4>
                 <button type="button" class="close" id="exit" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" style="color:white;">&times;</span></button>
             </div>
-            <div class="modal_body">
+            <div class="dv3_body">
                 <div class="modal_content"></div>
             </div>
         </div>
@@ -123,6 +122,10 @@
 @include('modal')
 @section('js')
     <script>
+
+        var doc_type = @json($type);
+        console.log('doc', doc_type);
+
         $('.filter-division').select2();
         $('.filter-section').select2();
 
@@ -148,8 +151,87 @@
         }
 
         function updateDv3(route_no){
-            $.get("{{url('dv3/update').'/'}}"+route_no, function(result){
-                $('.modal_body').html(result);
+            console.log('route_no', route_no);
+            if(doc_type == 'unsettled'){
+                $('#confirm_dv').modal('show');
+                $('#confirmation_main').html(loading);
+                $.get("{{ url('budget/confirm').'/' }}" + route_no, function(result) {
+                    $('#confirmation_main').html(result);
+                });
+            }else{
+                $('#confirm_dv').modal('hide');
+                $('#create_dv3').modal('show');
+                $('.dv3_body').html(loading);
+                $.get("{{url('dv3/update').'/'}}"+route_no, function(result){
+                    $('.dv3_body').html(result);
+                });
+            }
+        }
+
+        function obligate(){
+            $('#confirm_dv').modal('hide');
+            con = 1;
+            // confirm();
+            $('#create_dv3').modal('show');
+            $('.dv3_body').html(loading);
+            $.get("{{url('dv3/update').'/'}}"+route, function(result){
+                $('.dv3_body').html(result);
+            });
+        }
+
+        // function confirm(){
+        //     $.get("{{ url('confirm').'/' }}" + dv_id, function(result) {
+        //         Swal.fire({
+        //             icon: 'success',
+        //             title: 'Confirmed!',
+        //             text: 'Disbursement was successfully confirmed!',
+        //             timer: 1000, 
+        //             showConfirmButton: false
+        //         }).then(() => {
+        //             if(con == 0){
+        //                 location.reload(); 
+        //             }
+        //         });
+        //     });
+        // }
+
+        var util_id = 0;
+        var con = 0;
+
+        function confirmed(){
+
+            var cs = $('.editable-input').val();
+            if(cs == ''){
+                Swal.fire({
+                    icon: "error",
+                    title: "Empty ORS No",
+                    text: " Ors no is required to confirm this data",
+                    timer: 1000,
+                    showConfirmButton: false
+                });
+            }else{
+                $('#checkbox_' + util_id).prop('checked', true);
+
+                var checkboxes = $('.confirm_check');
+                var allChecked = checkboxes.filter(':not(:checked)').length == 0;
+
+                if (allChecked) {
+                    $('.budget_obligate').css('display', 'block');
+                } else {
+                    $('.budget_obligate').css('display', 'none');
+                }
+                $('#budget_confirm').modal('hide');
+            }
+        }
+        var route;
+        function displayFunds(route_no, proponent, id){
+            util_id = id;
+            route = route_no;
+            console.log('sd', id);
+            $('#budget_confirm').modal('show');
+            $('.confirm_budget').html(loading);
+            $.get("{{ url('confirm-budget').'/' }}" + id, function(result) {
+                $('.confirm_budget').html(result);
             });
         }
         
