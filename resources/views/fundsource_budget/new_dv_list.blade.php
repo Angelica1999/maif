@@ -42,7 +42,7 @@ use App\Models\TrackingDetails;
                                     <button type="button" class="btn btn-xs" style="background-color:#165A54;color:white;width:50px; border-radius:0px" data-toggle="modal" href="#iframeModal" data-routeId="{{$row->new_dv->route_no}}" id="track_load" onclick="openModal()">Track</button>
                                     <a href="{{ route('new_dv.pdf', ['id' => $row->id]) }}" style="background-color:green;color:white; width:50px; border-radius:0px; margin-top:1px" target="_blank" type="button" class="btn btn-xs">Print</a>
                                 </td>
-                                <td><a class="text-info" data-toggle="modal" data-backdrop="static" onclick="viewV1({{ $row->id }}, {{ $row->new_dv->id }}, '{{ $row->new_dv->confirm }}')">{{ $row->new_dv->route_no }}</a></td>
+                                <td><a class="text-info" data-toggle="modal" data-backdrop="static" onclick="viewV1('{{ $row->new_dv->route_no }}', {{ $row->id }}, {{ $row->new_dv->id }}, '{{ $row->new_dv->confirm }}')">{{ $row->new_dv->route_no }}</a></td>
                                 <td class="td">{{ $row->facility->name }}</td>
                                 <td class="td">
                                     @foreach($row->extension as $index => $data)
@@ -84,8 +84,6 @@ use App\Models\TrackingDetails;
         </div>
     </div>
 </div>
-
-
 @include('modal')
 @endsection
 @section('js')
@@ -99,7 +97,7 @@ use App\Models\TrackingDetails;
     var id = 0;
     var con = 0;
     var util_id = 0;
-
+    
     function confirmed(){
 
         var cs = $('.editable-input').val();
@@ -136,7 +134,7 @@ use App\Models\TrackingDetails;
         });
     }
 
-    function viewV1(d_id, d_dv_id, confirmation) {
+    function viewV1(route_no, d_id, d_dv_id, confirmation) {
         dv_id = d_dv_id;
         console.log('dv_id', dv_id);
         id = d_id;
@@ -149,7 +147,7 @@ use App\Models\TrackingDetails;
         }else{
             $('#confirm_dv').modal('show');
             $('#confirmation_main').html(loading);
-            $.get("{{ url('budget/confirm').'/' }}" + dv_id, function(result) {
+            $.get("{{ url('budget/confirm').'/' }}" + route_no, function(result) {
                 $('#confirmation_main').html(result);
             });
         } 
