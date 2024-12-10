@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Kyslik\ColumnSortable\Sortable;
 
 class FundSourceController2 extends Controller{
 
@@ -295,11 +296,11 @@ class FundSourceController2 extends Controller{
         }
     }
 
-    public function confirmDV($id){
-        $dv = NewDV::where('id', $id)->first();
+    public function confirmDV($route_no, Request $request){
+        $dv = NewDV::where('route_no', $route_no)->first();
 
         if (empty($dv)) {
-            $dv = Dv3::where('route_no', $id)->first();
+            $dv = Dv3::where('route_no', $route_no)->first();
         }
 
         if($dv){
@@ -309,12 +310,56 @@ class FundSourceController2 extends Controller{
                         'saaData:id,saa',
                         'proponentdata:id,proponent',
                         'facilitydata:id,name'
-                    ])->get();
+                    ]);
+
+            if ($request->sort) {
+
+               
+                $util = $util->get(); 
+                $direction = $request->input('direction', 'asc') == 'desc'; 
+                $direct = $request->input('direction'); 
+                if($request->input('sort') === 'proponent'){
+                    $util = $util->sortBy(function ($utilization) {
+                        return $utilization->proponentdata->proponent; 
+                    }, SORT_REGULAR, $direction); 
+                }else if($request->input('sort') === 'saa'){
+                    $util = $util->sortBy(function ($utilization) {
+                        return $utilization->saaData->saa; 
+                    }, SORT_REGULAR, $direction); 
+                }else if($request->input('sort') === 'payee'){
+                    $facility_ids = Facility::orderBy('name', $direct)->pluck('id')->toArray(); 
+                    $util = $util->sortBy(function ($item) use ($facility_ids) {
+                        $ids = json_decode($item->infoData->facility_id, true); 
+                        if (!is_array($ids)) {
+                            $ids = [$ids];
+                        }
+                        $firstFacilityId = $ids[0] ?? null;
+                        return array_search($firstFacilityId, $facility_ids) !== false
+                            ? array_search($firstFacilityId, $facility_ids)
+                            : PHP_INT_MAX;
+                    });
+
+                    $util = $util->values();
+                }
+                
+            }else{
+                $util = $util->get();
+                $direct = 'sd';
+            }
+
+            // if ($request->ajax()) {
+            //     // Return only the updated table rows for AJAX requests
+            //     return response()->json([
+            //         'html' => view('fundsource_budget.confirmation_table_rows', ['data' => $util])->render()
+            //     ]);
+            // }
+    
 
             return view('fundsource_budget.confirmation',[
                 'facilities' =>Facility::get(),
                 'data' => $util,
-                'dv' => $dv
+                'dv' => $dv,
+                'direction' => $direct
             ]);        
         }
     }

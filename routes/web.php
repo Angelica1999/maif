@@ -138,7 +138,7 @@ Route::post('/fundsource_budget/create', [App\Http\Controllers\FundSourceControl
 Route::get('/dvlist/{type}', [App\Http\Controllers\FundSourceController2::class, 'pendingDv'])->name('fundsource_budget.pendingDv');
 Route::get('/budget/fundsource/{id}', [App\Http\Controllers\FundSourceController2::class, 'budgetTracking'])->name('budget.tracking');
 Route::get('/budget/funds/{id}', [App\Http\Controllers\FundSourceController2::class, 'fundsTracking'])->name('funds.tracking');
-Route::get('/budget/confirm/{id}', [App\Http\Controllers\FundSourceController2::class, 'confirmDV'])->name('dv.confirmation');
+Route::match(['get', 'post'],'/budget/confirm/{route_no}', [App\Http\Controllers\FundSourceController2::class, 'confirmDV'])->name('dv.confirmation');
 Route::get('/confirm/{id}', [App\Http\Controllers\FundSourceController2::class, 'confirm'])->name('dv.confirm');
 Route::get('/admin/cost/{id}', [App\Http\Controllers\FundSourceController2::class, 'addCost'])->name('add.cost');
 Route::post('/cost/save', [App\Http\Controllers\FundSourceController2::class, 'saveCost'])->name('save.cost');

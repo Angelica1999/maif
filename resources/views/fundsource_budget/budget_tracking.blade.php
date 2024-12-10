@@ -1,5 +1,5 @@
 @csrf
-<table class="table table-list table-hover" id="">
+<table class="table table-list table-hover" id="budget_table">
     <thead style="position: sticky; top: 0; background-color: white; z-index: 1;">
         <tr style="text-align:center;">
             <th class="budget_th" style="border:1px solid black; vertical-align:middle; background-color:#CEAB60" colspan="12">BREAKDOWN OF CHARGES</th>
