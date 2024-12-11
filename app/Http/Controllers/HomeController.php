@@ -134,6 +134,20 @@ class HomeController extends Controller
 
         // -- for table header sorting
 
+        $date = clone ($patients);
+        $fname = clone ($patients);
+        $mname = clone ($patients);
+        $lname = clone ($patients);
+        $facs = clone ($patients);
+        $code = clone ($patients);
+        $proponent = clone ($patients);
+        $region = clone ($patients);
+        $province = clone ($patients);
+        $muncity = clone ($patients);
+        $barangay = clone ($patients);
+        $on = clone ($patients);
+        $by = clone ($patients);
+
         if ($request->sort && $request->input('sort') == 'facility') {
             $patients = $patients->sortable(['facility.name' => 'asc'])->where('sent_type', null);
         }else if ($request->sort && $request->input('sort') == 'proponent') {
@@ -228,19 +242,7 @@ class HomeController extends Controller
             }
         // }
 
-        $date = clone ($patients);
-        $fname = clone ($patients);
-        $mname = clone ($patients);
-        $lname = clone ($patients);
-        $facs = clone ($patients);
-        $code = clone ($patients);
-        $proponent = clone ($patients);
-        $region = clone ($patients);
-        $province = clone ($patients);
-        $muncity = clone ($patients);
-        $barangay = clone ($patients);
-        $on = clone ($patients);
-        $by = clone ($patients);
+        
 
         $fc_list = Facility::whereIn('id', $facs->groupBy('facility_id')->pluck('facility_id'))->select('id','name')->get();
         $pros = Proponent::whereIn('id', $proponent->groupBy('proponent_id')->pluck('proponent_id'))->select('id','proponent')->get();
