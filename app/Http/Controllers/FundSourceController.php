@@ -17,6 +17,7 @@ use App\Models\NewDV;
 use App\Models\PreDV;
 use App\Models\ProponentUtilizationV1;
 use App\Models\SupplementalFunds;
+use App\Models\SubtractedFunds;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -664,9 +665,6 @@ class FundSourceController extends Controller
     }
 
     public function facilityProponentGet($facility_id) {
-        // $ids = ProponentInfo::where('facility_id', $facility_id)
-        //         ->orWhereJsonContains('facility_id', $facility_id)
-        //         ->pluck('proponent_id')->toArray();
 
         $ids = ProponentInfo::where(function ($query) use ($facility_id) {
                         $query->whereJsonContains('proponent_info.facility_id', '702')
