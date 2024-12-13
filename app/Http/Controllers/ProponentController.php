@@ -15,6 +15,7 @@ use App\Models\Dv;
 use App\Models\Dv2;
 use App\Models\Group;
 use App\Models\ProponentInfo;
+use App\Models\Dv3Fundsource;
 use App\Models\ProponentUtilizationV1;
 use App\Models\SupplementalFunds;
 use App\Models\SubtractedFunds;
@@ -218,6 +219,20 @@ class ProponentController extends Controller
         
         $allData = $proponents->map(function ($proponent) use ($proponentIdMap, $fundsData, $utilizationData) {
             $proponentIds = $proponentIdMap->get($proponent->proponent)->pluck('id');
+
+            $info = ProponentInfo::whereIn('proponent_id', $proponentIds)->pluck('id')->toArray();
+            $dv3_sum = Dv3Fundsource::whereIn('info_id', $info)
+                ->with([
+                    'dv3' => function ($query){
+                        $query->with([
+                            'facility:id,name',
+                            'user:userid,fname,lname'
+                        ]);
+                    },
+                    'fundsource:id,saa'
+                ])->sum('amount');
+
+
             $totalFunds = $proponentIds->sum(function ($id) use ($fundsData) {
                 return $fundsData->get($id)?->first()?->total_amount ?? 0;
             });
@@ -239,7 +254,7 @@ class ProponentController extends Controller
             return [
                 'proponent' => $proponent,
                 'sum' => $totalFunds,
-                'rem' => $all_rem - $sub,
+                'rem' => $all_rem - $dv3_sum,
                 'supp' => $supp,
                 'sub' => $sub
             ];
@@ -277,10 +292,23 @@ class ProponentController extends Controller
         $ids = Proponent::where('proponent', $code)->pluck('id')->toArray();
         $tracking = Patients::whereIn('proponent_id', $ids)->with('facility:id,name','encoded_by:userid,fname,lname,mname', 'gl_user:username,fname,lname')->paginate(20);
         $facilities = Facility::whereIn('id', Patients::whereIn('proponent_id', $ids)->pluck('facility_id')->toArray())->select('id', 'name')->get(); 
+        $info = ProponentInfo::whereIn('proponent_id', $ids)->pluck('id')->toArray();
+        $dv3_fundsources = Dv3Fundsource::whereIn('info_id', $info)
+            ->with([
+                'dv3' => function ($query){
+                    $query->with([
+                        'facility:id,name',
+                        'user:userid,fname,lname'
+                    ]);
+                },
+                'fundsource:id,saa'
+            ]);
+
         if(count($tracking) > 0){
             return view('proponents.proponent_util',[
                 'data' => $tracking,
-                'facilities' => $facilities
+                'facilities' => $facilities,
+                'dv3' => $dv3_fundsources->orderBy('id', 'desc')->get()
             ]);
         }else{
             return 0;
@@ -292,6 +320,17 @@ class ProponentController extends Controller
         $f_ids = $request->f_id;
         $pro_code = $request->pro_code;
         $ids = Proponent::where('proponent', $pro_code)->pluck('id')->toArray();
+        $info = ProponentInfo::whereIn('proponent_id', $ids)->pluck('id')->toArray();
+        $dv3_fundsources = Dv3Fundsource::whereIn('info_id', $info)
+            ->with([
+                'dv3' => function ($query){
+                    $query->with([
+                        'facility:id,name',
+                        'user:userid,fname,lname'
+                    ]);
+                },
+                'fundsource:id,saa'
+            ]);
         if (in_array("all", $f_ids)) {
             $tracking = Patients::whereIn('proponent_id', $ids)
                 ->with('facility:id,name','encoded_by:userid,fname,lname,mname', 'gl_user:username,fname,lname')->paginate(20);
@@ -302,7 +341,8 @@ class ProponentController extends Controller
         $facilities = Facility::whereIn('id', Patients::whereIn('proponent_id', $ids)->pluck('facility_id')->toArray())->select('id', 'name')->get(); 
         return view('proponents.proponent_util',[
             'data' => $tracking,
-            'facilities' => $facilities
+            'facilities' => $facilities,
+            'dv3' => $dv3_fundsources->orderBy('id', 'desc')->get()
         ]);
     }
 

@@ -1646,13 +1646,16 @@
                         var suggestions =[];
                         var res = result.proponent_info;
                         var over_all = parseFloat(result.overall).toFixed(2);
+                        console.log('sadsad', res);
 
                         $.each(res, function(index, optionData) {
+                            var deduct = (res[index].dv3_funds && res[index].dv3_funds.length > 0) ? res[index].dv3_funds[0].deduction : 0;
+                            console.log('fdsf', deduct);
                             var amount = parseFloat(res[index].alocated_funds.replace(/,/g, '')) - parseFloat(res[index].admin_cost.replace(/,/g, ''));
                             if(over_all >= amount){
                                 over_all = over_all - amount;
                             }else{
-                                var total =amount - over_all;
+                                var total =amount - over_all - deduct;
                                 over_all = 0;
                                 suggestions.push(res[index].fundsource.saa +' - '+formatBalance(total));
                             }

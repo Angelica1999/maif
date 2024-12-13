@@ -32,4 +32,7 @@ class ProponentInfo extends Model
     {
         return $this->belongsTo(Extension::class);
     }
+    public function dv3_funds(){
+        return $this->hasMany(Dv3Fundsource::class, 'info_id', 'id');
+    }
 }
