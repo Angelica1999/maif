@@ -18,7 +18,7 @@ class Dv3 extends Model{
     public function facility(){
         return $this->belongsTo(Facility::class, 'facility_id', 'id');
     }
-
+    
     public function proponent_info(){
         return $this->hasMany(ProponentInfo::class);
     }

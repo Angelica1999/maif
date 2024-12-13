@@ -15,6 +15,8 @@ use App\Models\Fundsource_Files;
 use App\Models\Dv2;
 use App\Models\NewDV;
 use App\Models\PreDV;
+use App\Models\Dv3;
+use App\Models\Dv3Fundsource;
 use App\Models\ProponentUtilizationV1;
 use App\Models\SupplementalFunds;
 use App\Models\SubtractedFunds;
@@ -730,6 +732,19 @@ class FundSourceController extends Controller
         $user = Auth::user();
         $proponent= Proponent::where('id', $proponent_id)->first();
         $proponent_ids= Proponent::where('proponent', $proponent->proponent)->pluck('id')->toArray();
+
+        $info = ProponentInfo::whereIn('proponent_id', $proponent_ids)->pluck('id')->toArray();
+        $dv3_sum = Dv3Fundsource::whereIn('info_id', $info)
+            ->with([
+                'dv3' => function ($query){
+                    $query->with([
+                        'facility:id,name',
+                        'user:userid,fname,lname'
+                    ]);
+                },
+                'fundsource:id,saa'
+            ])->sum('amount');
+
         $facility = Facility::find($facility_id);
         $patient_code = $proponent->proponent_code.'-'.$this->getAcronym($facility->name).date('YmdHis').$user->id;
         $total = ProponentInfo::whereIn('proponent_id', $proponent_ids)
@@ -795,7 +810,10 @@ class FundSourceController extends Controller
                     ->orWhereIn('proponent_info.facility_id', [$facility_id, '702']);
                 })
                 ->whereIn('proponent_id', $proponent_ids)
-                ->with('fundsource')
+                ->with(['fundsource', 'dv3_funds' => function ($query) {
+                    $query->selectRaw('info_id, SUM(amount) as deduction')
+                          ->groupBy('info_id');
+                }])
                 ->orderByRaw("
                     (JSON_CONTAINS(proponent_info.facility_id, '702') OR proponent_info.facility_id = '702') DESC
                 ")
@@ -805,14 +823,15 @@ class FundSourceController extends Controller
         });  
 
         $supplemental = SupplementalFunds::where('proponent', $proponent->proponent)->sum('amount');
-        $balance = ($overall_sum - $overall) + $supplemental;
+        $balance = ($overall_sum - $overall) + $supplemental - $dv3_sum;
         return [
             'patient_code' => $patient_code,
             'proponent_info' => $overall_info,
             'balance' => round($balance, 2),
             'overall' => $overall,
             'overall_sum' => $overall_sum,
-            'supplemental' => $supplemental
+            'supplemental' => $supplemental,
+            'dv3' => $dv3_sum
         ];   
     }
 
