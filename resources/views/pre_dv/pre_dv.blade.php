@@ -23,7 +23,7 @@
                             </div>
                         </div>
                         <div class = "input-group">
-                            <input type="text" style="text-align:center" class="form-control" id="dates_filter" value="" name="dates_filter" />
+                            <input type="text" style="text-align:center" class="form-control" id="dates_filter" value="{{ $generated_dates }}" name="dates_filter" />
                             <button type="submit" id="gen_btn" style="background-color:teal; color:white; width:95px; border-radius: 0; font-size:11px" class="btn btn-xs"><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
                         </div>
                         <input type="hidden" name="f_id" class="fc_id" value="{{ implode(',',$f_id) }}">
@@ -37,7 +37,6 @@
                 MAIF-IPP
             </p>
             <div class="table-responsive">
-                <?php $overall=0; ?>
                 @if(count($results) > 0)
                     <table class="table table-striped">
                         <thead>
@@ -112,7 +111,6 @@
                                     <td>{{ $row->user->lname .', '.$row->user->fname }}</td>
                                     <td>{{ date('F j, Y', strtotime($row->created_at)) }}</td>
                                 </tr>
-                                <?php $overall= $overall + $total; ?>
                             @endforeach
                         </tbody>
                     </table>
@@ -126,7 +124,7 @@
             <div class="pl-5 pr-5 mt-5 alert alert-info" role="alert" style="width: 100%; margin-top:5px;">
                 <strong>Total number of data generated: {{ $num_generated }}</strong>
                 <strong style="margin-left: 20px;">|</strong>
-                <strong style="margin-left: 20px;">Total number of transmittals:  {{ $overall }}</strong>
+                <strong style="margin-left: 20px;">Total number of transmittals:  {{  number_format($total_control, 2,'.',',') }}</strong>
                 <strong style="margin-left: 20px;">|</strong>
                 <strong style="margin-left: 20px;">Total amount:  {{ number_format($grand_amount, 2,'.',',') }}</strong>
 

@@ -255,7 +255,8 @@ class ProponentController extends Controller
 
         return view('proponents.fundsource', [
             'data' => $paginatedData,
-            'keyword' => $keyword
+            'keyword' => $keyword,
+            'facilities' => Facility::get()
         ]);
     }
 
@@ -318,6 +319,8 @@ class ProponentController extends Controller
             'data' => $supplemental,
         ], 200);
     }
+
+    
 
     public function subtracted($proponent, $amount)
     {

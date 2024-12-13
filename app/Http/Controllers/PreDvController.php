@@ -60,14 +60,14 @@ class PreDvController extends Controller
                     }
                 ]
             );
-
+        $gen_date = $request->dates_filter;
         if ($request->generate && !$request->viewAll) {
-
             $dateRange = explode(' - ', $request->dates_filter);
             $start_date = date('Y-m-d', strtotime($dateRange[0]));
             $end_date = date('Y-m-d', strtotime($dateRange[1]));
             $pre_dv ->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59']);
-        
+        }else{
+            $gen_date = '';
         }
 
         $data = $pre_dv->get();
@@ -100,6 +100,12 @@ class PreDvController extends Controller
 
         $total = count($pre_dv->get());
 
+        $totalControls = $pre_dv->get()->sum(function ($preDv) {
+            return $preDv->extension->sum(function ($extension) {
+                return $extension->controls->count();
+            });
+        });
+        
         $grand_amount = $pre_dv->sum('grand_total');
 
         $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(50);
@@ -115,7 +121,9 @@ class PreDvController extends Controller
             'b_id' => explode(',', $request->b_id),
             'generate' => $request->generate,
             'num_generated' => $total,
-            'grand_amount' => $grand_amount
+            'grand_amount' => $grand_amount,
+            'generated_dates' => $gen_date,
+            'total_control' => $totalControls
         ]);
     }
 

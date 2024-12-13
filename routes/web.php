@@ -195,6 +195,7 @@ Route::get('/proponent/patient-sort/{code}/{id}/{userid}/{on}', [App\Http\Contro
 Route::get('/proponent/patient-print/{code}/{ids}', [App\Http\Controllers\ProponentController::class, 'excelData'])->name('excel.gl');
 Route::get('/proponent/sub-details/{proponent}', [App\Http\Controllers\ProponentController::class, 'subDetails'])->name('details.subtracted');
 Route::get('/proponent/sub-update/{id}/{amount}', [App\Http\Controllers\ProponentController::class, 'subUpdate'])->name('update.subtraction');
+Route::post('/proponent/supplemental-updated', [App\Http\Controllers\ProponentController::class, 'supplementalv2'])->name('proponent.supplementalv2');
 
 Route::match(['get', 'post'],'/proponents/excel/', [App\Http\Controllers\FundSourceController::class, 'generateExcel'])->name('proponent.excel');
 Route::match(['get', 'post'],'/data/update/', [App\Http\Controllers\FacilityController::class, 'updateData'])->name('update.data');
@@ -284,7 +285,9 @@ Route::get('/angelica/{route_no}', [App\Http\Controllers\PreDvController::class,
 Route::get('/transmittal/received/{control_no}/{name}', [App\Http\Controllers\FacilityController::class, 'received'])->name('received.transmittal');
 //sample
 Route::get('/proposal', [App\Http\Controllers\SampleController::class, 'proposal'])->name('proposal');
+Route::get('/rotate', [App\Http\Controllers\PrintController::class, 'roImage'])->name('roImage');
 
+Route::get('/pre-dvv/version-2/pdf/{id}', [App\Http\Controllers\PrintController::class, 'sampleMe'])->name('new_dv.sample');
 
 
 

@@ -116,11 +116,50 @@
     </div>
 </div>
 
+<div class="modal fade" id="manage_funds" role="dialog">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content" style="border-radius:0px;">
+            <div class="modal-header" style="text-align:center">
+                <h4 class="text-success modal-title">
+                    <i style="font-size:15px" class="typcn typcn-location-arrow menu-icon"></i>
+                    MANAGE FUNDSOURCE
+                </h4>
+            </div>
+            <form id="contractForm" method="POST" action="{{ route('proponent.supplementalv2') }}">
+                <div class="modal-body" style="padding:20px">
+                    @csrf
+                    <div class="row">
+                        <div class="col-md-5">
+                            <label style="vertical-align:center">AMOUNT: </label>
+                            <input type="text" class="form-control" id="amount" name="amount" placeholder="0.00">
+                        </div>
+                        <div class="col-md-7">
+                            <label style="vertical-align:center">FACILITY: </label>
+                            <select class="form-control js-example-basic-single select2" style="width:100%" id="f_id" name="f_id">
+                                <option value=""></option>
+                                @foreach($facilities as $row)
+                                    <option value="{{ $row->id }}">{{ $row->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">ADD</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @include('modal')
 @endsection
 @section('js')
 <script>
-
+    $('.select2').select2({
+        placeholder: 'Select Facility'
+    });
     document.getElementById('printButton').addEventListener('click', function(e) {
         e.preventDefault(); 
         var code = pro_code;  
@@ -340,88 +379,91 @@
     var input_amount;
 
     function addBalance(proponent) {
-        console.log('proponent', proponent);
-        Swal.fire({
-            title: 'Supplemental Funds',
-            input: 'text',
-            inputLabel: 'Amount:',
-            inputPlaceholder: '0.00',
-            showCancelButton: true,
-            showDenyButton: true, // Add a Deny button
-            confirmButtonText: 'Add',
-            denyButtonText: 'Negate', // Label for the Deny button
-            cancelButtonText: 'Cancel',
-            inputValidator: (value) => {
-                if (!value) {
-                    return 'Please enter the amount!';
+        var user = <?php echo Auth::user()->userid ?>;
+        console.log('user', user);
+        if(user == 2760){
+            $('#manage_funds').modal('show');
+        }else{
+            console.log('proponent', proponent);
+            Swal.fire({
+                title: 'Supplemental Funds',
+                input: 'text',
+                inputLabel: 'Amount:',
+                inputPlaceholder: '0.00',
+                showCancelButton: true,
+                showDenyButton: true, // Add a Deny button
+                confirmButtonText: 'Add',
+                denyButtonText: 'Negate', // Label for the Deny button
+                cancelButtonText: 'Cancel',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'Please enter the amount!';
+                    }
+                },
+                didOpen: () => {
+                    var inputElement = Swal.getInput();
+                    inputElement.oninput = function () {
+                        var cleanedValue = this.value.replace(/[^\d.]/g, '');
+                        var formattedValue = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                        this.value = formattedValue;
+                    };
                 }
-            },
-            didOpen: () => {
+            }).then((result) => {
+                var pro = encodeURIComponent(proponent);
                 var inputElement = Swal.getInput();
-                inputElement.oninput = function () {
-                    var cleanedValue = this.value.replace(/[^\d.]/g, '');
-                    var formattedValue = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-                    this.value = formattedValue;
-                };
-            }
-        }).then((result) => {
-            var pro = encodeURIComponent(proponent);
-            var inputElement = Swal.getInput();
-            var rawAmount = inputElement ? inputElement.value : '0';
-            var amount = parseFloat(rawAmount.replace(/,/g, '')) || 0;
+                var rawAmount = inputElement ? inputElement.value : '0';
+                var amount = parseFloat(rawAmount.replace(/,/g, '')) || 0;
 
-            if (result.isConfirmed) {
-                // var amount = parseFloat(result.value.replace(/,/g, ''));
+                if (result.isConfirmed) {
 
-                fetch(`proponent/supplemental/${pro}/${amount}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
-                })
-                .then(async (response) => {
-                    if (!response.ok) {
-                        var errorDetails = await response.json().catch(() => null);
-                        throw new Error(errorDetails?.message || `HTTP Error: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    Swal.fire('Success!', 'Your data has been submitted.', 'success');
-                    location.reload();
-                })
-                .catch(error => {
-                    Swal.fire('Error!', error.message, 'error');
-                });
+                    fetch(`proponent/supplemental/${pro}/${amount}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        }
+                    })
+                    .then(async (response) => {
+                        if (!response.ok) {
+                            var errorDetails = await response.json().catch(() => null);
+                            throw new Error(errorDetails?.message || `HTTP Error: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        Swal.fire('Success!', 'Your data has been submitted.', 'success');
+                        location.reload();
+                    })
+                    .catch(error => {
+                        Swal.fire('Error!', error.message, 'error');
+                    });
 
-            } else if (result.isDenied) {
-                // console.log('fdsfds', result);
-                // var amount = parseFloat(result.value.replace(/,/g, ''));
+                } else if (result.isDenied) {
 
-                fetch(`proponent/subtracted/${pro}/${amount}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
-                })
-                .then(async (response) => {
-                    if (!response.ok) {
-                        var errorDetails = await response.json().catch(() => null);
-                        throw new Error(errorDetails?.message || `HTTP Error: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    Swal.fire('Success!', 'The balance has been negated.', 'success');
-                    location.reload();
-                })
-                .catch(error => {
-                    Swal.fire('Error!', error.message, 'error');
-                });
-            }
-        });
+                    fetch(`proponent/subtracted/${pro}/${amount}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        }
+                    })
+                    .then(async (response) => {
+                        if (!response.ok) {
+                            var errorDetails = await response.json().catch(() => null);
+                            throw new Error(errorDetails?.message || `HTTP Error: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        Swal.fire('Success!', 'The balance has been negated.', 'success');
+                        location.reload();
+                    })
+                    .catch(error => {
+                        Swal.fire('Error!', error.message, 'error');
+                    });
+                }
+            });
+        }
     }
 
     function validateAmount(element) {
