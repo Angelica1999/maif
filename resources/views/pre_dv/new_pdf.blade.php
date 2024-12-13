@@ -373,7 +373,7 @@
                     <div style="margin-left: 1px; margin-right: 1px; height:auto; text-align: center;">
                         <span>{{$fund_saa['saa']}}</span>
                         <?php
-                            $imagePath = storage_path('app/uploads/SAA NO. 2024-04-001637.jpg');
+                            $imagePath = storage_path('app/'.$fund_saa['path']);
                             $rotatedImagePath = storage_path('app/rotated_image.jpg');
 
                             $image = imagecreatefromjpeg($imagePath); 

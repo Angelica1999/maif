@@ -9,6 +9,7 @@ use App\Models\MailHistory;
 use App\Models\AddFacilityInfo;
 use App\Models\Dv2;
 use App\Models\Facility;
+use App\Models\Fundsource_Files;
 use App\Models\Fundsource;
 use App\Models\Proponent;
 use App\Models\Dv3;
@@ -398,6 +399,7 @@ class PrintController extends Controller
 
     public function newDVPDF($id) {
         $this->genPreImage($id);
+        set_time_limit(0);  // No time limit, will run indefinitely (or until the task finishes)
        
         $new = NewDV::where('predv_id', $id)->first();
         if($new){
@@ -659,4 +661,110 @@ class PrintController extends Controller
             return 'no data found!';
         }
     }
+
+    public function roImage(){
+        set_time_limit(0);  // No time limit, will run indefinitely (or until the task finishes)
+        $funds = Fundsource_Files::get();
+        foreach ($funds as $row) {
+            // Get the original image path
+            $imagePath = storage_path('app/' . $row->path);
+            // Set the rotated image path, preserving the original filename
+            $rotatedImagePath = storage_path('app/rotate/' . $row->path);
+        
+            // Ensure the directory for rotated images exists
+            if (!file_exists(storage_path('app/rotate'))) {
+                mkdir(storage_path('app/rotate'), 0777, true);
+            }
+        
+            // Open the image from the uploads directory
+            $image = imagecreatefromjpeg($imagePath);
+        
+            // Rotate the image 270 degrees
+            $rotatedImage = imagerotate($image, 270, 0);
+        
+            // Save the rotated image to the rotate directory
+            imagejpeg($rotatedImage, $rotatedImagePath);
+        
+            // Free memory
+            imagedestroy($image);
+            imagedestroy($rotatedImage);
+        }
+        
+    }
+
+    public function sampleMe($id) {
+        $this->genPreImage($id);
+        set_time_limit(0);  // No time limit, will run indefinitely (or until the task finishes)
+       
+        $new = NewDV::where('predv_id', $id)->first();
+        if($new){
+            $pre_dv = PreDV::where('id', $id)->with(
+                [
+                    'user:userid,fname,lname,mname',
+                    'facility:id,name,address', 
+                    'extension' => function ($query){
+                        $query->with(
+                            [
+                                'proponent:id,proponent',
+                                'controls',
+                                'saas' => function($query){
+                                    $query->with([
+                                        'saa:id,saa'
+                                    ]);
+                                }
+                            ]
+                        );
+                    }
+                ])->first();
+            $extension = PreDVExtension::where('pre_dv_id', $pre_dv->id)->pluck('id');
+            $saas = PreDVSAA::whereIn('predv_extension_id', $extension)->with(
+                ['saa'=> function ($query){
+                    $query->with('image');
+                }]
+            )->get();
+
+            $info = AddFacilityInfo::where('facility_id', $pre_dv->facility_id)->first();
+            $controls = PreDVControl::whereIn('predv_extension_id', $extension)->get();  
+            // return $saas;
+            $i = 0;   
+            $control = '';   
+
+            foreach ($controls as $index => $c) {
+                if ($i <= 3) {
+                    $control = ($control != '')? $control .', '.$c->control_no : $control .' '. $c->control_no ;
+                }
+                $i++;
+            }
+
+            $grouped = $saas->groupBy('fundsource_id')->map(function ($group) use ($info){
+                return [ 
+                    'amount' => $group->sum('amount'),
+                    'saa' => $group->first()->saa->saa, 
+                    'path' => ($group->first()->saa->image)?$group->first()->saa->image->path: '', 
+                    'fundsource_id' => $group->first()->saa->id,
+                    'vat' => ($info && $info->vat != null)? (float) $info->vat *  $group->sum('amount') / 100: 0,
+                    'ewt' => ($info && $info->Ewt != null)? (float) $info->Ewt *  $group->sum('amount') / 100: 0
+                ];
+            });
+
+           
+            $data = [
+                'result'=> $new,
+                'pre_dv'=> $pre_dv,
+                'fundsources' => $grouped,
+                'control' => $control,
+                'info' => $info,
+                'amount' => $grouped->sum('amount'),
+                'route_no' => $new->route_no,
+                'total_count' => count($grouped)
+            ];
+            // Determine which view to use based on grouped count
+           
+            $pdf = PDF::loadView('pre_dv.new_pdf1', $data);
+
+            $pdf->setPaper('Folio');
+            return $pdf->stream('dv.pdf');
+        }
+    }
+    
 }
