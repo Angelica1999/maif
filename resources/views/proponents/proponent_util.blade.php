@@ -85,6 +85,16 @@
                                 <td>{{ date('F j, Y', strtotime($row1->created_at)) }}</td>
                             </tr>
                         @endforeach
+                        @foreach($dv1 as $row2)
+                            <tr style="" class="gl_{{ $row->id }}">
+                                <td>{{ $row2->div_id }}</td>
+                                <td>{{ $row2->fundSourcedata->saa }}</td>
+                                <td>Vita-Lab</td>
+                                <td>{{ number_format(floatval(str_replace(',', '', $row2->utilize_amount)), 2, '.', ',') }}</td>
+                                <td>{{ $row2->user? $row2->user->lname .', '.$row2->user->fname : '' }}</td>
+                                <td>{{ date('F j, Y', strtotime($row2->created_at)) }}</td>
+                            </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>

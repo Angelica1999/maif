@@ -408,7 +408,7 @@ class HomeController extends Controller
 
             foreach($utilization as $row) {
 
-                if($row->status !== 1){
+                if($row->status != 1){
                     $user = $row->user->lname .', '. $row->user->fname .' '. $row->user->mname;
                     $created_on = date('F j, Y', strtotime($row->created_at));
                     $saa = $row->fundSourcedata->saa;
@@ -541,7 +541,6 @@ class HomeController extends Controller
                             $discount_all = 0;
                             $string_patient = '';
                         }
-                        
                         $table_body .= "<tr>
                             <td style='vertical-align:top;'>$row->route_no</td>
                             <td style='vertical-align:top;'>$saaString</td>
@@ -574,7 +573,6 @@ class HomeController extends Controller
                         where('facility_id', $facility_id)
                     ->orWhereJsonContains('facility_id', $facility_id)
                     ->with('facilitydata')->with('fundSourcedata')->with('proponentdata')->where('status', '<>', '1')->get();
-        // return count($utilize);
         $title = Facility::where('id', $facility_id)->value('name');
         $filename = $title.'.xls';
         header("Content-Type: application/xls");
