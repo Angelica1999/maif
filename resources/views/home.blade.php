@@ -826,10 +826,8 @@
             var date_obj = moment(optionData);
             var isSelected = false;
             if(filtered.length !== 0){
-              console.log('here');
               isSelected = filter_date.includes(optionData) ? true : false;
             }
-            console.log('check', isSelected);
             $('#date_select').append($('<option>', {
                 value: optionData,
                 text: date_obj.format('MMMM d, YYYY'),
@@ -898,7 +896,6 @@
             var optionId = Number(optionData.id);
             if(filtered.length !== 0){
               isSelected = filtered.includes(optionId) ? true : false;
-              console.log('hereew', isSelected);
             }
             $('#facility_select').append($('<option>', {
                 value: optionData.id,
@@ -954,10 +951,8 @@
         province.forEach(function(optionData) {
             var isSelected = false;
             if(filter_province.length !== 0){
-              console.log('here');
               isSelected = filter_province.includes(optionData) ? true : false;
             }
-            console.log('check', isSelected);
             $('#province_select').append($('<option>', {
                 value: optionData,
                 text: optionData,
@@ -973,7 +968,6 @@
             var optionId = Number(optionData.id);
             if(prov.length !== 0){
               isSelected = prov.includes(optionId) ? true : false;
-              console.log('hereew', isSelected);
             }
             $('#province_select').append($('<option>', {
                 value: optionData.id,
@@ -992,10 +986,8 @@
         muncity.forEach(function(optionData) {
             var isSelected = false;
             if(filter_muncity.length !== 0){
-              console.log('here');
               isSelected = filter_muncity.includes(optionData) ? true : false;
             }
-            console.log('check', isSelected);
             $('#muncity_select').append($('<option>', {
                 value: optionData,
                 text: optionData,
@@ -1011,7 +1003,6 @@
             var optionId = Number(optionData.id);
             if(f_mun.length !== 0){
               isSelected = f_mun.includes(optionId) ? true : false;
-              console.log('hereew', isSelected);
             }
             $('#muncity_select').append($('<option>', {
                 value: optionData.id,
@@ -1059,7 +1050,6 @@
         $('#on_select').empty();
         $('#on_div').css('display', 'block');
         var on = @json($on);
-        console.log('date', on)
         var filter_on = @json($filter_on);
         filter_on = filter_on.filter(item => item !== '');
         on.forEach(function(optionData) {
@@ -1079,7 +1069,6 @@
     $('#by_i').on('click', function(){
         $('#by_select').empty();
         $('#by_div').css('display', 'block');
-        console.log('here');
         var by = @json($by);
         var filter_by = @json($filter_by);
         filter_by = filter_by.map(Number);
@@ -1088,7 +1077,6 @@
             var optionId = Number(optionData.userid);
             if(filter_by.length !== 0){
               isSelected = filter_by.includes(optionId) ? true : false;
-              console.log('hereew', isSelected);
             }
             $('#by_select').append($('<option>', {
                 value: optionData.userid,
@@ -1113,8 +1101,6 @@
 
     $('#fname_select').change(function() {
         var selectedValues = $(this).val(); // Get the selected values
-        console.log(selectedValues); // Do something with the selected values
-        // Add your custom logic here
     });
 
 
@@ -1168,16 +1154,11 @@
         var patientId = parentTd.attr('data-patient-id');
         var checkboxId = element.attr("id");
         if(id_list.includes(patientId)){
-            console.log("Patient ID already exists in the array.");
             id_list = id_list.filter(id => id !== patientId);
             mail_ids = mail_ids.filter(id => id !== checkboxId);
-
-            console.log("Id_list:", mail_ids);
         } else {
-            console.log("Patient ID does not exist in the array.");
             id_list.push(patientId);
             mail_ids.push(checkboxId);
-            console.log("Added Patient ID to the array:", mail_ids);
         }
 
         if(id_list.length != 0){
@@ -1185,9 +1166,6 @@
         }else{
             $('.send_mails').val('').hide();
         }
-        
-        console.log('list', id_list);
-        console.log('checked', patientId);
     }
 
     var group_a = [];
@@ -1206,7 +1184,6 @@
         if(group_i.includes(patientId)){
             var r_index = group_i.indexOf(patientId); 
             group_i = group_i.filter(id => id !== patientId);
-            console.log('index', r_index);
             if (r_index !== -1) {
                 group_a.splice(r_index, 1);
             }
@@ -1217,7 +1194,6 @@
             }else{
                 var c_pro = parentTd.attr('data-proponent-id');
                 var c_fac = parentTd.attr('data-facility-id');
-                console.log('dsfdf', c_pro)
                 if (g_fac != 0 || c_fac == g_fac || g_pro != 0 || c_pro == g_pro) {
                     group_a.push(amount);
                     group_i.push(patientId);
@@ -1229,7 +1205,6 @@
                 }
             }
         }
-        console.log('grouped', group_i);
         
         var sum = group_a.reduce((accumulator, currentValue)  => accumulator + parseFloat(currentValue), 0);
         if(group_a.length != 0){
@@ -1258,18 +1233,14 @@
                     $('#patient_table_container').html($(response).find('#patient_table_container').html());
                     $('#pagination_links').html($(response).find('#pagination_links').html());
 
-                    console.log('row', mail_ids);
                     $.each(mail_ids, function(index, id) {
                         $('#' + id).prop('checked', true);
-                        console.log('row', '#' + id);
                     });
 
                     $.each(group_i, function(index, id) {
                         $('#someCheckboxId_' + id).prop('checked', true);
                     });
                     
-                    console.log('chakchak', selectedProponentId);
-
                     if(selectedProponentId != 0){
                         $('#patient_table tbody tr').each(function() {
                             var row = $(this);
@@ -1435,7 +1406,6 @@
     var edit_c = 0;
 
     function editPatient(id) {
-        console.log('id', id);
         form_type='update';
         var patient;
         $.get("{{url('/gl/update').'/'}}" + id, function(result){
@@ -1445,8 +1415,6 @@
             edit_c = 1;
             var editRoute = `{{ route('patient.update', ['id' => ':id']) }}`;
             editRoute = editRoute.replace(':id', id);
-            console.log('asd0', id);
-            console.log('asd0', editRoute);
 
             $('#update_form').attr('action', editRoute);
             if(patient){
@@ -1494,7 +1462,6 @@
             }
             edit_c = 0;
         });
-        console.log('edit', edit_c)
     }
     
     var form_type = 'create';
@@ -1622,14 +1589,12 @@
         }
         if(edit_c == 0){
             if(data.val()) {
-                console.log('code', data.val());
                 $.get("{{ url('patient/code').'/' }}"+data.val()+"/"+facility_id, function(result) {
                     $(".patient_code").val(result.patient_code);
                     const formattedBalance = new Intl.NumberFormat('en-US', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                     }).format(result.balance);
-                    console.log('for', result.balance);
                     if(result.balance == 0 || result.balance < 0){
 
                         data.val('').trigger('change');
@@ -1646,11 +1611,9 @@
                         var suggestions =[];
                         var res = result.proponent_info;
                         var over_all = parseFloat(result.overall).toFixed(2);
-                        console.log('sadsad', res);
 
                         $.each(res, function(index, optionData) {
                             var deduct = (res[index].dv3_funds && res[index].dv3_funds.length > 0) ? res[index].dv3_funds[0].deduction : 0;
-                            console.log('fdsf', deduct);
                             var amount = parseFloat(res[index].alocated_funds.replace(/,/g, '')) - parseFloat(res[index].admin_cost.replace(/,/g, ''));
                             if(over_all >= amount){
                                 over_all = over_all - amount;
@@ -1734,7 +1697,6 @@
 
     function removePatient(){
         var id = event.target.getAttribute('data-id');
-        console.log('route_no', id);
         Lobibox.alert('error',
             {
                 size: 'mini',

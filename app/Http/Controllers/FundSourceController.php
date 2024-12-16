@@ -13,6 +13,7 @@ use App\Models\Patients;
 use App\Models\Admin_Cost;
 use App\Models\Fundsource_Files;
 use App\Models\Dv2;
+use App\Models\Dv;
 use App\Models\NewDV;
 use App\Models\PreDV;
 use App\Models\Dv3;
@@ -733,17 +734,48 @@ class FundSourceController extends Controller
         $proponent= Proponent::where('id', $proponent_id)->first();
         $proponent_ids= Proponent::where('proponent', $proponent->proponent)->pluck('id')->toArray();
 
+        if($facility_id == 837){
+            $dv1 = Utilization::whereIn('proponent_id', $proponent_ids)
+                ->where('status', 0)
+                ->where('facility_id', 837)
+                ->where(function ($query) {
+                    $query->whereHas('dv', function ($query) {
+                        $query->whereColumn('div_id', 'route_no');
+                    })->orWhereHas('newDv', function ($query) {
+                        $query->whereColumn('div_id', 'route_no');
+                    });
+                })
+                ->with([
+                    'fundSourcedata:id,saa',
+                    'user:userid,fname,lname',
+                ])
+                ->orderBy('id', 'desc')
+                ->get();
+
+            $dv_sum = $dv1->sum(function ($item) {
+                // Remove commas, convert to float, and sum
+                return floatval(str_replace(',', '', $item->utilize_amount));
+            });
+        }else{
+            $dv_sum = 0;
+        }
+        
         $info = ProponentInfo::whereIn('proponent_id', $proponent_ids)->pluck('id')->toArray();
+      
         $dv3_sum = Dv3Fundsource::whereIn('info_id', $info)
+            ->whereHas('dv3', function ($query) use ($facility_id) {
+                $query->where('facility_id', $facility_id);
+            })
             ->with([
-                'dv3' => function ($query){
+                'dv3' => function ($query) {
                     $query->with([
                         'facility:id,name',
                         'user:userid,fname,lname'
                     ]);
                 },
                 'fundsource:id,saa'
-            ])->sum('amount');
+            ])
+            ->sum('amount');
 
         $facility = Facility::find($facility_id);
         $patient_code = $proponent->proponent_code.'-'.$this->getAcronym($facility->name).date('YmdHis').$user->id;
@@ -823,7 +855,7 @@ class FundSourceController extends Controller
         });  
 
         $supplemental = SupplementalFunds::where('proponent', $proponent->proponent)->sum('amount');
-        $balance = ($overall_sum - $overall) + $supplemental - $dv3_sum;
+        $balance = ($overall_sum - $overall) + $supplemental - ($dv3_sum + $dv_sum);
         return [
             'patient_code' => $patient_code,
             'proponent_info' => $overall_info,

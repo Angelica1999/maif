@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\Patients;
 use App\Models\Facility;
 use App\Models\Dv;
+use App\Models\NewDV;
 use App\Models\Dv2;
 use App\Models\Group;
 use App\Models\ProponentInfo;
@@ -218,6 +219,7 @@ class ProponentController extends Controller
             ->groupBy('proponent_id');
         
         $allData = $proponents->map(function ($proponent) use ($proponentIdMap, $fundsData, $utilizationData) {
+            
             $proponentIds = $proponentIdMap->get($proponent->proponent)->pluck('id');
 
             $info = ProponentInfo::whereIn('proponent_id', $proponentIds)->pluck('id')->toArray();
@@ -231,8 +233,29 @@ class ProponentController extends Controller
                     },
                     'fundsource:id,saa'
                 ])->sum('amount');
-
-
+            
+            $dv1 = Utilization::whereIn('proponent_id', $proponentIds)
+                ->where('status', 0)
+                ->where('facility_id', 837)
+                ->where(function ($query) {
+                    $query->whereHas('dv', function ($query) {
+                        $query->whereColumn('div_id', 'route_no');
+                    })->orWhereHas('newDv', function ($query) {
+                        $query->whereColumn('div_id', 'route_no');
+                    });
+                })
+                ->with([
+                    'fundSourcedata:id,saa',
+                    'user:userid,fname,lname',
+                ])
+                ->orderBy('id', 'desc')
+                ->get();
+    
+            $dv_sum = $dv1->sum(function ($item) {
+                // Remove commas, convert to float, and sum
+                return floatval(str_replace(',', '', $item->utilize_amount));
+            });
+    
             $totalFunds = $proponentIds->sum(function ($id) use ($fundsData) {
                 return $fundsData->get($id)?->first()?->total_amount ?? 0;
             });
@@ -254,9 +277,12 @@ class ProponentController extends Controller
             return [
                 'proponent' => $proponent,
                 'sum' => $totalFunds,
-                'rem' => $all_rem - $dv3_sum,
+                'rem' => $all_rem - ($dv3_sum + $dv_sum),
                 'supp' => $supp,
-                'sub' => $sub
+                'sub' => $sub,
+                'sample' => $dv3_sum,
+                'refsdfm' => $all_rem,
+                'dv_sum' => $dv_sum
             ];
         });
 
@@ -293,6 +319,24 @@ class ProponentController extends Controller
         $tracking = Patients::whereIn('proponent_id', $ids)->with('facility:id,name','encoded_by:userid,fname,lname,mname', 'gl_user:username,fname,lname')->paginate(20);
         $facilities = Facility::whereIn('id', Patients::whereIn('proponent_id', $ids)->pluck('facility_id')->toArray())->select('id', 'name')->get(); 
         $info = ProponentInfo::whereIn('proponent_id', $ids)->pluck('id')->toArray();
+        
+        $dv1 = Utilization::whereIn('proponent_id', $ids)
+            ->where('status', 0)
+            ->where('facility_id', 837)
+            ->where(function ($query) {
+                $query->whereHas('dv', function ($query) {
+                    $query->whereColumn('div_id', 'route_no');
+                })->orWhereHas('newDv', function ($query) {
+                    $query->whereColumn('div_id', 'route_no');
+                });
+            })
+            ->with([
+                'fundSourcedata:id,saa',
+                'user:userid,fname,lname',
+            ])
+            ->orderBy('id', 'desc')
+            ->get();
+
         $dv3_fundsources = Dv3Fundsource::whereIn('info_id', $info)
             ->with([
                 'dv3' => function ($query){
@@ -308,7 +352,8 @@ class ProponentController extends Controller
             return view('proponents.proponent_util',[
                 'data' => $tracking,
                 'facilities' => $facilities,
-                'dv3' => $dv3_fundsources->orderBy('id', 'desc')->get()
+                'dv3' => $dv3_fundsources->orderBy('id', 'desc')->get(),
+                'dv1' => $dv1
             ]);
         }else{
             return 0;
