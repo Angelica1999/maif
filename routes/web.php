@@ -288,6 +288,7 @@ Route::get('/proposal', [App\Http\Controllers\SampleController::class, 'proposal
 Route::get('/rotate', [App\Http\Controllers\PrintController::class, 'roImage'])->name('roImage');
 
 Route::get('/pre-dvv/version-2/pdf/{id}', [App\Http\Controllers\PrintController::class, 'sampleMe'])->name('new_dv.sample');
+Route::get('sampsamp/{id}', [App\Http\Controllers\FundSourceController::class, 'getAmount'])->name('amount.get');
 
 
 
