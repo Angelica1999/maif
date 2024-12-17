@@ -1147,4 +1147,14 @@ class FundSourceController extends Controller
             return "No disbursement version 2 found on this dv!";
         }
     }
+
+    public function getAmount($id){
+        $utilization = Utilization::where('proponentinfo_id', 832)->get();
+        $initial = 9900000;
+        foreach($utilization as $row){
+            $row->beginning_balance = $initial;
+            $row->save();
+            $initial = $initial -  str_replace(',','',$row->utilize_amount);
+        }
+    }
 }
