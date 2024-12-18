@@ -14,7 +14,7 @@
                 font-size: 11px;
             }
             @page {
-                margin-bottom: 0.1in; /* Set bottom margin to 0.25in */
+                margin-bottom: 0in; /* Set bottom margin to 0.25in */
             }
             /* .box-container {
                 display: flex;

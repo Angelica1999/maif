@@ -256,6 +256,7 @@
     }
     function getTransmittal(trans_id){   
         // $('.fac_control').empty();
+        console.log('trans_id', trans_id + '-' + f_id);
         $.get("{{ url('transmittal/details').'/' }}" +trans_id+'/'+f_id, function(result){
             $('.fac_control').html(result);
             getGrand();
