@@ -48,7 +48,8 @@
                                 <td>{{ $row->lname .', '.$row->fname.' '.$row->mname }}</td>
                                 <td>{{ number_format(str_replace(',','',$row->guaranteed_amount), 2,'.',',') }}</td>
                                 <td>{{ $row->facility->name }}</td>
-                                <td>{{ $row->encoded_by? $row->encoded_by->lname .', '.$row->encoded_by->fname : $row->gl_user->lname .', '.$row->gl_user->fname }}</td>
+                                <td>{{ $row->encoded_by ? $row->encoded_by->lname.', '.$row->encoded_by->fname : 
+                                    ($row->gl_user? $row->gl_user->lname.', '.$row->gl_user->fname:'') }}</td>
                                 <td>{{ date('F j, Y', strtotime($row->created_at)) }}</td>
                                 <td><a class="text-danger" onclick="deletePatient({{$row->id}})">remove</a></td>
                             </tr>

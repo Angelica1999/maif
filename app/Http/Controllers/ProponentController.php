@@ -277,7 +277,7 @@ class ProponentController extends Controller
             return [
                 'proponent' => $proponent,
                 'sum' => $totalFunds,
-                'rem' => $all_rem - ($dv3_sum + $dv_sum),
+                'rem' => $all_rem - ($dv3_sum + $dv_sum + $sub),
                 'supp' => $supp,
                 'sub' => $sub,
                 'sample' => $dv3_sum,
