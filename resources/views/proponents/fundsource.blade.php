@@ -381,9 +381,9 @@
     function addBalance(proponent) {
         var user = <?php echo Auth::user()->userid ?>;
         console.log('user', user);
-        if(user == 2760){
-            $('#manage_funds').modal('show');
-        }else{
+        // if(user == 2760){
+        //     $('#manage_funds').modal('show');
+        // }else{
             console.log('proponent', proponent);
             Swal.fire({
                 title: 'Supplemental Funds',
@@ -463,7 +463,7 @@
                     });
                 }
             });
-        }
+        // }
     }
 
     function validateAmount(element) {

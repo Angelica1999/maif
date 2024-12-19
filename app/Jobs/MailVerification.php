@@ -42,6 +42,7 @@ class MailVerification implements ShouldQueue
    
         $password = $this->generateUniquePassword();
         $username = $registration->lname.$registration->identity_type.$registration->id;
+        $username = str_replace(' ', '', $username);
 
         if($type == 'verify'){
             $user = new OnlineUser();

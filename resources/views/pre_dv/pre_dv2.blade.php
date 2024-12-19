@@ -67,7 +67,7 @@ use App\Models\TrackingDetails;
                                     <select style="width: 120px;" id="fac_select" name="fac_select" multiple>
                                         <?php $check = []; ?>
                                         @foreach($all_data as $index => $d)
-                                            @if(!in_array($d->facility->id, $check))
+                                            @if($d->facility && !in_array($d->facility->id, $check))
                                                 <option value="{{ $d->facility->id }}" {{ is_array($f_id) && in_array($d->facility->id, $f_id) ? 'selected' : '' }}>
                                                     {{ $d->facility->name}}
                                                 </option>
@@ -165,7 +165,7 @@ use App\Models\TrackingDetails;
                                     @endif
                                 </td>
                                 <td>{{ $row->new_dv ? ($row->new_dv->status == 0? 'Pending' : ($row->new_dv->status == 1 ? 'Obligated': 'Paid')):'' }}</td>
-                                <td><a data-toggle="modal" data-backdrop="static" href="#view_v2" onclick="viewV1({{$row->id}})">{{$row->facility->name}}</a></td>
+                                <td><a data-toggle="modal" data-backdrop="static" href="#view_v2" onclick="viewV1({{$row->id}})">{{ $row->facility ? $row->facility->name : $row->id }}</a></td>
                                 <td>
                                     @foreach($row->extension as $index => $data)
                                         {{$data->proponent->proponent}}

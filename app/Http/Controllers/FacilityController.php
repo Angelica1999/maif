@@ -102,7 +102,7 @@ class FacilityController extends Controller
     public function updateData(){
 
         $response = Http::get('http://cvchd7.com/iMkiW5YcHA6D9Gd7BuTteeQPVx4a1UxK');
-
+        set_time_limit(0);
         if ($response->successful()) { // Check if the request was successful
             Facility::truncate();
             $facilities = $response->json(); // Get the response as an array
