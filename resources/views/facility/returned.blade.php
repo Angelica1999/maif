@@ -94,11 +94,11 @@
             <div class="summary_body" style="display: flex; flex-direction: column; align-items: center;">
                 
             </div>
-            <div class="modal-footer">
+            <!-- <div class="modal-footer">
                 <button type="button" data-dismiss="modal" style="background-color: gray; color: white; border: none; padding: 8px 15px; cursor: pointer; float:right">CLOSE</button>
                 <button type="button" style="border: none; padding: 8px 15px; cursor: pointer; float:right; color:white" class="btn-warning">RETURN</button>
                 <button type="button" style="border: none; padding: 8px 15px; cursor: pointer; float:right" class="btn-success">ACCEPT</button>
-            </div>
+            </div> -->
         </div>
     </div>
 </div>
@@ -146,6 +146,7 @@
     function displaySum(id){
         trans_id = id;
         console.log('id', id);
+        $('.summary_body').html(loading);
         $.get("{{ url('transmittal').'/' }}" + id, function(result){
             $('.summary_body').html(result);
         });

@@ -172,7 +172,6 @@
 
 
     function displayFilter(){
-        console.log('sdasd');
         $('.filter_btn').css('display', 'block');
     }
 

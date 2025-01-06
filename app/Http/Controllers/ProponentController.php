@@ -366,6 +366,24 @@ class ProponentController extends Controller
         $pro_code = $request->pro_code;
         $ids = Proponent::where('proponent', $pro_code)->pluck('id')->toArray();
         $info = ProponentInfo::whereIn('proponent_id', $ids)->pluck('id')->toArray();
+        
+        $dv1 = Utilization::whereIn('proponent_id', $ids)
+            ->where('status', 0)
+            ->where('facility_id', 837)
+            ->where(function ($query) {
+                $query->whereHas('dv', function ($query) {
+                    $query->whereColumn('div_id', 'route_no');
+                })->orWhereHas('newDv', function ($query) {
+                    $query->whereColumn('div_id', 'route_no');
+                });
+            })
+            ->with([
+                'fundSourcedata:id,saa',
+                'user:userid,fname,lname',
+            ])
+            ->orderBy('id', 'desc')
+            ->get();
+
         $dv3_fundsources = Dv3Fundsource::whereIn('info_id', $info)
             ->with([
                 'dv3' => function ($query){
@@ -387,7 +405,8 @@ class ProponentController extends Controller
         return view('proponents.proponent_util',[
             'data' => $tracking,
             'facilities' => $facilities,
-            'dv3' => $dv3_fundsources->orderBy('id', 'desc')->get()
+            'dv3' => $dv3_fundsources->orderBy('id', 'desc')->get(),
+            'dv1' => $dv1
         ]);
     }
 
