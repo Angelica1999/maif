@@ -15,7 +15,6 @@
             </button>
         </li>
     </ul>
-
     <!-- Tabs Content -->
     <div class="tab-content" id="customTabContent" style="">
         <!-- GL LISTS Tab Content -->

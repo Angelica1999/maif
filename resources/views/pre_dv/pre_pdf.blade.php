@@ -103,8 +103,8 @@
                             @foreach($row->saas as $row2)
                                 <!-- <div class="card3"> -->
                                     <div style="justify-content: space-between;"  class="page-break-avoid">
-                                        <input type="text" class="" style="font-size:12px; font-style:italicize; text-align:center; width:45%; height:20px;page-break-inside: avoid;" value="{{$row2->saa->saa}}">
-                                        <input type="text" class="" style="font-style:italicize; text-align:center; width:45%; height:20px; font-size:12px; margin-left:35px; page-break-inside: avoid;" value="{{ number_format(str_replace(',','',$row2->amount), 2, '.',',') }}">
+                                        <input type="text" class="" style="margin-left:10px; font-size:12px; font-style:italicize; text-align:center; width:44%; height:20px;page-break-inside: avoid;" value="{{$row2->saa->saa}}">
+                                        <input type="text" class="" style="font-style:italicize; text-align:center; width:44.5%; height:20px; font-size:12px; margin-left:33px; page-break-inside: avoid;" value="{{ number_format(str_replace(',','',$row2->amount), 2, '.',',') }}">
                                     </div>
                                 <!-- </div> -->
                             @endforeach
