@@ -196,6 +196,7 @@ Route::get('/proponent/patient-print/{code}/{ids}', [App\Http\Controllers\Propon
 Route::get('/proponent/sub-details/{proponent}', [App\Http\Controllers\ProponentController::class, 'subDetails'])->name('details.subtracted');
 Route::get('/proponent/sub-update/{id}/{amount}', [App\Http\Controllers\ProponentController::class, 'subUpdate'])->name('update.subtraction');
 Route::post('/proponent/supplemental-updated', [App\Http\Controllers\ProponentController::class, 'supplementalv2'])->name('proponent.supplementalv2');
+Route::post('/proponent/manage-funds', [App\Http\Controllers\ProponentController::class, 'manageFunds'])->name('manage.funds');
 
 Route::match(['get', 'post'],'/proponents/excel/', [App\Http\Controllers\FundSourceController::class, 'generateExcel'])->name('proponent.excel');
 Route::match(['get', 'post'],'/data/update/', [App\Http\Controllers\FacilityController::class, 'updateData'])->name('update.data');

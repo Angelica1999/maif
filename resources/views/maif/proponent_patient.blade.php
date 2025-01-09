@@ -244,9 +244,17 @@
                                 </div> -->
                             </td>
                             <td class="td">
-                                <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}" style="border-radius:0; background-color:teal;color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
-                                <a href="{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}" type="button" style="margin-top:1px; border-radius:0; width:50px;" class="btn btn-success btn-xs" id="send_btn">Send</a>
-                            
+                                <div style="display: flex; align-items: center; gap: 5px;">
+                                    <div>
+                                        <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}" style="border-radius:0; background-color:teal;color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
+                                        <a href="{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}" type="button" style="margin-top:1px; border-radius:0; width:50px;" class="btn btn-success btn-xs" id="send_btn">Send</a>
+                                    </div>
+                                    @if($patient->sent_type == 1 || $patient->fc_status == 'returned')
+                                        <a href="{{ route('patient.accept', ['id' => $patient->id]) }}" style="margin-left:10px; font-size:14px"  title="Send this GL to facility">
+                                            <i class="fa fa-paper-plane"></i>
+                                        </a>
+                                    @endif
+                                </div>
                                 <!-- @if($patient->status == 1)
                                     <i style="font-size:20px" class="typcn typcn-home menu-icon"></i>
                                 @else

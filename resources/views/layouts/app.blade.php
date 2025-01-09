@@ -434,6 +434,12 @@
             msg: 'Successfully process the gl!'
          });
       @endif
+      @if(session('manage_funds'))
+         <?php session()->forget('manage_funds'); ?>
+         Lobibox.notify('success', {
+            msg: 'Successfully manage funds!'
+         });
+      @endif
    </script>
    @yield('js')
 </body>
