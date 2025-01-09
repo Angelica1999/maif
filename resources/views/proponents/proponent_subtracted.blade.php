@@ -4,10 +4,11 @@
             <thead style="position: sticky; top: 0; background-color: white; z-index: 1;">
                 <tr style="text-align:center; background-color:gray; color:white">
                     <th>Proponent</th>
-                    <th colspan=2>{{ $data[0]->proponent }}</th>
+                    <th colspan=3>{{ $data[0]->proponent }}</th>
                 </tr>
                 <tr style="text-align:center;">
                     <th>Amount</th>
+                    <th>Remarks</th>
                     <th>Subtracted By</th>
                     <th>Created On</th>
                 </tr>
@@ -18,6 +19,7 @@
                         <td>
                             <a href="#" onclick="updateNegation({{ $row->id }})">{{ number_format($row->amount, 2,'.',',') }}</a>
                         </td>
+                        <td>{{ $row->remarks }}</td>
                         <td>{{ $row->user->fname .' '.$row->user->lname }}</td>
                         <td>{{ date('F j, Y', strtotime($row->created_at)) }}</td>
                     </tr>

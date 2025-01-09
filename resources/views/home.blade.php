@@ -233,17 +233,6 @@
                             <td>
                                 <button type="button" href="#patient_history" data-backdrop="static" style="border-radius:0; width:70px;background-color:#006BC4; color:white; font-size:11px" data-toggle="modal" class="btn btn-xs" onclick="populateHistory({{$patient->id}})"><small>Edit History</small></button>
                                 <button type="button" href="#get_mail" data-backdrop="static" data-toggle="modal" class="btn btn-xs" style="margin-top:1px; border-radius:0; width:70px;background-color:#005C6F; color:white; font-size:11px" onclick="populate({{$patient->id}})"><small>Mail History</small></button>
-                           
-                                <!-- <div style="white-space: nowrap;">
-                                    <div style="float:left; display:inline-block;">
-                                        <button type="button" href="#patient_history" data-backdrop="static" style="border-radius:0; width:60px; background-color:#006BC4; color:white;" data-toggle="modal" class="btn btn-sm" onclick="populateHistory({{$patient->id}})"><small>Patient</small></button>
-                                        <button type="button" href="#get_mail" data-backdrop="static" data-toggle="modal" class="btn btn-sm" style="border-radius:0; width:60px; background-color:#005C6F; color:white;" onclick="populate({{$patient->id}})"><small>Mail</small></button>
-                                    </div>
-                                    <div style="float:left; display:inline-block;">
-                                        <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}" style="border-radius:0; background-color:teal; color:white; width:60px;" target="_blank" type="button" class="btn btn-sm"><small>Print</small></a>
-                                        <a href="{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}" type="button" style="border-radius:0; width:60px;" class="btn btn-success btn-sm" id="send_btn"><small>Send</small></a>
-                                    </div>
-                                </div> -->
                             </td>
                             <td class="td">
                                 <div style="display: flex; align-items: center; gap: 5px;">
@@ -263,12 +252,6 @@
                                         <i class="fa fa-paper-plane"></i>
                                     </a>
                                 </div>
-
-                                <!-- @if($patient->status == 1)
-                                    <i style="font-size:20px" class="typcn typcn-home menu-icon"></i>
-                                @else
-                                    <a href="{{ route('facility.send', ['id' => $patient->id]) }}" type="button"><i style="font-size:20px" class="typcn typcn-home-outline menu-icon"></i></a>
-                                @endif -->
                             </td>
                             <td style="text-align:center;" class="group-email" data-patient-id="{{ $patient->id }}" >
                                 <input class="sent_mails[] " id="mail_ids[]" name="mail_ids[]" type="hidden">
@@ -276,15 +259,9 @@
                                     class="group-mailCheckBox" onclick="itemChecked($(this))">
                             </td>
                             <td style="text-align:center">
-                                <!-- {{ $patient->pat_rem }} -->
                                 @if($patient->remarks == 1)
                                     <i class="typcn typcn-tick menu-icon">
                                 @endif
-                                <!-- @if($patient->remarks == 1 || $patient->status == 1)
-                                    <i class="typcn typcn-tick menu-icon">
-                                @elseif($patient->status == 2)
-                                    Returned
-                                @endif -->
                             </td>
                             <td>
                                 @if($patient->status == 1)
@@ -346,7 +323,10 @@
                                     {{ $patient->other_barangay }}
                                 @endif
                             </td>
-                            <td>{{date('F j, Y', strtotime($patient->created_at))}}</td>
+                            <td style="text-align:center">
+                                {{ date('F j, Y', strtotime($patient->created_at)) }}<br>
+                                ( {{  date('H:i:s', strtotime($patient->created_at)) }} )
+                            </td>
                             <td class="td">{{ $patient->user_type == null ? $patient->encoded_by->lname .', '. $patient->encoded_by->fname: ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td>
                         </tr>
                     @endforeach
@@ -1609,23 +1589,14 @@
                     }else{
                         $('.remaining_balance').val(formattedBalance);
                         var suggestions =[];
-                        var res = result.proponent_info;
-                        var over_all = parseFloat(result.overall).toFixed(2);
-
-                        $.each(res, function(index, optionData) {
-                            var deduct = (res[index].dv3_funds && res[index].dv3_funds.length > 0) ? res[index].dv3_funds[0].deduction : 0;
-                            var amount = parseFloat(res[index].alocated_funds.replace(/,/g, '')) - parseFloat(res[index].admin_cost.replace(/,/g, ''));
-                            if(over_all >= amount){
-                                over_all = over_all - amount;
-                            }else{
-                                var total =amount - over_all - deduct;
-                                over_all = 0;
-                                suggestions.push(res[index].fundsource.saa +' - '+formatBalance(total));
-                            }
-                        });
-                        if(result.supplemental != 0){
-                            suggestions.push('Supplemental Funds - ' + formatBalance(result.supplemental));
-                        }
+                        suggestions.push('Breakdowns: ');
+                        suggestions.push('Allocated Funds - ' + formatBalance(result.total_funds));
+                        suggestions.push('Sum of all GL - ' + formatBalance(result.gl_sum));
+                        suggestions.push('DV - ' + formatBalance(result.disbursement));
+                        suggestions.push('Supplemental Funds - ' + formatBalance(result.supplemental));
+                        suggestions.push('Negative Amount - ' + formatBalance(result.subtracted));
+                        suggestions.push('Remaining Funds - ' + formatBalance(result.balance));
+                        
                         var suggestionsDiv = $('.suggestions');
                         suggestionsDiv.empty();
 

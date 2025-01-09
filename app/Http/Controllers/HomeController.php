@@ -255,7 +255,7 @@ class HomeController extends Controller
         $proponents_code = Proponent::groupBy('proponent_code')->select(DB::raw('MAX(proponent) as proponent'), DB::raw('MAX(proponent_code) as proponent_code'),DB::raw('MAX(id) as id') )->get();
         // return $patients->paginate(10);
         return view('home', [
-            'patients' => $patients->where('sent_type', null)->paginate(50),
+            'patients' => $patients->where('sent_type', null)->orderBy('updated_at', 'desc')->paginate(50),
             'keyword' => $request->keyword,
             'provinces' => Province::get(),
             'municipalities' => Muncity::get(),
@@ -967,7 +967,8 @@ class HomeController extends Controller
 
     public function acceptPat($id){
         Patients::where('id', $id)->update([
-            'fc_status' => 'referred'
+            'fc_status' => 'referred',
+            'sent_type' => 3
         ]);
         return redirect()->back()->with('process_gl', true);
     }

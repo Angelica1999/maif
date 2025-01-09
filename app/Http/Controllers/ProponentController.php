@@ -212,7 +212,16 @@ class ProponentController extends Controller
         $utilizationData = Patients::whereIn('proponent_id', $proponentIdMap->flatten()->pluck('id'))
             ->select(
                 'proponent_id',
-                DB::raw('SUM(CAST(REPLACE(guaranteed_amount, ",", "") AS DECIMAL(10,2))) as total_utilized')
+                DB::raw('
+                    SUM(
+                        CASE 
+                            WHEN actual_amount IS NOT NULL AND actual_amount != "" 
+                            THEN CAST(REPLACE(actual_amount, ",", "") AS DECIMAL(20, 2)) 
+                            ELSE CAST(REPLACE(guaranteed_amount, ",", "") AS DECIMAL(20, 2)) 
+                        END
+                    ) as total_utilized
+                ')
+                // DB::raw('SUM(CAST(REPLACE(guaranteed_amount, ",", "") AS DECIMAL(10,2))) as total_utilized')
             )
             ->groupBy('proponent_id')
             ->get()
@@ -222,17 +231,14 @@ class ProponentController extends Controller
             
             $proponentIds = $proponentIdMap->get($proponent->proponent)->pluck('id');
 
+            $alocated_cost = ProponentInfo::whereIn('proponent_id', $proponentIds)
+            ->sum(DB::raw("
+                CAST(REPLACE(IFNULL(admin_cost, '0'), ',', '') AS DECIMAL(20, 2))
+            "));
+
             $info = ProponentInfo::whereIn('proponent_id', $proponentIds)->pluck('id')->toArray();
             $dv3_sum = Dv3Fundsource::whereIn('info_id', $info)
-                ->with([
-                    'dv3' => function ($query){
-                        $query->with([
-                            'facility:id,name',
-                            'user:userid,fname,lname'
-                        ]);
-                    },
-                    'fundsource:id,saa'
-                ])->sum('amount');
+                ->sum('amount');
             
             $dv1 = Utilization::whereIn('proponent_id', $proponentIds)
                 ->where('status', 0)
@@ -268,21 +274,15 @@ class ProponentController extends Controller
             $rem = $totalFunds - $totalUtilized;
             $sub = SubtractedFunds::whereIn('proponent', $proponentIdMap->get($proponent->proponent)->pluck('proponent'))->sum('amount');
 
-            if($supp == 0){
-                $all_rem = $rem;
-            }else{
-                $all_rem = $rem + $supp;
-            }
-
             return [
                 'proponent' => $proponent,
                 'sum' => $totalFunds,
-                'rem' => $all_rem - ($dv3_sum + $dv_sum + $sub),
+                'rem' => $rem + $supp - ($dv3_sum + $dv_sum + $sub),
                 'supp' => $supp,
                 'sub' => $sub,
-                'sample' => $dv3_sum,
-                'refsdfm' => $all_rem,
-                'dv_sum' => $dv_sum
+                'disbursement' => $dv3_sum + $dv_sum,
+                'allocated_cost' => $alocated_cost,
+                'totalUtilized' => $totalUtilized
             ];
         });
 
@@ -408,6 +408,24 @@ class ProponentController extends Controller
             'dv3' => $dv3_fundsources->orderBy('id', 'desc')->get(),
             'dv1' => $dv1
         ]);
+    }
+    public function manageFunds(Request $request){
+        if($request->funds_type == 1){
+            $supplemental = new SupplementalFunds();
+            $supplemental->proponent = $request->proponent;
+            $supplemental->amount = (float) str_replace(',', '', $request->amount);
+            $supplemental->added_by = Auth::user()->userid;
+            $supplemental->remarks = $request->remarks;
+            $supplemental->save();
+        }else if($request->funds_type == 2){
+            $subtracted = new SubtractedFunds();
+            $subtracted->proponent = $request->proponent;
+            $subtracted->amount = (float) str_replace(',', '', $request->amount);
+            $subtracted->subtracted_by = Auth::user()->userid;
+            $subtracted->remarks = $request->remarks;
+            $subtracted->save();
+        }
+        return redirect()->back()->with('manage_funds', true);
     }
 
     public function supplemental($proponent, $amount)

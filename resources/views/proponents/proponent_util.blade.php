@@ -45,7 +45,8 @@
                             <tr style="" class="gl_{{ $row->id }}">
                                 <td>{{ $row->patient_code }}</td>
                                 <td>{{ $row->lname .', '.$row->fname.' '.$row->mname }}</td>
-                                <td>{{ number_format(str_replace(',','',$row->guaranteed_amount), 2,'.',',') }}</td>
+                                <td>{{ $row->actual_amount ? number_format(str_replace(',','',$row->actual_amount), 2,'.',',') :
+                                    number_format(str_replace(',','',$row->guaranteed_amount), 2,'.',',') }}</td>
                                 <td>{{ $row->facility->name }}</td>
                                 <td>{{ $row->encoded_by ? $row->encoded_by->lname.', '.$row->encoded_by->fname : 
                                     ($row->gl_user? $row->gl_user->lname.', '.$row->gl_user->fname:'') }}</td>
