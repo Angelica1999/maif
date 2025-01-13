@@ -19,6 +19,7 @@ use App\Models\BillTracking;
 use App\Models\Transmittal;
 use App\Models\ReturnDetails;
 use App\Models\Logbook;
+use App\Models\IncludedFacility;
 
 class FacilityController extends Controller
 {
@@ -47,9 +48,9 @@ class FacilityController extends Controller
     }
 
     public function includedFacility(Request $request) {
-
+        $ids = IncludedFacility::pluck('id')->toArray();
         $brgy = Barangay::pluck('muncity_id')->toArray();
-        $result = Facility::with('addFacilityInfo')
+        $result = Facility::whereIn('id', $ids)->with('addFacilityInfo')
                 ->select(
                     'facility.id',
                     'facility.name',
@@ -63,10 +64,12 @@ class FacilityController extends Controller
         }
 
         $results = $result->paginate(50);
+        $list = Facility::whereNotIn('id', $ids)->get();
 
         return view('facility.included_facility',[
             'results' => $results,
-            'keyword' => $request->keyword
+            'keyword' => $request->keyword,
+            'list' => $list
         ]);
     }
 
@@ -373,5 +376,22 @@ class FacilityController extends Controller
         Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$trans->id.'/'.Auth::user()->userid.'/received');
 
         return response()->json(['message' => 'Data submitted successfully']);
+    }
+
+    public function releaseFacility($id){
+        $fc = IncludedFacility::where('facility_id', $id)->first();
+        if($fc){
+            $fc->delete();
+        }
+    }
+    public function addFacility(Request $request){
+        $ids = $request->ids;
+        foreach($ids as $id){
+            $fc = new IncludedFacility();
+            $fc->facility_id = $id;
+            $fc->added_by = Auth::user()->userid;
+            $fc->save();
+        }
+       return redirect()->back()->with('added_facility', true);
     }
 }

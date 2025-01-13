@@ -440,6 +440,12 @@
             msg: 'Successfully manage funds!'
          });
       @endif
+      @if(session('added_facility'))
+         <?php session()->forget('added_facility'); ?>
+         Lobibox.notify('success', {
+            msg: 'Successfully added this facility!'
+         });
+      @endif
    </script>
    @yield('js')
 </body>
