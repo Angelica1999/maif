@@ -111,12 +111,22 @@ class PrintController extends Controller
         $ids = array_map('intval', explode(',', $ids[0]));
         set_time_limit(0);
 
-        if ($ids !== null || $ids !== '') {
-            SendMultipleEmails::dispatch($ids);
-            return redirect()->route('home')->with('status', 'Emails are being sent in the background.');
+        if($request->sent_type == 0){
+            if ($ids !== null || $ids !== '') {
+                SendMultipleEmails::dispatch($ids);
+                return redirect()->route('home')->with('status', 'Emails are being sent in the background.');
+            }
+    
+            return redirect()->route('home')->with('status', 'No emails selected.');
+        }elseif($request->sent_type == 1){
+            foreach($ids as $id){
+                Patients::where('id', $id)->update([
+                    'fc_status' => 'referred',
+                    'sent_type' => 3
+                ]);
+                return redirect()->back()->with('process_gl', true);
+            }
         }
-
-        return redirect()->route('home')->with('status', 'No emails selected.');
     }
 
     public function dvPDF(Request $request, $dvId) {
