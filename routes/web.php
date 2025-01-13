@@ -21,6 +21,8 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/mpu-returned', [App\Http\Controllers\HomeController::class, 'returnedPatients'])->name('returned.patients');
+Route::get('/expired-gl', [App\Http\Controllers\HomeController::class, 'expiredPatients'])->name('expired.patients');
+
 // Route::get('/data/{type}', [App\Http\Controllers\HomeController::class, 'getData'])->name('get.data');
 Route::get('/facilities', [App\Http\Controllers\FacilityController::class, 'index'])->name('facility');
 Route::get('facility/edit/{main_id}', [App\Http\Controllers\FacilityController::class, 'facilityEdit'])->name('facility.edit');
