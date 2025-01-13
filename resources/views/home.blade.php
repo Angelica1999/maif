@@ -77,7 +77,6 @@
                         <div class="input-group">
                             <input type="text" style="text-align:center" class="form-control" id="filter_dates" value="{{($generate_dates)?$generate_dates:''}}" name="filter_dates" />
                             <button type="submit" id="gen_btn" style="background-color:teal; color:white; width:90px; height:40px; border-radius:0; " class="btn"><i class="typcn typcn-calendar-outline menu-icon"></i>Filter</button>
-
                         </div>
                         <input type="hidden" name="filter_date" id="filter_date" value="{{implode(',', $filter_date)}}"></input>
                         <input type="hidden" name="filter_fname" id="filter_fname" value="{{implode(',', $filter_fname)}}"></input>
@@ -96,9 +95,14 @@
                     </form>
                     <form method="POST" action="{{ route('sent.mails') }}" class="send_mailform">
                         @csrf
+                        <input type="hidden" class="form-control idss" name="idss" id="idss" >
+                        <input type="hidden" class="form-control sent_type" name="sent_type" id="sent_type" value="0">
+
                         <div class="input-group-append" style="display: flex; justify-content: flex-end;">
-                            <button class="btn btn-md send_mails" name="send_mails[]" style="display:none; background-color:green; color:white; height:40px">Send Mails</button>
-                            <input type="hidden" class="form-control idss" name="idss" id="idss" >
+                            <button class="btn btn-md send_mails" name="send_mails[]" style="display:none; background-color:green; color:white; height:41px; border-radius:0px; width:100%">Send Mails <img src="\maif\public\images\email_16.png"></button>
+                        </div>
+                        <div class="input-group">
+                            <button class="btn btn-md send_mails" name="send_mails[]" id="system_sent" style="display:none; background-color:darkgreen; color:white; height:40px; border-radius:0px; width:100%">Send GL to <img src="{{ asset('images/doh-logo.png') }}" style="width:20px"></button>
                         </div>
                     </form>
                     <form method="POST" action="{{ route('save.group') }}">
@@ -760,6 +764,10 @@
 <script>
     $(function() {
         $('#filter_dates').daterangepicker();
+    });
+
+    $('#system_sent').on('click', function(){
+        $('.sent_type').val(1);
     });
 
     $('#crt_pnt').on('click', function(){
