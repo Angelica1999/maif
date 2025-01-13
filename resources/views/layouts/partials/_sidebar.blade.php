@@ -243,7 +243,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('patients') }}">
+                                    <a class="nav-link" href="{{ route('expired.patients') }}">
                                         <img src="\maif\public\images\hos_letter_16.png" style="margin-right:12px">
                                         <span class="menu-title">Expired</span>
                                     </a>
