@@ -46,6 +46,30 @@ class FacilityController extends Controller
         ]);
     }
 
+    public function includedFacility(Request $request) {
+
+        $brgy = Barangay::pluck('muncity_id')->toArray();
+        $result = Facility::with('addFacilityInfo')
+                ->select(
+                    'facility.id',
+                    'facility.name',
+                    'facility.address',
+                );
+     
+        if($request->viewAll){
+            $request->keyword = '';
+        }else if($request->keyword){
+            $result->where('name', 'LIKE', "%$request->keyword%");
+        }
+
+        $results = $result->paginate(50);
+
+        return view('facility.included_facility',[
+            'results' => $results,
+            'keyword' => $request->keyword
+        ]);
+    }
+
     public function facilityEdit($main_id)
     {
     

@@ -116,7 +116,6 @@ class PrintController extends Controller
                 SendMultipleEmails::dispatch($ids);
                 return redirect()->route('home')->with('status', 'Emails are being sent in the background.');
             }
-    
             return redirect()->route('home')->with('status', 'No emails selected.');
         }elseif($request->sent_type == 1){
             foreach($ids as $id){
