@@ -223,11 +223,32 @@
                         &nbsp;&nbsp;<i class="typcn typcn-arrow-sorted-down menu-icon"></i>
                     </a>
                     <ul class="nav flex-column sub-menu">
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                             <a class="nav-link" href="{{ route('home') }}">
                                 <img src="\maif\public\images\letter_16.png" style="margin-right:12px">
                                 <span class="menu-title">Guarantee Letter (MPU)</span>
                             </a>
+                        </li> -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('home') }}">
+                                <img src="\maif\public\images\patients_16.png" style="margin-right:12px">
+                                <span class="menu-title">Guarantee Letter (MPU)</span>
+                                &nbsp;&nbsp;<i class="typcn typcn-arrow-sorted-down menu-icon"></i>
+                            </a>
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('returned.patients') }}">
+                                        <img src="\maif\public\images\letter_16.png" style="margin-right:12px">
+                                        <span class="menu-title">Returned</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('patients') }}">
+                                        <img src="\maif\public\images\hos_letter_16.png" style="margin-right:12px">
+                                        <span class="menu-title">Expired</span>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('patients') }}">
