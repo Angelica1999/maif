@@ -9,12 +9,12 @@
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
-                        <button type="button" href="#facility_included" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Hold</button>
+                        <button type="button" href="#facility_included" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Add Facility</button>
 
                     </div>
                 </div>
             </form>
-            <h4 class="card-title">FACILITY</h4>
+            <h4 class="card-title">INCLUDED FACILITY</h4>
             <p class="card-description">
                 MAIF-IPP
             </p>
@@ -28,30 +28,18 @@
                         <th>Address</th>
                         <th>Official Email</th>
                         <th style="min-width:200px">Additional Email(s)</th>
-                        <th>Vat</th>
-                        <th>Ewt</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($results as $facility)
                         <tr>
                             <td class="td">
-                                <a href="{{ route('facility.edit', ['main_id' => $facility->id]) }}" 
-                                    data-target="#update_facility" 
-                                    type="button" 
-                                    onclick="updateFacility(this)" 
-                                    data-backdrop="static" 
-                                    data-toggle="modal" 
-                                    class="btn btn-primary btn-sm"
-                                    data-main-id="{{ $facility->id }}"
-                                    data-name="{{$facility->name}}">Update</a>
+                                <button class="btn btn-sm btn-warning" style="color:white; border-radius:0px" onclick="released({{ $facility->id }})">Release</button>
                             </td>
                             <td class="td">{{ $facility->name }}</td>
                             <td class="td">{{ $facility->address }}</td>
                             <td class="td">{{ $facility->AddFacilityInfo->official_mail ?? '' }}</td>
                             <td class="td">{{ $facility->AddFacilityInfo->cc ?? '' }}</td>
-                            <td class="td">{{ $facility->AddFacilityInfo->vat ?? '' }}</td>
-                            <td class="td">{{ $facility->AddFacilityInfo->Ewt ?? '' }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -72,22 +60,24 @@
 <div class="modal fade" id="facility_included" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content"> 
-            <form action="{{route('hold.proponent')}}" method="POST">
+            <form action="{{route('include.facility')}}" method="POST">
                 <div class="modal-proponent" style="padding:10px">
-                    <h4 class="text-success"><i style = "font-size:30px"class="typcn typcn-user menu-icon"></i>Hold Proponent</h4><hr />
+                    <h4 class="text-success"><i style = "font-size:30px"class="typcn typcn-user menu-icon"></i>Include Facility</h4><hr />
                     @csrf
                     <input type="hidden" name="id" id="id">
                     <div class="form-group">
-                        <b><label>Proponent</label><b>
-                        <select class="js-example-basic-single proponent_id" style="width:100%;" id="proponent_id" name="proponent_id[]" multiple>
+                        <b><label>Facility</label><b>
+                        <select class="js-example-basic-single ids" style="width:100%;" id="ids" name="ids[]" multiple>
                             <option value="">Please select province</option>
-                           
+                            @foreach($list as $id)
+                                <option value="{{ $id->id }}">{{ $id->name }}</option>
+                            @endforeach
                         </select>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button style = "background-color:lightgray"  class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> Close</button>
-                    <button type="submit" class="btn btn-success btn-submit" onclick=""><i style = "" class="typcn typcn-location-arrow menu-icon"></i> Hold</button>
+                    <button type="submit" class="btn btn-success btn-submit" onclick=""><i style = "" class="typcn typcn-location-arrow menu-icon"></i>Include</button>
                 </div>
             </form>
         </div>
@@ -96,5 +86,28 @@
 @endsection
 @section('js')
 <script>
+    function released(id){
+        console.log('code', id);
+        Swal.fire({
+            title: 'Release proponent',
+            text: "Are you certain you want to release this facility?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.get("{{ url('release-facility').'/' }}" + id)
+                .done(function(response) {
+                    location.reload();
+                })
+                .fail(function(jqXHR, textStatus, errorThrown) {
+                    // Handle error response
+                    console.error('Error:', textStatus, errorThrown);
+                    Swal.fire('Error!', 'An error occurred while processing your request.', 'error');
+                });
+            }
+        });
+    }
 </script> 
 @endsection
