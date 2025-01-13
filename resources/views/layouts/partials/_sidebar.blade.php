@@ -376,6 +376,14 @@
                                 </a>
                             </li>
                         </ul>
+                        <ul class="nav flex-column sub-menu">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('included.facility') }}">
+                                    <img src="\maif\public\images\proponents_16.png" style="margin-right:12px">
+                                    <span class="menu-title">Facilities</span>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
             @endif

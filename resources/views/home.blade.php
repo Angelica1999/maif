@@ -1139,6 +1139,8 @@
     
     function itemChecked(element){
         var parentTd = $(element).closest('td');   
+        console.log('sds');
+
         var patientId = parentTd.attr('data-patient-id');
         var checkboxId = element.attr("id");
         if(id_list.includes(patientId)){
@@ -1154,6 +1156,7 @@
         }else{
             $('.send_mails').val('').hide();
         }
+        console.log('sds');
     }
 
     var group_a = [];

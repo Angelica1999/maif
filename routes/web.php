@@ -28,6 +28,7 @@ Route::get('/facilities', [App\Http\Controllers\FacilityController::class, 'inde
 Route::get('facility/edit/{main_id}', [App\Http\Controllers\FacilityController::class, 'facilityEdit'])->name('facility.edit');
 Route::post('facility/update', [App\Http\Controllers\FacilityController::class, 'facilityUpdate'])->name('facility.update');
 Route::get('facility/vatEwt', [App\Http\Controllers\FacilityController::class, 'getVatEwt']);
+Route::get('/included-facility', [App\Http\Controllers\FacilityController::class, 'includedFacility'])->name('included.facility');
 Route::get('facility/get/{fundsource_id}', [App\Http\Controllers\DvController::class, 'facilityGet'])->name('facility.get');
 //creating new route, method for modification in selecting facility first before the fundsource
 Route::get('fetch/fundsource/{facility_id}', [App\Http\Controllers\DvController::class, 'getFundsource'])->name('fetch.fundsource');
