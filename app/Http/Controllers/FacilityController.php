@@ -48,7 +48,7 @@ class FacilityController extends Controller
     }
 
     public function includedFacility(Request $request) {
-        $ids = IncludedFacility::pluck('id')->toArray();
+        $ids = IncludedFacility::pluck('facility_id')->toArray();
         $brgy = Barangay::pluck('muncity_id')->toArray();
         $result = Facility::whereIn('id', $ids)->with('addFacilityInfo')
                 ->select(
