@@ -107,7 +107,6 @@
             } else if (result.isDismissed) {
             }
         });
-
     }
 </script>
 @endsection

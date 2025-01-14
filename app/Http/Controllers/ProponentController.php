@@ -210,6 +210,10 @@ class ProponentController extends Controller
             ->groupBy('proponent_id');
 
         $utilizationData = Patients::whereIn('proponent_id', $proponentIdMap->flatten()->pluck('id'))
+            ->where(function ($query) {
+                $query->where('expired', '!=', 1)
+                    ->orWhereNull('expired'); // Include NULL values
+            })
             ->select(
                 'proponent_id',
                 DB::raw('
