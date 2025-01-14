@@ -743,6 +743,10 @@ class FundSourceController extends Controller
             ->selectRaw('SUM(CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(10,2)) - CAST(REPLACE(admin_cost, ",", "") AS DECIMAL(10,2))) as total_amount')
             ->value('total_amount');
         $pat_sum = Patients::whereIn('proponent_id', $proponent_ids)
+            ->where(function ($query) {
+                $query->where('expired', '!=', 1)
+                    ->orWhereNull('expired'); // Include NULL values
+            })
             ->sum(DB::raw("
                 IFNULL(actual_amount, CAST(REPLACE(guaranteed_amount, ',', '') AS DECIMAL(20, 2)))
             ")); 
