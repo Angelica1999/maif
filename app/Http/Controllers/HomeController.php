@@ -24,6 +24,7 @@ use App\Models\PatientLogs;
 use App\Models\MailHistory;
 use App\Models\ReturnedPatients;
 use App\Models\ProponentUtilizationV1;
+use App\Models\IncludedFacility;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Arr;
@@ -252,6 +253,7 @@ class HomeController extends Controller
         $all_pat = clone ($patients);
         $proponents_code = Proponent::groupBy('proponent_code')->select(DB::raw('MAX(proponent) as proponent'), DB::raw('MAX(proponent_code) as proponent_code'),DB::raw('MAX(id) as id') )->get();
         // return $patients->paginate(10);
+        $included_ids = IncludedFacility::pluck('facility_id')->toArray();
         return view('home', [
             'patients' => $patients->where('pro_used', null)->orderBy('updated_at', 'desc')->paginate(50),
             'keyword' => $request->keyword,
@@ -259,7 +261,7 @@ class HomeController extends Controller
             'municipalities' => Muncity::get(),
             'proponents' => $proponents_code,
             'barangays' => Barangay::get(),
-            'facilities' => Facility::get(),
+            'facilities' => Facility::whereIn('id', $included_ids)->get(),
             'user' => Auth::user(),
             'date' =>  $date->groupBy('date_guarantee_letter')->pluck('date_guarantee_letter'),
             'fname' => $fname->groupBy('fname')->pluck('fname'),
