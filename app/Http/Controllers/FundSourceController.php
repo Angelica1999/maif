@@ -743,14 +743,14 @@ class FundSourceController extends Controller
         //     ->selectRaw('SUM(CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(10,2)) - CAST(REPLACE(admin_cost, ",", "") AS DECIMAL(10,2))) as total_amount')
         //     ->value('total_amount');
         $info_sum = ProponentInfo::whereIn('proponent_id', $proponent_ids)
-    ->where(function ($query) use ($included_ids) {
-        foreach ($included_ids as $id) {
-            $query->orWhere('facility_id', $id) // Match facility_id as integer
-                ->orWhereJsonContains('facility_id', (string) $id); // Match facility_id in JSON array
-        }
-    })
-    ->selectRaw('SUM(CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(10,2)) - CAST(REPLACE(admin_cost, ",", "") AS DECIMAL(10,2))) as total_amount')
-    ->value('total_amount');
+            ->where(function ($query) use ($included_ids) {
+                foreach ($included_ids as $id) {
+                    $query->orWhere('facility_id', $id) // Match facility_id as integer
+                        ->orWhereJsonContains('facility_id', (string) $id); // Match facility_id in JSON array
+                }
+            })
+            ->selectRaw('SUM(CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(10,2)) - CAST(REPLACE(admin_cost, ",", "") AS DECIMAL(10,2))) as total_amount')
+            ->value('total_amount');
         $pat_sum = Patients::whereIn('proponent_id', $proponent_ids)
             ->where(function ($query) {
                 $query->where('expired', '!=', 1)
