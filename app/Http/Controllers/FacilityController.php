@@ -63,7 +63,7 @@ class FacilityController extends Controller
             $result->where('name', 'LIKE', "%$request->keyword%");
         }
 
-        $results = $result->paginate(50);
+        $results = $result->paginate(20);
         $list = Facility::whereNotIn('id', $ids)->get();
 
         return view('facility.included_facility',[

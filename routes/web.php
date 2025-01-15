@@ -20,7 +20,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('/mpu-returned', [App\Http\Controllers\HomeController::class, 'returnedPatients'])->name('returned.patients');
+Route::get('/returned-gl', [App\Http\Controllers\HomeController::class, 'returnedPatients'])->name('returned.patients');
 Route::get('/expired-gl', [App\Http\Controllers\HomeController::class, 'expiredPatients'])->name('expired.patients');
 
 // Route::get('/data/{type}', [App\Http\Controllers\HomeController::class, 'getData'])->name('get.data');
