@@ -80,7 +80,7 @@ class ReportController extends Controller
         // $inf->save();
 
         $fundsources = ProponentInfo::orderBy('fundsource_id', 'ASC')->with('facility', 'proponent', 'fundsource')->get();
-      
+            
         $filename = 'SAA.xls';
         header("Content-Type: application/xls");
         header("Content-Disposition: attachment; filename=$filename");

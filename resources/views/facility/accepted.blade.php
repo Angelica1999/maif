@@ -60,7 +60,7 @@
                 </div>
             @else
                 <div class="alert alert-danger" role="alert" style="width: 100%;">
-                <i class="typcn typcn-times menu-icon"></i>
+                    <i class="typcn typcn-times menu-icon"></i>
                     <strong>No bills found!</strong>
                 </div>
             @endif
@@ -153,6 +153,7 @@
     var trans_id = 0;
     
     function displaySum(id){
+        console.log('dsad');
         trans_id = id;
         $('.summary_body').html(loading);
         $.get("{{ url('transmittal').'/' }}" + id, function(result) {
