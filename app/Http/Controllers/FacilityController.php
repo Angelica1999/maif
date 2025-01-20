@@ -241,12 +241,30 @@ class FacilityController extends Controller
         return $response;
     }
 
-    public function logbook(Request $req){
-        $logbook = Logbook::with('r_by:fname,lname,mname,userid')->orderBy('id', 'desc')->paginate(100);
+    public function logbook(Request $request){
+        // $group = Logbook::with('r_by:fname,lname,mname,userid')->get()->groupBy('received_by');
+        $group = Logbook::whereIn('id', function ($query) {
+            $query->select(\DB::raw('MAX(id)'))
+                ->from('logbook')
+                ->groupBy('received_by');
+        })
+        ->with('r_by:fname,lname,mname,userid')->get();
+        $logbook = Logbook::with('r_by:fname,lname,mname,userid');
         $trans = Transmittal::pluck('control_no')->toArray();
+        $keyword = '';
+        if($request->keyword && !$request->viewAll && !$request->filter){
+            $keyword = $request->keyword;
+            $logbook->where('control_no', 'LIKE', "%$keyword%");
+        }else if($request->filter){
+            $logbook->whereIn('received_by', array_map('intval', explode(',', $request->filter)));
+        }
+
         return view('maif.logbook',[
-            'logbook' => $logbook,
-            'control_no' => $trans
+            'logbook' => $logbook->orderBy('id', 'desc')->paginate(30),
+            'control_no' => $trans,
+            'keyword' => $keyword,
+            'list' => $group,
+            'selected' => array_map('intval', explode(',', $request->filter))
         ]);
     }
 
