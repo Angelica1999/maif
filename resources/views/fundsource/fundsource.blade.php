@@ -515,9 +515,10 @@
         }
 
         function proponentCode(proponent){
-            
+            console.log('sadsad');
             if(proponent.val()){
                 var proponent_id = proponent.val()
+                console.log('chaki', proponent_id);
                 var url = "{{ url('proponent').'/' }}"+ proponent_id;
                 setTimeout(function() {
                     $.ajax({

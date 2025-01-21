@@ -297,10 +297,9 @@
     }
 
     function proponentCode(selectElement) {
-
         var selectedValue = selectElement.val();
-        var proponentCode = selectElement.find('option[value="' + selectedValue + '"]').data('proponent-code');
-
+        var proponentCode = selectElement.find(':selected').data('proponent-code');
+        // var proponentCode = selectElement.find('option[value="' + selectedValue + '"]').data('proponent-code');
         if (proponentCode != "" || proponentCode != undefined ) {
             var proponentCodeInput = selectElement.closest('.row').find('.proponent_code');
             proponentCodeInput.val(proponentCode);
