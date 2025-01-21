@@ -536,10 +536,11 @@ class FundSourceController extends Controller
     }
 
     public function saveTransferFunds(Request $request){
-        // return $request->input('to_saa');
         $identifier = $request->input('fac');
         $from_id = $request->input('from_info');
         $to_id = $request->input('to_info');
+        $sb_from = $request->input('sb_from');
+        $sb_to = $request->input('to_source');
 
         $from = ProponentInfo::where('id', $from_id)->first();
 
@@ -569,18 +570,9 @@ class FundSourceController extends Controller
             $to->facility_id = $request->input('to_info');
             $to->remaining_balance = $request->input('to_amount');
             $to->admin_cost = "";
-            // if($fund->cost_value == 0){
-            //     $to->admin_cost = 0;
-            //     $to->remaining_balance = $request->input('to_amount');
-            // }else{
-            //     $to->admin_cost = (double) str_replace(',','', $request->input('to_amount')) * $fund->cost_value / 100;
-            //     $to->remaining_balance = (double) str_replace(',','', $request->input('to_amount')) - ((double) str_replace(',','', $request->input('to_amount')) * $fund->cost_value / 100);
-            // }
             $to->created_by = Auth::user()->userid;
             $to->save();
-
         }else{
-
             if($from_id != null && $to_id != null){
                 $to = ProponentInfo::where('id', $to_id)->first();
             }
@@ -622,17 +614,27 @@ class FundSourceController extends Controller
             $from_utilize->facility_id = $from->facility_id;
             $from_utilize->status = 2;
             $from_utilize->transfer_id = $transfer->id;
+            $from_utilize->transfer_type = $sb_from == 1 ? 1 : ($sb_from == 2 ? 2 : ($sb_from == 3 ? 3 : ''));
             $from_utilize->save();
 
-            $from->alocated_funds = str_replace(',', '',$from->alocated_funds) - str_replace(',', '',$request->input('to_amount'));
-            $from->remaining_balance = str_replace(',', '',$from->remaining_balance) - str_replace(',', '',$request->input('to_amount'));
-            $from->save();
-
             $fundsource = Fundsource ::where('id', $from->fundsource_id)->first();
-            // $fundsource->admin_cost = ($fundsource->cost_value == 0)?0:(double) str_replace(',','',$fundsource->remaining_balance) 
-            //     - str_replace(',', '',$request->input('to_amount')) * $fundsource->cost_value / 100;
-            $fundsource->alocated_funds = (double) str_replace(',','',$fundsource->alocated_funds) - str_replace(',', '',$request->input('to_amount'));
-            $fundsource->remaining_balance = (double) str_replace(',','',$fundsource->remaining_balance) - str_replace(',', '',$request->input('to_amount'));
+
+            if($sb_from == 1){ // allocated funds deduction
+                $fundsource->alocated_funds = (double) str_replace(',','',$fundsource->alocated_funds) - str_replace(',', '',$request->input('to_amount'));
+                $fundsource->remaining_balance = (double) str_replace(',','',$fundsource->remaining_balance) - str_replace(',', '',$request->input('to_amount'));
+                $from->alocated_funds = str_replace(',', '',$from->alocated_funds) - str_replace(',', '',$request->input('to_amount'));
+                $from->remaining_balance = str_replace(',', '',$from->remaining_balance) - str_replace(',', '',$request->input('to_amount'));
+                
+            }else if($sb_from == 2){ // remaining balance deduction
+                $fundsource->remaining_balance = (double) str_replace(',','',$fundsource->remaining_balance) - str_replace(',', '',$request->input('to_amount'));
+                $from->remaining_balance = str_replace(',', '',$from->remaining_balance) - str_replace(',', '',$request->input('to_amount'));
+
+            }else if($sb_from == 3){ //admin cost deduction
+                $from->admin_cost = str_replace(',', '',$from->admin_cost) - str_replace(',', '',$request->input('to_amount'));
+                $fundsource->admin_cost = (double) str_replace(',','',$fundsource->admin_cost) - str_replace(',', '',$request->input('to_amount'));
+            }
+           
+            $from->save();
             $fundsource->save();
         }
         
@@ -649,17 +651,29 @@ class FundSourceController extends Controller
             $to_utilize->facility_id = $to->facility_id;
             $to_utilize->status = 3;
             $to_utilize->transfer_id = $transfer->id;
+            $to_utilize->transfer_type = $sb_to == 1 ? 1 : ($sb_to == 2 ? 2 : ($sb_to == 3 ? 3 : ''));
             $to_utilize->save();
 
-            $to->alocated_funds = str_replace(',', '',$to->alocated_funds) + str_replace(',', '',$request->input('to_amount')); 
-            $to->remaining_balance = str_replace(',', '',$to->remaining_balance) + str_replace(',', '',$request->input('to_amount')); 
+            $to_fundsource = Fundsource ::where('id', $to->fundsource_id)->first();
+
+            if($sb_to == 1){ // allocated funds deduction
+                $to_fundsource->alocated_funds = (double) str_replace(',','',$to_fundsource->alocated_funds) + str_replace(',', '',$request->input('to_amount'));
+                $to_fundsource->remaining_balance = (double) str_replace(',','',$to_fundsource->remaining_balance) + str_replace(',', '',$request->input('to_amount'));
+                $to->alocated_funds = str_replace(',', '',$to->alocated_funds) + str_replace(',', '',$request->input('to_amount')); 
+                $to->remaining_balance = str_replace(',', '',$to->remaining_balance) + str_replace(',', '',$request->input('to_amount')); 
+                
+            }else if($sb_to == 2){ // remaining balance deduction
+                $to_fundsource->remaining_balance = (double) str_replace(',','',$to_fundsource->remaining_balance) + str_replace(',', '',$request->input('to_amount'));
+                $to->remaining_balance = str_replace(',', '',$to->remaining_balance) + str_replace(',', '',$request->input('to_amount')); 
+
+            }else if($sb_to == 3){ //admin cost deduction
+                $to->admin_cost = str_replace(',', '',$to->admin_cost) + str_replace(',', '',$request->input('to_amount')); 
+                $to_fundsource->admin_cost = (double) str_replace(',','',$to_fundsource->admin_cost) + str_replace(',', '',$request->input('to_amount'));
+            }
+
+         
             $to->save();
 
-            $to_fundsource = Fundsource ::where('id', $to->fundsource_id)->first();
-            // $to_fundsource->admin_cost = ($to_fundsource->cost_value == 0)?0:(double) str_replace(',','',$to_fundsource->remaining_balance) 
-            //     - str_replace(',', '',$request->input('to_amount'))* $to_fundsource->cost_value / 100;
-            $to_fundsource->alocated_funds = (double) str_replace(',','',$to_fundsource->alocated_funds) + str_replace(',', '',$request->input('to_amount'));
-            $to_fundsource->remaining_balance = (double) str_replace(',','',$to_fundsource->remaining_balance) + str_replace(',', '',$request->input('to_amount'));
             $to_fundsource->save();
         }
         session()->flash('fund_transfer', true);

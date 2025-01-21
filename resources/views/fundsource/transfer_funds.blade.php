@@ -9,10 +9,8 @@
     }
 </style>
 <form id="contractForm" method="POST" action="{{ route('transfer.save')}}">
-    
     <div class="modal-body">
         @csrf
-      
         <div class="row ">
             <div class="col-md-12">
                 <b><h5>From:</b> {{$from_info->proponent->proponent}} - {{$from_info->fundsource->saa}} </h5>
@@ -41,12 +39,17 @@
             </div>
             <div class="col-md-6">
                 <div class="form-group">
-                    <label for="rem_bal">Remaining Balance:</label> 
-                    <input type="text" class="form-control " id="rem_bal" name="rem_bal" value="{{ number_format(floatval(str_replace(',', '',$from_info->remaining_balance)), 2, '.', ',') }}" readonly>
+                    <label for="rem_bal">Source Balance:</label> 
+                    <select class="form-control sb_from" name="sb_from" id="sb_from" onchange="setData(this.options[this.selectedIndex].dataset.amount)">
+                        <option></option>
+                        <option value="1" data-amount="{{ $from_info->alocated_funds }}">Allocated Funds</option>
+                        <option value="2" data-amount="{{ $from_info->remaining_balance }}">Remaining Balance</option>
+                        <option value="3" data-amount="{{ $from_info->admin_cost }}">Admin Cost</option>
+                    </select>
+                    <!-- <input type="text" class="form-control " id="rem_bal" name="rem_bal" value="{{ number_format(floatval(str_replace(',', '',$from_info->remaining_balance)), 2, '.', ',') }}" readonly> -->
                 </div>
             </div>
         </div>
-
         <hr>
         <strong>Transfer To:</strong>
         <h5 class="transfer transfer_to" style="display: inline;"></h5>
@@ -81,7 +84,7 @@
                 <div class="form-group">
                     <label>Facility:</label>
                     <div id="facility_body">
-                        <select  style="height:48px" class="form-control break_fac" name="to_info" onchange = "updateFacField(this.value)" required disabled>
+                        <select style="height:48px" class="form-control break_fac" name="to_info" onchange = "updateFacField(this.value)" required disabled>
                             <option value="">Please select facility</option>
                         </select>
                     </div>
@@ -89,16 +92,29 @@
             </div>
             <div class="col-md-6">
                 <div class="form-group">
-                    <label for="alocated_funds">Amount to Transfer:</label>
-                    <input type="text" class="form-control to_amount" id="to_amount" name="to_amount" oninput="validateBalance(this.value)" onkeyup= "validateAmount(this)" required disabled>
+                    <label>Source Balance:</label>
+                    <div id="">
+                        <select style="height:38px" class="form-control to_source" name="to_source" required>
+                            <option value=""></option>
+                            <option value="1">Allocated Funds</option>
+                            <option value="2">Remaining Balance</option>
+                            <option value="3">Admin Cost</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="alocated_funds">Amount to Transfer:</label>
+                    <input type="text" class="form-control to_amount" id="to_amount" name="to_amount" oninput="validateBalance(this.value)" onkeyup= "validateAmount(this)" required disabled>
+                </div>
+            </div>
+            <div class="col-md-6">
                 <div class="form-group">
                     <label for="alocated_funds">Remarks:</label>
-                    <textarea type="text" class="form-control transfer_remarks" id="transfer_remarks" name="transfer_remarks"></textarea>
+                    <textarea style="height:38px" type="text" class="form-control transfer_remarks" id="transfer_remarks" name="transfer_remarks"></textarea>
                 </div>
             </div>
         </div>
@@ -111,35 +127,54 @@
     </div>
 </form>
 
-<script src="{{ asset('admin/js/select2.js?v=').date('His') }}">
-</script>
-
+<script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 <script>
+    var selected_amount;
+    function setData(amount) {
+        selected_amount = amount;
+    }
 
-$(document).ready(function() {
-    $('.break_fac').select2();
-    $('.to_saa').select2();
-    $('.to_proponent').select2();
+    $('.sb_from').select2({
+        tag: true,
+        placeholder: 'Please Select',
+        templateSelection: function (data) {
+            var $selectedElement = $(data.element);
+            var amount = $selectedElement.attr('data-amount');
+            return amount 
+            ? parseFloat(amount.replace(/,/g, '')).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) 
+            : data.text;
 
-    $('.trans_fac').select2({
-        theme: 'bootstrap', 
-        width: '100%',     
-        placeholder: 'Please select facility', 
+        }
     });
-});
-
-function validateBalance(value){
-  var to_transfer = parseFloat(value.replace(/,/g,''));
-
-  if( to_transfer > {{floatval(str_replace(',', '',$from_info->remaining_balance))}}){
-    Lobibox.alert('error',{
-      size: 'mini',
-      msg: "Insufficient Funds!"
+    $('.to_source').select2({
+        tag: true,
+        placeholder: 'Select Type'
     });
-    $('.to_amount').val('');
-  }
-    var amount= document.getElementById("to_amount").value;
-}
+    $(document).ready(function() {
+        $('.break_fac').select2();
+        $('.to_saa').select2();
+        $('.to_proponent').select2();
+
+        $('.trans_fac').select2({
+            theme: 'bootstrap', 
+            width: '100%',     
+            placeholder: 'Please select facility', 
+        });
+    });
+
+    function validateBalance(value){
+        var to_transfer = parseFloat(value.replace(/,/g,''));
+        selected_amount = parseFloat(selected_amount.replace(/,/g,''));
+
+        if( to_transfer > selected_amount){
+            Lobibox.alert('error',{
+                size: 'mini',
+                msg: "Insufficient Funds!"
+            });
+            $('.to_amount').val('');
+        }
+            var amount= document.getElementById("to_amount").value;
+    }
     var saa_id, proponent;
 
     function updateProponent(fundsource_id){
