@@ -10,6 +10,7 @@
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
+            <meta name="csrf-token" content="{{ csrf_token() }}">
             <form method="GET" action="{{ route('fundsource_budget') }}">
                 <div class="input-group float-right w-50" style="min-width: 600px;">
                     <input type="text" class="form-control" name="keyword" placeholder="SAA" value="{{$keyword}}" aria-label="Recipient's username">
@@ -29,32 +30,41 @@
                         <div class="col-md-4 mt-2 grid-margin grid-margin-md-0 stretch-card">
                             <div class="card">
                                 <div class="card-body">
-                                    <div style ="display:flex; justify-content:space-between;">
-                                        @if($section == 6)
-                                            <b><h3><a class="card-title text-success" href="#budget_track2" onclick="budgetTracking({{ $fund->id }})" data-toggle="modal">{{$fund->saa}}</a></h3></b>
-                                            <!-- <h4 class="card-title text-success" style=" text-align:left">{{ $fund->saa }}</h4> -->
-                                        @else
-                                            <b><h3><a class="card-title text-success" href="#update_fundsource" onclick="updateFundsource('{{ $fund->id }}')" data-backdrop="static" data-toggle="modal">{{$fund->saa}}</a></h3></b>
-                                        @endif
-                                        <!-- <button class="btn btn-sm update_saa" style="cursor: pointer; text-align: right; background-color:#417524; color:white;" data-proponent-id="" data-backdrop="static" data-toggle="modal" onclick="editfundsource()" href="#create_fundsource">Update</button> -->
-
-                                        <button style="width:105px; border-radius:0; border:1px solid teal" id="track" data-fundsource-id="{{  $fund->id }}" data-target="#track_details" onclick="track_details(event)" class='btn btn-sm btn-outline-success track_details'>Tracking</button>
-                                    </div>
+                                    <table style="border-collapse: collapse; width: 100%; margin: 0; padding: 0; ">
+                                        <tr>
+                                            <td>
+                                                @if($section == 6)
+                                                    <b><h3><a class="card-title text-success" href="#budget_track2" onclick="budgetTracking({{ $fund->id }})" data-toggle="modal">{{$fund->saa}}</a></h3></b>
+                                                @else
+                                                    <b><h3><a class="card-title text-success" href="#update_fundsource" onclick="updateFundsource('{{ $fund->id }}')" data-backdrop="static" data-toggle="modal">{{$fund->saa}}</a></h3></b>
+                                                @endif
+                                            </td>
+                                            <td style="width:20%"><button style="border-radius:0px; border:1px solid blue" class="btn btn-sm btn-outline-info" onclick="budgetCost({{ $fund->id }}, '{{ $fund->saa }}')">Budget Cost</button></td>
+                                            <td style="text-align:right; padding:0px; width:20%"><button style="width:105px; border-radius:0; border:1px solid teal" id="track" data-fundsource-id="{{  $fund->id }}" data-target="#track_details" onclick="track_details(event)" class='btn btn-sm btn-outline-success track_details'>Tracking</button></td>
+                                        </tr>
+                                    </table>
                                     <div style="display: flex; justify-content: space-between; align-items: center;">
                                         <div style="width:70%;">
                                             <ul class="list-arrow mt-3" style="list-style: none; padding: 0; margin: 0;">
-                                                <li><span class="ml-3">Allocated Funds: <strong class="text-info">{{ !Empty($fund->proponentInfo[0]->total_allocated_funds) ? number_format(floatval(str_replace(',', '',$fund->proponentInfo[0]->total_allocated_funds)), 2, '.', ',') : 0 }}</strong></span></li>
-                                                <li><span class="ml-3">Administrative Cost: <strong class="text-info">{{ !Empty($fund->proponentInfo[0]->total_admin_cost) ? number_format(floatval(str_replace(',', '',$fund->proponentInfo[0]->total_admin_cost)), 2, '.', ',') : 0 }}</strong></span> </li>    
-                                                @if($fund->remaining_balance == 0)
-                                                    <li><span class="ml-3">Remaining Balance: <strong class="text-danger">{{ !Empty($fund->proponentInfo[0]->total_allocated_funds) ? number_format(floatval(str_replace(',', '', $fund->proponentInfo[0]->total_allocated_funds - ($fund->utilization[0]->total_bbudget_utilize + $fund->proponentInfo[0]->total_admin_cost) )), 2, '.', ',') : 0 }}</strong></span> </li>      
-                                                @else
-                                                    <li><span class="ml-3">Remaining Balance: <strong class="text-info">{{ !Empty($fund->remaining_balance) ? number_format(floatval(str_replace(',', '', $fund->proponentInfo[0]->total_allocated_funds - ($fund->utilization[0]->total_bbudget_utilize + $fund->proponentInfo[0]->total_admin_cost))), 2, '.', ',') : 0 }}</strong></span> </li>      
-                                                @endif
+                                                <?php
+                                                    $allocated = !Empty($fund->proponentInfo[0]->total_allocated_funds) ? $fund->proponentInfo[0]->total_allocated_funds : 0;
+                                                    $admin_cost = !Empty($fund->proponentInfo[0]->total_admin_cost) ? $fund->proponentInfo[0]->total_admin_cost : 0;
+                                                    $utilized = !Empty($fund->utilization[0]->total_bbudget_utilize) ? $fund->utilization[0]->total_bbudget_utilize : 0;
+                                                ?>
+                                                <li><span class="ml-3">Allocated Funds: <strong class="text-info">{{ number_format(floatval(str_replace(',', '',$allocated)), 2, '.', ',') }}</strong></span></li>
+                                                <li><span class="ml-3">Administrative Cost: <strong class="text-info">{{ number_format(floatval(str_replace(',', '',$admin_cost + $fund->budget_cost)), 2, '.', ',') }}</strong></span> </li>    
+                                                <li>
+                                                    <span class="ml-3">Remaining Balance: 
+                                                        <strong class="{{ $fund->remaining_balance == 0 ? 'text-danger' : 'text-info' }}">
+                                                            {{ number_format(floatval(str_replace(',', '', $allocated - ($utilized + $admin_cost))), 2, '.', ',') }}
+                                                        </strong>
+                                                    </span>
+                                                </li>
                                             </ul>
                                         </div>
                                         <div style="display: flex; gap: 5px;">
                                             <button class="btn btn-sm btn-info" href="#budget_funds" onclick="fundsTracking({{ $fund->id }})" data-toggle="modal" style="border-radius: 0; flex: 1;">&nbsp;&nbsp;Breakdowns of Funds&nbsp;&nbsp;</button>
-                                    <button class="btn btn-sm btn-success" href="" onclick="budgetTracking('{{ $fund->saa }}',{{ $fund->id }}, {{ !Empty($fund->admin_cost) ? floatval(str_replace(',', '',$fund->admin_cost)): 0 }})" data-toggle="modal" style="border-radius: 0; flex: 1;">Breakdowns of Charges</button>
+                                    <button class="btn btn-sm btn-success" href="" onclick="budgetTracking('{{ $fund->saa }}',{{ $fund->id }}, {{ !Empty($fund->admin_cost) ? floatval(str_replace(',', '',$fund->admin_cost)): 0 }}, {{ !Empty($fund->budget_cost) ? floatval(str_replace(',', '',$fund->budget_cost)): 0 }})" data-toggle="modal" style="border-radius: 0; flex: 1;">Breakdowns of Charges</button>
                                         </div>
                                     </div>
                                 </div>
@@ -74,7 +84,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="create_fundsource2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -204,6 +213,95 @@
         });
     });
 
+    function budgetCost(id, saa) {
+        Swal.fire({
+            title: 'Enter Budget Cost',
+            input: 'text',
+            inputPlaceholder: 'Enter a decimal value',
+            inputAttributes: {
+                'aria-label': 'Enter a decimal value'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
+            cancelButtonText: 'Cancel',
+            didOpen: () => {
+                var inputField = Swal.getInput();
+
+                inputField.addEventListener('input', (e) => {
+                    var value = e.target.value;
+
+                    value = value.replace(/[^0-9.]/g, ''); 
+                    var parts = value.split('.');
+
+                    if (parts.length > 2) {
+                        value = `${parts[0]}.${parts[1]}`;
+                    }
+
+                    e.target.value = formatNumber(value); 
+                });
+            },
+            preConfirm: (value) => {
+                return new Promise((resolve, reject) => {
+                    var numericValue = value.replace(/,/g, ''); 
+                    if (!numericValue) {
+                        reject('You need to enter a value!');
+                    } else if (isNaN(numericValue) || parseFloat(numericValue) <= 0) {
+                        reject('Please enter a valid positive decimal number!');
+                    } else {
+                        resolve(numericValue);
+                    }
+                });
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var amount = parseFloat(result.value.replace(/,/g, '')).toFixed(2);
+
+                fetch(`budget-cost/${id}/${amount}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                })
+                .then((response) => {
+                    if (response.ok) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: `Budget cost updated for fundsource ${saa} with amount ${amount}.`,
+                            timer: 1500, 
+                            showConfirmButton: false 
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Failed to update budget cost.'
+                        });
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Something went wrong. Please try again later.'
+                    });
+                });
+            }
+        }).catch((error) => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid Input',
+                text: error
+            });
+        });
+    }
+
+    function formatNumber(value) {
+        var [integerPart, decimalPart] = value.split('.');
+        var formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        return decimalPart !== undefined ? `${formattedInteger}.${decimalPart}` : formattedInteger;
+    }
 
     var saa;
     function addCost() {
@@ -316,30 +414,29 @@
                 data: {
                     _token: '{{ csrf_token() }}',
                     data: data
-                },
-                success: function (response) {
-                    console.log('response', response);
-                    Swal.fire({
-                        icon: 'success',            
-                        title: 'Success!',
-                        text: 'Operation completed successfully.', 
-                        timer: 1000,                
-                        timerProgressBar: true,     
-                        showConfirmButton: false   
-                    });
-                },
-                error: function (error) {
-                    if (error.status) {
-                        console.error('Status Code:', error.status);
-                    }
-
-                    if (error.responseJSON) {
-                        console.error('Response JSON:', error.responseJSON);
-                    }
-
+            },
+            success: function (response) {
+                console.log('response', response);
+                Swal.fire({
+                    icon: 'success',            
+                    title: 'Success!',
+                    text: 'Operation completed successfully.', 
+                    timer: 1000,                
+                    timerProgressBar: true,     
+                    showConfirmButton: false   
+                });
+            },
+            error: function (error) {
+                if (error.status) {
+                    console.error('Status Code:', error.status);
                 }
-            });
-    
+
+                if (error.responseJSON) {
+                    console.error('Response JSON:', error.responseJSON);
+                }
+
+            }
+        });
     }
 
     function gen(){
@@ -351,7 +448,7 @@
             timerProgressBar: true,
             didOpen: () => {
                 Swal.showLoading();
-                const timer = Swal.getPopup().querySelector("b");
+                var timer = Swal.getPopup().querySelector("b");
                 timerInterval = setInterval(() => {
                 timer.textContent = `${Swal.getTimerLeft()}`;
                 }, 100);
@@ -372,7 +469,7 @@
 
     var saa_id;
 
-    function budgetTracking(fundsource, id, amount){
+    function budgetTracking(fundsource, id, amount, budget_amount){
         saa_id = id;
         saa = fundsource;
         console.log('id', id);
@@ -396,7 +493,7 @@
                 $('.modal-backdrop').addClass("fade show");
             }
         });
-        if(amount == 0){
+        if(amount + budget_amount == 0){
             $('.add_cost').css('display', 'none');
         }else{
             $('.add_cost').css('display', 'block');

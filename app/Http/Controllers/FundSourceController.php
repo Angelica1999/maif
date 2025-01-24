@@ -1125,4 +1125,13 @@ class FundSourceController extends Controller
             $initial = $initial -  str_replace(',','',$row->utilize_amount);
         }
     }
+
+    public function budgetCost($id, $amount){
+        Fundsource::where('id', $id)->update([
+            'budget_cost' => str_replace(',','', $amount),
+            'added_by' => Auth::user()->userid
+        ]);
+
+        return 'success';
+    }
 }

@@ -41,11 +41,12 @@
                             <div class="card">
                                 <div class="card-body">
                                     <div style="display: flex; justify-content: space-between;">
-                                        @if($fund->remaining_balance <= 0)
-                                            <h4 class="card-title" style="text-align: left; margin: 0; color:red">{{ $fund->saa }}</h4>
-                                        @else
-                                            <h4 class="card-title" style="text-align: left; margin: 0;">{{ $fund->saa }}</h4>
-                                        @endif
+                                        <h4 class="card-title" style="text-align: left; margin: 0; color: {{ $fund->remaining_balance <= 0 ? 'red' : 'inherit' }};">
+                                            {{ $fund->saa }} 
+                                            @if($fund->budget_cost != null | $fund->budget_cost != 0)
+                                                <br><small class="text-info">Fundsource Budget(admin cost) : {{ number_format($fund->budget_cost,2,'.',',') }}</small>
+                                            @endif
+                                        </h4>
                                         @if($user->section != 6)
                                             <button class="btn btn-sm update_saa" style="min-width:110px; cursor: pointer; text-align:center; color:white; background-color:#417524; border-radius:0;" data-proponent-id="" data-backdrop="static" data-toggle="modal" onclick="createBreakdowns({{ $fund->id }})" href="#create_fundsource">Breakdowns</button>                                      
                                         @endif
@@ -320,8 +321,6 @@
         function track_details2(event){
             event.stopPropagation();
             $('#track_details2').modal('show');
-            console.log('Track button clicked');
-
             var info_id = event.target.getAttribute('data-proponentInfo-id');
             var i = 0;
             console.log('id', info_id);
@@ -353,13 +352,33 @@
                             var stat='';
                             if(item.status == 0){
                                 stat = 'DV';
-                            }else if(item.status == 2){
-                                stat = 'Transfered/Deducted: ' + (item.transfer && item.transfer.remarks !== null ? item.transfer.remarks : '');
-                            }else if(item.status == 3){
-                                stat = 'Transfered/Added: ' + (item.transfer && item.transfer.remarks !== null ? item.transfer.remarks : '');
+                            }else if(item.status == 2 || item.status == 3){
+                                var from_proponent = item.transfer && item.transfer.from_proponent_info && item.transfer.from_proponent_info.proponent !== null 
+                                    ? item.transfer.from_proponent_info.proponent : '';
+                                var to_proponent = item.transfer && item.transfer.to_proponent_info && item.transfer.to_proponent_info.proponent !== null 
+                                    ? item.transfer.to_proponent_info.proponent : '';
+                                var from_saa = item.transfer && item.transfer.from_fundsource && item.transfer.from_fundsource.saa !== null 
+                                    ? item.transfer.from_fundsource.saa : '';   
+                                var to_saa = item.transfer && item.transfer.to_fundsource && item.transfer.to_fundsource.saa !== null 
+                                    ? item.transfer.to_fundsource.saa : '';   
+                                if(item.transfer_type == null && item.transfer_to == null){
+                                    stat = "Transferred funds amounting to " + item.utilize_amount + " from " + from_proponent +" " + from_saa + " to " + to_proponent +" " + to_saa + " amounting to " + item.utilize_amount;
+                                }else{
+                                    var item1 = item.transfer_type == 1? 'Allocated Funds' : (item.transfer_type == 2 ? 'Remaining Balance' : (item.transfer_type == 3 ? 'Administrative Cost' : ''));
+                                    var item2 = item.transfer_to == 1? 'Allocated Funds' : (item.transfer_to == 2 ? 'Remaining Balance' : (item.transfer_to == 3 ? 'Administrative Cost' : ''));
+                                    stat = "Transferred " + item1 + " amounting to " + item.utilize_amount + " from " + from_proponent +" " + from_saa + " to " + item2 + " amounting to " + item.utilize_amount + " to " +  to_proponent +" " + to_saa;
+                                }
                             }
+                            
+                            // if(item.transfer)
+                            // else if(item.status == 2){
+                            //     if(item)
+                            //     stat = 'Transfered/Deducted: ' + (item.transfer && item.transfer.remarks !== null ? item.transfer.remarks : '');
+                            // }else if(item.status == 3){
+                            //     stat = 'Transfered/Added: ' + (item.transfer && item.transfer.remarks !== null ? item.transfer.remarks : '');
+                            // }
 
-                            stat = splitIntoLines(stat, 35); 
+                            // stat = splitIntoLines(stat, 35); 
 
                             // else if(item.status == 1){
                             //     stat = 'Modified';
