@@ -19,15 +19,17 @@ class UtilizationController extends Controller{
     }
     
     public function tracking($info_id){
-        
         $utilization = Utilization::where('proponentinfo_id', $info_id)
-                            ->with(['user', 'proponentdata', 'fundSourcedata', 'transfer', 'facilitydata'])
-                            ->get();
-                            // ->groupBy('div_id')
-                            // ->map(function ($group) {
-                            //     return $group->sortByDesc('created_at')->first();
-                            // })
-                            // ->values();    
+            ->with(['user', 'proponentdata', 'fundSourcedata', 'facilitydata',
+            'transfer' => function($query){
+                $query->with([
+                    'from_fundsource:id,saa',
+                    'to_fundsource:id,saa',
+                    'from_proponentInfo:id,proponent',
+                    'to_proponentInfo:id,proponent'
+                ]);
+            }
+            ])->get(); 
         return response()->json($utilization);
     }
    
