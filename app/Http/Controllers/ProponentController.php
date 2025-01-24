@@ -413,6 +413,7 @@ class ProponentController extends Controller
             'dv1' => $dv1
         ]);
     }
+    
     public function manageFunds(Request $request){
         if($request->funds_type == 1){
             $supplemental = new SupplementalFunds();

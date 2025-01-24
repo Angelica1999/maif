@@ -328,77 +328,77 @@
             
             var url = "{{ url('tracking').'/' }}"+ info_id;
             $.ajax({
-            url: url,
-            type: 'GET',
-            
-            success: function(result) {
-                $('#track_body').empty(); 
-                if(result.length > 0){
-                    result.forEach(function(item) {
-                        var saa = item.fund_sourcedata && item.fund_sourcedata.saa !== null ? item.fund_sourcedata.saa : '-';
-                        var proponentName = item.proponentdata && item.proponentdata.proponent !== null ? item.proponentdata.proponent : '-';
-                        var facility_name = item.facilitydata && item.facilitydata.name !== null ? item.facilitydata.name : '-';
-                        var user = item.user && item.user !== null ? item.user.lname + ', ' + item.user.fname : '-';
-                        var timestamp = item.created_at;
-                        var date = new Date(timestamp);
-                        var formattedDate = date.toLocaleString('en-US', {
-                            month: 'long',
-                            day: 'numeric',
-                            year: 'numeric'
-                        });
-                        var formattedTime = date.toLocaleTimeString('en-US', {
-                            hour: 'numeric',
-                            minute: 'numeric'
-                        });
-                        var stat='';
-                        if(item.status == 0){
-                            stat = 'DV';
-                        }else if(item.status == 2){
-                            stat = 'Transfered/Deducted: ' + (item.transfer && item.transfer.remarks !== null ? item.transfer.remarks : '');
-                        }else if(item.status == 3){
-                            stat = 'Transfered/Added: ' + (item.transfer && item.transfer.remarks !== null ? item.transfer.remarks : '');
-                        }
-
-                        stat = splitIntoLines(stat, 35); 
-
-                        // else if(item.status == 1){
-                        //     stat = 'Modified';
-                        // }
-                        var beg_balance = item.beginning_balance.replace(',', '');
-                        var discount = (item.discount !== null)?number_format(parseFloat(item.discount.replace(/,/g, '')), 2, '.', ','):'';
-                        var utilize = (item.utilize_amount !== null)?number_format(parseFloat(item.utilize_amount.replace(/,/g, '')), 2, '.', ','):'';
-                        var route = item.div_id.toString();
-                        var new_row = '<tr style="text-align:center">' +
-                            '<td>' + saa + '</td>' +
-                            '<td>' + proponentName + '</td>' +
-                            '<td>' + '<a class="modal-link" href="#i_frame" data-routeId="'+route+'" onclick="version2(this)">' + facility_name + '</a>' + '</td>' +
-                            '<td>' + number_format(parseFloat(beg_balance.replace(',', '')), 2, '.', ',') + '</td>' +
-                            '<td>' + discount + '</td>' +
-                            '<td>' +(item.div_id != 0 ?'<a class="modal-link" href="#i_frame" data-routeId="'+route+'" onclick="openModal(this)">' + utilize + '</a>' :utilize) +'</td>' +
-                            // '<td>' + (item.div_id != 0 ? '<a href="{{ route("dv", ["keyword" => ""]) }}' + encodeURIComponent(route) + '">' + route + '</a>' : '') + '</td>' +
-                            '<td>' + (item.div_id != 0 ? '<a href="{{ url("checkdv").'/' }}' + encodeURIComponent(route) + '">' + route + '</a>' : '') +'</td>'+
-                            '<td>' + user + '</td>' +
-                            '<td>' + formattedDate+'<br>'+ formattedTime + '</td>' +
-                            '<td>' + (item.obligated == 1 ? '<i class="typcn typcn-tick menu-icon"></i>' : '') + '</td>' +
-                            '<td>' + (item.paid == 1 ? '<i class="typcn typcn-tick menu-icon"></i>' : '') + '</td>' +
-                            '<td>' + stat + '</td>' ;
-                            '</tr>';
-                        if(item.status != 1){
-                            $('#track_body').append(new_row);
-                        }
-                        i= i+1;
-                    });
+                url: url,
+                type: 'GET',
                 
-                }else{
-                    var new_row = '<tr>' +
-                        '<td colspan ="12">' + "No Data Available" + '</td>' +
-                        '</tr>';
-                    $('#track_body').append(new_row);
+                success: function(result) {
+                    $('#track_body').empty(); 
+                    if(result.length > 0){
+                        result.forEach(function(item) {
+                            var saa = item.fund_sourcedata && item.fund_sourcedata.saa !== null ? item.fund_sourcedata.saa : '-';
+                            var proponentName = item.proponentdata && item.proponentdata.proponent !== null ? item.proponentdata.proponent : '-';
+                            var facility_name = item.facilitydata && item.facilitydata.name !== null ? item.facilitydata.name : '-';
+                            var user = item.user && item.user !== null ? item.user.lname + ', ' + item.user.fname : '-';
+                            var timestamp = item.created_at;
+                            var date = new Date(timestamp);
+                            var formattedDate = date.toLocaleString('en-US', {
+                                month: 'long',
+                                day: 'numeric',
+                                year: 'numeric'
+                            });
+                            var formattedTime = date.toLocaleTimeString('en-US', {
+                                hour: 'numeric',
+                                minute: 'numeric'
+                            });
+                            var stat='';
+                            if(item.status == 0){
+                                stat = 'DV';
+                            }else if(item.status == 2){
+                                stat = 'Transfered/Deducted: ' + (item.transfer && item.transfer.remarks !== null ? item.transfer.remarks : '');
+                            }else if(item.status == 3){
+                                stat = 'Transfered/Added: ' + (item.transfer && item.transfer.remarks !== null ? item.transfer.remarks : '');
+                            }
+
+                            stat = splitIntoLines(stat, 35); 
+
+                            // else if(item.status == 1){
+                            //     stat = 'Modified';
+                            // }
+                            var beg_balance = item.beginning_balance.replace(',', '');
+                            var discount = (item.discount !== null)?number_format(parseFloat(item.discount.replace(/,/g, '')), 2, '.', ','):'';
+                            var utilize = (item.utilize_amount !== null)?number_format(parseFloat(item.utilize_amount.replace(/,/g, '')), 2, '.', ','):'';
+                            var route = item.div_id.toString();
+                            var new_row = '<tr style="text-align:center">' +
+                                '<td>' + saa + '</td>' +
+                                '<td>' + proponentName + '</td>' +
+                                '<td>' + '<a class="modal-link" href="#i_frame" data-routeId="'+route+'" onclick="version2(this)">' + facility_name + '</a>' + '</td>' +
+                                '<td>' + number_format(parseFloat(beg_balance.replace(',', '')), 2, '.', ',') + '</td>' +
+                                '<td>' + discount + '</td>' +
+                                '<td>' +(item.div_id != 0 ?'<a class="modal-link" href="#i_frame" data-routeId="'+route+'" onclick="openModal(this)">' + utilize + '</a>' :utilize) +'</td>' +
+                                // '<td>' + (item.div_id != 0 ? '<a href="{{ route("dv", ["keyword" => ""]) }}' + encodeURIComponent(route) + '">' + route + '</a>' : '') + '</td>' +
+                                '<td>' + (item.div_id != 0 ? '<a href="{{ url("checkdv").'/' }}' + encodeURIComponent(route) + '">' + route + '</a>' : '') +'</td>'+
+                                '<td>' + user + '</td>' +
+                                '<td>' + formattedDate+'<br>'+ formattedTime + '</td>' +
+                                '<td>' + (item.obligated == 1 ? '<i class="typcn typcn-tick menu-icon"></i>' : '') + '</td>' +
+                                '<td>' + (item.paid == 1 ? '<i class="typcn typcn-tick menu-icon"></i>' : '') + '</td>' +
+                                '<td>' + stat + '</td>' ;
+                                '</tr>';
+                            if(item.status != 1){
+                                $('#track_body').append(new_row);
+                            }
+                            i= i+1;
+                        });
+                    
+                    }else{
+                        var new_row = '<tr>' +
+                            '<td colspan ="12">' + "No Data Available" + '</td>' +
+                            '</tr>';
+                        $('#track_body').append(new_row);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log('Track AJAX error:', error);
                 }
-            },
-            error: function (xhr, status, error) {
-                console.log('Track AJAX error:', error);
-            }
             });
 
         }

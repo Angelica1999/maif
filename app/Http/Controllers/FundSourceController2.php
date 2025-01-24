@@ -35,18 +35,54 @@ class FundSourceController2 extends Controller{
     }
 
     public function fundSource2(Request $request) {
-      
         $section = DB::connection('dohdtr')
-                        ->table('users')
-                        ->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
-                        ->where('users.userid', '=', Auth::user()->userid)
-                        ->value('users.section');
-        $fundsources = Fundsource::orderByRaw("CASE WHEN saa LIKE 'conap%' THEN 0 ELSE 1 END, saa ASC")->paginate(15);
+            ->table('users')
+            ->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
+            ->where('users.userid', '=', Auth::user()->userid)
+            ->value('users.section');
+        // $fundsources = Fundsource::orderByRaw("CASE WHEN saa LIKE 'conap%' THEN 0 ELSE 1 END, saa ASC")
+        // ->paginate(15);
+        $fundsources = Fundsource::orderByRaw("CASE WHEN saa LIKE 'conap%' THEN 0 ELSE 1 END, saa ASC")
+        ->with(['proponentInfo' => function($query) {
+            $query->selectRaw('
+                fundsource_id, 
+                sum(CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(18, 2))) - sum(IFNULL(admin_cost, 0)) as total_allocated_funds,
+                sum(IFNULL(admin_cost, 0)) as total_admin_cost
+            ')
+            ->groupBy('fundsource_id'); 
+        },
+        'utilization' => function($query) {
+            $query->selectRaw('
+                fundsource_id,
+                sum(CASE WHEN status = 0 THEN CAST(REPLACE(budget_utilize, ",", "") AS DECIMAL(18, 2)) ELSE 0 END) as total_bbudget_utilize
+            ')
+            ->groupBy('fundsource_id');
+        }
+        ])
+        ->paginate(15);
+        // return $fundsources;
         if($request->viewAll) {
             $request->keyword = '';
         }
         else if($request->keyword) {
-            $fundsources = Fundsource::where('saa', 'LIKE', "%$request->keyword%")->orderByRaw("CASE WHEN saa LIKE 'conap%' THEN 0 ELSE 1 END, saa ASC")->paginate(15);
+            $fundsources = Fundsource::where('saa', 'LIKE', "%$request->keyword%")->orderByRaw("CASE WHEN saa LIKE 'conap%' THEN 0 ELSE 1 END, saa ASC")
+            ->with(['proponentInfo' => function($query) {
+                $query->selectRaw('
+                    fundsource_id, 
+                    sum(CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(18, 2))) - sum(IFNULL(admin_cost, 0)) as total_allocated_funds,
+                    sum(IFNULL(admin_cost, 0)) as total_admin_cost
+                ')
+                ->groupBy('fundsource_id'); 
+            },
+            'utilization' => function($query) {
+                $query->selectRaw('
+                    fundsource_id,
+                    sum(CASE WHEN status = 0 THEN CAST(REPLACE(budget_utilize, ",", "") AS DECIMAL(18, 2)) ELSE 0 END) as total_bbudget_utilize
+                ')
+                ->groupBy('fundsource_id');
+            }])
+            
+            ->paginate(15);
         } 
         return view('fundsource_budget.fundsource2',[
             'fundsources' => $fundsources,

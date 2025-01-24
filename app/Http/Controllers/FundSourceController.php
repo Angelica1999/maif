@@ -615,6 +615,7 @@ class FundSourceController extends Controller
             $from_utilize->status = 2;
             $from_utilize->transfer_id = $transfer->id;
             $from_utilize->transfer_type = $sb_from == 1 ? 1 : ($sb_from == 2 ? 2 : ($sb_from == 3 ? 3 : ''));
+            $from_utilize->transfer_to = $sb_to == 1 ? 1 : ($sb_to == 2 ? 2 : ($sb_to == 3 ? 3 : ''));
             $from_utilize->save();
 
             $fundsource = Fundsource ::where('id', $from->fundsource_id)->first();
@@ -651,7 +652,8 @@ class FundSourceController extends Controller
             $to_utilize->facility_id = $to->facility_id;
             $to_utilize->status = 3;
             $to_utilize->transfer_id = $transfer->id;
-            $to_utilize->transfer_type = $sb_to == 1 ? 1 : ($sb_to == 2 ? 2 : ($sb_to == 3 ? 3 : ''));
+            $to_utilize->transfer_type = $sb_from == 1 ? 1 : ($sb_from == 2 ? 2 : ($sb_from == 3 ? 3 : ''));
+            $to_utilize->transfer_to = $sb_to == 1 ? 1 : ($sb_to == 2 ? 2 : ($sb_to == 3 ? 3 : ''));
             $to_utilize->save();
 
             $to_fundsource = Fundsource ::where('id', $to->fundsource_id)->first();
