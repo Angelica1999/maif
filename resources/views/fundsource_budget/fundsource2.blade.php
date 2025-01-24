@@ -43,12 +43,12 @@
                                     <div style="display: flex; justify-content: space-between; align-items: center;">
                                         <div style="width:70%;">
                                             <ul class="list-arrow mt-3" style="list-style: none; padding: 0; margin: 0;">
-                                                <li><span class="ml-3">Allocated Funds: <strong class="text-info">{{ !Empty($fund->alocated_funds) ? number_format(floatval(str_replace(',', '',$fund->alocated_funds)), 2, '.', ',') : 0 }}</strong></span></li>
-                                                <li><span class="ml-3">Administrative Cost: <strong class="text-info">{{ !Empty($fund->admin_cost) ? number_format(floatval(str_replace(',', '',$fund->admin_cost)), 2, '.', ',') : 0 }}</strong></span> </li>    
+                                                <li><span class="ml-3">Allocated Funds: <strong class="text-info">{{ !Empty($fund->proponentInfo[0]->total_allocated_funds) ? number_format(floatval(str_replace(',', '',$fund->proponentInfo[0]->total_allocated_funds)), 2, '.', ',') : 0 }}</strong></span></li>
+                                                <li><span class="ml-3">Administrative Cost: <strong class="text-info">{{ !Empty($fund->proponentInfo[0]->total_admin_cost) ? number_format(floatval(str_replace(',', '',$fund->proponentInfo[0]->total_admin_cost)), 2, '.', ',') : 0 }}</strong></span> </li>    
                                                 @if($fund->remaining_balance == 0)
-                                                    <li><span class="ml-3">Remaining Balance: <strong class="text-danger">{{ !Empty($fund->remaining_balance) ? number_format(floatval(str_replace(',', '',$fund->remaining_balance)), 2, '.', ',') : 0 }}</strong></span> </li>      
+                                                    <li><span class="ml-3">Remaining Balance: <strong class="text-danger">{{ !Empty($fund->proponentInfo[0]->total_allocated_funds) ? number_format(floatval(str_replace(',', '', $fund->proponentInfo[0]->total_allocated_funds - ($fund->utilization[0]->total_bbudget_utilize + $fund->proponentInfo[0]->total_admin_cost) )), 2, '.', ',') : 0 }}</strong></span> </li>      
                                                 @else
-                                                    <li><span class="ml-3">Remaining Balance: <strong class="text-info">{{ !Empty($fund->remaining_balance) ? number_format(floatval(str_replace(',', '',$fund->remaining_balance)), 2, '.', ',') : 0 }}</strong></span> </li>      
+                                                    <li><span class="ml-3">Remaining Balance: <strong class="text-info">{{ !Empty($fund->remaining_balance) ? number_format(floatval(str_replace(',', '', $fund->proponentInfo[0]->total_allocated_funds - ($fund->utilization[0]->total_bbudget_utilize + $fund->proponentInfo[0]->total_admin_cost))), 2, '.', ',') : 0 }}</strong></span> </li>      
                                                 @endif
                                             </ul>
                                         </div>

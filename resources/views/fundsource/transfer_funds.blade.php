@@ -131,7 +131,7 @@
 <script>
     var selected_amount;
     function setData(amount) {
-        selected_amount = amount;
+        selected_amount = parseFloat(amount.replace(/,/g,''));
     }
 
     $('.sb_from').select2({
@@ -143,7 +143,6 @@
             return amount 
             ? parseFloat(amount.replace(/,/g, '')).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) 
             : data.text;
-
         }
     });
     $('.to_source').select2({
@@ -164,7 +163,8 @@
 
     function validateBalance(value){
         var to_transfer = parseFloat(value.replace(/,/g,''));
-        selected_amount = parseFloat(selected_amount.replace(/,/g,''));
+        console.log('dasd', to_transfer);
+        console.log('selected_amount', selected_amount);
 
         if( to_transfer > selected_amount){
             Lobibox.alert('error',{
