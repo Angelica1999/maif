@@ -265,9 +265,11 @@ use App\Models\TrackingDetails;
 
     function viewV1(id) {
         $('.pre_body').empty();
+        $('.pre_body').html(loading);
+
         console.log('id', id);
         $.get("{{ url('pre-dv/v2/').'/' }}" + id, function(result) {
-            $('.pre_body').append(result);
+            $('.pre_body').html(result);
         });
     }
 

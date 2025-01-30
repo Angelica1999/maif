@@ -58,7 +58,7 @@
                             <td class="td">{{$row->contact_no}}</td>
                             <td class="td">
                                 <a href="{{ route('verify.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-info" style="color:white; width:80px;">Verify</a>
-                                <button type="button" href="#user_cancel" style="width:100%" data-toggle="modal" data-backdrop="static" class="btn btn-xs btn-warning" onclick="cancel({{$row->id}})">Cancel</button>
+                                <button type="button" href="#user_cancel" style="width:100%; color:white; border" data-toggle="modal" data-backdrop="static" class="btn btn-xs btn-warning" onclick="cancel({{$row->id}})">Cancel</button>
                             </td>
                         </tr>
                     @endforeach

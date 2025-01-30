@@ -36,7 +36,7 @@
                             <td class="td">
                                 <button class="btn btn-sm btn-warning" style="color:white; border-radius:0px" onclick="released({{ $facility->id }})">Release</button>
                             </td>
-                            <td class="td">{{ $facility->name }}</td>
+                            <td class="td" style="width:300px">{{ $facility->name }}</td>
                             <td class="td">{{ $facility->address }}</td>
                             <td class="td">{{ $facility->AddFacilityInfo->official_mail ?? '' }}</td>
                             <td class="td">{{ $facility->AddFacilityInfo->cc ?? '' }}</td>
