@@ -238,14 +238,28 @@ class DvController extends Controller
     }
 
     public function getFundsource(Request $request){
-       
-        $info = ProponentInfo::with('facility', 'fundsource', 'proponent')
-                    ->where(function ($query) use ($request) {
-                        $query->whereJsonContains('proponent_info.facility_id', '702')
-                            ->orWhereJsonContains('proponent_info.facility_id', [$request->facility_id]);
-                    })
-                    ->orWhereIn('proponent_info.facility_id', [$request->facility_id, '702'])
-                    ->get();
+        $currentYear = date("Y");
+        $info = ProponentInfo::with(['facility', 'fundsource', 'proponent'])
+            ->where(function ($query) use ($request, $currentYear) {
+                $query->where(function ($q) use ($currentYear) {
+                    $q->whereJsonContains('proponent_info.facility_id', '702')
+                    ->whereYear('created_at', $currentYear);
+                })->orWhereJsonContains('proponent_info.facility_id', [$request->facility_id]);
+            })
+            ->whereYear('created_at', $currentYear) // Ensures filtering by year for all conditions
+            ->orWhere(function ($query) use ($request, $currentYear) {
+                $query->whereIn('proponent_info.facility_id', [$request->facility_id, '702'])
+                    ->whereYear('created_at', $currentYear);
+            })
+            ->get();
+
+        // $info = ProponentInfo::with('facility', 'fundsource', 'proponent')
+        //     ->where(function ($query) use ($request) {
+        //         $query->whereJsonContains('proponent_info.facility_id', '702')
+        //             ->orWhereJsonContains('proponent_info.facility_id', [$request->facility_id]);
+        //     })
+        //     ->orWhereIn('proponent_info.facility_id', [$request->facility_id, '702'])
+        //     ->get();
         // return count($info);
                     
         $facility = Facility::where('id', $request->facility_id)->first();

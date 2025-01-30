@@ -97,7 +97,7 @@
                                         <span class="text-danger"><i>dv is not yet created</i></span>
                                     @endif
                                 </td>
-                                <td class="td"><a data-toggle="modal" data-backdrop="static" href="#view_v1" onclick="viewV1({{$row->id}})">{{$row->facility->name}}</a></td>
+                                <td class="td" style="width:350px"><a data-toggle="modal" data-backdrop="static" href="#view_v1" onclick="viewV1({{$row->id}})">{{$row->facility->name}}</a></td>
                                 <td class="td">
                                     @foreach($row->extension as $index => $data)
                                         {{$data->proponent->proponent}}
@@ -186,9 +186,10 @@
         }); 
 
         function viewV1(id){
+            $('.pre1_body').html(loading);
             $.get("{{ url('pre-dv/v1/').'/' }}"+id, function(result) {
                 $('.pre1_body').empty();
-                $('.pre1_body').append(result);
+                $('.pre1_body').html(result);
             });
         }
         

@@ -268,11 +268,7 @@
                                 @endif
                             </td>
                             <td>
-                                @if($patient->status == 1)
-                                    {{$patient->pat_rem}}
-                                @elseif($patient->status == 2)
-                                    {{ $patient->pat_remarks[count($patient->pat_remarks) -1]->remarks }}
-                                @endif             
+                                    {{$patient->pat_rem}}   
                             </td>
                             <td style="text-align:center;" class="group-amount" data-patient-id="{{ $patient->id }}" data-proponent-id="{{ $patient->proponent_id }}" 
                                 data-amount="{{ $patient->actual_amount }}" data-facility-id="{{ $patient->facility_id }}" >

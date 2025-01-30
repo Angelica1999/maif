@@ -875,9 +875,8 @@ class PreDvController extends Controller
                 // Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/dv');
                 Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/dv');
             }
-           
-            return redirect()->back()->with('pre_dv', true);
         }
+        return redirect()->back()->with('pre_dv', true);
     }
 
     public function v2Delete($route_no){

@@ -1,4 +1,4 @@
-<form class="pre_form" style="width:100%; font-weight:1px solid black" method="get" >
+<form class="pre_form" style="width:100%; font-weight:1px solid black" method="get">
     @csrf
     <div style="width: 100%; display:flex; justify-content: center;text-align:center;">
         <input value="{{$result->facility->name}}" class="form-control" style="width:80%; text-align:center; font-weight: bold" readonly> 
@@ -18,9 +18,7 @@
             @endforeach
         @endforeach
     </div>
-
-
-    <div style="display: flex; justify-content: flex-end; margin-top: 5%; margin-bottom:5%">
+    <div style="display: flex; justify-content: flex-end; margin-top: 2%;">
         <input class="form-control grand_total" name="grand_total" style="width: 30%; text-align: center; margin-right:3%" placeholder="GRAND TOTAL" value="{{$result->grand_total}}" readonly>
     </div>
     <button type="submit" class="btn-sm btn-success updated_submit" style="display:none">SUBMIT</button>

@@ -63,8 +63,8 @@
                                             </ul>
                                         </div>
                                         <div style="display: flex; gap: 5px;">
-                                            <button class="btn btn-sm btn-info" href="#budget_funds" onclick="fundsTracking({{ $fund->id }})" data-toggle="modal" style="border-radius: 0; flex: 1;">&nbsp;&nbsp;Breakdowns of Funds&nbsp;&nbsp;</button>
-                                    <button class="btn btn-sm btn-success" href="" onclick="budgetTracking('{{ $fund->saa }}',{{ $fund->id }}, {{ !Empty($fund->admin_cost) ? floatval(str_replace(',', '',$fund->admin_cost)): 0 }}, {{ !Empty($fund->budget_cost) ? floatval(str_replace(',', '',$fund->budget_cost)): 0 }})" data-toggle="modal" style="border-radius: 0; flex: 1;">Breakdowns of Charges</button>
+                                            <button class="btn btn-sm btn-info" href="#budget_funds" onclick="fundsTracking({{ $fund->id }})" data-toggle="modal" style="border-radius: 0; flex: 1;">&nbsp;&nbsp;Breakdowns of Funds&nbsp;</button>
+                                            <button class="btn btn-sm btn-success" href="" onclick="budgetTracking('{{ $fund->saa }}',{{ $fund->id }}, {{ !Empty($fund->admin_cost) ? floatval(str_replace(',', '',$fund->admin_cost)): 0 }}, {{ !Empty($fund->budget_cost) ? floatval(str_replace(',', '',$fund->budget_cost)): 0 }})" data-toggle="modal" style="border-radius: 0; flex: 1;">Breakdowns of Charges</button>
                                         </div>
                                     </div>
                                 </div>

@@ -48,13 +48,12 @@
                                             @endif
                                         </h4>
                                         @if($user->section != 6)
-                                            <button class="btn btn-sm update_saa" style="min-width:110px; cursor: pointer; text-align:center; color:white; background-color:#417524; border-radius:0;" data-proponent-id="" data-backdrop="static" data-toggle="modal" onclick="createBreakdowns({{ $fund->id }})" href="#create_fundsource">Breakdowns</button>                                      
+                                            <button class="btn btn-sm update_saa" style="min-width:110px; cursor: pointer; text-align:center; color:white; background-color:#417524; border-radius:0; min-width:90px;" data-proponent-id="" data-backdrop="static" data-toggle="modal" onclick="createBreakdowns({{ $fund->id }})" href="#create_fundsource">Breakdowns</button>                                      
                                         @endif
                                     </div>
 
                                     @foreach($fund->proponents as $proponent)
                                         @if(count($proponent->proponentInfo)>0)
-                                            <!-- <div class="card-body"> -->
                                             <br>
                                             @if(isset($proponent->proponentInfo->first()->main_pro))
                                                 <b><p class="text-success">{{ $proponent->proponentInfo->first()->main_pro->proponent }} (main)</p></b>
@@ -78,9 +77,7 @@
                                                                 @endif
                                                             @endforeach
                                                         </li>
-
                                                     @endif
-
                                                     <div class="d-flex justify-content-between align-items-center">
                                                         <span class="ml-3">Allocated Funds &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->alocated_funds)), 2, '.', ',') }}</strong></span>
                                                         <button style="min-width:90px; border-radius:0;" id="track" data-backdrop="static" data-proponentInfo-id="{{ $proponentInfo->id }}" data-toggle="modal" href="#track_details2" onclick="track_details2(event)" class='btn btn-sm btn-outline-info track_details2'>Track</button>
@@ -101,7 +98,6 @@
                                                     <div class="d-flex justify-content-end mt-2"></div>
                                                 @endforeach
                                             </ul>
-                                            <!-- <div> -->
                                         @endif
                                     @endforeach
                                 </div>

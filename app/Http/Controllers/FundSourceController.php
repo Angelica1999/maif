@@ -84,22 +84,22 @@ class FundSourceController extends Controller
                             $query->whereHas('proponentInfo', function ($query) use ($f_list) {
                                 $query->where(function ($query) use ($f_list) {
                                     $query->whereIn('facility_id', $f_list)
-                                          ->orWhere(function ($query) use ($f_list) {
-                                              foreach ($f_list as $value) {
-                                                  $stringValue = (string) $value; // Convert $value to string
-                                                  $query->orWhereJsonContains('facility_id', $stringValue);
-                                              }
-                                          });
+                                        ->orWhere(function ($query) use ($f_list) {
+                                            foreach ($f_list as $value) {
+                                                $stringValue = (string) $value; // Convert $value to string
+                                                $query->orWhereJsonContains('facility_id', $stringValue);
+                                            }
+                                        });
                                 });
                             })->with(['proponentInfo' => function ($query) use ($f_list) {
                                 $query->where(function ($query) use ($f_list) {
                                     $query->whereIn('facility_id', $f_list)
-                                          ->orWhere(function ($query) use ($f_list) {
-                                              foreach ($f_list as $value) {
-                                                  $stringValue = (string) $value; // Convert $value to string
-                                                  $query->orWhereJsonContains('facility_id', $stringValue);
-                                              }
-                                          });
+                                        ->orWhere(function ($query) use ($f_list) {
+                                            foreach ($f_list as $value) {
+                                                $stringValue = (string) $value; // Convert $value to string
+                                                $query->orWhereJsonContains('facility_id', $stringValue);
+                                            }
+                                        });
                                 });
                             }]);
                         },
@@ -113,12 +113,12 @@ class FundSourceController extends Controller
                     ->orWhereHas('proponents.proponentInfo', function ($query) use ($f_list) {
                         $query->where(function ($query) use ($f_list) {
                             $query->whereIn('facility_id', $f_list)
-                                  ->orWhere(function ($query) use ($f_list) {
-                                      foreach ($f_list as $value) {
-                                          $stringValue = (string) $value; // Convert $value to string
-                                          $query->orWhereJsonContains('facility_id', $stringValue);
-                                      }
-                                  });
+                                ->orWhere(function ($query) use ($f_list) {
+                                    foreach ($f_list as $value) {
+                                        $stringValue = (string) $value; // Convert $value to string
+                                        $query->orWhereJsonContains('facility_id', $stringValue);
+                                    }
+                                });
                         });
                     });
                 }
@@ -126,9 +126,16 @@ class FundSourceController extends Controller
                 //search through fundsource
                 $fundsources = $fundsources->where('saa', 'LIKE', "%$request->keyword%");
             }
-        } 
-        
-        $fundsources = $fundsources->orderByRaw("CASE WHEN saa LIKE 'conap%' THEN 0 ELSE 1 END, saa ASC")->paginate(15);
+        }  
+
+        $currentYear = date("Y");
+
+        $fundsources = $fundsources
+            ->orderByRaw("CASE WHEN YEAR(created_at) = ? THEN 0 ELSE 1 END", [$currentYear]) 
+            ->orderBy('remaining_balance', 'desc') 
+            ->paginate(15);
+
+        // $fundsources = $fundsources->orderByRaw("CASE WHEN saa LIKE 'conap%' THEN 0 ELSE 1 END, saa ASC")->paginate(15);
 
         $user = DB::connection('dohdtr')->table('users')->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
                 ->where('users.userid', '=', Auth::user()->userid)

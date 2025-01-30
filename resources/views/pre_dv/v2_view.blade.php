@@ -106,7 +106,7 @@
                                 &nbsp;&nbsp;&nbsp;&nbsp;<input type="date" asp-for="Date" name="date" style="width: 150px; height: 28px; font-size:8pt" value="{{$new_dv?$new_dv->date :(new DateTime())->format('Y-m-d')}}" required>
                                 <br>
                                 <div>
-                                    <span>DV No:</span>
+                                <span>DV No: {{ optional($new_dv)->dv_no }}</span>
                                     @if(Auth::user()->userid == 1027 || Auth::user()->userid == 2660)
                                       &nbsp;<input type="text" name="dv_no" id="dv_no" style="width:150px; height: 28px;" class="ft15" required>
                                     @endif
