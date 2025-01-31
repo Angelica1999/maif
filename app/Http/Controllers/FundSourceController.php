@@ -127,7 +127,6 @@ class FundSourceController extends Controller
                 $fundsources = $fundsources->where('saa', 'LIKE', "%$request->keyword%");
             }
         }  
-
         $currentYear = date("Y");
 
         $fundsources = $fundsources
