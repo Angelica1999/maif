@@ -35,25 +35,23 @@ class Dv2Controller extends Controller
         if ($request->viewAll) {
             $request->keyword = "";
         } elseif ($request->keyword) {
-            
             $dv2_list = $dv2_list->where('route_no','LIKE', "%$request->keyword%")
-                            ->orWhere('ref_no', 'LIKE', "%$request->keyword%")
-                            ->orWhere('amount', 'LIKE', "%$request->keyword%");
-                                       
+                ->orWhere('ref_no', 'LIKE', "%$request->keyword%")
+                ->orWhere('amount', 'LIKE', "%$request->keyword%");                       
         }
         
         $dv2_list = $dv2_list->paginate(50);
         $section = DB::connection('dohdtr')
-                    ->table('users')
-                    ->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
-                    ->where('users.userid', '=', Auth::user()->userid)
-                    ->value('users.section');
+            ->table('users')
+            ->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
+            ->where('users.userid', '=', Auth::user()->userid)
+            ->value('users.section');
         return view('dv2.dv2',[
-                'dv2_list' => $dv2_list,
-                'keyword' => $request->keyword,
-                'section' => $section
-            ]);
-        }
+            'dv2_list' => $dv2_list,
+            'keyword' => $request->keyword,
+            'section' => $section
+        ]);
+    }
 
     public function getGroup($facility_id, $proponentId){
         $pro_g = Proponent::where('id', $proponentId)->value('pro_group');
