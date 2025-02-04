@@ -474,6 +474,7 @@ class PrintController extends Controller
                 'route_no' => $new->route_no,
                 'total_count' => count($grouped)
             ];
+
             // Determine which view to use based on grouped count
             $file = (count($grouped) > 16) ? 'pre_dv.new_pdf1' : 'pre_dv.new_pdf';
             $html = view($file, $data)->render();
@@ -755,7 +756,6 @@ class PrintController extends Controller
                     'ewt' => ($info && $info->Ewt != null)? (float) $info->Ewt *  $group->sum('amount') / 100: 0
                 ];
             });
-
            
             $data = [
                 'result'=> $new,
@@ -768,7 +768,6 @@ class PrintController extends Controller
                 'total_count' => count($grouped)
             ];
             // Determine which view to use based on grouped count
-           
             $pdf = PDF::loadView('pre_dv.new_pdf1', $data);
 
             $pdf->setPaper('Folio');

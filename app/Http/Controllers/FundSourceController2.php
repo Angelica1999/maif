@@ -35,32 +35,41 @@ class FundSourceController2 extends Controller{
     }
 
     public function fundSource2(Request $request) {
+        // if(Auth::user()->userid != 2163){
+        //     return "under development";
+        // }
         $section = DB::connection('dohdtr')
             ->table('users')
             ->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
             ->where('users.userid', '=', Auth::user()->userid)
             ->value('users.section');
-        // $fundsources = Fundsource::orderByRaw("CASE WHEN saa LIKE 'conap%' THEN 0 ELSE 1 END, saa ASC")
-        // ->paginate(15);
+
         $fundsources = Fundsource::orderByRaw("CASE WHEN saa LIKE 'conap%' THEN 0 ELSE 1 END, saa ASC")
-        ->with(['proponentInfo' => function($query) {
-            $query->selectRaw('
-                fundsource_id, 
-                sum(CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(18, 2))) - sum(IFNULL(admin_cost, 0)) as total_allocated_funds,
-                sum(IFNULL(admin_cost, 0)) as total_admin_cost
-            ')
-            ->groupBy('fundsource_id'); 
-        },
-        'utilization' => function($query) {
-            $query->selectRaw('
-                fundsource_id,
-                sum(CASE WHEN status = 0 THEN CAST(REPLACE(budget_utilize, ",", "") AS DECIMAL(18, 2)) ELSE 0 END) as total_bbudget_utilize
-            ')
-            ->groupBy('fundsource_id');
-        }
-        ])
-        ->paginate(15);
-        // return $fundsources;
+            ->with(['proponentInfo' => function($query) {
+                    $query->selectRaw('
+                        fundsource_id, 
+                        sum(CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(18, 2))) - sum(IFNULL(admin_cost, 0)) as total_allocated_funds,
+                        sum(IFNULL(admin_cost, 0)) as total_admin_cost
+                    ')
+                    ->groupBy('fundsource_id'); 
+                },
+                'utilization' => function($query) {
+                    $query->selectRaw('
+                        fundsource_id,
+                        sum(CASE WHEN status = 0 THEN CAST(REPLACE(budget_utilize, ",", "") AS DECIMAL(18, 2)) ELSE 0 END) as total_bbudget_utilize
+                    ')
+                    ->groupBy('fundsource_id');
+                },
+                'a_cost' => function($query) {
+                    $query->selectRaw('
+                        fundsource_id, 
+                        SUM(CAST(REPLACE(admin_cost, ",", "") AS DECIMAL(18, 2))) as total_admin_cost
+                    ')
+                    ->groupBy('fundsource_id');
+                }
+            ])
+            ->paginate(15);
+
         if($request->viewAll) {
             $request->keyword = '';
         }
@@ -80,10 +89,18 @@ class FundSourceController2 extends Controller{
                     sum(CASE WHEN status = 0 THEN CAST(REPLACE(budget_utilize, ",", "") AS DECIMAL(18, 2)) ELSE 0 END) as total_bbudget_utilize
                 ')
                 ->groupBy('fundsource_id');
+            },
+            'a_cost' => function($query) {
+                $query->selectRaw('
+                    fundsource_id, 
+                    SUM(CAST(REPLACE(admin_cost, ",", "") AS DECIMAL(18, 2))) as total_admin_cost
+                ')
+                ->groupBy('fundsource_id');
             }])
             
             ->paginate(15);
         } 
+        // return $fundsources;
         return view('fundsource_budget.fundsource2',[
             'fundsources' => $fundsources,
             'keyword' => $request->keyword,
@@ -267,16 +284,16 @@ class FundSourceController2 extends Controller{
             );
 
 
-            if(count($combi) > 0){
+            // if(count($combi) > 0){
                 return view('fundsource_budget.budget_tracking',[
                     'result' => $data,
                     'facilities' => Facility::get(),
                     'last' => $combi->last(),
                     'confirm' => 0
                 ]);
-            }else{
-                return 'No data available!';
-            }
+            // }else{
+            //     return 'No data available!';
+            // }
           
         }else{
             return 'No data found';
@@ -298,7 +315,25 @@ class FundSourceController2 extends Controller{
     }
 
     public function fundsTracking($id){
-        $saa = Fundsource::where('id', $id)->first();
+        $saa = Fundsource::where('id', $id)
+            ->with(['a_cost' => function($query) {
+                $query->selectRaw('
+                    fundsource_id, 
+                    SUM(CAST(REPLACE(admin_cost, ",", "") AS DECIMAL(18, 2))) as total_admin_cost
+                ')
+                ->groupBy('fundsource_id');
+            }])
+            ->first();
+
+        // ->with(['proponentInfo' => function($query) {
+        //     $query->selectRaw('
+        //         fundsource_id, 
+        //         sum(CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(18, 2))) - sum(IFNULL(admin_cost, 0)) as total_allocated_funds,
+        //         sum(IFNULL(admin_cost, 0)) as total_admin_cost
+        //     ')
+        //     ->groupBy('fundsource_id'); 
+        // }
+        // return $saa;
         if($saa){
             $infos = ProponentInfo::where('fundsource_id', $saa->id)
                 ->with('proponent:id,proponent', 'main_pro:id,proponent')->get();
@@ -330,6 +365,17 @@ class FundSourceController2 extends Controller{
                 'saa' => $saa
             ]);
         }
+    }
+
+    public function costTracking($id){
+        $saa = Fundsource::where('id', $id)
+            ->with('a_cost')
+            ->first();
+        
+        return view('fundsource_budget.cost_tracking',[
+            'saa' => $saa
+        ]);
+        
     }
 
     public function confirmDV($route_no, Request $request){

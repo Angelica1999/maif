@@ -112,72 +112,6 @@ class ProponentController extends Controller
         Proponent::where('proponent_code', $code)->update(['status' => null]);
     }
 
-
-    // public function fundsource(Request $req){
-
-    //     if(Auth::user()->userid != 2760){
-    //         return 'ongoing updates';
-    //     }
-    //     $keyword = $req->keyword;
-
-    //     if($req->viewAll){
-    //         $keyword = '';
-    //     }
-
-    //     if($keyword){
-    //         $proponents = Proponent::where('proponent', 'LIKE', "%$keyword%")
-    //         ->select(
-    //             DB::raw('MAX(id) as id'), 
-    //             DB::raw('MAX(proponent) as proponent'), 
-    //             DB::raw('MAX(proponent_code) as proponent_code')
-    //         )
-    //         ->groupBy('proponent_code')
-    //         ->get();
-    //     }else{
-    //         $proponents = Proponent::select(
-    //             DB::raw('MAX(id) as id'), 
-    //             DB::raw('MAX(proponent) as proponent'), 
-    //             DB::raw('MAX(proponent_code) as proponent_code')
-    //         )
-    //         ->groupBy('proponent_code')
-    //         ->get();
-    //     }
-    //     $all_data = [];
-    //     foreach($proponents as $row){
-    //         $ids = Proponent::where('proponent_code', $row->proponent_code)->pluck('id')->toArray();
-           
-    //         $sum = ProponentInfo::whereIn('proponent_id', $ids)
-    //         ->sum(DB::raw('CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(10,2)) - CAST(REPLACE(admin_cost, ",", "") AS DECIMAL(10,2))'));
-
-    //         $util_sum = Patients::whereIn('proponent_id', $ids)
-    //             ->sum(DB::raw('CAST(REPLACE(guaranteed_amount, ",", "") AS DECIMAL(10,2))'));
-        
-    //         // $sum = ProponentInfo::whereIn('proponent_id', $ids) ->sum('in_balance');
-    //         // $util_sum = ProponentUtilizationV1::where('proponent_code', $row->proponent_code)->sum('amount');
-    //         $all_data[] =[
-    //             'proponent' => $row,
-    //             'sum' => $sum,
-    //             'rem' => $sum - $util_sum
-    //         ];
-    //     }
-
-    //     $page = LengthAwarePaginator::resolveCurrentPage();
-    //     $perPage = 51; 
-    //     $currentPageData = array_slice($all_data, ($page - 1) * $perPage, $perPage); 
-    //     $all_data_paginated = new LengthAwarePaginator(
-    //         $currentPageData, 
-    //         count($all_data), 
-    //         $perPage, 
-    //         $page, 
-    //         ['path' => LengthAwarePaginator::resolveCurrentPath()] 
-    //     );
-
-    //     return view('proponents.fundsource', [
-    //         'data' => $all_data_paginated,
-    //         'keyword' => $keyword
-    //     ]);
-    // }
-
     public function fundsource(Request $request)
     {
         try {
@@ -373,7 +307,7 @@ class ProponentController extends Controller
         Log::info("Deleting patient record: ", $patient->toArray());
         $patient->delete();
         return response()->json(['success' => true]);
-      }
+    }
 
     public function tracking($code){
         $ids = Proponent::where('proponent', $code)->pluck('id')->toArray();

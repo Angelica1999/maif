@@ -1437,7 +1437,7 @@
                 for (var i = 0; i < ids.length; i++) {
                     var id = ids[i]; 
                     if ($proponentSelect.find('option[value="' + id + '"]').length > 0) {
-                        $proponentSelect.val(id).trigger('change');
+                        $proponentSelect.val(id).trigger('change').select2();
                         break; 
                     }
                 }
@@ -1599,9 +1599,9 @@
                         suggestions.push('Breakdowns: ');
                         suggestions.push('Allocated Funds - ' + formatBalance(result.total_funds));
                         suggestions.push('Sum of all GL - ' + formatBalance(result.gl_sum));
-                        suggestions.push('DV - ' + formatBalance(result.disbursement));
-                        suggestions.push('Supplemental Funds - ' + formatBalance(result.supplemental));
-                        suggestions.push('Negative Amount - ' + formatBalance(result.subtracted));
+                        // suggestions.push('DV - ' + formatBalance(result.disbursement));
+                        // suggestions.push('Supplemental Funds - ' + formatBalance(result.supplemental));
+                        // suggestions.push('Negative Amount - ' + formatBalance(result.subtracted));
                         suggestions.push('Remaining Funds - ' + formatBalance(result.balance));
                         
                         var suggestionsDiv = $('.suggestions');

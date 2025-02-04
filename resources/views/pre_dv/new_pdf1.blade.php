@@ -11,7 +11,7 @@
                 text-align:center;
             }
             table td{
-                font-size: 11px;
+                font-size: {{ $total_count >40 ? '10px' : ($total_count > 30 ? '10.5px' : '11px') }};
             }
             @page {
                 margin-bottom: 0in; /* Set bottom margin to 0.25in */
@@ -55,7 +55,7 @@
                 <div style="page-break-inside: avoid;">
                     <table class="table" style="border-collapse:collapse; width: 100%; font-size:12px">
                         <tr style="border: 1px solid black;">
-                            <td width="23%" style="text-align: center; border-right:none"><img src="{{realpath(__DIR__ . '/../../..').'/public/images/doh-logo.png'}}" width="70"></td>
+                            <td width="23%" style="text-align: center; border-right:none; padding:4px"><img src="{{realpath(__DIR__ . '/../../..').'/public/images/doh-logo.png'}}" width="70"></td>
                             <td width="54%" style="border-left:none; border-right:none; text-align:center">
                                 <div class="header" style="margin-top: 15px">
                                     <span style="margin-top: 10px">Republic of the Philippines</span> <br>
@@ -133,11 +133,11 @@
                                 Assistance for Indigent Patient Program for {{$pre_dv->facility->name}}
                                 per billing statement dated {{date('F Y', strtotime($result->date_from))}} {{!Empty($result->date_to)?' - '.date('F Y', strtotime($result->date_to)):''}}
                                 in the amount of:</p>
-                                <table style="width: 100%; border-collapse: collapse; margin-top:5px; line-height:1">
+                                <table style="width: 100%; border-collapse: collapse; margin-top:5px; line-height:1;">
                                     @foreach($fundsources as $index=> $fund_saa)
                                         <tr>
-                                            <td style="text-align: left; padding: 1px;">{{ $fund_saa['saa'] }}</td>
-                                            <td style="text-align: right; padding: 1px;">{{ number_format(floatval(str_replace(',','',$fund_saa['amount'])), 2, '.', ',') }}</td>
+                                            <td style="text-align: left; padding: 1px; font-size:{{ $total_count >40 ? '8.5px' : ($total_count > 30 ? '9.5px' : '11px') }}">{{ $fund_saa['saa'] }}</td>
+                                            <td style="text-align: right; padding: 1px; font-size:{{ $total_count >40 ? '8.5px' : ($total_count > 30 ? '9.5px' : '11px') }}">{{ number_format(floatval(str_replace(',','',$fund_saa['amount'])), 2, '.', ',') }}</td>
                                         </tr>
                                     @endforeach
                                 </table>
@@ -371,32 +371,35 @@
                             background-repeat: no-repeat;
                             background-position: center;">
                         </div>
-
                     </div>
                 @endif
             @endforeach
             <div style="page-break-before: always;"></div>
-            <div style="width: 100%; text-align:center;margin-top:5px">
-                <h6><b>V1 - {{$pre_dv->facility->name}}</b><h6>
+            <div style="width: 100%; text-align:center;">
+                @if($total_count > 30)
+                    <b style="font-size:14px">V1 - {{$pre_dv->facility->name}}</b>
+                @else
+                    <h6><b>V1 - {{$pre_dv->facility->name}}</b><h6>
+                @endif
             </div>
-            <div style="width:100%; border:1px solid black">
+            <div style="width:100%; border:1px solid black;">
                 @foreach($pre_dv->extension as $index => $row)
                     @if($index == 0)
-                        <div style="width: 100%; text-align:center;margin-top:10px; display:inline-block; font-weight:bold">
+                        <div style="width: 100%; text-align:center;margin-top:{{ $total_count >30 ? '2px' : '10px'}}; display:inline-block; font-weight:bold">
                             <input type="text" class="" style="text-align:center; width:35%; height:18px; font-size:11px; border: none" value="SAA">
                             <input type="text" class="" style="text-align:center; width:20%; height:18px; font-size:11px; border: none" value="AMOUNT">
                             <input type="text" class="" style="text-align:center; width:35%; height:18px; font-size:11px; border: none" value="PROPONENT">
                         </div>
                     @endif
                     @foreach ($row->saas as $data)
-                        <div style="width: 100%; text-align:center;margin-top:3px; display:inline-block">
+                        <div style="width: 100%; text-align:center;margin-top:{{ $total_count >30 ? '0.5px' : '3px'}}; display:inline-block">
                             <input type="text" class="" style="text-align:center; width:35%; height:18px; font-size:11px;" value="{{ $data->saa->saa }}">
                             <input type="text" class="" style="text-align:center; width:20%; height:18px; font-size:11px;" value="{{ number_format(str_replace(',', '', $data->amount), 2, '.',',')}}">
                             <input type="text" class="" style="text-align:center; width:35%; height:18px; font-size:11px;" value="{{ $row->proponent->proponent }}">
                         </div>        
                     @endforeach
                 @endforeach
-                <div style="margin-top:15px">
+                <div style="margin-top:{{ $total_count >30 ? '1.5px' : '15px'}}; text-align:center">
                     <input type="text" class="" style="text-align:center; width:35%; height:20px; font-size:14px; margin-left:61%; margin-bottom:20px" value="{{number_format($pre_dv->grand_total,2,'.',',')}}">
                 </div>
             </div>

@@ -50,9 +50,13 @@
                                                     $allocated = !Empty($fund->proponentInfo[0]->total_allocated_funds) ? $fund->proponentInfo[0]->total_allocated_funds : 0;
                                                     $admin_cost = !Empty($fund->proponentInfo[0]->total_admin_cost) ? $fund->proponentInfo[0]->total_admin_cost : 0;
                                                     $utilized = !Empty($fund->utilization[0]->total_bbudget_utilize) ? $fund->utilization[0]->total_bbudget_utilize : 0;
+                                                    $deduction = (isset($fund->a_cost) && count($fund->a_cost) > 0) ? $fund->a_cost[0]->total_admin_cost : 0;
                                                 ?>
                                                 <li><span class="ml-3">Allocated Funds: <strong class="text-info">{{ number_format(floatval(str_replace(',', '',$allocated)), 2, '.', ',') }}</strong></span></li>
-                                                <li><span class="ml-3">Administrative Cost: <strong class="text-info">{{ number_format(floatval(str_replace(',', '',$admin_cost + $fund->budget_cost)), 2, '.', ',') }}</strong></span> </li>    
+                                                <li onclick="costTracking({{ $fund->id }})">
+                                                    <span class="ml-3" title="Click to see admin cost tracking!">Admin Cost Balance: <strong class="text-info">{{ number_format(floatval(str_replace(',', '',$admin_cost + $fund->budget_cost - $deduction)), 2, '.', ',') }}
+                                                    </strong></span>
+                                                </li>    
                                                 <li>
                                                     <span class="ml-3">Remaining Balance: 
                                                         <strong class="{{ $fund->remaining_balance == 0 ? 'text-danger' : 'text-info' }}">
@@ -178,6 +182,14 @@
 <script src="{{ asset('admin/vendors/x-editable/bootstrap-editable.min.js?v=1') }}"></script>
 <script>
 
+    function costTracking(id){
+        $('#cost_tracking').modal('show');
+        $('.cost_main').html(loading);
+        $.get("{{ url('budget/cost') }}" +'/'+ id, function(result){
+            $('.cost_main').html(result);
+        });
+    }
+
     $(document).on('click', '.budget_track_pag a', function(e) {
         e.preventDefault(); 
         let url = $(this).attr('href');
@@ -271,6 +283,7 @@
                             timer: 1500, 
                             showConfirmButton: false 
                         });
+                        location.reload();
                     } else {
                         Swal.fire({
                             icon: 'error',
@@ -393,7 +406,7 @@
         var date = row.find('.ad_date').val();
         var pro = row.find('.pro_name').val();
         var dv_no = row.find('.dv_no').val();
-
+        console.log('cost', cost);
         var data = 
             {
                 l_id: l_id,
@@ -472,11 +485,11 @@
     function budgetTracking(fundsource, id, amount, budget_amount){
         saa_id = id;
         saa = fundsource;
-        console.log('id', id);
+        console.log('amount', amount);
         $('#budget_track_body').empty();
         $.get("{{ url('budget/fundsource').'/' }}"+id, function(result){
 
-            if(result == 'No data available!' && amount == 0){
+            if(result == 'No data available!' && amount == 0 && budget_amount == 0){
                 $('#budget_track2').modal('hide');
                 Swal.fire({
                     title: "No Data Found",

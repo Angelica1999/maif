@@ -26,7 +26,7 @@ use App\Models\TrackingDetails;
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th style="padding:5px; min-width:100px"></th>
+                            <th style="padding:5px; min-width:150px"></th>
                             <th style="min-width:100px">Route</th>
                             <th>Facility</th>
                             <th>Proponent</th>

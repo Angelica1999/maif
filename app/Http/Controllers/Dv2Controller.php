@@ -59,18 +59,17 @@ class Dv2Controller extends Controller
     }
     
     public function getProponentInfo($facility_id, $pro_group){
-        // return $pro_group;
         $ids = Proponent::where('pro_group', $pro_group)->pluck('id')->toArray();
         return ProponentInfo::where(function ($query) use ($facility_id, $ids) {
-                    $query->where('facility_id', $facility_id)
-                        ->whereIn('proponent_id', $ids);
-                    })
-                    ->orWhere(function ($query) use ($ids) {
-                        $query->where('facility_id', 702)
-                            ->whereIn('proponent_id', $ids);
-                    })
-                ->with(['proponent', 'fundsource', 'facility'])
-                ->get();
+            $query->where('facility_id', $facility_id)
+                ->whereIn('proponent_id', $ids);
+            })
+            ->orWhere(function ($query) use ($ids) {
+                $query->where('facility_id', 702)
+                    ->whereIn('proponent_id', $ids);
+            })
+        ->with(['proponent', 'fundsource', 'facility'])
+        ->get();
     }
 
     public function createDv2($route_no){
@@ -83,13 +82,13 @@ class Dv2Controller extends Controller
             
             $dv_amount = Dv::where('route_no', $route_no)->value('total_amount');
             $dv2 = Dv2::where('route_no', $route_no)
-                        ->leftJoin('patients as p1', 'dv2.lname', '=', 'p1.id')
-                        ->leftJoin('patients as p2', 'dv2.lname2', '=', 'p2.id')
-                        ->select('dv2.*', 'p1.lname as lname1', 'p2.lname as lname_2')
-                        ->get();
+                ->leftJoin('patients as p1', 'dv2.lname', '=', 'p1.id')
+                ->leftJoin('patients as p2', 'dv2.lname2', '=', 'p2.id')
+                ->select('dv2.*', 'p1.lname as lname1', 'p2.lname as lname_2')
+                ->get();
             $total = Dv2::where('route_no', $route_no)
-                        ->select(DB::raw('SUM(REPLACE(amount, ",", "")) as totalAmount'))
-                        ->first()->totalAmount;   
+                ->select(DB::raw('SUM(REPLACE(amount, ",", "")) as totalAmount'))
+                ->first()->totalAmount;   
             return view('dv2.update_dv2', [
                 'dv2'=> $dv2,
                 'dv_amount' => $dv_amount,
@@ -121,7 +120,6 @@ class Dv2Controller extends Controller
             }else{
                 return "No proponent being recorded, please contact system administrator!";
             }
-            
         }
     }
 
@@ -158,19 +156,12 @@ class Dv2Controller extends Controller
     }
 
     public function saveDv2(Request $request){
-        // return  $request->input('g_lname1');
                
         $facility = $request->input('facility');
         $lname = $request->input('g_lname1');
-        // $lname = array_filter($lname, function($value) {
-        //     return $value !== null;
-        // });
-        
-        // return $lname;
         $lname2 = $request->input('g_lname2');
         $amount = $request->input('amount');
         $control_no = $request->input('ref_no');
-        // return $lname ;
         foreach($control_no as $index => $ref){
             if($lname[$index] !== null){
                 $dv2 = new Dv2();
@@ -185,7 +176,6 @@ class Dv2Controller extends Controller
                 $dv2->created_by = Auth::user()->userid;
                 $dv2->save();
             }
-           
         }
         return redirect()->route('dv2')->with('create_dv2', true);
     }
