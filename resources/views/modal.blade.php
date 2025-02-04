@@ -61,7 +61,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="budget_track2" role="dialog">
+<div class="modal fade" id="budget_track2" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content" style="border-radius:0px;">
             <div class="modal-header" style="text-align:center">
@@ -76,6 +76,24 @@
             <div class="modal-footer">
                 <button style="background-color:lightgray" class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> CLOSE</button>
                 <button style="display:none" type="button" style="" class="btn btn-info add_cost" onclick="addCost()"><i class="typcn typcn-tick menu-icon"></i> ADD ADMIN COST</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="cost_tracking" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" style="border-radius:0px;">
+            <div class="modal-header" style="text-align:center">
+                <h4 class="text-success modal-title">
+                    <i style="font-size:15px" class="typcn typcn-location-arrow menu-icon"></i>
+                    ADMINISTRATIVE COST TRACKING DETAILS
+                </h4>
+            </div>
+            <div class="table-container cost_main" style="padding:10px">
+                <div id="cost_body"></div>
+            </div>
+            <div class="modal-footer">
+                <button style="background-color:lightgray" class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> CLOSE</button>
             </div>
         </div>
     </div>

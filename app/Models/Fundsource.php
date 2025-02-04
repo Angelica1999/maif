@@ -16,9 +16,12 @@ class Fundsource extends Model
         return $this->belongsTo(Facility::class, 'facility_id','id');
     }
 
-    
     public function proponents() {   
         return $this->hasMany(Proponent::class);
+    }
+
+    public function a_cost() {   
+        return $this->hasMany(AdminCostUtilization::class);
     }
 
     public function encoded_by() {       

@@ -123,7 +123,6 @@ class FundSourceController extends Controller
                     });
                 }
             }else{
-                //search through fundsource
                 $fundsources = $fundsources->where('saa', 'LIKE', "%$request->keyword%");
             }
         }  
@@ -134,12 +133,11 @@ class FundSourceController extends Controller
             ->orderBy('remaining_balance', 'desc') 
             ->paginate(15);
 
-        // $fundsources = $fundsources->orderByRaw("CASE WHEN saa LIKE 'conap%' THEN 0 ELSE 1 END, saa ASC")->paginate(15);
-
         $user = DB::connection('dohdtr')->table('users')->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
                 ->where('users.userid', '=', Auth::user()->userid)
                 ->select('users.section')
                 ->first();
+
         return view('fundsource.fundsource',[
             'fundsources' => $fundsources,
             'keyword' => $request->keyword,
@@ -161,11 +159,8 @@ class FundSourceController extends Controller
         if($type == 'display'){
             return Fundsource::where('id', $fundsource_id)->first();
         }else if($type == 'save'){
-            // return abs(0-3);
             $fundsource =  Fundsource::where('id', $fundsource_id)->first();
-            
             if($fundsource){
-
                 $fundsource->saa = $request->input('saa');
                 $fundsource->alocated_funds = str_replace(',','',  $request->input('allocated_funds'));
                 $fundsource->cost_value = $request->input('admin_cost');
@@ -174,7 +169,6 @@ class FundSourceController extends Controller
                 $fundsource->remaining_balance = (double)str_replace(',','',  $request->input('allocated_funds')) -  $admin_cost;
                 $fundsource->created_by = Auth::user()->userid;
                 $fundsource->save();
-
                 $funds_util = Utilization::where('fundsource_id', $fundsource->id)->where('status', 0)->where('obligated', 1)->get();
                 if($funds_util){
                     foreach($funds_util as $item){
@@ -198,7 +192,6 @@ class FundSourceController extends Controller
                         $row->save();
                     }else{
                         $a_cost = (double)str_replace(',','',  $row->admin_cost);
-                        // return $r_cost;
                         if($r_cost != $a_cost){
                             $rmng = $a_cost - $r_cost ;
                             $row->admin_cost = $r_cost;
@@ -212,12 +205,10 @@ class FundSourceController extends Controller
                         }
                     }
                 }
-
                 return redirect()->back()->with('fundsource_update', true);
             }
         }
     }
-
 
     public function createFundSource() {
     
@@ -240,7 +231,6 @@ class FundSourceController extends Controller
     }
 
     public function createFundSourceSave(Request $request) {
-        // $user = Auth::user();
         return $user;
         if(isset($request->saa_exist)) {
             $fundsource = Fundsource::find($request->saa_exist);
@@ -255,7 +245,6 @@ class FundSourceController extends Controller
         if($proponent){
             // return $proponent;
         }else{
-            // return 1;
             $check = Proponent::where('proponent_code', $request->proponent_code)->first();
             $proponent = new Proponent();
             $proponent->fundsource_id = $fundsource->id;
@@ -323,15 +312,13 @@ class FundSourceController extends Controller
 
         $randomBytes = random_bytes(16); 
         $proponents = Proponent::select( DB::raw('MAX(id) as id'), DB::raw('MAX(proponent) as proponent'),
-                            DB::raw('MAX(proponent_code) as proponent_code'))
-                        ->groupBy('proponent')
-                        ->get(); 
-                        // return $proponents;
+                DB::raw('MAX(proponent_code) as proponent_code'))
+            ->groupBy('proponent')
+            ->get(); 
         $proponent_info  =   ProponentInfo::where('fundsource_id', $fundsourceId)->get();             
         $sum = $proponent_info->sum(function ($info) {
                     return (float) str_replace(',', '', $info->alocated_funds);
                 });
-                // return $fundsource;
         return view('fundsource.breakdowns', [
             'fundsource' => $fundsource,
             'pro_count' => $proponent_info->count(),
@@ -361,7 +348,6 @@ class FundSourceController extends Controller
        
         if($breakdowns){
             foreach($breakdowns as $breakdown){
-                // return $breakdown['proponent_main'];
                 $pro_exists = Proponent::where('proponent', $breakdown['proponent'])->where('fundsource_id', $breakdown['fundsource_id'])->where('proponent_code', $breakdown['proponent_code'])->first();
                 if(!$pro_exists){
                     $check = Proponent::where('proponent', $breakdown['proponent'])->where('proponent_code', $breakdown['proponent_code'])->first();
@@ -394,17 +380,10 @@ class FundSourceController extends Controller
                         $info->alocated_funds = $breakdown['alocated_funds'];
                         // if((double)str_replace(',','',$get_fundsource->alocated_funds) >= 1000000){
                         $info->admin_cost =number_format( (double)str_replace(',','',$breakdown['alocated_funds']) * ($get_fundsource->cost_value/100) , 2,'.', ',');
-
                         $rem =  (double)str_replace(',','',$breakdown['alocated_funds']) - (double)str_replace(',','', $info->admin_cost);
                         $info->remaining_balance = $rem;
                         $info->facility_funds = $rem;
                         $info->proponent_funds = $rem;
-
-                        // }else{
-                        //     $info->admin_cost = 0;
-                        //     $info->remaining_balance = $breakdown['alocated_funds'];
-                        // }
-                            
                         $info->created_by = Auth::user()->userid;
                         $info->save();
                         $utilization = Utilization::where('proponentinfo_id', $info->id)->where('status', '!=', 1)->get();
@@ -442,17 +421,11 @@ class FundSourceController extends Controller
                     $p_info->proponent_id = $proponentId;
                     $p_info->facility_id = json_encode($breakdown['facility_id']);
                     $p_info->alocated_funds = $breakdown['alocated_funds'];
-                    // if((double)str_replace(',','',$get_fundsource->alocated_funds) >= 1000000){
                     $p_info->admin_cost =number_format((double)str_replace(',','',$breakdown['alocated_funds']) * ($get_fundsource->cost_value/100) , 2,'.', ',');
-
                     $rem = (double)str_replace(',','',$breakdown['alocated_funds']) - (double)str_replace(',','',$p_info->admin_cost);
                     $p_info->remaining_balance = $rem;
                     $p_info->facility_funds = $rem;
                     $p_info->proponent_funds = $rem;
-                    // }else{
-                    //     $p_info->admin_cost = 0;
-                    //     $p_info->remaining_balance = $breakdown['alocated_funds'];
-                    // }
                     $p_info->created_by = Auth::user()->userid;
                     $p_info->save();
                 }
@@ -465,13 +438,13 @@ class FundSourceController extends Controller
         $fundsourceData = $request->input('fundsource');
     
         foreach ($fundsourceData as $fundsourceId => $fundsources){
-        $fundsourceModel = Fundsource::find($fundsourceId);
+            $fundsourceModel = Fundsource::find($fundsourceId);
 
-        if($fundsourceModel){
-            $fundsourceModel->update([
-                'saa' => $fundsources['saa_exist'],
-            ]);
-        }
+            if($fundsourceModel){
+                $fundsourceModel->update([
+                    'saa' => $fundsources['saa_exist'],
+                ]);
+            }
         }
         $proponentsData = $request->input('proponents');
 
@@ -678,25 +651,21 @@ class FundSourceController extends Controller
                 $to->admin_cost = str_replace(',', '',$to->admin_cost) + str_replace(',', '',$request->input('to_amount')); 
                 $to_fundsource->admin_cost = (double) str_replace(',','',$to_fundsource->admin_cost) + str_replace(',', '',$request->input('to_amount'));
             }
-
-         
             $to->save();
-
             $to_fundsource->save();
         }
         session()->flash('fund_transfer', true);
         return redirect()->back();
-        
     }
 
     public function facilityProponentGet($facility_id) {
 
         $ids = ProponentInfo::where(function ($query) use ($facility_id) {
-                        $query->whereJsonContains('proponent_info.facility_id', '702')
-                            ->orWhereJsonContains('proponent_info.facility_id', [$facility_id]);
-                    })
-                    ->orWhereIn('proponent_info.facility_id', [$facility_id, '702'])
-                    ->pluck('proponent_id')->toArray();
+                $query->whereJsonContains('proponent_info.facility_id', '702')
+                    ->orWhereJsonContains('proponent_info.facility_id', [$facility_id]);
+            })
+            ->orWhereIn('proponent_info.facility_id', [$facility_id, '702'])
+            ->pluck('proponent_id')->toArray();
 
         $proponents = Proponent::select( DB::raw('MAX(proponent) as proponent'), DB::raw('MAX(id) as id'))
             ->groupBy('proponent') ->whereIn('id', $ids)
@@ -722,57 +691,30 @@ class FundSourceController extends Controller
         return $acronym;
     }
 
-    // $proponent_info = ProponentInfo::where(function ($query) use ($facility_id, $proponent_ids) {
-        //                         $query->where(function ($subquery) use ($facility_id) {
-        //                             $subquery->whereJsonContains('proponent_info.facility_id', '702')
-        //                                     ->orWhereJsonContains('proponent_info.facility_id', [$facility_id]);
-        //                         })
-        //                         ->orWhereIn('proponent_info.facility_id', [$facility_id, '702']);
-        //                     })
-        //                     ->whereIn('proponent_id', $proponent_ids)
-        //                     ->with('fundsource')
-        //                     ->get();                         
-        // $sum = $proponent_info->sum(function ($info) {
-        //     return $info->in_balance;
-        // });    
-        // $proponent_info = ProponentInfo::where(function ($query) use ($facility_id, $proponent_ids) {
-        //             $query->where(function ($subquery) use ($facility_id) {
-        //                 $subquery->whereJsonContains('proponent_info.facility_id', '702')
-        //                         ->orWhereJsonContains('proponent_info.facility_id', [$facility_id]);
-        //             })
-        //             ->orWhereIn('proponent_info.facility_id', [$facility_id, '702']);
-        //         })
-        //         ->whereIn('proponent_id', $proponent_ids)
-        //         ->with('fundsource')
-        //         ->get();                         
-        // $sum = $proponent_info->sum(function ($info) {
-        //     return (float) str_replace(',','', $info->alocated_funds) - (float) str_replace(',','', $info->admin_cost);
-        // });  
-
-        // $util_sum = ProponentUtilizationV1::where('proponent_code', $proponent->proponent_code)->sum('amount');
-        // $util_sum = Patients::whereIn('proponent_id', $proponent_ids)
-        //     ->get()
-        //     ->sum(function ($patient) {
-        //         return (float) str_replace(',', '', $patient->guaranteed_amount);
-        //     });
-
     public function forPatientCode($proponent_id, $facility_id) {
         $included_ids = IncludedFacility::pluck('facility_id')->toArray();
         $user = Auth::user();
         $proponent= Proponent::where('id', $proponent_id)->first();
         $proponent_ids= Proponent::where('proponent', $proponent->proponent)->pluck('id')->toArray();
-        $info_sum = ProponentInfo::whereIn('proponent_id', $proponent_ids)
-            ->selectRaw('SUM(CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(10,2)) - CAST(REPLACE(admin_cost, ",", "") AS DECIMAL(10,2))) as total_amount')
-            ->value('total_amount');
         // $info_sum = ProponentInfo::whereIn('proponent_id', $proponent_ids)
-        //     ->where(function ($query) use ($included_ids) {
-        //         foreach ($included_ids as $id) {
-        //             $query->orWhere('facility_id', $id) // Match facility_id as integer
-        //                 ->orWhereJsonContains('facility_id', (string) $id); // Match facility_id in JSON array
-        //         }
-        //     })
         //     ->selectRaw('SUM(CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(10,2)) - CAST(REPLACE(admin_cost, ",", "") AS DECIMAL(10,2))) as total_amount')
         //     ->value('total_amount');
+        $saaa = ProponentInfo::whereIn('proponent_id', $proponent_ids)
+        ->where(function ($query) use ($included_ids) {
+            foreach ($included_ids as $id) {
+                $query->orWhere('facility_id', $id) // Match facility_id as integer
+                    ->orWhereJsonContains('facility_id', (string) $id); // Match facility_id in JSON array
+            }
+        })->get();
+        $info_sum = ProponentInfo::whereIn('proponent_id', $proponent_ids)
+            ->where(function ($query) use ($included_ids) {
+                foreach ($included_ids as $id) {
+                    $query->orWhere('facility_id', $id) // Match facility_id as integer
+                        ->orWhereJsonContains('facility_id', (string) $id); // Match facility_id in JSON array
+                }
+            })
+            ->selectRaw('SUM(CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(10,2)) - CAST(REPLACE(admin_cost, ",", "") AS DECIMAL(10,2))) as total_amount')
+            ->value('total_amount');
         $pat_sum = Patients::whereIn('proponent_id', $proponent_ids)
             ->where(function ($query) {
                 $query->where('expired', '!=', 1)
@@ -824,7 +766,8 @@ class FundSourceController extends Controller
             return floatval(str_replace(',', '', $item->utilize_amount));
         });
         
-        $balance = ($info_sum + $supplemental) - ($subtracted + $dv3_sum + $dv_sum + $pat_sum) ;
+        // $balance = ($info_sum + $supplemental) - ($subtracted + $dv3_sum + $dv_sum + $pat_sum) ;
+        $balance = $info_sum -  $pat_sum;
         $facility = Facility::find($facility_id);
         $patient_code = $proponent->proponent_code.'-'.$this->getAcronym($facility->name).date('YmdHis').$user->id;
         $total = ProponentInfo::whereIn('proponent_id', $proponent_ids)
@@ -837,7 +780,9 @@ class FundSourceController extends Controller
             'supplemental' => $supplemental,
             'subtracted' => $subtracted,
             'disbursement' => $dv3_sum + $dv_sum,
-            'gl_sum' => round($pat_sum, 2)
+            'gl_sum' => round($pat_sum, 2),
+            'list'=> $saaa ,
+            'dsad' => count($saaa)
         ];
     }
 
@@ -1045,10 +990,10 @@ class FundSourceController extends Controller
 
     public function generateExcel(){
         $proponents = Proponent::select( DB::raw('MAX(id) as id'), DB::raw('MAX(proponent) as proponent'), 
-                        DB::raw('MAX(proponent_code) as proponent_code'))
-                        ->groupBy('proponent_code')
-                        ->orderBy('id', 'desc')
-                        ->get();
+            DB::raw('MAX(proponent_code) as proponent_code'))
+            ->groupBy('proponent_code')
+            ->orderBy('id', 'desc')
+            ->get();
         $title = "List of Proponent";
         $filename = $title.'.xls';
         header("Content-Type: application/xls");
@@ -1059,7 +1004,6 @@ class FundSourceController extends Controller
                 <th>Proponent</th>
                 <th>Proponent Code</th>
             </tr>";
-            // return $utilization;
         foreach($proponents as $row){
             $table_body .= "<tr>
                 <td style='vertical-align:top;'>$row->proponent</td>

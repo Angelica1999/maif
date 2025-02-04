@@ -19,7 +19,7 @@
     </thead>
     <tbody >
         @if(isset($result))
-            @foreach($result as $row)
+            @foreach($result as $index => $row)
                 <tr style="text-align:center;">
                     @csrf    
                     <td style="border:1px solid gray; vertical-align:middle">
@@ -49,17 +49,24 @@
                     </td>
                     <td style="border:1px solid gray; vertical-align:middle">
                         {{ number_format($row['obligated'],2,'.',',') }}
-                </td>
+                    </td>
                     <td style="border:1px solid gray; vertical-align:middle">
                         {{ number_format(str_replace(',','',$row['info']->alocated_funds) - $row['obligated'],2,'.',',') }}
                     </td>
                     <td style="border:1px solid gray; vertical-align:middle">
-                        {{ number_format(str_replace(',','',$saa->admin_cost), 2,'.',',') }}
+                        @if($index == 0)
+                            {{ number_format(str_replace(',','',$saa->admin_cost + $saa->budget_cost), 2,'.',',') }}
+                        @endif
                     </td>
                     <td style="border:1px solid gray; vertical-align:middle">
-
+                        @if($index == 0)
+                            {{ number_format(str_replace(',','',$saa->a_cost[0]->total_admin_cost), 2,'.',',') }}
+                        @endif    
                     </td>
                     <td style="border:1px solid gray; vertical-align:middle">
+                        @if($index == 0)
+                            {{ number_format(str_replace(',','',$saa->admin_cost + $saa->budget_cost - $saa->a_cost[0]->total_admin_cost), 2,'.',',') }}
+                        @endif    
                     </td>
                 </tr>
             @endforeach

@@ -372,21 +372,10 @@
                     <div style="page-break-before: always;"></div>
                     <div style="margin-left: 1px; margin-right: 1px; height:auto; text-align: center;">
                         <span>{{$fund_saa['saa']}}</span>
-                        <?php
-                            $imagePath = storage_path('app/'.$fund_saa['path']);
-                            $rotatedImagePath = storage_path('app/rotated_image.jpg');
-
-                            $image = imagecreatefromjpeg($imagePath); 
-                            $rotatedImage = imagerotate($image, 270, 0);
-
-                            imagejpeg($rotatedImage, $rotatedImagePath); 
-                            imagedestroy($image);
-                            imagedestroy($rotatedImage);
-                        ?>
                         <div id="cover" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; height:100%;
-                            background-image: url('{{ url('storage/app/rotated_image.jpg') }}');
-                            background-size: contain; 
-                            background-repeat: no-repeat; 
+                            background-image: url('{{ url('storage/app/rotate/' . $fund_saa['path']) }}');
+                            background-size: contain;
+                            background-repeat: no-repeat;
                             background-position: center;">
                         </div>
                     </div>

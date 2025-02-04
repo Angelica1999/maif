@@ -102,7 +102,7 @@
                         <td class="budget_td" style="max-width:130px; border:1px solid gray; vertical-align:middle"></td>
                         <td class="budget_td" style="max-width:130px; border:1px solid gray; vertical-align:middle"></td>
                         <td class="budget_td" style="max-width:90px; border:1px solid gray; vertical-align:middle">{{ $row->admin_uacs }}</td>
-                        <td class="budget_td" style="max-width:90px; border:1px solid black; vertical-align:middle">{{ number_format($row->admin_cost,2,',','.') }}</td>
+                        <td class="budget_td" style="max-width:90px; border:1px solid black; vertical-align:middle">{{ number_format($row->admin_cost,2,'.',',') }}</td>
                         <td style="border:1px solid black; vertical-align:middle"></td>
                     </tr>
                 @endif
