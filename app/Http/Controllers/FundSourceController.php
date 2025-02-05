@@ -930,7 +930,12 @@ class FundSourceController extends Controller
             $path = $upload->storeAs('uploads',$filename);
             $imagePath = storage_path('app/' . $path);
 
-            $exif = exif_read_data($imagePath);
+            if (exif_imagetype($imagePath) == IMAGETYPE_JPEG || exif_imagetype($imagePath) == IMAGETYPE_TIFF_II || exif_imagetype($imagePath) == IMAGETYPE_TIFF_MM) {
+                $exif = exif_read_data($imagePath);
+            } else {
+                return "Please upload jpeg file.";
+            }
+
             $orientation = isset($exif['Orientation']) ? $exif['Orientation'] : null;
             $img = imagecreatefromstring(file_get_contents($imagePath));
 
@@ -954,6 +959,22 @@ class FundSourceController extends Controller
             $ffiles->path = $path;
             $ffiles->uploaded_by = Auth::user()->userid;
             $ffiles->save();
+
+            //for rotation
+            $imagePath1 = storage_path('app/' . $path);
+            $rotatedImagePath = storage_path('app/rotate/' . $path);
+        
+            if (!file_exists(storage_path('app/rotate'))) {
+                mkdir(storage_path('app/rotate'), 0777, true);
+            }
+            $image1 = imagecreatefromjpeg($imagePath1);
+        
+            $rotatedImage = imagerotate($image1, 270, 0);
+        
+            imagejpeg($rotatedImage, $rotatedImagePath);
+        
+            imagedestroy($image1);
+            imagedestroy($rotatedImage);
         }
         return redirect()->back()->with('upload_files', true);
     }
