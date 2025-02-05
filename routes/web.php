@@ -124,7 +124,9 @@ Route::get('/confirm/{id}', [App\Http\Controllers\FundSourceController2::class, 
 Route::get('/admin/cost/{id}', [App\Http\Controllers\FundSourceController2::class, 'addCost'])->name('add.cost');
 Route::post('/cost/save', [App\Http\Controllers\FundSourceController2::class, 'saveCost'])->name('save.cost');
 Route::get('/confirm-budget/{id}', [App\Http\Controllers\FundSourceController2::class, 'confirmBudget'])->name('confirm.budget');
+Route::get('/util-date/{id}/{date}', [App\Http\Controllers\FundSourceController2::class, 'saveDate'])->name('save.date');
 Route::post('util/ors_no', [App\Http\Controllers\FundSourceController2::class, 'orsNo'])->name('add.ors');
+Route::post('util/ors_no2', [App\Http\Controllers\FundSourceController2::class, 'orsNo2'])->name('add.ors2');
 Route::post('util/uacs', [App\Http\Controllers\FundSourceController2::class, 'uacs'])->name('add.uacs');
 Route::get('fundsource/breakdowns/{fundsourceId}', [App\Http\Controllers\FundSourceController::class, 'createBDowns'])->name('fundsource.create_breakdowns');
 Route::match(['get','post'],'fundsource/breakdowns', [App\Http\Controllers\FundSourceController::class, 'saveBDowns'])->name('fundsource.save_breakdowns');

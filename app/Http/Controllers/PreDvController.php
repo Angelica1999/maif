@@ -366,7 +366,7 @@ class PreDvController extends Controller
     public function budgetV2(Request $request, $type, $id){
         $pre_dv = PreDV::where('id', $id)->with('facility')->first();
         $new_dv = NewDV::where('predv_id', $id)->with('dts')->first();
-        $ors = Utilization::where('div_id', $new_dv->route_no)->pluck('ors_no')->implode(', ');
+        $ors = Utilization::where('div_id', $new_dv->route_no)->pluck('ors_no')->filter()->unique()->implode(', ');
         // return $ors;
         $extension = PreDVExtension::where('pre_dv_id', $pre_dv->id)->pluck('id');
         $saas = PreDVSAA::whereIn('predv_extension_id', $extension)->with('saa:id,saa')->get();
