@@ -307,6 +307,15 @@ class FundSourceController2 extends Controller{
         return true;
     }
 
+    public function orsNo2(Request $request){
+        $ids = array_map('intval', explode(',', $request->id));
+        if($request->id){
+            Utilization::whereIn('id', $ids)->update(['ors_no' => $request->ors_no]);
+        }
+        return true;
+    }
+
+
     public function uacs(Request $request){
         if($request->id){
             Utilization::where('id', $request->id)->update(['uacs' => $request->uacs]);
@@ -436,10 +445,10 @@ class FundSourceController2 extends Controller{
             //     ]);
             // }
     
-
+            // return $util->groupBy('fundsource_id');
             return view('fundsource_budget.confirmation',[
                 'facilities' =>Facility::get(),
-                'data' => $util,
+                'data' => $util->groupBy('fundsource_id'),
                 'dv' => $dv,
                 'direction' => $direct
             ]);        
@@ -477,8 +486,8 @@ class FundSourceController2 extends Controller{
     }
 
     public function confirmBudget($id){
-       
-        $util = Utilization::where('id', $id)
+        $ids = array_map('intval', explode(',', $id));
+        $util = Utilization::whereIn('id', $ids)
             ->with([
                 'fundSourcedata:id,saa,remaining_balance,alocated_funds,admin_cost',
                 'proponentdata:id,proponent',
@@ -498,6 +507,8 @@ class FundSourceController2 extends Controller{
                     ]);
                 }
             ])->where('status', 0)->paginate(10);
+
+            // return $util;
 
         // $admin_c = AdminCostUtilization::with('fundSourcedata:id,saa')->get();
         // $combi = $util->merge($admin_c);
@@ -525,5 +536,10 @@ class FundSourceController2 extends Controller{
             return 'No data available!';
         }
        
+    }
+
+    public function saveDate($id, $date){
+        Utilization::where('id', $id)->update(['obligated_on' => date('Y-m-d', strtotime($date))]);
+        return 'success';
     }
 }

@@ -34,7 +34,12 @@
                             {{ $row->proponentdata? $row->proponentdata->proponent:'' }}
                         </td>
                         <td class="budget_td" style="max-width:90px; border:1px solid gray; vertical-align:middle">
-                            {{ $row->obligated_on? date('F j, Y', strtotime($row->obligated_on)):'' }}
+                            @if($confirm == 1)
+                                <input type="date" id="obligated_on" name="obligated_on" style="border: none;" onchange="saveDate({{ $row->id }})"
+                                    value="{{ $row->obligated_on ? date('Y-m-d', strtotime($row->obligated_on)) : '' }}">
+                            @else
+                                {{ $row->obligated_on? date('F j, Y', strtotime($row->obligated_on)):'' }}
+                            @endif
                         </td>
                         <td class="budget_td" style="max-width:60px; border:1px solid gray; vertical-align:middle">
                             {{ $row->dv? $row->dv->dv_no:''  }}
@@ -114,11 +119,28 @@
     {!! $result->appends(request()->query())->links('pagination::bootstrap-5') !!}
 </div>
 <script>
+
+    function saveDate(id){
+        console.log('id', id);
+        var date = $('#obligated_on').val();
+        $.get("{{ url('util-date') }}" + "/" + id +"/"+date, function (result){
+            if (result == "success"){
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Saved',
+                    text: 'Successfully added date of obligation!',
+                    timer: 1000,
+                    showConfirmButton: false
+                });
+            }
+        });
+    }
+
     $(document).on('change', '.editable-input', function () {
         console.log('here1');
-        const orsNo = $(this).val();
-        const rowId = $(this).data('id'); 
-        const input = $(this);
+        var orsNo = $(this).val();
+        var rowId = $(this).data('id'); 
+        var input = $(this);
 
         if (orsNo.trim() === '') {
             Swal.fire({
@@ -165,9 +187,9 @@
     $(document).on('change', '.editable-uacs', function () {
         console.log('here2');
 
-        const uacsNo = $(this).val();
-        const rowId = $(this).data('id'); 
-        const input = $(this);
+        var uacsNo = $(this).val();
+        var rowId = $(this).data('id'); 
+        var input = $(this);
 
         if (uacsNo.trim() === '') {
             Swal.fire({

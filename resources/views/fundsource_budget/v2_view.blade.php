@@ -354,7 +354,7 @@
                                 <td width =25%></td>
                                 <td width =15%>Date:</td>
                                 <td width =30%>Printed Name:</td>
-                                <td width =15%>Date</td>
+                                <td width =15%>Date:</td>
                             </tr>
                         </table>
                         <table border="2" style="width: 100%;" >

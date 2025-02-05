@@ -3,6 +3,7 @@
     <thead style="position: sticky; top: 0; background-color: white; z-index: 1;">
         <tr style="background-color:#F5F5F5">
             <th data-column="route_no">ROUTE #</th>
+            <th data-column="ors_no" class="text-center">ORS #</th>
             <th data-column="saa" class="sortable" data-sort-direction="{{ $direction }}">@sortablelink('saa', 'SAA #')</th>
             <th data-column="proponent" class="sortable" data-sort-direction="{{ $direction }}">@sortablelink('proponent', 'PROPONENT')</th>
             <th data-column="payee" class="sortable" data-sort-direction="{{ $direction }}">@sortablelink('payee', 'PAYEE')</th>
@@ -12,38 +13,109 @@
         </tr>
     </thead>
     <tbody id="confirm_body">
-        @foreach($data as $row)
-            <tr style="font-weight:normal">
-                <td><a href="#" data-toggle="modal" onclick="displayFunds('{{ $dv->route_no }}','{{ $row->proponentData->proponent }}', {{ $row->id }})">{{ $dv->route_no }}</a></td>
-                <td>{{ $row->saaData->saa }}</td>
-                <td>{{ $row->proponentData->proponent }}</td>
-                <td>
-                    <?php
-                        $ids = json_decode($row->infoData->facility_id);
-                        if (!is_array($ids)) {
-                            $ids = [$ids];
-                        }
-                    ?>
-                    @foreach($ids as $id)
-                        @php
-                            $facility = $facilities->where('id', $id)->first();
-                        @endphp
-                        @if($facility)
-                            {{ $facility->name }}<br>
-                        @endif
-                    @endforeach
-                </td>
-                <td>{{ $row->facilitydata->name }}</td>
-                <td>{{ number_format(str_replace(',','', $row->utilize_amount), 2,'.',',') }}</td>
-                <td>
-                    <input type="checkbox" id="checkbox_{{ $row->id }}" class="confirm_check" style="width: 50px; height: 15px;" disabled>
-                </td>
-            </tr>
-        @endforeach
-    </tbody>
+    @foreach($data as $row)
+        @php
+            $ors_no = collect($row)->pluck('ors_no')->filter()->unique()->implode(', ');
+            $pro_ids = collect($row)->pluck('proponent_id')->implode(',');
+            $ids = collect($row)->pluck('id')->implode(',');
+            $balance = collect($row)->sum(fn($item) => str_replace(',', '', $item->utilize_amount));
+        @endphp
+        <tr style="font-weight:normal">
+            <td>
+                <a href="#" data-toggle="modal" 
+                   onclick="displayFunds('{{ $dv->route_no }}', '{{ $pro_ids }}', '{{ $ids }}')">
+                    {{ $dv->route_no }}
+                </a>
+            </td>
+            <td class="text-center">
+                {!! $ors_no ?: "<input type='text' 
+                    class='editable-ors2' 
+                    data-id='{$ids}' 
+                    value=''
+                    style='width: 100%; border: none; text-align: center;'
+                    placeholder='Enter UACS'>" !!}
+            </td>
+            <td>{{ $row[0]->saaData->saa }}</td>
+            <td>
+                {{ collect($row)->pluck('proponentData.proponent')->join(', ') }}
+            </td>
+            <td>
+                @php
+                    $facility_names = collect($row)->flatMap(function ($item) use ($facilities) {
+                        $facility_ids = is_array(json_decode($item->infoData->facility_id, true)) 
+                                    ? json_decode($item->infoData->facility_id, true) 
+                                    : [json_decode($item->infoData->facility_id)];
+
+                        return collect($facility_ids)->map(fn($id) => optional($facilities->firstWhere('id', $id))->name);
+                    })->filter()->unique();
+                @endphp
+
+                {{ $facility_names->implode('<br>') }}
+            </td>
+            <td>
+            {{ collect($row)->pluck('facilitydata.name')->unique()->join(', ') }}
+            </td>
+            <td>{{ $balance }}</td>
+            <td>
+                <input type="checkbox" id="checkbox_{{ $row[0]->id }}" class="confirm_check" style="width: 50px; height: 15px;" disabled>
+            </td>
+        </tr>
+    @endforeach
+</tbody>
+
 </table>
 <script>
+
    $(document).ready(function() {
+
+    $(document).on('change', '.editable-ors2', function () {
+        var orsNo = $(this).val();
+        var rowId = $(this).data('id'); 
+        var input = $(this);
+
+        if (orsNo.trim() === '') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'ORS No cannot be empty!',
+                timer: 1500,
+                showConfirmButton: false
+            });
+            return;
+        }
+
+        $.ajax({
+            url: '/maif/util/ors_no2', 
+            type: 'POST',
+            data: {
+                id: rowId,
+                ors_no: orsNo,
+                _token: $('meta[name="csrf-token"]').attr('content') 
+            },
+            success: function (response) {
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Saved',
+                    text: 'ORS No has been updated successfully!',
+                    timer: 1000,
+                    showConfirmButton: false
+                });
+                input.prop('readonly', true);
+            },
+            error: function (xhr, status, error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to save the ORS No. Please try again!',
+                    timer: 1000,
+                    showConfirmButton: false
+                });
+                console.error(error);
+            }
+        });
+    });
+
     $(".sortable").click(function(e) {
         e.preventDefault();  
 

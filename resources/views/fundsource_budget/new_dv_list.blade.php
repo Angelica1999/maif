@@ -101,15 +101,15 @@ use App\Models\TrackingDetails;
     function confirmed(){
 
         var cs = $('.editable-input').val();
-        if(cs == ''){
-            Swal.fire({
-                icon: "error",
-                title: "Empty ORS No",
-                text: " Ors no is required to confirm this data",
-                timer: 1000,
-                showConfirmButton: false
-            });
-        }else{
+        // if(cs == ''){
+        //     Swal.fire({
+        //         icon: "error",
+        //         title: "Empty ORS No",
+        //         text: " Ors no is required to confirm this data",
+        //         timer: 1000,
+        //         showConfirmButton: false
+        //     });
+        // }else{
             $('#checkbox_' + util_id).prop('checked', true);
 
             var checkboxes = $('.confirm_check');
@@ -121,7 +121,7 @@ use App\Models\TrackingDetails;
                 $('.budget_obligate').css('display', 'none');
             }
             $('#budget_confirm').modal('hide');
-        }
+        // }
     }
 
     function displayFunds(route_no, proponent, id){
@@ -137,6 +137,8 @@ use App\Models\TrackingDetails;
     function viewV1(route_no, d_id, d_dv_id, confirmation) {
         dv_id = d_dv_id;
         console.log('dv_id', dv_id);
+        console.log('doc_type', doc_type);
+
         id = d_id;
         if(doc_type == "accomplished" || doc_type == "deferred" || doc_type == "disbursed"){
             $('#view_v2').modal('show');
@@ -145,6 +147,7 @@ use App\Models\TrackingDetails;
                 $('.pre_body').html(result);
             });
         }else{
+            console.log('else');
             $('#confirm_dv').modal('show');
             $('#confirmation_main').html(loading);
             $.get("{{ url('budget/confirm').'/' }}" + route_no, function(result) {
@@ -184,11 +187,20 @@ use App\Models\TrackingDetails;
     function openModal() {
         var routeNoo = event.target.getAttribute('data-routeId'); 
         var src = "https://mis.cvchd7.com/dts/document/trackMaif/" + routeNoo;
-        // $('.modal-body').html(loading);
-        setTimeout(function() {
+        $("#trackIframe").attr("src", "");
+        Swal.fire({
+            title: 'Loading...',
+            text: 'Please wait while we fetch the tracking details.',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            willOpen: () => {
+                Swal.showLoading();
+            },
+            timer: 3000 
+        }).then(() => {
             $("#trackIframe").attr("src", src);
             $("#iframeModal").css("display", "block");
-        }, 150);
+        });
     }
 
     function putRoutes(form){
