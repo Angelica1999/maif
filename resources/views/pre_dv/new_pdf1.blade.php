@@ -363,7 +363,24 @@
             @foreach($fundsources as $index => $fund_saa)
                 @if($fund_saa['path'])
                     <div style="page-break-before: always;"></div>
-                    <div style="margin-left: 1px; margin-right: 1px; height:auto; text-align: center;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr style="height: 1200px;">
+                            <td style="width: 95%; text-align: center; height: 1200px;">
+                                <img src="{{ url('storage/app/rotate/' . $fund_saa['path']) }}" 
+                                    style="max-width: 100%; max-height: 1500px; object-fit: contain;">
+                            </td>
+                            <td style="width: 5%; text-align: center; vertical-align: middle; height: 1200px;">
+                                <table style="height: 100%;">
+                                    <tr text-rotate="-270">
+                                        <td style="font-size:16px" rotate="-270">
+                                            {{$fund_saa['saa']}}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- <div style="margin-left: 1px; margin-right: 1px; height:auto; text-align: center;">
                         <span>{{$fund_saa['saa']}}</span>
                         <div id="cover" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; height:100%;
                             background-image: url('{{ url('storage/app/rotate/' . $fund_saa['path']) }}');
@@ -371,7 +388,7 @@
                             background-repeat: no-repeat;
                             background-position: center;">
                         </div>
-                    </div>
+                    </div> -->
                 @endif
             @endforeach
             <div style="page-break-before: always;"></div>
