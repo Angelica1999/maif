@@ -363,7 +363,7 @@
             @foreach($fundsources as $index => $fund_saa)
                 @if($fund_saa['path'])
                     <div style="page-break-before: always;"></div>
-                    <table style="width: 100%; border-collapse: collapse;">
+                    <!-- <table style="width: 100%; border-collapse: collapse;">
                         <tr style="height: 1200px;">
                             <td style="width: 95%; text-align: center; height: 1200px;">
                                 <img src="{{ url('storage/app/rotate/' . $fund_saa['path']) }}" 
@@ -379,16 +379,16 @@
                                 </table>
                             </td>
                         </tr>
-                    </table>
-                    <!-- <div style="margin-left: 1px; margin-right: 1px; height:auto; text-align: center;">
-                        <span>{{$fund_saa['saa']}}</span>
-                        <div id="cover" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; height:100%;
+                    </table> -->
+                    <div style="margin-left: 1px; margin-right: 1px; height:auto; text-align: center;margin-top:0px">
+                        <div id="cover" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; height:95%;
                             background-image: url('{{ url('storage/app/rotate/' . $fund_saa['path']) }}');
                             background-size: contain;
                             background-repeat: no-repeat;
                             background-position: center;">
                         </div>
-                    </div> -->
+                        <span>{{ $fund_saa['saa'] }}</span>
+                    </div> 
                 @endif
             @endforeach
             <div style="page-break-before: always;"></div>

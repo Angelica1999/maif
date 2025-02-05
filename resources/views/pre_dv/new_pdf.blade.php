@@ -370,7 +370,7 @@
             @foreach($fundsources as $index => $fund_saa)
                 @if($fund_saa['path'])
                     <div style="page-break-before: always;"></div>
-                    <table style="width: 100%; border-collapse: collapse;">
+                    <!-- <table style="width: 100%; border-collapse: collapse;">
                         <tr style="height: 1200px;">
                             <td style="width: 95%; text-align: center; height: 1200px;">
                                 <img src="{{ url('storage/app/rotate/' . $fund_saa['path']) }}" 
@@ -386,21 +386,21 @@
                                 </table>
                             </td>
                         </tr>
-                    </table>
-                    <!-- <div style="margin-left: 1px; margin-right: 1px; height:auto; text-align: center;">
-                        <span>{{$fund_saa['saa']}}</span>
-                        <div id="cover" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; height:100%;
+                    </table> -->
+                    <div style="margin-left: 1px; margin-right: 1px; height:auto; text-align: center;">
+                        <div id="cover" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; height:98%;
                             background-image: url('{{ url('storage/app/rotate/' . $fund_saa['path']) }}');
                             background-size: contain;
                             background-repeat: no-repeat;
                             background-position: center;">
                         </div>
-                    </div>  -->
+                        <span>{{ $fund_saa['saa'] }}</span>
+                    </div> 
                 @endif
             @endforeach
             <div style="page-break-before: always;"></div>
             <div style="width: 100%; text-align:center;margin-top:5px">
-                <h6><b>V1 - {{$pre_dv->facility->name}}</b><h6>
+                <h6><b>V1 - {{ $pre_dv->facility->name }}</b><h6>
             </div>
             <div style="width:100%; border:1px solid black">
                 @foreach($pre_dv->extension as $index => $row)
@@ -420,7 +420,7 @@
                     @endforeach
                 @endforeach
                 <div style="margin-top:15px">
-                    <input type="text" class="" style="text-align:center; width:35%; height:20px; font-size:14px; margin-left:61%; margin-bottom:20px" value="{{number_format($pre_dv->grand_total,2,'.',',')}}">
+                    <input type="text" class="" style="text-align:center; width:35%; height:20px; font-size:14px; margin-left:61%; margin-bottom:20px" value="{{ number_format($pre_dv->grand_total,2,'.',',') }}">
                 </div>
             </div>
         @endif
