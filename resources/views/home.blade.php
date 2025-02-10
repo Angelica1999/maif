@@ -775,6 +775,7 @@
         $('#facility_id').select2();
         $('#proponent_id').select2();
         form_type = 'create';
+        console.log($.fn.select2);
     });
 
     $('#gen_btn').on('click', function(){
@@ -1600,8 +1601,8 @@
                         suggestions.push('Allocated Funds - ' + formatBalance(result.total_funds));
                         suggestions.push('Sum of all GL - ' + formatBalance(result.gl_sum));
                         // suggestions.push('DV - ' + formatBalance(result.disbursement));
-                        // suggestions.push('Supplemental Funds - ' + formatBalance(result.supplemental));
-                        // suggestions.push('Negative Amount - ' + formatBalance(result.subtracted));
+                        suggestions.push('Supplemental Funds - ' + formatBalance(result.supplemental));
+                        suggestions.push('Negative Amount - ' + formatBalance(result.subtracted));
                         suggestions.push('Remaining Funds - ' + formatBalance(result.balance));
                         
                         var suggestionsDiv = $('.suggestions');

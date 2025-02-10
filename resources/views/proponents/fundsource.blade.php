@@ -54,7 +54,7 @@
                                                     <td style="padding: 5px;">Supplemental Funds</td>
                                                     <td style="padding: 5px; text-align: center;">:</td>
                                                     <td style="padding: 5px;">
-                                                        <a href="#supp_tracking" data-toggle="modal" onclick="supDetails('{{ $row['proponent']['proponent'] }}')">
+                                                        <a href="#supp_tracking" data-backdrop="static" data-toggle="modal" onclick="supDetails('{{ $row['proponent']['proponent'] }}')">
                                                             <strong>{{ !empty($row['supp']) ? number_format($row['supp'], 2, '.', ',') : '0.00' }}</strong>
                                                         </a>
                                                     </td>
@@ -495,6 +495,37 @@
         $.get("{{ url('proponent/sup-details').'/' }}"+proponent, function(result){
             $('.sup_body').html(result);
         });
+    }
+
+    function delSupplemental(id){
+        $.get("{{ url('proponent/sup-del') }}" + '/' + id, function() {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Successfuly deleted this data.',
+                showConfirmButton: false,
+                timer: 1000
+            });
+            $("#row-" + id).remove();
+        });
+    }
+
+    function delNegate(id){
+        $.get("{{ url('proponent/sub-del') }}" + '/' + id, function() {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Successfuly deleted this data.',
+                showConfirmButton: false,
+                timer: 1000
+            });
+            $("#row-" + id).remove();
+        });
+    }
+
+    function reloadPage(){
+        console.log('asdsad');
+        location.reload();
     }
 
     function subDetails(proponent){

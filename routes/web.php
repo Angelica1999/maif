@@ -164,6 +164,10 @@ Route::get('/proponent/util/{code}', [App\Http\Controllers\ProponentController::
 Route::get('/proponent/supplemental/{proponent}/{amount}', [App\Http\Controllers\ProponentController::class, 'supplemental'])->name('proponent.supplemental');
 Route::get('/proponent/subtracted/{proponent}/{amount}', [App\Http\Controllers\ProponentController::class, 'subtracted'])->name('proponent.subtracted');
 Route::get('/proponent/sup-details/{proponent}', [App\Http\Controllers\ProponentController::class, 'supDetails'])->name('details.supplemental');
+
+Route::get('/proponent/sup-del/{id}', [App\Http\Controllers\ProponentController::class, 'delSup'])->name('delete.supplemental');
+Route::get('/proponent/sub-del/{id}', [App\Http\Controllers\ProponentController::class, 'delSub'])->name('delete.subtracted');
+
 Route::get('/proponent/sup-update/{id}/{amount}', [App\Http\Controllers\ProponentController::class, 'supUpdate'])->name('update.supplemental');
 Route::get('/proponent/patient-delete/{id}', [App\Http\Controllers\ProponentController::class, 'delGL'])->name('delete.gl');
 Route::get('/proponent/patient-sort/{code}/{id}/{userid}/{on}', [App\Http\Controllers\ProponentController::class, 'filterData'])->name('filter.gl');

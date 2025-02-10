@@ -461,6 +461,16 @@ class ProponentController extends Controller
         ]);
     }
 
+    public function delSup($id){
+        SupplementalFunds::where('id', $id)->delete();
+        return true;
+    }
+
+    public function delSub($id){
+        SubtractedFunds::where('id', $id)->delete();
+        return true;
+    }
+
     public function subDetails($proponent){
         $sub = SubtractedFunds::where('proponent', $proponent)->with('user:userid,fname,lname')->get();
         return view('proponents.proponent_subtracted', [
