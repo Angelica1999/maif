@@ -365,7 +365,7 @@
                                     stat = "Transferred " + item1 + " amounting to " + item.utilize_amount + " from " + from_proponent +" " + from_saa + " to " + item2 + " amounting to " + item.utilize_amount + " to " +  to_proponent +" " + to_saa;
                                 }
                             }
-                            
+                            var item_remarks = item.transfer.remarks !== null ? item.transfer.remarks : ''; 
                             // if(item.transfer)
                             // else if(item.status == 2){
                             //     if(item)
@@ -396,7 +396,7 @@
                                 '<td>' + formattedDate+'<br>'+ formattedTime + '</td>' +
                                 '<td>' + (item.obligated == 1 ? '<i class="typcn typcn-tick menu-icon"></i>' : '') + '</td>' +
                                 '<td>' + (item.paid == 1 ? '<i class="typcn typcn-tick menu-icon"></i>' : '') + '</td>' +
-                                '<td>' + stat + '</td>' ;
+                                '<td style="text-align:justify">' + stat +'<br>'+ '<span class="text-success">' +item_remarks+'</span>' + '</td>' ;
                                 '</tr>';
                             if(item.status != 1){
                                 $('#track_body').append(new_row);

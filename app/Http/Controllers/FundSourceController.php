@@ -767,7 +767,7 @@ class FundSourceController extends Controller
         });
         
         // $balance = ($info_sum + $supplemental) - ($subtracted + $dv3_sum + $dv_sum + $pat_sum) ;
-        $balance = $info_sum -  $pat_sum;
+        $balance = ($info_sum + $supplemental) - ($subtracted + $pat_sum) ;
         $facility = Facility::find($facility_id);
         $patient_code = $proponent->proponent_code.'-'.$this->getAcronym($facility->name).date('YmdHis').$user->id;
         $total = ProponentInfo::whereIn('proponent_id', $proponent_ids)
