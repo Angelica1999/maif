@@ -439,103 +439,73 @@ class Dv3Controller extends Controller
         ]);
     }
 
-    public function pendingDv3(Request $request, $type){ 
-        if($type == 'unsettled'){
-            $dv3 = Dv3::              
-            with([
-                'extension' => function ($query) {
-                    $query->with([
-                        'proponentInfo' => function ($query) {
-                            $query->with('proponent', 'fundsource');
-                        }
-                    ]);
-                },
-                'facility' => function ($query) {
-                    $query->select('id','name');},
-                'user' => function ($query) {
-                    $query->select('userid','fname','lname');}
-            ])
-            ->whereNull('ors_no')
-            ->orderBy('created_at', 'desc');
-
-        }else if($type == 'processed'){
-            $dv3 = Dv3::              
-            with([
-                'extension' => function ($query) {
-                    $query->with([
-                        'proponentInfo' => function ($query) {
-                            $query->with('proponent', 'fundsource');
-                        }
-                    ]);
-                },
-                'facility' => function ($query) {
-                    $query->select('id','name');},
-                'user' => function ($query) {
-                    $query->select('userid','fname','lname');}
-            ])
-            ->whereNotNull('ors_no')
-            ->orderBy('created_at', 'desc');
-
-        }else if($type == 'dv3_owed'){
-
-            $dv3 = Dv3::              
-            with([
-                'extension' => function ($query) {
-                    $query->with([
-                        'proponentInfo' => function ($query) {
-                            $query->with('proponent', 'fundsource');
-                        }
-                    ]);
-                },
-                'facility' => function ($query) {
-                    $query->select('id','name');},
-                'user' => function ($query) {
-                    $query->select('userid','fname','lname');}
-            ])
-            ->whereNotNull('ors_no')
-            ->whereNull('paid_by')
-            ->orderBy('created_at', 'desc');
-
-        }else if($type == 'done'){
-
-            $dv3 = Dv3::              
-            with([
-                'extension' => function ($query) {
-                    $query->with([
-                        'proponentInfo' => function ($query) {
-                            $query->with('proponent', 'fundsource');
-                        }
-                    ]);
-                },
-                'facility' => function ($query) {
-                    $query->select('id','name');},
-                'user' => function ($query) {
-                    $query->select('userid','fname','lname');}
-            ])
-            ->whereNotNull('paid_by')
-            ->orderBy('created_at', 'desc');
-
-        }
-
-        if($request->viewAll){
+    public function pendingDv3(Request $request, $type) { 
+        // Reset the keyword if 'viewAll' is passed
+        if ($request->viewAll) {
             $request->keyword = '';
-        }else if($request->keyword){
+        }
+    
+        // Common relationship structure
+        $relations = [
+            'extension' => function ($query) {
+                $query->with([
+                    'proponentInfo' => function ($query) {
+                        $query->with('proponent', 'fundsource');
+                    }
+                ]);
+            },
+            'facility' => function ($query) {
+                $query->select('id', 'name');
+            },
+            'user' => function ($query) {
+                $query->select('userid', 'fname', 'lname');
+            }
+        ];
+    
+        // Initialize the query builder
+        $dv3 = Dv3::with($relations)->orderBy('created_at', 'desc');
+    
+        // Apply conditions based on the $type
+        if ($type == 'unsettled') {
+            $dv3->whereNull('ors_no');
+        } elseif ($type == 'processed') {
+            $dv3->whereNotNull('ors_no');
+        } elseif ($type == 'dv3_owed') {
+            $dv3->whereNotNull('ors_no')->whereNull('paid_by');
+        } elseif ($type == 'done') {
+            $dv3->whereNotNull('ors_no')->whereNotNull('paid_by');
+        }
+    
+        // Apply keyword filtering if provided
+        if ($request->keyword) {
             $keyword = $request->keyword;
-            $dv3->where('route_no', 'LIKE', "%$keyword%")->orWhere('dv_no', 'LIKE', "%$keyword%");
-            if ($dv3->count() >= 0) {
-                $new = NewDV::where('route_no', 'LIKE', "%$keyword%")->orWhere('dv_no', 'LIKE', "%$keyword%")->get();
-                if(count($new)> 0){
-                    return redirect()->route('pre_dv_budget', ['type' => 'awaiting', 'keyword' => $keyword]);
+            $dv3->where(function ($query) use ($keyword) {
+                $query->where('route_no', 'LIKE', "%$keyword%")
+                      ->orWhere('dv_no', 'LIKE', "%$keyword%");
+            });
+    
+            // If no records are found in Dv3, check NewDV table
+            if ($dv3->count() == 0) {
+                $new = NewDV::where('route_no', 'LIKE', "%$keyword%")
+                            ->orWhere('dv_no', 'LIKE', "%$keyword%")
+                            ->get();
+                
+                if ($new->count() > 0) {
+                    return redirect()->route('pre_dv_budget', [
+                        'type' => $new->first()->paid_by == null ? 'disbursed' : 'deferred', 
+                        'keyword' => $keyword
+                    ]);
                 }
             }
         }
-        
+    
+        // Return the view with pagination, ensuring $type is passed properly
         return view('fundsource_budget.dv3_list', [
-          'dv3' => $dv3->paginate(50),
-          'type' => $type,
-          'keyword' => $request->keyword
+            'dv3' => $dv3->paginate(50),
+            'type' => $type,  // Ensures the original type is preserved
+            'keyword' => $request->keyword
         ]);
-    }
+    }    
 
     public function processDv3($type, Request $request){
 

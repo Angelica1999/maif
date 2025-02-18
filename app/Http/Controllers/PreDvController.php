@@ -317,40 +317,41 @@ class PreDvController extends Controller
                 }
             ]
         );
+
         // return $pre_dv;
         $saas = Fundsource::get();
         $proponents = Proponent::select('proponent')->groupBy('proponent')->get();
         $facilities = Facility::get();
 
-        if($type == 'awaiting'){
-            $pre_dv->whereHas('new_dv', function ($query) {
-                $query->whereNull('ors_no'); 
-            });  
-        }else if($type== 'accomplished'){
-            $pre_dv->whereHas('new_dv', function ($query) {
-                $query->whereNotNull('ors_no'); 
-            });  
-        }else if($type== 'deferred'){
-            $pre_dv->whereHas('new_dv', function ($query) {
-                $query->whereNull('paid_by')->whereNotNull('ors_no');
-            });  
-        }else if($type== 'disbursed'){
-            $pre_dv->whereHas('new_dv', function ($query) {
-                $query->whereNotNull('paid_by')->whereNotNull('ors_no'); 
-            });  
-        }
-
         if($request->viewAll){
             $request->keyword = '';
-        }else if($request->keyword){
-            $keyword = $request->keyword;
-            $pre_dv->whereHas('new_dv', function ($query) use ($keyword) {
-                $query->where('route_no', 'LIKE', '%' . $keyword . '%');
-            })->orWhereHas('facility', function ($query) use ($keyword) {
-                $query->where('name', 'LIKE', '%' . $keyword . '%');
-            });
         }
+
+        if (in_array($type, ['awaiting', 'accomplished', 'deferred', 'disbursed'])) {
+            $pre_dv->whereHas('new_dv', function ($query) use ($type) {
+                if ($type == 'awaiting') {
+                    $query->whereNull('obligated_by');
+                } elseif ($type == 'accomplished') {
+                    $query->whereNotNull('obligated_by');
+                } elseif ($type == 'deferred') {
+                    $query->whereNull('paid_by')->whereNotNull('ors_no');
+                } elseif ($type == 'disbursed') {
+                    $query->whereNotNull('paid_by')->whereNotNull('ors_no');
+                }
+            });
         
+            if ($request->keyword) {
+                $keyword = $request->keyword;
+                $pre_dv->where(function ($query) use ($keyword) {
+                    $query->whereHas('new_dv', function ($subQuery) use ($keyword) {
+                        $subQuery->where('route_no', 'LIKE', '%' . $keyword . '%');
+                    })->orWhereHas('facility', function ($subQuery) use ($keyword) {
+                        $subQuery->where('name', 'LIKE', '%' . $keyword . '%');
+                    });
+                });
+            }
+        }        
+
         $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(50);
         
         return view('fundsource_budget.new_dv_list', [

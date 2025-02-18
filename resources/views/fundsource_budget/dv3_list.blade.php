@@ -13,7 +13,7 @@
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-            <form method="GET" action="{{ url('disbursement3/lists/unsettled') }}">
+            <form method="GET" action="">
                 <div class="input-group float-right w-50" style="min-width: 600px;">
                     <input type="text" class="form-control" name="keyword" placeholder="Route No/DV No" value="{{ $keyword }}">
                     <div class="input-group-append">
@@ -121,121 +121,122 @@
 @endsection
 @include('modal')
 @section('js')
-    <script>
+<script>
 
-        var doc_type = @json($type);
-        console.log('doc', doc_type);
+    var doc_type = @json($type);
+    console.log('doc', doc_type);
 
-        $('.filter-division').select2();
-        $('.filter-section').select2();
+    $('.filter-division').select2();
+    $('.filter-section').select2();
 
-        function createDv3() {
-            $('.modal_body').html(loading);
-            var url = "{{ route('dv3.create') }}";
-            $.ajax({
-                url: url,
-                type: 'GET',
-                success: function(result) {
-                    $('.modal_body').html(result);
-                }
-            });
-        }
-
-        function openModal() {
-            var routeNoo = event.target.getAttribute('data-routeId'); 
-            var src = "https://mis.cvchd7.com/dts/document/trackMaif/" + routeNoo;
-            setTimeout(function() {
-                $("#trackIframe").attr("src", src);
-                $("#iframeModal").css("display", "block");
-            }, 150);
-        }
-
-        function updateDv3(route_no){
-            console.log('route_no', route_no);
-            if(doc_type == 'unsettled'){
-                $('#confirm_dv').modal('show');
-                $('#confirmation_main').html(loading);
-                $.get("{{ url('budget/confirm').'/' }}" + route_no, function(result) {
-                    $('#confirmation_main').html(result);
-                });
-            }else{
-                $('#confirm_dv').modal('hide');
-                $('#create_dv3').modal('show');
-                $('.dv3_body').html(loading);
-                $.get("{{url('dv3/update').'/'}}"+route_no, function(result){
-                    $('.dv3_body').html(result);
-                });
+    function createDv3() {
+        $('.modal_body').html(loading);
+        var url = "{{ route('dv3.create') }}";
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(result) {
+                $('.modal_body').html(result);
             }
-        }
+        });
+    }
 
-        function obligate(){
+    function openModal() {
+        var routeNoo = event.target.getAttribute('data-routeId'); 
+        var src = "https://mis.cvchd7.com/dts/document/trackMaif/" + routeNoo;
+        setTimeout(function() {
+            $("#trackIframe").attr("src", src);
+            $("#iframeModal").css("display", "block");
+        }, 150);
+    }
+
+    function updateDv3(route_no){
+        console.log('route_no', route_no);
+        console.log('dadasdsd');
+        if(doc_type == 'unsettled'){
+            $('#confirm_dv').modal('show');
+            $('#confirmation_main').html(loading);
+            $.get("{{ url('budget/confirm').'/' }}" + route_no, function(result) {
+                $('#confirmation_main').html(result);
+            });
+        }else{
             $('#confirm_dv').modal('hide');
-            con = 1;
-            // confirm();
             $('#create_dv3').modal('show');
             $('.dv3_body').html(loading);
-            $.get("{{url('dv3/update').'/'}}"+route, function(result){
+            $.get("{{url('dv3/update').'/'}}"+route_no, function(result){
                 $('.dv3_body').html(result);
             });
         }
+    }
 
-        // function confirm(){
-        //     $.get("{{ url('confirm').'/' }}" + dv_id, function(result) {
-        //         Swal.fire({
-        //             icon: 'success',
-        //             title: 'Confirmed!',
-        //             text: 'Disbursement was successfully confirmed!',
-        //             timer: 1000, 
-        //             showConfirmButton: false
-        //         }).then(() => {
-        //             if(con == 0){
-        //                 location.reload(); 
-        //             }
-        //         });
-        //     });
-        // }
+    function obligate(){
+        $('#confirm_dv').modal('hide');
+        con = 1;
+        // confirm();
+        $('#create_dv3').modal('show');
+        $('.dv3_body').html(loading);
+        $.get("{{url('dv3/update').'/'}}"+route, function(result){
+            $('.dv3_body').html(result);
+        });
+    }
 
-        var util_id = 0;
-        var con = 0;
+    // function confirm(){
+    //     $.get("{{ url('confirm').'/' }}" + dv_id, function(result) {
+    //         Swal.fire({
+    //             icon: 'success',
+    //             title: 'Confirmed!',
+    //             text: 'Disbursement was successfully confirmed!',
+    //             timer: 1000, 
+    //             showConfirmButton: false
+    //         }).then(() => {
+    //             if(con == 0){
+    //                 location.reload(); 
+    //             }
+    //         });
+    //     });
+    // }
 
-        function confirmed(){
+    var util_id = 0;
+    var con = 0;
 
-            var cs = $('.editable-input').val();
-            if(cs == ''){
-                Swal.fire({
-                    icon: "error",
-                    title: "Empty ORS No",
-                    text: " Ors no is required to confirm this data",
-                    timer: 1000,
-                    showConfirmButton: false
-                });
-            }else{
-                $('#checkbox_' + util_id).prop('checked', true);
+    function confirmed(){
 
-                var checkboxes = $('.confirm_check');
-                var allChecked = checkboxes.filter(':not(:checked)').length == 0;
-
-                if (allChecked) {
-                    $('.budget_obligate').css('display', 'block');
-                } else {
-                    $('.budget_obligate').css('display', 'none');
-                }
-                $('#budget_confirm').modal('hide');
-            }
-        }
-        var route;
-        function displayFunds(route_no, proponent, id){
-            util_id = id;
-            route = route_no;
-            console.log('sd', id);
-            $('#budget_confirm').modal('show');
-            $('.confirm_budget').html(loading);
-            $.get("{{ url('confirm-budget').'/' }}" + id, function(result) {
-                $('.confirm_budget').html(result);
+        var cs = $('.editable-input').val();
+        if(cs == ''){
+            Swal.fire({
+                icon: "error",
+                title: "Empty ORS No",
+                text: " Ors no is required to confirm this data",
+                timer: 1000,
+                showConfirmButton: false
             });
+        }else{
+            $('#checkbox_' + util_id).prop('checked', true);
+
+            var checkboxes = $('.confirm_check');
+            var allChecked = checkboxes.filter(':not(:checked)').length == 0;
+
+            if (allChecked) {
+                $('.budget_obligate').css('display', 'block');
+            } else {
+                $('.budget_obligate').css('display', 'none');
+            }
+            $('#budget_confirm').modal('hide');
         }
-        
-    </script>
+    }
+    var route;
+    function displayFunds(route_no, proponent, id){
+        util_id = id;
+        route = route_no;
+        console.log('sd', id);
+        $('#budget_confirm').modal('show');
+        $('.confirm_budget').html(loading);
+        $.get("{{ url('confirm-budget').'/' }}" + id, function(result) {
+            $('.confirm_budget').html(result);
+        });
+    }
+    
+</script>
 @endsection
 
 
