@@ -446,6 +446,12 @@
             msg: 'Successfully added this facility!'
          });
       @endif
+      @if(session('patient_transfer'))
+         <?php session()->forget('patient_transfer'); ?>
+         Lobibox.notify('success', {
+            msg: 'Successfully change the patient(s) code!'
+         });
+      @endif
    </script>
    @yield('js')
 </body>

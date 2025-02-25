@@ -241,8 +241,6 @@ class HomeController extends Controller
             }
         // }
 
-        
-
         $fc_list = Facility::whereIn('id', $facs->groupBy('facility_id')->pluck('facility_id'))->select('id','name')->get();
         $pros = Proponent::whereIn('id', $proponent->groupBy('proponent_id')->pluck('proponent_id'))->select('id','proponent')->get();
         $users = User::whereIn('userid', $by->groupBy('created_by')->pluck('created_by'))->select('userid','lname', 'fname')->get();
@@ -352,7 +350,6 @@ class HomeController extends Controller
 
 
         }else if($request->keyword){
-            // return $patients->where('pro_used', null)->orderBy('id', 'desc')->paginate(50);
 
             $keyword = $request->keyword;
             $patients = $patients->where(function ($query) use ($keyword) {
@@ -1492,7 +1489,9 @@ class HomeController extends Controller
 
     public function patientHistory($id){
         return view('maif.patient_history',[
-            'logs' => PatientLogs::where('patient_id', $id)->with('modified', 'facility', 'province', 'muncity', 'barangay', 'proponent')->get()
+            'logs' => PatientLogs::where('patient_id', $id)->with([
+                'modified', 'facility:id,name', 'province', 'muncity', 'barangay', 'proponent:id,proponent', 'proponent_from:id,proponent'
+            ])->get()
         ]);
     }
  
@@ -1865,5 +1864,56 @@ class HomeController extends Controller
             'order' => $order,
             'id_pat' => ''
         ]);
-     }
+    }
+
+    public function getAcronym($str) {
+        $words = explode(' ', $str); 
+        $acronym = '';
+        
+        foreach ($words as $word) {
+            $acronym .= strtoupper(substr($word, 0, 1)); 
+        }
+        
+        return $acronym;
+    }
+
+    public function changeProponent(Request $req){
+        $user = Auth::user();
+        $ids = array_map('intval', explode(',', $req->ids));
+        $id = $req->id;
+
+        foreach($ids as $item){
+            $proponent = Proponent::where('id', $id)->first();
+            $patient = Patients::where('id', $item)->first();
+            $facility = Facility::where('id', $patient->id)->select('id', 'name')->first();
+
+            $patientLogs = new PatientLogs();
+            $patientLogs->patient_id = $patient->id;
+            $patientLogs->fill(Arr::except($patient->toArray(), ['status', 'sent_type', 'user_type', 'transd_id', 'fc_status', 'expired', 'pro_used']));
+            unset($patientLogs->id);
+            $patientLogs->save();
+            $patientLogs->update([
+                'transfer_from' => $id,
+                'pat_rem' => $req->trans_rem
+            ]);
+
+            do {
+                $random = rand(10, 99); 
+                $patient_code = $proponent->proponent_code . '-' . 
+                                $this->getAcronym($patient->facility->name) . 
+                                date('YmdHis') . 
+                                $user->id . 
+                                $random;
+                $check_code = Patients::where('patient_code', $patient_code)->first();
+            } while ($check_code);
+            
+            $patient->update([
+                'proponent_id' => $id,
+                'patient_code' => $patient_code,
+                'created_by' => $user->userid,
+                'transfer_from' => $id
+            ]);
+        }
+        return redirect()->back()->with('patient_transfer', true);
+    }
 }

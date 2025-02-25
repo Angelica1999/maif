@@ -4,8 +4,8 @@
             <thead>
                 <tr style="background-color:gray; color:black">
                     <th scope="col">Patient</th>
-                    <th scope="col">Birthdate</th>
-                    <th scope="col">Address</th>
+                    <!-- <th scope="col">Birthdate</th>
+                    <th scope="col">Address</th> -->
                     <th scope="col">Date</th>
                     <th scope="col">Facility</th>
                     <th scope="col">Proponent</th>
@@ -21,8 +21,8 @@
                 @foreach($logs as $l)
                 <tr>
                     <td>{{$l->lname}}, {{$l->fname}} {{$l->mname}}</td>
-                    <td>{{!Empty($l->dob)?date('F j, Y', strtotime($l->dob)):''}}</td>
-                    <td>
+                    <!-- <td>{{!Empty($l->dob)?date('F j, Y', strtotime($l->dob)):''}}</td> -->
+                    <!-- <td>
                         @if($l->region == 'Region 7')
                             <?php
                                 echo (!empty($l->barangay) ? $l->barangay->description . ', ' : '') .
@@ -38,16 +38,22 @@
                                                 (!empty($l->region) ? $l->region : '') ;
                             ?>
                         @endif
+                    </td> -->
+                    <td>{{ !Empty($l->date_guarantee_letter)?date('F j, Y', strtotime($l->date_guarantee_letter)):'' }}</td>
+                    <td>{{ $l->facility->name }}</td>
+                    <td>{{ $l->proponent->proponent }}</td>
+                    <td>{{ $l->patient_code }}</td>
+                    <td>{{ number_format(str_replace(',','', $l->guaranteed_amount), 2, '.',',') }}</td>
+                    <td>{{ !Empty($l->actual_amount)?number_format(str_replace(',','', $l->actual_amount), 2, ',','.'): ' ' }}</td>
+                    <td> 
+                        @if($l->proponent_from)
+                            Transferred from {{ $l->proponent_from->proponent }} : {{ $l->pat_rem }}
+                        @else
+                            {{ $l->pat_rem }}
+                        @endif
                     </td>
-                    <td>{{!Empty($l->date_guarantee_letter)?date('F j, Y', strtotime($l->date_guarantee_letter)):''}}</td>
-                    <td>{{$l->facility->name}}</td>
-                    <td>{{$l->proponent->proponent}}</td>
-                    <td>{{$l->proponent_code}}</td>
-                    <td>{{number_format(str_replace(',','', $l->guaranteed_amount), 2, ',','.')}}</td>
-                    <td>{{!Empty($l->actual_amount)?number_format(str_replace(',','', $l->actual_amount), 2, ',','.'): ' '}}</td>
-                    <td>{{$l->pat_rem}}</td>
-                    <td>{{$l->modified->lname}}, {{$l->modified->fname}} {{$l->modified->mname}}</td>
-                    <td>{{date('F j, Y', strtotime($l->created_at))}}</td>
+                    <td>{{ $l->modified->lname }}, {{ $l->modified->fname }} {{ $l->modified->mname }}</td>
+                    <td>{{ date('F j, Y', strtotime($l->created_at)) }}</td>
                 </tr>
                 @endforeach
             </tbody>

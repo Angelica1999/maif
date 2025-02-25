@@ -22,5 +22,8 @@ class Facility extends Model
     public function dv(){
         return $this->hasmany(Dv::class, 'id', 'facility_id');
     }
+    public function util(){
+        return $this->hasmany(Utilization::class, 'id', 'facility_id');
+    }
 
 }

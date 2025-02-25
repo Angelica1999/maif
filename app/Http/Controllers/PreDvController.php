@@ -21,11 +21,16 @@ use App\Models\TrackingDetails;
 use App\Models\ProponentInfo;
 use App\Models\Utilization;
 use App\Models\Dv2;
+use App\Models\User;
 use PDF;
 
 class PreDvController extends Controller
 {
-    //
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
 
     public function pre_dv(Request $request)
     {
@@ -40,26 +45,26 @@ class PreDvController extends Controller
                 }
             });
 
-            $pre_dv = PreDV::with(
-                [
-                    'user:userid,fname,lname,mname',
-                    'facility:id,name',
-                    'new_dv',
-                    'extension' => function ($query) {
-                        $query->with(
-                            [
-                                'proponent:id,proponent',
-                                'controls',
-                                'saas' => function ($query) {
-                                    $query->with([
-                                        'saa:id,saa'
-                                    ]);
-                                }
-                            ]
-                        );
-                    }
-                ]
-            );
+        $pre_dv = PreDV::with(
+            [
+                'user:userid,fname,lname,mname',
+                'facility:id,name',
+                'new_dv:id,predv_id,route_no',
+                'extension' => function ($query) {
+                    $query->with(
+                        [
+                            'proponent:id,proponent',
+                            'controls',
+                            'saas' => function ($query) {
+                                $query->with([
+                                    'saa:id,saa'
+                                ]);
+                            }
+                        ]
+                    );
+                }
+            ]
+        );
         $gen_date = $request->dates_filter;
         if ($request->generate && !$request->viewAll) {
             $dateRange = explode(' - ', $request->dates_filter);
@@ -70,12 +75,12 @@ class PreDvController extends Controller
             $gen_date = '';
         }
 
-        $data = $pre_dv->get();
-
         $saas = Fundsource::get();
         $proponents = Proponent::select('proponent')->groupBy('proponent')->get();
-        $facilities = Facility::with('addFacilityInfo')->get();
-
+        $facilities = Facility::select('id', 'name') 
+            ->with(['addFacilityInfo:id,facility_id,vat,ewt'])
+            ->get();
+    
         if($request->viewAll){
             $request->keyword = '';
             $request->f_id = '';
@@ -97,21 +102,25 @@ class PreDvController extends Controller
         }elseif($request->b_id){
             $pre_dv->whereIn('created_by', explode(',', $request->b_id));
         }
-
-        $total = count($pre_dv->get());
+    
+        $total = $pre_dv->take(1)->count();
 
         $totalControls = $pre_dv->get()->sum(function ($preDv) {
             return $preDv->extension->sum(function ($extension) {
                 return $extension->controls->count();
             });
         });
-        
-        $grand_amount = $pre_dv->sum('grand_total');
 
+        $grand_amount = $pre_dv->sum('grand_total');
         $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(50);
-        
+        $pre_ids = PreDv::pluck('facility_id')->unique()->values()->toArray();
+        $user_ids = PreDv::pluck('created_by')->unique()->values()->toArray();
+        $f_list = Facility::whereIn('id', $pre_ids)->select('id','name')->get();
+        $user_data = User::whereIn('userid', $user_ids)->select('userid','fname','lname','mname')->get();
+
         return view('pre_dv.pre_dv', [
-            'data' => $data,
+            'facility_data' => $f_list,
+            'user_data' => $user_data,
             'results' => $pre_dv,
             'proponents' => $proponents,
             'saas' => $saas,
@@ -274,12 +283,14 @@ class PreDvController extends Controller
                 $query->whereIn('status', explode(',', $request->s_id));
             });
         }
-        
-        $all_data =  $pre_dv->orderBy('id', 'desc')->get();
+
         $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(50);
 
+        $pre_ids = PreDv::pluck('facility_id')->unique()->values()->toArray();
+        $f_list = Facility::whereIn('id', $pre_ids)->select('id','name')->get();
+
         return view('pre_dv.pre_dv2', [
-            'all_data' => $all_data,
+            'facility_data' => $f_list,
             'results' => $pre_dv,
             'proponents' => $proponents,
             'saas' => $saas,

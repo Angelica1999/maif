@@ -236,6 +236,7 @@ Route::get('/pre-dv/pdf/{id}', [App\Http\Controllers\PrintController::class, 'pr
 Route::get('/pre-dv/image/{id}', [App\Http\Controllers\PrintController::class, 'preImage'])->name('pre.image');
 Route::get('/version2/{id}', [App\Http\Controllers\FundSourceController::class, 'version2'])->name('version2');
 Route::get('/patients', [App\Http\Controllers\HomeController::class, 'patients'])->name('patients');
+Route::get('/patients/forward', [App\Http\Controllers\HomeController::class, 'changeProponent'])->name('change.proponent');
 Route::post('/mpu/activate', [App\Http\Controllers\UserController::class, 'mpu'])->name('mpu');
 Route::get('/incoming', [App\Http\Controllers\FacilityController::class, 'incoming'])->name('incoming');
 Route::get('/transmittal/{id}', [App\Http\Controllers\FacilityController::class, 'getTrans'])->name('transmittal.get');
@@ -257,6 +258,8 @@ Route::get('/rotate', [App\Http\Controllers\PrintController::class, 'roImage'])-
 Route::get('/pre-dvv/version-2/pdf/{id}', [App\Http\Controllers\PrintController::class, 'sampleMe'])->name('new_dv.sample');
 Route::get('sampsamp/{id}', [App\Http\Controllers\FundSourceController::class, 'getAmount'])->name('amount.get');
 Route::get('/budget-cost/{id}/{amount}', [App\Http\Controllers\FundSourceController::class, 'budgetCost'])->name('budget.cost');
+Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'dashboard'])->name('dashboard');
+
 
 
 
