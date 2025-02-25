@@ -48,12 +48,12 @@
                                     <div class="filter" id="fac_div" style="display:none;">
                                         <select style="width: 120px;" id="fac_select" name="fac_select" multiple>
                                             <?php $check = []; ?>
-                                            @foreach($data as $index => $d)
-                                                @if(!in_array($d->facility->id, $check))
-                                                    <option value="{{ $d->facility->id }}" {{ is_array($f_id) && in_array($d->facility->id, $f_id) ? 'selected' : '' }}>
-                                                        {{ $d->facility->name}}
+                                            @foreach($facility_data as $index => $d)
+                                                @if(!in_array($d->id, $check))
+                                                    <option value="{{ $d->id }}" {{ is_array($f_id) && in_array($d->id, $f_id) ? 'selected' : '' }}>
+                                                        {{ $d->name}}
                                                     </option>
-                                                    <?php $check[] = $d->facility->id; ?>
+                                                    <?php $check[] = $d->id; ?>
                                                 @endif
                                             @endforeach
                                         </select>
@@ -66,12 +66,12 @@
                                     <div class="filter" id="by_div" style="display:none;">
                                         <select style="width: 120px;" id="by_select" name="by_select" multiple>
                                             <?php $check = []; ?>
-                                            @foreach($data as $index => $d)
-                                                @if(!in_array($d->user->userid, $check))
-                                                    <option value="{{ $d->user->userid }}" {{ is_array($b_id) && in_array($d->user->userid, $b_id) ? 'selected' : '' }}>
-                                                        {{ $d->user->fname .' '.$d->user->lname }}
+                                            @foreach($user_data as $index => $d)
+                                                @if(!in_array($d->userid, $check))
+                                                    <option value="{{ $d->userid }}" {{ is_array($b_id) && in_array($d->userid, $b_id) ? 'selected' : '' }}>
+                                                        {{ $d->fname .' '.$d->lname }}
                                                     </option>
-                                                    <?php $check[] = $d->user->userid; ?>
+                                                    <?php $check[] = $d->userid; ?>
                                                 @endif
                                             @endforeach
                                         </select>

@@ -345,7 +345,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="create_patient" tabindex="-1" role="dialog" aria-hidden="true" style="opacity:1">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -892,7 +891,6 @@
     $('#proponent_i').on('click', function(){
         $('#proponent_select').empty();
         $('#proponent_div').css('display', 'block');
-        // <select style="width: 120px;" id="proponent_select" name="proponent_select" multiple>
         var pros = @json($pros);
         var filter_proponent = @json($filter_proponent);
         filter_proponent = filter_proponent.map(Number);
@@ -999,7 +997,6 @@
     $('#barangay_i').on('click', function(){
         $('#barangay_select').empty();
         $('#barangay_div').css('display', 'block');
-        // <select style="width: 120px;" id="barangay_select" name="barangay_select" multiple>
         var barangay = @json($barangay).filter(item => item !== '' && item !== null);
         var filter_barangay = @json($filter_barangay);
         filter_barangay = filter_barangay.filter(item => item !== '');
@@ -1085,9 +1082,8 @@
     $('#by_select').select2();
 
     $('#fname_select').change(function() {
-        var selectedValues = $(this).val(); // Get the selected values
+        var selectedValues = $(this).val(); 
     });
-
 
     var proponents,all_patients;
 
@@ -1164,7 +1160,6 @@
 
         var parentTd = $(element).closest('td');   
         var patientId = parentTd.attr('data-patient-id');
-        // var amount = parentTd.attr('data-amount');
         var row = $(element).closest('tr');   
         var edit = row.find('td.editable-amount');
         var val = edit.attr('data-actual-amount');
@@ -1211,8 +1206,6 @@
     }
 
     $(document).ready(function () {
-        
-
         function loadPaginatedData(url) {
             $.ajax({
                 url: url,
@@ -1282,10 +1275,8 @@
             mail_ids = [];
         });
 
-
         function initializeEditable() {
             $.fn.editable.defaults.mode = 'popup';
-
             $(".number_editable").editable({
                 type : 'number',
                 name: 'actual_amount',
@@ -1411,8 +1402,6 @@
                     removeRoute = removeRoute.replace(':id', id);
                     $('.btn.btn-danger').attr('data-id', id).css('display', 'inline-block').text('Remove');
                 }
-                // $('.btn.btn-warning').attr('data-id', id).css('display', 'inline-block');
-
                 $('.fname').val(patient.fname);
                 $('.lname').val(patient.lname);
                 $('.mname').val(patient.mname);
@@ -1431,7 +1420,6 @@
                 $('.guaranteed_amount').val(patient.guaranteed_amount);
                 $('.actl_amnt').show();
                 $('.actual_amount').val(patient.actual_amount);
-                // $('.proponent_id1').val(patient.proponent_id).trigger('change');
 
                 var $proponentSelect = $('.proponent_id1'); 
 
@@ -1477,12 +1465,12 @@
             });
 
             $(".muncity_body").html("<select class=\"form-control muncity_id\" id=\"muncity_id\" name=\"muncity_id\" onchange=\"onchangeMuncity($(this))\">\n" +
-                "                                        <option value=\"\">Please select municipality</option>\n" +
-                "                                    </select>");
+                "<option value=\"\">Please select municipality</option>\n" +
+                "</select>");
 
             $(".barangay_body").html("<select class=\"form-control barangay_id\" id=\"barangay_id\" name=\"barangay_id\">\n" +
-                "                                        <option value=\"\">please select barangay</option>\n" +
-                "                                    </select>");
+                "<option value=\"\">please select barangay</option>\n" +
+                "</select>");
             if(form_type == 'update'){
                 $(".muncity_id").select2({ width: '220px' });
                 $(".barangay_id").select2({ width: '220px' });
@@ -1493,8 +1481,7 @@
                 $("#province_id").select2({ width: '220px' });
             }
         }
-
-   } 
+    } 
 
     function onchangeProvince(data) {
         $('.muncity_id').empty();
@@ -1534,6 +1521,7 @@
             });
         }
     }
+
     var facility_id = 0;
 
     function onchangeForProponent(data){
@@ -1569,8 +1557,6 @@
     }
 
     function onchangeForPatientCode(data) {
-
-        // var facility_id = $('#facility_id').val();
 
         if(facility_id == 0){
             facility_id = $('#facility_id').val();
@@ -1705,6 +1691,5 @@
         var id = event.target.getAttribute('data-id');
         window.location.href= "patient/return/" + id;
     }
-
-    </script>
+</script>
 @endsection

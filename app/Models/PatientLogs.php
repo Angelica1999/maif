@@ -37,6 +37,8 @@ class PatientLogs extends Model
     public function proponent() {       
         return $this->belongsTo(Proponent::class, 'proponent_id','id');
     }
-
+    public function proponent_from() {       
+        return $this->belongsTo(Proponent::class, 'transfer_from','id');
+    }
 }
 

@@ -1,5 +1,4 @@
 @extends('layouts.app')
-
 @section('content')
 <?php 
     use App\Models\Proponent; 
@@ -106,9 +105,10 @@
                 <div id="gl_body"></div>
             </div>
             <div class="modal-footer budget_track_footer">
-                <button style="background-color:lightgray" class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> CLOSE</button>
-                <a href="#" id="printButton" class="btn btn-success">Print</a>
-                <button style="display:none" class="btn btn-info filter_btn" onclick="filterData()"><i class="typcn typcn-tick menu-icon"></i> FILTER</button>
+                <button style="background-color:lightgray; border-radius:0px" class="btn btn-default" data-dismiss="modal">CLOSE</button>
+                <a href="#" id="printButton" style="border-radius:0px" class="btn btn-success">Print</a>
+                <button style="display:none; border-radius:0px" class="btn btn-info filter_btn" onclick="filterData()">FILTER</button>
+                <button href="#forward_patient" data-toggle="modal" class="btn btn-warning forward_btn" style="display:none; border-radius:0px">Forward</button>
             </div>
         </div>
     </div>
@@ -215,7 +215,6 @@
 @endsection
 @section('js')
 <script>
-
     function supp(){
         $('.funds_type').val(1);
     }
@@ -225,8 +224,9 @@
     }
 
     $('.select2').select2({
-        placeholder: 'Select Facility'
+        placeholder: 'Select Facility',
     });
+
     document.getElementById('printButton').addEventListener('click', function(e) {
         e.preventDefault(); 
         var code = pro_code;  

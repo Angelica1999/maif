@@ -125,7 +125,7 @@ class ProponentController extends Controller
                 ->orderBy('proponent')
                 ->get()
                 ->groupBy('proponent');
-
+            
             if ($proponentGroups->isEmpty()) {
                 return view('maif.pro_fundsource', [
                     'data' => [],
@@ -343,12 +343,17 @@ class ProponentController extends Controller
                 'fundsource:id,saa'
             ]);
 
+            $proponents = Proponent::selectRaw('MIN(id) as id, proponent')
+                ->groupBy('proponent')
+                ->get();
         if(count($tracking) > 0){
             return view('proponents.proponent_util',[
                 'data' => $tracking,
                 'facilities' => $facilities,
                 'dv3' => $dv3_fundsources->orderBy('id', 'desc')->get(),
-                'dv1' => $dv1
+                'dv1' => $dv1,
+                'proponents' => $proponents,
+                'ids' => $tracking->whereNull('pro_used')->pluck('id')->toArray()
             ]);
         }else{
             return 0;
@@ -401,7 +406,8 @@ class ProponentController extends Controller
             'data' => $tracking,
             'facilities' => $facilities,
             'dv3' => $dv3_fundsources->orderBy('id', 'desc')->get(),
-            'dv1' => $dv1
+            'dv1' => $dv1,
+            'ids' => $tracking->whereNull('pro_used')->pluck('id')->toArray()
         ]);
     }
     

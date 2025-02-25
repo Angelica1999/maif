@@ -35,9 +35,10 @@
                                     @endforeach
                                 </select>
                             </th>
-                            <th>CREATED BY</th>
+                            <th>CREATED BY</th> 
                             <th>CREATED ON</th>
                             <th></th>
+                            <th class="text-info" style="text-align:center;" onclick="checkAll()">Select All</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -60,6 +61,13 @@
                                 <td>
                                     @if($row->transd_id == null || $row->transd_id == '')
                                         <a class="text-danger" onclick="deletePatient({{$row->id}})">remove</a>
+                                    @endif
+                                </td>
+                                <td style="text-align:center;" class="group-email" data-row-id="{{ $row->id }}" >
+                                    @if($row->pro_used == null)
+                                        <input class="forward[] " id="forward_ids[]" name="forward_ids[]" type="hidden">
+                                        <input type="checkbox" style="width: 60px; height: 20px;" name="idCheckbox[]" id="rowId_{{ $row->id }}" 
+                                            class="group-idCheckBox" onclick="forwardPatient({{ $row->id }})">
                                     @endif
                                 </td>
                             </tr>
@@ -112,11 +120,80 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="forward_patient" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+        <div class="modal-content" style="border-radius:0px;">
+            <div class="modal-header text-center">
+                <h4 class="text-success modal-title">
+                    <i style="font-size:15px" class="typcn typcn-location-arrow menu-icon"></i>
+                    Change Proponent
+                </h4>
+            </div>
+            <form method="GET" action="{{ route('change.proponent') }}">
+                <input type="hidden" class="pat_ids" name="ids">
+                <div class="modal-body" style="padding:10px">
+                    <div class="form-group">
+                        <label>Proponent:</label>
+                        <select class="form-control change_pro" name="id" style="with:100%">
+                            <option value=''></option>
+                            @foreach($proponents as $row)
+                                <option value="{{ $row->id }}">{{ $row->proponent }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Remarks:</label>
+                        <textarea class="form-control" name="trans_rem" style="width:100%; height: 30vh"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-xs btn-success" type="submit">Submit</button>
+                </div>             
+            </form>
+        </div>
+    </div>
+</div>
 <script>
+    var ids=[];
+    var identifier = 0;
+
+    function checkAll(){
+        if(identifier == 0){
+            var all_id = @json($ids);
+            ids = [...new Set([...ids, ...all_id])];
+            identifier = 1;
+            $('#track_details').find('input.group-idCheckBox').prop('checked', true).trigger('change');
+        }else if(identifier == 1){
+            $('#track_details').find('input.group-idCheckBox').prop('checked', false).trigger('change');
+            identifier = 0;
+            ids=[];
+        }        
+    }
+
+    function forwardPatient(row_id){
+        if(ids.includes(row_id)){
+            ids = ids.filter(id => id !== row_id);
+        } else {
+            ids.push(row_id);
+        }
+
+        if(ids.length != 0){
+            $('.forward_btn').css('display', 'block');
+        }else{
+            $('.forward_btn').css('display', 'none');
+        }
+        $('.pat_ids').val(ids.join(','));
+    }
+
     $(document).ready(function () {
         $('#facility').select2({
             placeholder: "FACILITY", 
             allowClear: true           
+        });
+        $('.change_pro').select2({
+            placeholder: 'Select Proponent',
+            allowClear: true,
+            width: '100%'           
         });
     });
     $('.select2').select2(); 
