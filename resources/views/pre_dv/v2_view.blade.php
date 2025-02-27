@@ -118,16 +118,16 @@
                         <tr height=30px>
                             <td  width =11.9% height= 3%><b> Mode of Payment</td>
                             <td style="width:85%; border-left: 0 " >
-                            <div class="box-container">
-                              <span class="box"></span>
-                              <span class="label">MDS Check</span>
-                              <span class="box"></span>
-                              <span class="label">Commercial Check</span>
-                              <span class="box"></span>
-                              <span class="label">ADA</span>
-                              <span class="box"></span>
-                              <span class="label">Others (Please specify)  _________________________</span>
-                            </div>
+                                <div class="box-container">
+                                    <span class="box"></span>
+                                    <span class="label">MDS Check</span>
+                                    <span class="box"></span>
+                                    <span class="label">Commercial Check</span>
+                                    <span class="box"></span>
+                                    <span class="label">ADA</span>
+                                    <span class="box"></span>
+                                    <span class="label">Others (Please specify)  _________________________</span>
+                                </div>
                             </td>
                         </tr>
                     </table>
