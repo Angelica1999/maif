@@ -163,10 +163,12 @@
             ids = [...new Set([...ids, ...all_id])];
             identifier = 1;
             $('#track_details').find('input.group-idCheckBox').prop('checked', true).trigger('change');
+            $('.forward_btn').css('display', 'block');
         }else if(identifier == 1){
             $('#track_details').find('input.group-idCheckBox').prop('checked', false).trigger('change');
             identifier = 0;
             ids=[];
+            $('.forward_btn').css('display', 'none');
         }        
     }
 

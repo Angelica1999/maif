@@ -157,14 +157,14 @@
             </ul>
         @endif
         @if($joinedData->section == 105 || $id == 2760 || $id == 201400208 || $joinedData->section == 36 || $joinedData->section == 31)
-            <!-- <ul class="nav flex-column" style=" margin-bottom: 0;">
+            <ul class="nav flex-column" style=" margin-bottom: 0;">
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('dashboard') }}">
                         <img src="\maif\public\images\dashboard_16.png" style="margin-right:12px">
                         <span class="menu-title">Dashboard</span>
                     </a>
                 </li>
-            </ul> -->
+            </ul>
             <ul class="nav flex-column" style=" margin-bottom: 0;">
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('fundsource') }}">

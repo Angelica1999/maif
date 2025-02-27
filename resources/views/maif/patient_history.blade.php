@@ -47,7 +47,7 @@
                     <td>{{ !Empty($l->actual_amount)?number_format(str_replace(',','', $l->actual_amount), 2, ',','.'): ' ' }}</td>
                     <td> 
                         @if($l->proponent_from)
-                            Transferred from {{ $l->proponent_from->proponent }} : {{ $l->pat_rem }}
+                            Transferred from {{ $l->proponent_from->proponent }} to {{ $l->proponent->proponent }} : {{ $l->pat_rem }}
                         @else
                             {{ $l->pat_rem }}
                         @endif
