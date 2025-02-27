@@ -365,7 +365,7 @@
                                     stat = "Transferred " + item1 + " amounting to " + item.utilize_amount + " from " + from_proponent +" " + from_saa + " to " + item2 + " amounting to " + item.utilize_amount + " to " +  to_proponent +" " + to_saa;
                                 }
                             }
-                            var item_remarks = item.transfer.remarks !== null ? item.transfer.remarks : ''; 
+                            var item_remarks = item.transfer && item.transfer.remarks !== null ? item.transfer.remarks : ''; 
                             // if(item.transfer)
                             // else if(item.status == 2){
                             //     if(item)

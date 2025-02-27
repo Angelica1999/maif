@@ -402,6 +402,7 @@ class FacilityController extends Controller
             $fc->delete();
         }
     }
+    
     public function addFacility(Request $request){
         $ids = $request->ids;
         foreach($ids as $id){

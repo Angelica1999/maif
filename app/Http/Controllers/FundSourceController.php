@@ -375,7 +375,7 @@ class FundSourceController extends Controller
 
                     if(str_replace(',','',$breakdown['alocated_funds']) != str_replace(',','',$info->alocated_funds)){
                         $info->facility_id = json_encode($breakdown['facility_id']);
-                        $info->main_proponent = json_encode($breakdown['proponent_main']);
+                        $info->main_proponent = (int) $breakdown['proponent_main'];
                         $info->proponent_id = $proponentId;
                         $info->alocated_funds = $breakdown['alocated_funds'];
                         // if((double)str_replace(',','',$get_fundsource->alocated_funds) >= 1000000){
@@ -526,7 +526,9 @@ class FundSourceController extends Controller
         if($identifier == "new_fac"){
             $fund = Fundsource::where('id', $request->input('to_saa'))->first();
             $proponent = Proponent::where('id', $request->input('to_proponent'))->first();
-            $pro_exists = Proponent::where('fundsource_id', $request->input('to_saa'))->first();
+            // $pro_exists = Proponent::where('fundsource_id', $request->input('to_saa'))->first();
+            $pro_exists = Proponent::where('fundsource_id', $request->input('to_saa'))->where('proponent', $proponent->proponent)->first();
+
             if($pro_exists == null || $pro_exists == ""){
                 $new_pro = new Proponent();
                 $new_pro->fundsource_id = $request->input('to_saa');
@@ -820,6 +822,7 @@ class FundSourceController extends Controller
             'uniqueCode' => $uniqueCode
         ]);
     }
+
     public function facilitiesGet($type) {
         $randomBytes = random_bytes(16); 
         if($type== 'fac'){
@@ -837,8 +840,7 @@ class FundSourceController extends Controller
                 'proponents' => $proponents,
                 'uniqueCode' => bin2hex($randomBytes)
             ]);
-        }
-        
+        }  
     }
     
     public function fundSourceGet() {
