@@ -231,25 +231,36 @@
         e.preventDefault(); 
         var code = pro_code;  
         var f_id = $('#facility').val();  
-        console.log('chaki', f_id );
+        var patient_ids = $('#patient').val();  
         f_id = (Array.isArray(f_id) && f_id.length === 0) ? 0: f_id;
-        var url = `proponent/patient-print/${code}/${f_id}`;
+        patient_ids = (patient_ids === null || patient_ids === '') ? 0 : patient_ids;
+        var url = `proponent/patient-print/${code}/${f_id}/${patient_ids}`;
         window.location.href = url;
     });
-
 
     function displayFilter(){
         $('.filter_btn').css('display', 'block');
     }
 
     function filterData(){
-        var f_id = $('#facility').val(); 
-        f_id = (Array.isArray(f_id) && f_id.length === 0) ? f_id.push(undefined) : f_id;
+        var f_id = $('#facility').val();
+
+        if (Array.isArray(f_id) && f_id.length === 0) {
+            f_id.push("all");
+        } else {
+            f_id = (Array.isArray(f_id) && f_id.length === 0) ? f_id.push(undefined) : f_id;
+        }
+
+        var patient_ids = $('#patient').val(); 
+
+        if (!patient_ids) {  
+            patient_ids = "all";
+        }
 
         $('#gl_body').html(loading);
 
         $.ajax({
-            url: 'proponent/patient-sort/'+encodeURIComponent(pro_code)+'/'+f_id+'/0/0', 
+            url: 'proponent/patient-sort/'+encodeURIComponent(pro_code)+'/'+f_id+'/0/0/'+patient_ids +'/', 
             type: 'GET',
             data: {
                 pro_code: pro_code,
@@ -306,7 +317,6 @@
                                 showConfirmButton: false
                             }).then(() => {
                                 $(".gl_"+rowId).remove();
-                                console.log('sd',$(".gl_"+rowId).remove() );
                             });
                         } else {
                             Swal.fire({
@@ -467,7 +477,6 @@
     }
     var pro_code;
     function disUtil(code){
-        console.log('data', code);
         pro_code = code;
         // $('.pro_body').html(loading);
         $('#gl_body').html(loading);
@@ -524,7 +533,6 @@
     }
 
     function reloadPage(){
-        console.log('asdsad');
         location.reload();
     }
 

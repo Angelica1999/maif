@@ -24,7 +24,17 @@
                     <thead style="position: sticky; top: 0; background-color: white; z-index: 1;">
                         <tr style="font-weight:bold">
                             <th>CODE</th>
-                            <th>PATIENT</th>
+                            <th>
+                                <select id="patient" class="form-control patient" style="text-align:center" onchange="displayFilter()">
+                                    <option></option>
+                                    <option value="all">All</option>
+                                    @foreach($filter_patients as $row)
+                                        <option value="{{ $row->id }}" {{ $pat1 != "none" && $pat1->fname == $row->fname 
+                                            && $pat1->mname == $row->mname && $pat1->lname == $row->lname ? 'selected' :'' }}>
+                                            {{ $row->fname .' '. $row->mname. ' '. $row->lname }}</option>
+                                    @endforeach
+                                </select>
+                            </th>
                             <th>GUARANTEED AMOUNT</th>
                             <th>
                                 <select id="facility" class="form-control facility" style="text-align:center" multiple onchange="displayFilter()">
@@ -192,12 +202,19 @@
             placeholder: "FACILITY", 
             allowClear: true           
         });
+
+        $('#patient').select2({
+            placeholder: "PATIENT", 
+            allowClear: true           
+        });
+
         $('.change_pro').select2({
             placeholder: 'Select Proponent',
             allowClear: true,
             width: '100%'           
         });
     });
+
     $('.select2').select2(); 
 
     document.querySelectorAll('#myCustomTab .nav-link').forEach((tabButton) => {
@@ -211,7 +228,5 @@
             target.classList.add('show', 'active');
         });
     });
-    console.log('hereee');
-
 </script>
     
