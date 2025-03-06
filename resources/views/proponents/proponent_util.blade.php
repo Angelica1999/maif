@@ -41,8 +41,12 @@
                                     <option></option>
                                     <option value="all">All</option>
                                     @foreach($facilities as $row)
-                                        <option value="{{ $row->id }}">{{ $row->name }}</option>
+                                        <option value="{{ $row->id }}"
+                                            {{ $ret_id == null ? '' : (is_array($ret_id) ? (in_array($row->id, $ret_id) ? 'selected' : '') : ($ret_id == $row->id ? 'selected' : '')) }}>
+                                            {{ $row->name }}
+                                        </option>
                                     @endforeach
+
                                 </select>
                             </th>
                             <th>CREATED BY</th> 

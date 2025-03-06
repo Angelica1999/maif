@@ -140,20 +140,20 @@ use App\Models\TrackingDetails;
         console.log('doc_type', doc_type);
 
         id = d_id;
-        if(doc_type == "accomplished" || doc_type == "deferred" || doc_type == "disbursed"){
+        // if(doc_type == "accomplished" || doc_type == "deferred" || doc_type == "disbursed"){
             $('#view_v2').modal('show');
             $('.pre_body').html(loading);
             $.get("{{ url('pre-dv/budget/v2/').'/' }}" + doc_type + '/' + id, function(result) {
                 $('.pre_body').html(result);
             });
-        }else{
-            console.log('else');
-            $('#confirm_dv').modal('show');
-            $('#confirmation_main').html(loading);
-            $.get("{{ url('budget/confirm').'/' }}" + route_no, function(result) {
-                $('#confirmation_main').html(result);
-            });
-        } 
+        // }else{
+        //     console.log('else');
+        //     $('#confirm_dv').modal('show');
+        //     $('#confirmation_main').html(loading);
+        //     $.get("{{ url('budget/confirm').'/' }}" + route_no, function(result) {
+        //         $('#confirmation_main').html(result);
+        //     });
+        // } 
     }
 
     function confirm(){

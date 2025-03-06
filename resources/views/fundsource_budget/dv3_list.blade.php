@@ -153,20 +153,20 @@
     function updateDv3(route_no){
         console.log('route_no', route_no);
         console.log('dadasdsd');
-        if(doc_type == 'unsettled'){
-            $('#confirm_dv').modal('show');
-            $('#confirmation_main').html(loading);
-            $.get("{{ url('budget/confirm').'/' }}" + route_no, function(result) {
-                $('#confirmation_main').html(result);
-            });
-        }else{
+        // if(doc_type == 'unsettled'){
+        //     $('#confirm_dv').modal('show');
+        //     $('#confirmation_main').html(loading);
+        //     $.get("{{ url('budget/confirm').'/' }}" + route_no, function(result) {
+        //         $('#confirmation_main').html(result);
+        //     });
+        // }else{
             $('#confirm_dv').modal('hide');
             $('#create_dv3').modal('show');
             $('.dv3_body').html(loading);
             $.get("{{url('dv3/update').'/'}}"+route_no, function(result){
                 $('.dv3_body').html(result);
             });
-        }
+        // }
     }
 
     function obligate(){

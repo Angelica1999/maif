@@ -35,7 +35,7 @@ class RedirectIfAuthenticated
                 if ($joinedData) {
                     if ($joinedData->section == 6) {
                         return redirect(RouteServiceProvider::BUDGET);
-                    } elseif ($joinedData->section == 105 || $userId == 2760 || $userId == 201400208
+                    } elseif ($joinedData->section == 105 || $userId == 2760 || $userId == 201400208 || $userId == 200200097
                                 || $joinedData->section == 36 || $joinedData->section == 31) {
                         return redirect(RouteServiceProvider::MAIF);
                     }elseif($userId == 1027 || $userId == 2660){
