@@ -156,7 +156,7 @@
                 </li>
             </ul>
         @endif
-        @if($joinedData->section == 105 || $id == 2760 || $id == 201400208 || $joinedData->section == 36 || $joinedData->section == 31)
+        @if($joinedData->section == 105 || $id == 200200097 || $id == 2760 || $id == 201400208 || $joinedData->section == 36 || $joinedData->section == 31)
             <ul class="nav flex-column" style=" margin-bottom: 0;">
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('dashboard') }}">

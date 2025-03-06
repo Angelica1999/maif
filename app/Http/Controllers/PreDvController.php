@@ -102,17 +102,87 @@ class PreDvController extends Controller
         }elseif($request->b_id){
             $pre_dv->whereIn('created_by', explode(',', $request->b_id));
         }
-    
-        $total = $pre_dv->take(1)->count();
 
-        $totalControls = $pre_dv->get()->sum(function ($preDv) {
-            return $preDv->extension->sum(function ($extension) {
-                return $extension->controls->count();
+        $pre_dv = PreDV::with([
+            'user:userid,fname,lname,mname',
+            'facility:id,name',
+            'new_dv:id,predv_id,route_no',
+            'extension' => function ($query) {
+                $query->with([
+                    'proponent:id,proponent',
+                    'controls',
+                    'saas.saa:id,saa'
+                ])->withCount('controls'); // Count controls directly
+            }
+        ]);
+        
+        $gen_date = $request->dates_filter;
+        
+        if ($request->generate && !$request->viewAll) {
+            $dateRange = explode(' - ', $gen_date);
+            $start_date = date('Y-m-d', strtotime($dateRange[0]));
+            $end_date = date('Y-m-d', strtotime($dateRange[1])) . ' 23:59:59';
+            $pre_dv->whereBetween('created_at', [$start_date, $end_date]);
+        } else {
+            $gen_date = '';
+        }
+        
+        // Load related data efficiently
+        $saas = Fundsource::all();
+        $proponents = Proponent::select('proponent')->distinct()->get();
+        $facilities = Facility::select('id', 'name')
+            ->with('addFacilityInfo:id,facility_id,vat,ewt')
+            ->get();
+        
+        if ($request->viewAll) {
+            $request->merge(['keyword' => '', 'f_id' => '', 'b_id' => '', 'generate' => '']);
+        } elseif ($request->keyword) {
+            $keyword = $request->keyword;
+            $pre_dv->where(function ($query) use ($keyword) {
+                $query->whereHas('facility', function ($query) use ($keyword) {
+                    $query->where('name', 'LIKE', '%' . $keyword . '%');
+                })->orWhereHas('extension.controls', function ($query) use ($keyword) {
+                    $query->where('control_no', 'LIKE', '%' . $keyword . '%');
+                })->orWhereHas('new_dv', function ($query) use ($keyword) {
+                    $query->where('route_no', 'LIKE', '%' . $keyword . '%');
+                });
             });
-        });
+        }
+        
+        if ($request->f_id) {
+            $pre_dv->whereIn('facility_id', explode(',', $request->f_id));
+        } elseif ($request->b_id) {
+            $pre_dv->whereIn('created_by', explode(',', $request->b_id));
+        }
 
+        $pre_dv_ids = $pre_dv->pluck('id')->toArray();
+
+        $totalControls = DB::table('pre_dv_control')
+            ->whereIn('predv_extension_id', function ($query) use ($pre_dv_ids) {
+                $query->select('id')
+                    ->from('pre_dv_extension')
+                    ->whereIn('pre_dv_id', $pre_dv_ids);
+            })
+            ->count();
+
+
+            
+        // $pre_dv_ids = $pre_dv->pluck('id')->toArray();
+        // $totalControls = PreDVControl::whereIn('predv_extension_id',
+        //     PreDVExtension::whereIn('pre_dv_id', $pre_dv_ids)->pluck('id')
+        // )->count();
+        
+        // $totalControls = $pre_dv->get()->sum(function ($preDv) {
+        //     return $preDv->extension->sum(function ($extension) {
+        //         return $extension->controls->count();
+        //     });
+        // });
+
+        $total = $pre_dv->take(1)->count();        
         $grand_amount = $pre_dv->sum('grand_total');
-        $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(50);
+        $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(10);
+        // return $pre_dv;
+
         $pre_ids = PreDv::pluck('facility_id')->unique()->values()->toArray();
         $user_ids = PreDv::pluck('created_by')->unique()->values()->toArray();
         $f_list = Facility::whereIn('id', $pre_ids)->select('id','name')->get();

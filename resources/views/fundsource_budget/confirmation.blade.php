@@ -29,11 +29,12 @@
             </td>
             <td class="text-center">
                 {!! $ors_no ?: "<input type='text' 
+                    id='ors_input'
                     class='editable-ors2' 
                     data-id='{$ids}' 
                     value=''
                     style='width: 100%; border: none; text-align: center;'
-                    placeholder='Enter UACS'>" !!}
+                    placeholder='Enter ORS NO'>" !!}
             </td>
             <td>{{ $row[0]->saaData->saa }}</td>
             <td>
@@ -66,96 +67,109 @@
 </table>
 <script>
 
-   $(document).ready(function() {
+    $('.editable-ors2').on('input', function(){
+        let data = 0; 
+        $(".editable-ors2").each(function() {
+            if ($(this).val().trim() === "") {
+                data = 1; 
+                return false; 
+            }
+        });
 
-    $(document).on('change', '.editable-ors2', function () {
-        var orsNo = $(this).val();
-        var rowId = $(this).data('id'); 
-        var input = $(this);
-
-        if (orsNo.trim() === '') {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'ORS No cannot be empty!',
-                timer: 1500,
-                showConfirmButton: false
-            });
-            return;
+        if(data == 1){
+            $('.budget_obligate').css('display', 'none');
+        }else if(data == 0){
+            $('.budget_obligate').css('display', 'block');
         }
+    });
 
-        $.ajax({
-            url: '/maif/util/ors_no2', 
-            type: 'POST',
-            data: {
-                id: rowId,
-                ors_no: orsNo,
-                _token: $('meta[name="csrf-token"]').attr('content') 
-            },
-            success: function (response) {
+    $(document).ready(function() {
+        $(document).on('change', '.editable-ors2', function () {
+            var orsNo = $(this).val();
+            var rowId = $(this).data('id'); 
+            var input = $(this);
 
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Saved',
-                    text: 'ORS No has been updated successfully!',
-                    timer: 1000,
-                    showConfirmButton: false
-                });
-                input.prop('readonly', true);
-            },
-            error: function (xhr, status, error) {
+            if (orsNo.trim() === '') {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'Failed to save the ORS No. Please try again!',
-                    timer: 1000,
+                    text: 'ORS No cannot be empty!',
+                    timer: 1500,
                     showConfirmButton: false
                 });
-                console.error(error);
+                return;
             }
-        });
-    });
 
-    $(".sortable").click(function(e) {
-        e.preventDefault();  
+            $.ajax({
+                url: '/maif/util/ors_no2', 
+                type: 'POST',
+                data: {
+                    id: rowId,
+                    ors_no: orsNo,
+                    _token: $('meta[name="csrf-token"]').attr('content') 
+                },
+                success: function (response) {
 
-        var sortColumn = $(this).data("column");
-        var sortDirection = $(this).data("sort-direction") === "asc" ? "desc" : "asc"; 
-        var checkedIds = [];
-        $('.confirm_check:checked').each(function() {
-            checkedIds.push($(this).attr('id'));
-        });
-
-        $(this).data("sort-direction", sortDirection);
-
-        $.ajax({
-            url: "{{ route('dv.confirmation', ['route_no' => $dv->route_no]) }}", 
-            method: "GET",
-            data: {
-                sort: sortColumn,
-                direction: sortDirection
-            },
-            success: function(response) {
-                $("#confirmation_main").html(response); 
-                checkedIds.forEach(function(id) {
-                    $('#' + id).prop('checked', true); 
-                });
-
-                var totalCheckboxes = $('.confirm_check').length;  
-                var checkedCheckboxes = $('.confirm_check:checked').length;  
-
-                if (totalCheckboxes === checkedCheckboxes) {
-                    $('.budget_obligate').css('display', 'block');
-                } else {
-                    $('.budget_obligate').css('display', 'none');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Saved',
+                        text: 'ORS No has been updated successfully!',
+                        timer: 1000,
+                        showConfirmButton: false
+                    });
+                    input.prop('readonly', true);
+                },
+                error: function (xhr, status, error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to save the ORS No. Please try again!',
+                        timer: 1000,
+                        showConfirmButton: false
+                    });
+                    console.error(error);
                 }
-            },
-            error: function() {
-                alert('Error sorting data');
-            }
+            });
+        });
+
+        $(".sortable").click(function(e) {
+            e.preventDefault();  
+
+            var sortColumn = $(this).data("column");
+            var sortDirection = $(this).data("sort-direction") === "asc" ? "desc" : "asc"; 
+            var checkedIds = [];
+            $('.confirm_check:checked').each(function() {
+                checkedIds.push($(this).attr('id'));
+            });
+
+            $(this).data("sort-direction", sortDirection);
+
+            $.ajax({
+                url: "{{ route('dv.confirmation', ['route_no' => $dv->route_no]) }}", 
+                method: "GET",
+                data: {
+                    sort: sortColumn,
+                    direction: sortDirection
+                },
+                success: function(response) {
+                    $("#confirmation_main").html(response); 
+                    checkedIds.forEach(function(id) {
+                        $('#' + id).prop('checked', true); 
+                    });
+
+                    var totalCheckboxes = $('.confirm_check').length;  
+                    var checkedCheckboxes = $('.confirm_check:checked').length;  
+
+                    if (totalCheckboxes === checkedCheckboxes) {
+                        $('.budget_obligate').css('display', 'block');
+                    } else {
+                        $('.budget_obligate').css('display', 'none');
+                    }
+                },
+                error: function() {
+                    alert('Error sorting data');
+                }
+            });
         });
     });
-});
-
-
 </script>

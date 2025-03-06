@@ -367,7 +367,8 @@ class ProponentController extends Controller
                 'proponents' => $proponents,
                 'ids' => $tracking->whereNull('pro_used')->pluck('id')->toArray(),
                 'filter_patients' => $filter_patients,
-                'pat1' => 'none'
+                'pat1' => 'none',
+                'ret_id' => 'none'
             ]);
         }else{
             return 0;
@@ -419,11 +420,13 @@ class ProponentController extends Controller
             ]);
 
             $f_ids = is_array($f_ids) ? $f_ids : explode(',', $f_ids); 
-            
+
             if (in_array("all", $f_ids)) {
                 $query = Patients::whereIn('proponent_id', $ids);
+                $ret_id = 0;
             } else {
                 $query = Patients::whereIn('proponent_id', $ids)->whereIn('facility_id', $f_ids);
+                $ret_id = $f_ids;
             }
 
             $query->with('facility:id,name', 'encoded_by:userid,fname,lname,mname', 'gl_user:username,fname,lname');
@@ -446,13 +449,13 @@ class ProponentController extends Controller
         return view('proponents.proponent_util',[
             'data' => $tracking,
             'proponents' => $proponents,
-
+            'ret_id' => $ret_id,
             'facilities' => $facilities,
             'dv3' => $dv3_fundsources->orderBy('id', 'desc')->get(),
             'dv1' => $dv1,
             'ids' => $tracking->whereNull('pro_used')->pluck('id')->toArray(),
             'filter_patients' => $filter_patients,
-            'pat1' => $pat1
+            'pat1' => $patient_id == "all" ? 'none' :$pat1
 
         ]);
     }
@@ -564,7 +567,7 @@ class ProponentController extends Controller
         $pat1 = Patients::where('id', $patient_id)->select('fname','mname','lname')->first();
         $ids = array_map('intval', explode(',', $ids)); 
 
-        if($ids == 0){
+        if ($ids == 0 || (is_array($ids) && in_array(0, $ids))) {
             $query = Patients::whereIn('proponent_id', $id);
         }else{
             $query = Patients::whereIn('proponent_id', $id)
@@ -573,7 +576,7 @@ class ProponentController extends Controller
 
         $query->with('facility:id,name', 'encoded_by:userid,fname,lname,mname', 'gl_user:username,fname,lname');
 
-        if ($patient_id !== null) {
+        if ($patient_id != 0) {
             if ($patient_id !== "all" && isset($pat1)) {
                 $query->where('fname', $pat1->fname)
                     ->where('mname', $pat1->mname)
@@ -582,7 +585,6 @@ class ProponentController extends Controller
         }
 
         $patients = $query->get();
-
         $title = $pro[0]->proponent;
         $filename = $title.'.xls';
         header("Content-Type: application/xls");
