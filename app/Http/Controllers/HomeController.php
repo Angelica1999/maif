@@ -951,6 +951,13 @@ class HomeController extends Controller
         ];
     }
 
+    public function proponentPatient(){
+        return [
+            'all_pat' => Patients::whereNotNull('sent_type')->select('id')->get(),
+            'proponents' => Proponent::get()
+        ];
+    }
+
     public function updateGl($id){
 
         // if(Auth::user()->userid == 2760){
@@ -1635,14 +1642,14 @@ class HomeController extends Controller
             'facility:id,name',
             'proponentData:id,proponent',
             'pat_remarks:patient_id,remarks'
-        ])->whereNotNull('pro_used');
+        ])->whereNotNull('sent_type');
        
         //  -- for date range
         if($request->gen){
             $dateRange = explode(' - ', $filter_date);
             $start_date = date('Y-m-d', strtotime($dateRange[0]));
             $end_date = date('Y-m-d', strtotime($dateRange[1]));
-            $patients = $patients ->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59'])->whereNotNull('pro_used');
+            $patients = $patients ->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59'])->whereNotNull('sent_type');
         }
 
         // -- for search
@@ -1704,13 +1711,13 @@ class HomeController extends Controller
         // -- for table header sorting
 
         if ($request->sort && $request->input('sort') == 'facility') {
-            $patients = $patients->sortable(['facility.name' => 'asc'])->whereNotNull('pro_used');
+            $patients = $patients->sortable(['facility.name' => 'asc'])->whereNotNull('sent_type');
         }else if ($request->sort && $request->input('sort') == 'proponent') {
-            $patients = $patients->sortable(['proponentData.proponent' => 'asc'])->whereNotNull('pro_used');
+            $patients = $patients->sortable(['proponentData.proponent' => 'asc'])->whereNotNull('sent_type');
         }else if ($request->sort && $request->input('sort') == 'province') {
             
             $patients = $patients->leftJoin('province', 'province.id', '=', 'patients.province_id')
-                            ->whereNotNull('pro_used')
+                            ->whereNotNull('sent_type')
                             ->orderBy('patients.other_province', $request->input('order'))
                             ->orderBy('province.description', $request->input('order')) 
                             ->select('patients.*');
@@ -1749,51 +1756,51 @@ class HomeController extends Controller
 
         // if($request->filter_col){
             if($request->filter_date){
-                $patients = $patients->whereIn('date_guarantee_letter', explode(',',$request->filter_date))->whereNotNull('pro_used');
+                $patients = $patients->whereIn('date_guarantee_letter', explode(',',$request->filter_date))->whereNotNull('sent_type');
             }
             if($request->filter_fname){
-                $patients = $patients->whereIn('fname', explode(',',$request->filter_fname))->whereNotNull('pro_used');
+                $patients = $patients->whereIn('fname', explode(',',$request->filter_fname))->whereNotNull('sent_type');
             }
             if($request->filter_mname){
-                $patients = $patients->whereIn('mname', explode(',',$request->filter_date))->whereNotNull('pro_used');
+                $patients = $patients->whereIn('mname', explode(',',$request->filter_date))->whereNotNull('sent_type');
             }
             if($request->filter_lname){
-                $patients = $patients->whereIn('lname', explode(',',$request->filter_lname))->whereNotNull('pro_used');
+                $patients = $patients->whereIn('lname', explode(',',$request->filter_lname))->whereNotNull('sent_type');
             }
             if($request->filter_facility){
-                $patients = $patients->whereIn('facility_id', explode(',',$request->filter_facility))->whereNotNull('pro_used');
+                $patients = $patients->whereIn('facility_id', explode(',',$request->filter_facility))->whereNotNull('sent_type');
             }
             if($request->filter_proponent){
-                $patients = $patients->whereIn('proponent_id', explode(',',$request->filter_proponent))->whereNotNull('pro_used');
+                $patients = $patients->whereIn('proponent_id', explode(',',$request->filter_proponent))->whereNotNull('sent_type');
             }
             if($request->filter_code){
-                $patients = $patients->whereIn('patient_code', explode(',',$request->filter_code))->whereNotNull('pro_used');
+                $patients = $patients->whereIn('patient_code', explode(',',$request->filter_code))->whereNotNull('sent_type');
             }
             if($request->filter_region){
-                $patients = $patients->whereIn('region', explode(',',$request->filter_region))->whereNotNull('pro_used');
+                $patients = $patients->whereIn('region', explode(',',$request->filter_region))->whereNotNull('sent_type');
             }
             if($request->filter_province){
                 $patients = $patients->whereIn('province_id', explode(',',$request->filter_province))
                             ->orWhereIn('other_province', explode(',',$request->filter_province))
-                            ->whereNotNull('pro_used');
+                            ->whereNotNull('sent_type');
             }
             if($request->filter_municipality){
                 $patients = $patients->whereIn('muncity_id', explode(',',$request->filter_municipality))
                             ->orWhereIn('other_muncity', explode(',',$request->filter_municipality))
-                            ->whereNotNull('pro_used');
+                            ->whereNotNull('sent_type');
             }
             if($request->filter_barangay){
                 $patients = $patients->whereIn('barangay_id', explode(',',$request->filter_barangay))
                             ->orWhereIn('other_barangay', explode(',',$request->filter_barangay))
-                            ->whereNotNull('pro_used');
+                            ->whereNotNull('sent_type');
             }
             if($request->filter_on){
-                $patients = $patients->whereIn(DB::raw('DATE(created_at)'), explode(',',$request->filter_on))->whereNotNull('pro_used');
+                $patients = $patients->whereIn(DB::raw('DATE(created_at)'), explode(',',$request->filter_on))->whereNotNull('sent_type');
                 // return  $request->filter_on;
             }
             if($request->filter_by){
                 // return explode(',',$request->filter_by);
-                $patients = $patients->whereIn('created_by', explode(',',$request->filter_by))->whereNotNull('pro_used');
+                $patients = $patients->whereIn('created_by', explode(',',$request->filter_by))->whereNotNull('sent_type');
             }
         // }
 
@@ -1822,7 +1829,7 @@ class HomeController extends Controller
         $proponents_code = Proponent::groupBy('proponent')->select(DB::raw('MAX(proponent) as proponent'), DB::raw('MAX(proponent_code) as proponent_code'),DB::raw('MAX(id) as id') )->get();
         // return $patients->paginate(10);
         return view('maif.proponent_patient', [
-            'patients' => $patients->whereNotNull('pro_used')->paginate(50),
+            'patients' => $patients->whereNotNull('sent_type')->paginate(50),
             'keyword' => $request->keyword,
             'provinces' => Province::get(),
             'municipalities' => Muncity::get(),

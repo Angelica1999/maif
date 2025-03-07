@@ -40,7 +40,19 @@
                         <div class="col-md-4 mt-2 grid-margin grid-margin-md-0 stretch-card">
                             <div class="card">
                                 <div class="card-body">
-                                    <div style="display: flex; justify-content: space-between;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+    <h4 class="card-title" style="text-align: left; margin: 0; color: {{ $fund->remaining_balance <= 0 ? 'red' : 'inherit' }};">
+        {{ $fund->saa }} 
+        @if($fund->budget_cost != null | $fund->budget_cost != 0)
+            <br><small class="text-info">Fundsource Budget(admin cost) : {{ number_format($fund->budget_cost,2,'.',',') }}</small>
+        @endif
+    </h4>
+    @if($user->section != 6)
+        <button class="btn btn-sm update_saa" style="height: 35px; min-width: 110px; cursor: pointer; text-align: center; color: white; background-color: #417524; border-radius: 0; flex-shrink: 0;" data-proponent-id="" data-backdrop="static" data-toggle="modal" onclick="createBreakdowns({{ $fund->id }})" href="#create_fundsource">Breakdowns</button>                                      
+    @endif
+</div>
+
+                                    <!-- <div style="display: flex; justify-content: space-between;">
                                         <h4 class="card-title" style="text-align: left; margin: 0; color: {{ $fund->remaining_balance <= 0 ? 'red' : 'inherit' }};">
                                             {{ $fund->saa }} 
                                             @if($fund->budget_cost != null | $fund->budget_cost != 0)
@@ -50,7 +62,7 @@
                                         @if($user->section != 6)
                                             <button class="btn btn-sm update_saa" style="min-width:110px; cursor: pointer; text-align:center; color:white; background-color:#417524; border-radius:0; min-width:90px;" data-proponent-id="" data-backdrop="static" data-toggle="modal" onclick="createBreakdowns({{ $fund->id }})" href="#create_fundsource">Breakdowns</button>                                      
                                         @endif
-                                    </div>
+                                    </div> -->
 
                                     @foreach($fund->proponents as $proponent)
                                         @if(count($proponent->proponentInfo)>0)

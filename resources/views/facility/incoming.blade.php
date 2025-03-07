@@ -268,7 +268,6 @@
         });
     }
 
-
     var trans_id = 0;
     
     function displaySum(id, remarks){

@@ -42,6 +42,7 @@ Route::post('/patient/update/{id}', [App\Http\Controllers\HomeController::class,
 Route::get('/patient/remove/{id}', [App\Http\Controllers\HomeController::class, 'removePatient'])->name('patient.remove');
 Route::get('/patient/{id}', [App\Http\Controllers\HomeController::class, 'fetchPatient'])->name('patient.fetch');
 Route::get('/patient', [App\Http\Controllers\HomeController::class, 'fetchAdditionalData'])->name('home.addditional');
+Route::get('/patient-proponent', [App\Http\Controllers\HomeController::class, 'proponentPatient'])->name('proponent.patient');
 Route::get('/group/remove_patient/{id}', [App\Http\Controllers\HomeController::class, 'groupRemovePatient'])->name('patient.group_remove');
 Route::get('/patient/send-to-facility/{id}', [App\Http\Controllers\HomeController::class, 'facilitySend'])->name('facility.send');
 Route::match(['get', 'post'],'/patient/return/{id}', [App\Http\Controllers\HomeController::class, 'returnPatient'])->name('patient.return');
