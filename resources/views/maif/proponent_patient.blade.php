@@ -94,9 +94,14 @@
                     </form>
                     <form method="POST" action="{{ route('sent.mails') }}" class="send_mailform">
                         @csrf
-                        <div class="input-group-append" style="display: flex; justify-content: flex-end;">
-                            <button class="btn btn-md send_mails" name="send_mails[]" style="display:none; background-color:green; color:white; height:40px">Send Mails</button>
-                            <input type="hidden" class="form-control idss" name="idss" id="idss" >
+                        <input type="hidden" class="form-control idss" name="idss" id="idss" >
+                        <input type="hidden" class="form-control sent_type" name="sent_type" id="sent_type" value="0">
+
+                        <div class="input-group" >
+                            <button class="btn btn-md send_mails" name="send_mails[]" style="display:none; background-color:green; color:white; height:38.7px; border-radius:0px; width:120px">Send Mails <img src="\maif\public\images\email_16.png"></button>
+                        </div>
+                        <div class="input-group">
+                            <button class="btn btn-md send_mails" name="send_mails[]" id="system_sent" style="display:none; background-color:darkgreen; color:white; height:41px; border-radius:0px; width:120px">Send GL to <img src="{{ asset('images/doh-logo.png') }}" style="width:20px"></button>
                         </div>
                     </form>
                     <form method="POST" action="{{ route('save.group') }}">
@@ -261,10 +266,11 @@
                                     <a href="{{ route('facility.send', ['id' => $patient->id]) }}" type="button"><i style="font-size:20px" class="typcn typcn-home-outline menu-icon"></i></a>
                                 @endif -->
                             </td>
-                            <td style="text-align:center;" class="group-email" data-patient-id="{{ $patient->id }}" >
+                            <td style="text-align:center;" class="group-email"  
+                                data-patient-id="{{ $patient->id }}" >
                                 <input class="sent_mails[] " id="mail_ids[]" name="mail_ids[]" type="hidden">
                                 <input type="checkbox" style="width: 60px; height: 20px;" name="mailCheckbox[]" id="mailCheckboxId_{{ $patient->id }}" 
-                                    class="group-mailCheckBox" onclick="itemChecked($(this))">
+                                    data-stat="{{ $patient->sent_type == 1 || $patient->fc_status == 'returned' ? 1 : 0 }}" class="group-mailCheckBox" onclick="itemChecked($(this))">
                             </td>
                             <td style="text-align:center">
                                 {{ $patient->sent_type == 1 ? 'Sent from Proponent' : ($patient->sent_type == 2 ? 'Returned back to Proponent' : ( $patient->sent_type == 3 ? 'Credentials checked by MPU' : 'Credentials Check' )) }}
@@ -544,6 +550,10 @@
 <script>
     $(function() {
         $('#filter_dates').daterangepicker();
+    });
+
+    $('#system_sent').on('click', function(){
+        $('.sent_type').val(1);
     });
 
     $('#gen_btn').on('click', function(){
@@ -859,7 +869,7 @@
 
     var proponents,all_patients;
 
-    $.get("{{ url('patient') }}", function(result) {
+    $.get("{{ url('patient-proponent') }}", function(result) {
         proponents = result.proponents;
         all_patients = result.all_pat;
     });
@@ -1018,6 +1028,7 @@
           
         });
         $(document).on('click', '.select_all', function() {
+            console.log('click', all_patients);
             if(all_patients){
                 $('#patient_table').find('input.group-mailCheckBox').prop('checked', true).trigger('change');
                 $('.send_mails').val('').show();
@@ -1027,6 +1038,19 @@
                 });
             }
         });
+        // $(document).on('click', '.select_all', function() {
+        //     console.log('click', all_patients);
+        //     if (all_patients) {
+        //         $('#patient_table').find('input.group-mailCheckBox').each(function() {
+        //             if ($(this).data('stat') == 1) {
+        //                 $(this).prop('checked', true).trigger('change');
+        //                 id_list.push(String($(this).attr('id').replace('mailCheckboxId_', '')));
+        //                 mail_ids.push($(this).attr('id'));
+        //             }
+        //         });
+        //         $('.send_mails').val('').show();
+        //     }
+        // });
         $(document).on('click', '.unselect_all', function() {
             $('#patient_table').find('input.group-mailCheckBox').prop('checked', false).trigger('change');
             $('.send_mails').val('').hide();

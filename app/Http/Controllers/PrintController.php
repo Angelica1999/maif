@@ -119,12 +119,15 @@ class PrintController extends Controller
             return redirect()->route('home')->with('status', 'No emails selected.');
         }elseif($request->sent_type == 1){
             foreach($ids as $id){
-                Patients::where('id', $id)->update([
-                    'fc_status' => 'referred',
-                    'sent_type' => 3
-                ]);
-                return redirect()->back()->with('process_gl', true);
+                $pat = Patients::where('id', $id)->first();
+                if($pat->sent_type == 1 || $pat->fc_status == "returned"){
+                    Patients::where('id', $id)->update([
+                        'fc_status' => 'referred',
+                        'sent_type' => 3
+                    ]);
+                }
             }
+            return redirect()->back()->with('process_gl', true);
         }
     }
 
