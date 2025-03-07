@@ -920,7 +920,10 @@ class PreDvController extends Controller
                 }
 
                 NewDV::where('predv_id', $id)->update(
-                    ['total' => $pre_dv->grand_total]
+                    [
+                        'total' => $pre_dv->grand_total,
+                        'edit_status' => 0
+                    ]
                 );
 
                 $name = Facility::where('id', $pre_dv->facility_id)->value('name');
