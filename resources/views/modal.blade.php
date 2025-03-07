@@ -366,5 +366,20 @@
         </div>
     </div>
 </div>
+<div class="modal fade" tabindex="-1" role="dialog" id="acceptModal" style="margin-top: 30px;z-index: 99999;">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <h4 class="text-success"><i class="fa fa-book"></i> Remarks</h4>
+                <hr />
+                <textarea name="remarks" class="form-control" id="accept_remarks" rows="7" style="resize: vertical;" placeholder="Please enter your remark(s) of accept..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"></i> Close</button>
+                <button type="button" class="btn btn-success confirmAccept" data-dismiss="modal"><i class="fa fa-check"></i> Accept</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 

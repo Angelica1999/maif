@@ -16,7 +16,7 @@ use App\Models\TrackingDetails;
                                 <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
                                 <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
                                 <button type="submit" value="filt" style="display:none; background-color:green; color:white; width:79px; font-size:11px" name="filt_dv" id="filt_dv" class="btn btn-xs"><i class="typcn typcn-filter menu-icon"></i>&nbsp;&nbsp;&nbsp;Filter</button>
-                                <button type="button" id="release_btn" data-target="#releaseTo" style="display:none; background:teal; color:white" onclick="putRoutes($(this))" data-target="#releaseTo" data-backdrop="static" data-toggle="modal" class="btn btn-md">Release All</button>
+                                <button type="button" id="release_btn" data-target="#releaseTo" style="display:none; background:teal; color:white" onclick="putRoutes($(this))" data-backdrop="static" data-toggle="modal" class="btn btn-md">Release All</button>
                                 <input type="hidden" class="all_route" id="all_route" name="all_route">
                             </div>
                         </div>
@@ -41,7 +41,7 @@ use App\Models\TrackingDetails;
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th style="padding:5px; min-width:200px"></th>
+                            <th style="padding:5px; min-width:300px"></th>
                             <th style="text-align:center;min-width:150px ">
                                 <a class="text-info select_all">Release All</a>
                             </th>
@@ -115,24 +115,36 @@ use App\Models\TrackingDetails;
                     <tbody>
                         @foreach($results as $index => $row)
                             <tr>
-                                <td class="td" style="padding:5px;text-align:center">
+                                <td class="td" style="padding:5px;text-align:left">
                                     @if($row->new_dv)
                                         <?php
                                             $routed = TrackingDetails::where('route_no',$row->new_dv->route_no)
                                                 ->count();
                                             if($routed){
-                                                $doc_id = TrackingDetails::where('route_no',$row->new_dv->route_no)
-                                                ->orderBy('id','desc')
-                                                ->first()
-                                                ->id;
+
+                                                $doc = TrackingDetails::where('route_no',$row->new_dv->route_no)
+                                                    ->orderBy('id','desc')
+                                                    ->first();
+
+                                                $doc_id = $doc->id;
+                                                $data_action = $doc->action;
+                                                
+                                                if($data_action){
+                                                    $stat = $data_action;
+                                                }else{
+                                                    $stat = "none";
+                                                }
+                                                
                                             }else{
                                                 $doc_id= 0;
                                                 $routed = 0;
+                                                $stat = "none";
                                             }
                                         ?>                                   
                                         <button type="button" class="btn btn-xs" style="background-color:#165A54; border-radius:0; color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$row->new_dv->route_no}}" id="track_load" onclick="openModal()">Track</button>
                                         <a href="{{ route('new_dv.pdf', ['id' => $row->id]) }}" style="background-color:green; border-radius:0; color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
                                         <button data-toggle="modal" data-target="#releaseTo" data-id="{{ $doc_id }}" data-route_no="{{ $row->new_dv->route_no }}" onclick="putRoute($(this))" style="background-color:#1E90FF; border-radius:0; color:white; width:85px;" type="button" class="btn btn-xs">Release To</button>
+                                        <button data-toggle="modal" data-target="#acceptModal" data-id="{{ $doc_id }}" data-route_no="{{ $row->new_dv->route_no }}" onclick="acceptModal({{ $doc_id }}, '{{ $row->new_dv->route_no }}')" style="background-color:blue; border-radius:0; color:white; width:85px; display: inline-block" type="button" class="btn btn-xs accept_document">Accept</button>
                                     @else
                                         <span class="text-danger"><i>dv is not yet created</i></span>
                                     @endif
@@ -297,6 +309,90 @@ use App\Models\TrackingDetails;
         $('#currentID').val(form.data('id'));
         $('#multiple').val('single');
     }
+
+    var accept_id;
+    var accept_route_no;
+    function acceptModal(id, route_no){
+        console.log('id', id);
+        console.log('route_no', route_no);
+        accept_id = id;
+        accept_route_no = route_no;
+    }
+
+    $('.confirmAccept').on('click', function(){
+        console.log('id', accept_id);
+        console.log('route_no', accept_route_no);
+        var remarks = $('#accept_remarks').val();
+        $.ajax({
+            type: 'POST',
+            url: '{{ route("document.accept") }}',
+            data: {
+                _token: '{{ csrf_token() }}',
+                id : accept_id,
+                route_no : accept_route_no,
+                remarks : remarks
+            },
+            success: function (response) {
+                // location.reload();
+                Lobibox.notify('success', {
+                    msg: "Successfully accepted this document",
+                });
+                location.reload();
+            },
+            error: function (error) {
+                if (error.status) {
+                    console.error('Status Code:', error.status);
+                }
+
+                if (error.responseJSON) {
+                    console.error('Response JSON:', error.responseJSON);
+                }
+
+            }
+        });
+    });
+
+    // $('.confirmAccept').click(function(){
+    //         var id = $('#acceptModal').data('id');
+    //         var route_no = $('#acceptModal').data('route');
+    //         var remarks = $('#accept_remarks').val();
+    //         var _token = "{{ csrf_token() }}";
+    //         $('[data-id=' + id + ']').addClass('hide');
+    //         $('.loading').show();
+    //         $.ajax({
+    //             url: url,
+    //             type: 'POST',
+    //             data: {
+    //                 id:id,
+    //                 remarks:remarks,
+    //                 _token: _token
+    //             },
+    //             success: function(data){
+    //                 $(document).ready(function () {
+    //                     insertFirebase({
+    //                         "route_no" : data.route_no,
+    //                         "section_owner_id" : data.section_owner_id,
+    //                         "user_accepted_name" : data.user_accepted_name,
+    //                         "section_accepted_id" : data.section_accepted_id,
+    //                         "section_accepted_name" : data.section_accepted_name,
+    //                         "remarks" : data.remarks,
+    //                         "status" : data.status
+    //                     });
+    //                     countIncoming += 1;
+    //                     var count = incomingFunction();
+    //                     $('.badgeIncoming').html(count-countIncoming);
+    //                     Lobibox.notify('success', {
+    //                         msg: 'Accepted successfully!'
+    //                     });
+    //                     $('.loading').hide();
+    //                     if(count-countIncoming == 0){
+    //                         location.reload();
+    //                     }
+    //                     appendOutgoing(id,route_no);
+    //                 });
+    //             }
+    //         });
+    //     });
 
     function updateRemarks(route_no, remarks){
         if(remarks != 0){

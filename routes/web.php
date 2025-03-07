@@ -141,6 +141,9 @@ Route::match(['get', 'post'],'dv/pay', [App\Http\Controllers\DvController::class
 Route::match(['get', 'post'],'dv/add_dvno', [App\Http\Controllers\DvController::class, 'addDvNo'])->name('dv.add_dvno');
 Route::get('getsections/{id}', [App\Http\Controllers\DvController::class, 'getSections'])->name('division.section');
 Route::post('/document/release', [App\Http\Controllers\DvController::class, 'addRelease'])->name('document.release');
+
+Route::post('/document/accept', [App\Http\Controllers\DvController::class, 'acceptDocument'])->name('document.accept');
+
 Route::get('/sample', [App\Http\Controllers\FundSourceController2::class, 'sample'])->name('sample');
 Route::match(['get', 'post'],'proponentInfo/{infoId}', [App\Http\Controllers\FundSourceController::class, 'removeInfo'])->name('remove.proInfo');
 Route::get('/admin_cost', [App\Http\Controllers\FundSourceController::class, 'adminCost'])->name('admin_cost');
@@ -212,6 +215,8 @@ Route::get('pre-dv/delete/{id}', [App\Http\Controllers\PreDvController::class, '
 Route::get('pre-dv/v1/{id}', [App\Http\Controllers\PreDvController::class, 'v1View'])->name('v1.view');
 Route::get('pre-dv/v2/{id}', [App\Http\Controllers\PreDvController::class, 'v2View'])->name('v2.view');
 Route::match(['post', 'get'],'pre-dv/save/update', [App\Http\Controllers\PreDvController::class, 'updatePreDV'])->name('pre_update.save');
+Route::match(['post', 'get'],'pre-dv/save/modified', [App\Http\Controllers\PreDvController::class, 'modifyPreDV'])->name('pre_modify.save');
+
 Route::get('/pre-dv/version-1', [App\Http\Controllers\PreDvController::class, 'pre_dv1'])->name('pre_dv1');
 Route::get('/pre-dv/version-2', [App\Http\Controllers\PreDvController::class, 'pre_dv2'])->name('pre_dv2');
 Route::post('/pre-dv/dv/new', [App\Http\Controllers\PreDvController::class, 'newDV'])->name('dv_new.save');

@@ -97,7 +97,7 @@
                                             {{$row->new_dv->route_no}}
                                         @endif
                                     </td>
-                                    <td><a data-toggle="modal" data-backdrop="static" href="#update_predv" onclick="updatePre( {{$row->id}}, {{$row->new_dv?1:2}} )">{{ $row->facility->name }}</a></td>
+                                    <td><a data-toggle="modal" data-backdrop="static" href="#update_predv" onclick="updatePre( {{$row->id}}, {{$row->new_dv?1:2}}, {{ $row->new_dv && $row->new_dv->edit_status == 1 ? 1: 0 }} )">{{ $row->facility->name }}</a></td>
                                     <td>
                                         <?php
                                             $total = 0;
@@ -561,7 +561,9 @@
 
     }
 
-    function updatePre(id, data){
+    var edit_stat = 0;
+
+    function updatePre(id, data, stat){
         $('.form_body').html(loading);
         $.get("{{ url('pre-dv/update/').'/' }}"+id, function(result) {
             $('.form_body').html(result);
@@ -572,6 +574,14 @@
                 $('.delete_btn').css('display', 'block');
                 $('.submit_btn').css('display', 'block');
             }
+
+            if(stat == 1){
+                $('.submit_btn').css('display', 'block');
+                edit_stat = 1;
+            }
+
+            console.log(stat, stat);
+            
             f_id = $('#facility_id').val();
             $.get("{{url('pre-dv/control_nos').'/'}}" + f_id, function (result){
                 existing_control = result.controls; 
@@ -974,29 +984,63 @@
         var jsonData = JSON.stringify(all_data);
         var encodedData = encodeURIComponent(jsonData);
 
-        if($('#pre_id').val() == undefined){
-            // $('.pre_form').attr('action', "{{ route('pre_dv.save') }}".replace(':data', encodedData));
-            $.ajax({
-                type: 'POST',
-                url: '{{ route("pre_dv.save") }}',
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    data: encodedData,
-                    transmittal_id: trans_ids,
-                    facility_id: $('.facility_id').val(),
-                    grand_total: $('.grand_total').val()
-                },
-                success: function (response) {
+        if(edit_stat == 0){
+            console.log('edd');
+            if($('#pre_id').val() == undefined){
+                // $('.pre_form').attr('action', "{{ route('pre_dv.save') }}".replace(':data', encodedData));
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ route("pre_dv.save") }}',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        data: encodedData,
+                        transmittal_id: trans_ids,
+                        facility_id: $('.facility_id').val(),
+                        grand_total: $('.grand_total').val()
+                    },
+                    success: function (response) {
 
-                    Lobibox.notify('success', {
-                        msg: "Successfully created pre_dv!",
-                    });
-                    location.reload();
-                }
-            });
-        }else{
-            // $('.pre_form').attr('action', "{{ route('pre_update.save') }}".replace(':data', encodedData));
-            // $('.updated_submit').trigger('click');
+                        Lobibox.notify('success', {
+                            msg: "Successfully created pre_dv!",
+                        });
+                        location.reload();
+                    }
+                });
+            }else{
+                // $('.pre_form').attr('action', "{{ route('pre_update.save') }}".replace(':data', encodedData));
+                // $('.updated_submit').trigger('click');
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ route("pre_update.save") }}',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        data: encodedData,
+                        facility_id: $('#facility_id').val(),
+                        grand_total: $('#grand_total').val(),
+                        pre_id: $('#pre_id').val()
+
+                    },
+                    success: function (response) {
+                        Lobibox.notify('success', {
+                            msg: "Successfully created pre_dv!",
+                        });
+                        location.reload();
+                    },
+                    error: function (error) {
+                        if (error.status) {
+                            console.error('Status Code:', error.status);
+                        }
+
+                        if (error.responseJSON) {
+                            console.error('Response JSON:', error.responseJSON);
+                        }
+
+                    }
+                });
+            }
+        }else if( edit_stat == 1){
+            console.log('edd23');
+
             $.ajax({
                 type: 'POST',
                 url: '{{ route("pre_update.save") }}',
@@ -1010,7 +1054,7 @@
                 },
                 success: function (response) {
                     Lobibox.notify('success', {
-                        msg: "Successfully created pre_dv!",
+                        msg: "Successfully updated this pre_dv!",
                     });
                     location.reload();
                 },
@@ -1026,6 +1070,8 @@
                 }
             });
         }
+
+        
     });
 
 </script>

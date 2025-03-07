@@ -869,4 +869,122 @@ class DvController extends Controller
         return redirect()->back()->with('dv_remove', true);
     }
 
+    public function acceptDocument(Request $req){
+        $user = DB::connection('dohdtr')
+            ->table('users')
+            ->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
+            ->where('users.userid', '=', Auth::user()->userid)
+            ->first();
+        $id = $req->id;
+        $remarks = $req->remarks;
+        $date_in = date('Y-m-d H:i:s');
+
+        $tracking_details = TrackingDetails::where('id',$id)->where('route_no', $req->route_no)->orderBy('id', 'DESC');
+
+        //RELEASED TO
+        $this->releasedStatusChecker($tracking_details->first()->route_no,Auth::user()->section);
+
+        $tracking_details->update(array(
+            'code' => 'accept;' . $user->section,
+            'date_in' => $date_in,
+            'action' => $remarks,
+            'received_by' => $user->id,
+            'alert' => 0
+        ));
+
+        NewDV::where('route_no', $req->route_no)->update(['edit_status' => 1]);
+        
+    }
+
+    public function releasedStatusChecker($route_no,$section){
+        $release = Tracking_Releasev2::where("route_no","=",$route_no)
+            ->where("released_section_to","=",$section)
+            ->where(function ($query) {
+                $query->where('status','=','waiting')
+                    ->orWhere('status','=','return');
+            })
+            ->orderBy('id', 'DESC');
+
+        if($release->first()){
+            $minute = $this->checkMinutes($release->first()->released_date);
+            if($minute <= 30 && ($release->first()->status == "waiting" || $release->first()->status == "return" )){
+                $release->update([
+                    "status" => "accept"
+                ]);
+            }
+            elseif($minute > 30 && $release->first()->status == "waiting" || $release->first()->status == "return" ) {
+                $release->update([
+                    "status" => "report"
+                ]);
+            }
+        }
+    }
+
+    static function checkMinutes($start_date)
+    {
+        /* $start_date = "2018-11-16 11:24:33";
+         $end_date = "2018-11-16 14:43:00";*/
+        $global_end_date = date("Y-m-d H:i:s");
+        $end_date = $global_end_date;
+
+        $start_checker = date("Y-m-d",strtotime($start_date));
+        $end_checker = date("Y-m-d",strtotime($end_date));
+        $fhour_checker = date("H",strtotime($start_date));
+        $lhour_checker = date("H",strtotime($end_date));
+        $minutesTemp = 0;
+
+
+        if($start_checker != $end_checker) return 100;
+
+        if($fhour_checker <= 7 && $lhour_checker >= 8){
+            $fhour_checker = 8;
+            $start_date = $start_checker.' '.'08:00:00';
+        }
+        elseif($fhour_checker == 11 && $lhour_checker >= 12){
+            $start_date = new DateTime($start_date);
+            $end_date = $start_date->diff(new DateTime($start_checker." 12:00:00"));
+
+            $minutes = $end_date->days * 24 * 60;
+            $minutes += $end_date->h * 60;
+            $minutes += $end_date->i;
+
+            $start_date = $start_checker.' '.'13:00:00';
+            $minutesTemp = $minutes;
+            $end_date = $global_end_date;
+        }
+        elseif($fhour_checker == 12 && $lhour_checker >= 13){
+            $fhour_checker = 13;
+            $start_date = $start_checker.' '.'13:00:00';
+        }
+        elseif($fhour_checker >= 17 && $lhour_checker >= 17){
+            $start_date = $start_checker.' '.'17:00:00';
+            $end_date = $end_checker.' '.'17:00:00';
+        }
+        elseif($lhour_checker >= 17){
+            $end_date = $end_checker.' '.'17:00:00';
+        }
+
+        if(
+            ($fhour_checker >= 8 && $fhour_checker < 12)
+            || ($fhour_checker >= 13)
+
+            && ($lhour_checker >= 8 && $lhour_checker < 12)
+            || ($lhour_checker >= 13)
+        )
+        {
+            $start_date = new DateTime($start_date);
+            $end_date = $start_date->diff(new DateTime($end_date));
+
+            $minutes = $end_date->days * 24 * 60;
+            $minutes += $end_date->h * 60;
+            $minutes += $end_date->i;
+
+            if($minutesTemp){
+                $minutes += $minutesTemp;
+            }
+            return $minutes;
+        }
+        return 100;
+    }
+
 }
