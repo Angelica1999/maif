@@ -22,7 +22,7 @@ use App\Models\TrackingMaster;
 use App\Models\TrackingDetails;
 use App\Models\NewDV;
 
-class Dv3Controller extends Controller
+class DV3Controller extends Controller
 {
     public function __construct(){
        $this->middleware('auth');

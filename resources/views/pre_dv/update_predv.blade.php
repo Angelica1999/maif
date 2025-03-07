@@ -45,7 +45,7 @@
                     <?php $total_saa = number_format(str_replace(',','',$row->total_amount), 2, '.',','); ?>
                     @foreach($row->saas as $index => $row3)
                         <div class="saa_clone" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 2%;">
-                            <select style="width: 50%;" class="select2 saa_id" required>
+                            <select style="width: 50%;" class="select2 saa_id" onchange="autoDeduct($(this))" required>
                                 <option value=''>SELECT SAA</option>
                            
                                 @foreach($info as $row)

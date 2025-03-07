@@ -7,7 +7,7 @@
                     <option value="{{ $item['id'] }}">{{ $item['ref_no'] }}</option>
                 @endforeach
             </select>     
-            <input class="form-control remarks" name="remarks[]" style="margin-left:10px; width:250px" placeholder="remarks...">
+            <input class="form-control remarks" name="remarks[]" style="margin-left:10px; width:250px" placeholder="remarks..." required>
             <button class="btn btn-xs btn-success add" type="button" style="margin-left:10px; border-radius:0px" onclick="addRow({{ $references[0]['transmittal_id'] }})">+</button>
         </div>
     </div>
@@ -19,7 +19,7 @@
                 <option value="{{ $item['id'] }}">{{ $item['ref_no'] }}</option>
             @endforeach
         </select>     
-        <input class="form-control remarks" name="remarks[]" style="margin-left:10px; width:250px" placeholder="remarks...">
+        <input class="form-control remarks" name="remarks[]" style="margin-left:10px; width:250px" placeholder="remarks..." required>
         <button class="btn btn-xs btn-warning remove" type="button" style="margin-left:10px; border-radius:0px">-</button>
     </div>
 @endif

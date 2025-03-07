@@ -647,6 +647,7 @@
 
     function calculateAmount(data){
         var total = 0;
+        console.log('dsad');
         data.find('.amount').each(function(){
             var amount = parseFloat(($(this).val()).replace(/,/g, '')) || 0;
             total += amount;
@@ -726,6 +727,7 @@
     }
 
     function autoDeduct(element){
+        console.log('samplesample');
         var w_pro = element.closest('.proponent_clone');
         var m_amount = 0;
         w_pro.find('.saa_amount').each(function(){
@@ -1043,7 +1045,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: '{{ route("pre_update.save") }}',
+                url: '{{ route("pre_modify.save") }}',
                 data: {
                     _token: '{{ csrf_token() }}',
                     data: encodedData,
@@ -1053,6 +1055,7 @@
 
                 },
                 success: function (response) {
+                    // console.log('response', response);
                     Lobibox.notify('success', {
                         msg: "Successfully updated this pre_dv!",
                     });

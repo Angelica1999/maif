@@ -818,7 +818,7 @@ class PreDvController extends Controller
         }
     }
 
-    public function modifyPreDV(){
+    public function modifyPreDV(Request $request){
         try{
 
             $decodedData = urldecode($request->data);
@@ -886,19 +886,18 @@ class PreDvController extends Controller
                         if ($info) {
 
                             $facility_info = AddFacilityInfo::where('facility_id', $pre_dv->facility_id)->first();
+
+                            $total = (float) str_replace(',', '', $saa['saa_amount']);
+
                             if($facility_info){
                                 $vat = $facility_info->vat;
                                 $ewt = $facility_info->Ewt;
-
-                                $total = $row->amount;
 
                                 if ($vat > 3) {
                                     $total = ($total / 1.12 * $vat / 100) + ($total / 1.12 * $vat / 100);
                                 } else {
                                     $total = ($total * $vat / 100) + ($total * $vat / 100);
                                 }
-                            }else{
-                                $total = $row->amount;
                             }
 
                             $util = new Utilization();
@@ -914,27 +913,30 @@ class PreDvController extends Controller
                             $util->facility_id = $pre_dv->facility_id;
                             $util->save();
 
-                            $info->remaining_balance = (float) str_replace(',', '', $info->remaining_balance) - (float) str_replace(',', '', $row->amount);
+                            $info->remaining_balance = (float) str_replace(',', '', $info->remaining_balance) - (float) str_replace(',', '', $saa['saa_amount']);
                             $info->save();
                         }
                     }
                 }
 
-                $new_dv->update(
-                    'total' -> $pre_dv->grand_total,
+                NewDV::where('predv_id', $id)->update(
+                    ['total' => $pre_dv->grand_total]
                 );
 
                 $name = Facility::where('id', $pre_dv->facility_id)->value('name');
+                $route_no = $new_dv->route_no;
 
                 TrackingMaster::where('route_no', $route_no)->update([
                     'description' => "Disbursement Voucher for". $name . "amoung to PhP" . number_format($pre_dv->grand_total, 2, '.', ',')
                 ]);
 
                 $details = TrackingDetails::where('route_no', $route_no)->first();
-                $details->update([
-                    'action' => "Disbursement Voucher for". $name . "amoung to PhP" . number_format($pre_dv->grand_total, 2, '.', ',')
-                ]);
-                
+                if($details){
+                    TrackingDetails::where('route_no', $route_no)->where('id', $details->id)->update([
+                        'action' => "Disbursement Voucher for". $name . "amoung to PhP" . number_format($pre_dv->grand_total, 2, '.', ',')
+                    ]);
+                }
+
                 return redirect()->back()->with('pre_dv', true);
             } else {
                 return redirect()->back()->with('pre_dv_error', true);
