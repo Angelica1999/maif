@@ -294,7 +294,6 @@ class FacilityController extends Controller
     public function references($type, $id){
         $response = Http::get('http://192.168.110.7/guaranteeletter/transmittal/references/'.$id);
         $randomBytes = random_bytes(16); 
-        return  $id;
         return view('facility.return_facility',[
             'references' => $response->json(),
             'type' => $type,
