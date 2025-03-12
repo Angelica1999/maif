@@ -1090,8 +1090,8 @@ class PreDvController extends Controller
                     'route_no' => $updated_route,
                     'remarks' => 6
                 ]);
-                // Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/dv');
-                Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/dv');
+                Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/dv');
+                // Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/dv');
             }
         }
         return redirect()->back()->with('pre_dv', true);
@@ -1174,8 +1174,8 @@ class PreDvController extends Controller
                 Transmittal::whereIn('id', $trans_ids)->update([
                     'remarks' => 7
                 ]);
-                // Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/obligate');
-                Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/obligate');
+                Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/obligate');
+                // Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/obligate');
             }
            
             return redirect()->back()->with('pre_dv_update', true);
@@ -1200,8 +1200,8 @@ class PreDvController extends Controller
                     'remarks' => 8
                 ]);
 
-                // Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/paid');
-                Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/paid');
+                Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/paid');
+                // Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/paid');
             }
            
             return redirect()->back()->with('pay_dv', true);

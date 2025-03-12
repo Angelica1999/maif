@@ -452,6 +452,18 @@
             msg: 'Successfully change the patient(s) code!'
          });
       @endif
+      @if(session('user_deactivation'))
+         <?php session()->forget('user_deactivation'); ?>
+         Lobibox.notify('error', {
+            msg: 'User deactivated!'
+         });
+      @endif
+      @if(session('user_activation'))
+         <?php session()->forget('user_activation'); ?>
+         Lobibox.notify('success', {
+            msg: 'User activated!'
+         });
+      @endif
    </script>
    @yield('js')
 </body>

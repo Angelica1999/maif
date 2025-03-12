@@ -26,12 +26,27 @@ class UserController extends Controller{
     }
     
     public function users(){
-        $registration = Registration::with('facility','proponent')->orderBy('id', 'desc')->paginate(50);
         $users = OnlineUser::with('facility','proponent')->orderBy('id', 'desc')->paginate(50);
-
         return view('users',[
-            'registrations' => $registration,
             'users' => $users
+        ]);
+    }
+
+    public function deactivate($id){
+        OnlineUser::where('id', $id)->update(['status' => 1]);
+        return redirect()->back()->with('user_deactivation', true);
+    }
+
+    public function activate($id){
+        OnlineUser::where('id', $id)->update(['status' => 0]);
+        return redirect()->back()->with('user_activation', true);
+    }
+
+    public function usersActivation(){
+        $registration = Registration::with('facility','proponent')->orderBy('id', 'desc')->paginate(50);
+
+        return view('user_activation',[
+            'registrations' => $registration
         ]);
     }
 

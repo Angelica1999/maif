@@ -1,6 +1,5 @@
 @extends('layouts.app')
 @section('content')
-
 @if (session('error'))
     <div class="alert alert-danger">
         {{ session('error') }}
@@ -14,33 +13,30 @@
                     <input type="text" class="form-control" name="keyword" placeholder="Search..." value="">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
-                        <button type="button" href="#add_user" id="crt_pnt" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
                     </div>
                 </div>
             </form>
-            <h4 class="card-title">FACILITY</h4>
+            <h4 class="card-title">USER ACTIVATION</h4>
             <p class="card-description">
                 MAIF-IPP
             </p>
-            @if(isset($users) && $users->count() > 0)
+            @if(isset($registrations) && $registrations->count() > 0)
                 <div class="table-responsive">
                     <table class="table table-striped">
                     <thead>
                         <tr>
                             <th>Name</th>
-                            <th>Birthdate</th>
-                            <th>Type</th>
-                            <th>Account</th>
+                            <th style="width:50px">Type</th>
+                            <th style="width:150px">Account</th>
                             <th>Email</th>
-                            <th>Contact #</th>
-                            <th></th>
+                            <th>Contact</th>
+                            <th style="width:100px"></th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($users as $row)
+                        @foreach($registrations as $row)
                             <tr>
                                 <td class="td">{{$row->fname .' '.$row->lname}}</td>
-                                <td>{{ date('F j, Y', strtotime($row->birthdate)) }} </td>
                                 <td class="td">
                                     {{ 
                                         $row->user_type == 1 ? 'Proponent' : 
@@ -54,11 +50,10 @@
                                     }}
                                 </td>
                                 <td class="td">{{$row->email}}</td>
-                                <td>{{ $row->contact_no }}</td>
+                                <td class="td">{{$row->contact_no}}</td>
                                 <td class="td">
-                                    <a href="{{ route('reset.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-success" style="border-radius:0px">Reset</a>
-                                    <a href="{{ route('deactivate.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-warning" style="border-radius:0px">Deactivate</a>
-                                    <a href="{{ route('deactivate.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-info" style="border-radius:0px">Activate</a>
+                                    <a href="{{ route('verify.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-info" style="color:white; width:80px;">Verify</a>
+                                    <button type="button" href="#user_cancel" style="width:100%; color:white; border" data-toggle="modal" data-backdrop="static" class="btn btn-xs btn-warning" onclick="cancel({{$row->id}})">Cancel</button>
                                 </td>
                             </tr>
                         @endforeach
@@ -68,11 +63,11 @@
             @else
                 <div class="alert alert-danger" role="alert" style="width: 100%;">
                 <i class="typcn typcn-times menu-icon"></i>
-                    <strong>No User found!</strong>
+                    <strong>No new account to be registered!</strong>
                 </div>
             @endif
             <div class="pl-5 pr-5 mt-5">
-                {!! $users->appends(request()->query())->links('pagination::bootstrap-5') !!}
+                {!! $registrations->appends(request()->query())->links('pagination::bootstrap-5') !!}
             </div>
         </div>
     </div>
