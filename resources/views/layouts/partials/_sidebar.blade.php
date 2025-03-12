@@ -372,7 +372,15 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('users') }}">
                                     <i><img class="menu-icon" src="\maif\public\images\user_accounts_16.png"></i>
-                                    <span class="menu-title" style="margin-left:15px">USERS</span>
+                                    <span class="menu-title" style="margin-left:15px">ONLINE USERS</span>
+                                </a>
+                            </li>
+                        </ul>
+                        <ul class="nav flex-column sub-menu">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('users.activate') }}">
+                                    <i><img class="menu-icon" src="\maif\public\images\user_accounts_16.png"></i>
+                                    <span class="menu-title" style="margin-left:15px">ACTIVATE USERS</span>
                                 </a>
                             </li>
                         </ul>
