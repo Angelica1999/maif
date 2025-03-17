@@ -25,15 +25,21 @@
                         <tr style="font-weight:bold">
                             <th>CODE</th>
                             <th>
-                                <select id="patient" class="form-control patient" style="text-align:center" onchange="displayFilter()">
-                                    <option></option>
-                                    <option value="all">All</option>
-                                    @foreach($filter_patients as $row)
-                                        <option value="{{ $row->id }}" {{ $pat1 != "none" && $pat1->fname == $row->fname 
-                                            && $pat1->mname == $row->mname && $pat1->lname == $row->lname ? 'selected' :'' }}>
-                                            {{ $row->fname .' '. $row->mname. ' '. $row->lname }}</option>
-                                    @endforeach
-                                </select>
+                                <div style="display: flex; align-items: center; gap: 5px;">
+                                    <select id="patient" class="form-control patient" style="text-align:center; flex: 1;" onchange="displayFilter()">
+                                        <option></option>
+                                        <option value="all">All</option>
+                                        @foreach($filter_patients as $row)
+                                            <option value="{{ $row->id }}" {{ $pat1 != "none" && $pat1->fname == $row->fname 
+                                                && $pat1->mname == $row->mname && $pat1->lname == $row->lname ? 'selected' :'' }}>
+                                                {{ $row->fname .' '. $row->mname. ' '. $row->lname }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <i id="sort_patient" class="typcn typcn-filter menu-icon" 
+                                        onclick="sortData('{{ $sort_type == 'asc' ? 'desc' : 'asc' }}')">
+                                    </i>
+                                </div>
                             </th>
                             <th>GUARANTEED AMOUNT</th>
                             <th>

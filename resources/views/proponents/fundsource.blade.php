@@ -275,6 +275,40 @@
         });
     }
 
+    function sortData(sort_type){
+        var f_id = $('#facility').val();
+        console.log('sample', sort_type);
+        if (Array.isArray(f_id) && f_id.length === 0) {
+            f_id.push("all");
+        } else {
+            f_id = (Array.isArray(f_id) && f_id.length === 0) ? f_id.push(undefined) : f_id;
+        }
+
+        var patient_ids = $('#patient').val(); 
+
+        if (!patient_ids) {  
+            patient_ids = "all";
+        }
+
+        $('#gl_body').html(loading);
+
+        $.ajax({
+            url: 'proponent/patient-sort2/'+encodeURIComponent(pro_code)+'/'+f_id+'/0/0/'+patient_ids +'/', 
+            type: 'GET',
+            data: {
+                pro_code: pro_code,
+                f_id: f_id,
+                sort_type: sort_type
+            },
+            success: function (response) {
+                $('#gl_body').html(response);
+            },
+            error: function () {
+                alert('Error fetching data.');
+            }
+        });
+    }
+
     $(document).on('click', '.pro_util_pages a', function(e) {
         e.preventDefault(); 
         let url = $(this).attr('href');

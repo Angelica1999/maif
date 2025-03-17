@@ -24,45 +24,56 @@
             </p>
             @if(isset($users) && $users->count() > 0)
                 <div class="table-responsive">
-                    <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Birthdate</th>
-                            <th>Type</th>
-                            <th>Account</th>
-                            <th>Email</th>
-                            <th>Contact #</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($users as $row)
+                    <table class="table table-striped" style="text-align:center">
+                        <thead>
                             <tr>
-                                <td class="td">{{$row->fname .' '.$row->lname}}</td>
-                                <td>{{ date('F j, Y', strtotime($row->birthdate)) }} </td>
-                                <td class="td">
-                                    {{ 
-                                        $row->user_type == 1 ? 'Proponent' : 
-                                        ($row->user_type == 2 ? 'Facility' : 'MPU') 
-                                    }}
-                                </td>
-                                <td class="td">
-                                    {{ 
-                                        $row->user_type == 1 ? $row->proponent->proponent : 
-                                        ($row->user_type == 2 ? $row->facility->name : 'MPU') 
-                                    }}
-                                </td>
-                                <td class="td">{{$row->email}}</td>
-                                <td>{{ $row->contact_no }}</td>
-                                <td class="td">
-                                    <a href="{{ route('reset.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-success" style="border-radius:0px">Reset</a>
-                                    <a href="{{ route('deactivate.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-warning" style="border-radius:0px">Deactivate</a>
-                                    <a href="{{ route('activate.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-info" style="border-radius:0px">Activate</a>
-                                </td>
+                                <th>Status</th>
+                                <th>Name</th>
+                                <th>Birthdate</th>
+                                <th>Type</th>
+                                <th>Account</th>
+                                <th>Email</th>
+                                <th>Contact #</th>
+                                <th></th>
                             </tr>
-                        @endforeach
-                    </tbody>
+                        </thead>
+                        <tbody>
+                            @foreach($users as $row)
+                                <tr>
+                                    <td>
+                                        @if($row->status == 1)
+                                            <i class="typcn typcn-media-record menu-icon text-danger"></i>
+                                        @else
+                                            <i class="typcn typcn-media-record menu-icon text-success"></i>
+                                        @endif
+                                    </td>
+                                    <td class="td">{{$row->fname .' '.$row->lname}}</td>
+                                    <td>{{ date('F j, Y', strtotime($row->birthdate)) }} </td>
+                                    <td class="td">
+                                        {{ 
+                                            $row->user_type == 1 ? 'Proponent' : 
+                                            ($row->user_type == 2 ? 'Facility' : 'MPU') 
+                                        }}
+                                    </td>
+                                    <td class="td">
+                                        {{ 
+                                            $row->user_type == 1 ? $row->proponent->proponent : 
+                                            ($row->user_type == 2 ? $row->facility->name : 'MPU') 
+                                        }}
+                                    </td>
+                                    <td class="td">{{$row->email}}</td>
+                                    <td>{{ $row->contact_no }}</td>
+                                    <td class="td">
+                                        <a href="{{ route('reset.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-info" style="border-radius:0px">Reset</a>
+                                        @if($row->status == 1)
+                                            <a href="{{ route('activate.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-success" style="border-radius:0px">Activate</a>
+                                        @else
+                                            <a href="{{ route('deactivate.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-warning" style="border-radius:0px">Deactivate</a>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
                     </table>
                 </div>
             @else
