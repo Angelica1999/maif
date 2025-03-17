@@ -37,84 +37,72 @@
             @if(isset($fundsources) && $fundsources->count() >0)
             <div class="row">
                 @foreach($fundsources as $fund)
-                        <div class="col-md-4 mt-2 grid-margin grid-margin-md-0 stretch-card">
-                            <div class="card">
-                                <div class="card-body">
+                    <div class="col-md-4 mt-2 grid-margin grid-margin-md-0 stretch-card">
+                        <div class="card">
+                            <div class="card-body">
                                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-    <h4 class="card-title" style="text-align: left; margin: 0; color: {{ $fund->remaining_balance <= 0 ? 'red' : 'inherit' }};">
-        {{ $fund->saa }} 
-        @if($fund->budget_cost != null | $fund->budget_cost != 0)
-            <br><small class="text-info">Fundsource Budget(admin cost) : {{ number_format($fund->budget_cost,2,'.',',') }}</small>
-        @endif
-    </h4>
-    @if($user->section != 6)
-        <button class="btn btn-sm update_saa" style="height: 35px; min-width: 110px; cursor: pointer; text-align: center; color: white; background-color: #417524; border-radius: 0; flex-shrink: 0;" data-proponent-id="" data-backdrop="static" data-toggle="modal" onclick="createBreakdowns({{ $fund->id }})" href="#create_fundsource">Breakdowns</button>                                      
-    @endif
-</div>
-
-                                    <!-- <div style="display: flex; justify-content: space-between;">
-                                        <h4 class="card-title" style="text-align: left; margin: 0; color: {{ $fund->remaining_balance <= 0 ? 'red' : 'inherit' }};">
-                                            {{ $fund->saa }} 
-                                            @if($fund->budget_cost != null | $fund->budget_cost != 0)
-                                                <br><small class="text-info">Fundsource Budget(admin cost) : {{ number_format($fund->budget_cost,2,'.',',') }}</small>
-                                            @endif
-                                        </h4>
-                                        @if($user->section != 6)
-                                            <button class="btn btn-sm update_saa" style="min-width:110px; cursor: pointer; text-align:center; color:white; background-color:#417524; border-radius:0; min-width:90px;" data-proponent-id="" data-backdrop="static" data-toggle="modal" onclick="createBreakdowns({{ $fund->id }})" href="#create_fundsource">Breakdowns</button>                                      
+                                    <h4 class="card-title" style="text-align: left; margin: 0; color: {{ $fund->remaining_balance <= 0 ? 'red' : 'inherit' }};">
+                                        {{ $fund->saa }} 
+                                        @if($fund->budget_cost != null | $fund->budget_cost != 0)
+                                            <br><small class="text-info">Fundsource Budget(admin cost) : {{ number_format($fund->budget_cost,2,'.',',') }}</small>
                                         @endif
-                                    </div> -->
-
-                                    @foreach($fund->proponents as $proponent)
-                                        @if(count($proponent->proponentInfo)>0)
-                                            <br>
-                                            @if(isset($proponent->proponentInfo->first()->main_pro))
-                                                <b><p class="text-success">{{ $proponent->proponentInfo->first()->main_pro->proponent }} (main)</p></b>
-                                            @endif
-                                            <b><p class="">{{ $proponent->proponent }} (c/o)</p></b>
-                                            <ul class="list-arrow mt-3">
-                                                @foreach($proponent->proponentInfo as $proponentInfo)
-                                                    @if( $proponentInfo->facility !== null)
-                                                        <li><b>{{ $proponentInfo->facility->name }}</b></li>
-                                                    @else
-                                                        <?php 
-                                                            $facilityIds = json_decode($proponentInfo->facility_id);
-                                                        ?>
-                                                        <li>
-                                                            @foreach($facilityIds as $facilityId)
-                                                                @php
-                                                                    $facility = $facilities->where('id', $facilityId)->first();
-                                                                @endphp
-                                                                @if($facility)
-                                                                    <b>{{ $facility->name }}</b><br>
-                                                                @endif
-                                                            @endforeach
-                                                        </li>
-                                                    @endif
-                                                    <div class="d-flex justify-content-between align-items-center">
-                                                        <span class="ml-3">Allocated Funds &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->alocated_funds)), 2, '.', ',') }}</strong></span>
-                                                        <button style="min-width:90px; border-radius:0;" id="track" data-backdrop="static" data-proponentInfo-id="{{ $proponentInfo->id }}" data-toggle="modal" href="#track_details2" onclick="track_details2(event)" class='btn btn-sm btn-outline-info track_details2'>Track</button>
-                                                    </div>
-                                                    <div class="d-flex justify-content-between align-items-center">
-                                                        <span class="ml-3">Administrative Cost : <strong class="text-info">{{ $proponentInfo->admin_cost}}</strong></span>
-                                                        @if($user->section != 6)
-                                                            <button style="min-width:90px; border-radius:0; margin-top:1px" id="transfer_funds" data-backdrop="static" data-toggle="modal" href="#transfer_fundsource" onclick="transferFunds({{ $proponentInfo->id }})" style="width:100px" class='btn btn-sm btn-outline-success ml-2 transfer_funds'>Transfer</button>
-                                                        @endif
-                                                    </div>
-                                                    <div class="d-flex justify-content-between align-items-center">
-                                                        @if( $proponentInfo->remaining_balance == 0)
-                                                            <span class="ml-3">Remaining Balance &nbsp;: <strong class="text-danger">{{ number_format(floatval(str_replace(',', '', $proponentInfo->remaining_balance)), 2, '.', ',') }}</strong></span>
-                                                        @else
-                                                            <span class="ml-3">Remaining Balance &nbsp;: <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->remaining_balance)), 2, '.', ',') }}</strong></span>
-                                                        @endif
-                                                    </div>
-                                                    <div class="d-flex justify-content-end mt-2"></div>
-                                                @endforeach
-                                            </ul>
-                                        @endif
-                                    @endforeach
+                                    </h4>
+                                    @if($user->section != 6)
+                                        <button class="btn btn-sm update_saa" style="height: 35px; min-width: 110px; cursor: pointer; text-align: center; color: white; background-color: #417524; border-radius: 0; flex-shrink: 0;" data-proponent-id="" data-backdrop="static" data-toggle="modal" onclick="createBreakdowns({{ $fund->id }})" href="#create_fundsource">Breakdowns</button>                                      
+                                    @endif
                                 </div>
+
+                                @foreach($fund->proponents as $proponent)
+                                    @if(count($proponent->proponentInfo)>0)
+                                        <br>
+                                        @if(isset($proponent->proponentInfo->first()->main_pro))
+                                            <b><p class="text-success">{{ $proponent->proponentInfo->first()->main_pro->proponent }} (main)</p></b>
+                                        @endif
+                                        <b><p class="">{{ $proponent->proponent }} (c/o)</p></b>
+                                        <ul class="list-arrow mt-3">
+                                            @foreach($proponent->proponentInfo as $proponentInfo)
+                                                @if( $proponentInfo->facility !== null)
+                                                    <li><b>{{ $proponentInfo->facility->name }}</b></li>
+                                                @else
+                                                    <?php 
+                                                        $facilityIds = json_decode($proponentInfo->facility_id);
+                                                    ?>
+                                                    <li>
+                                                        @foreach($facilityIds as $facilityId)
+                                                            @php
+                                                                $facility = $facilities->where('id', $facilityId)->first();
+                                                            @endphp
+                                                            @if($facility)
+                                                                <b>{{ $facility->name }}</b><br>
+                                                            @endif
+                                                        @endforeach
+                                                    </li>
+                                                @endif
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <span class="ml-3">Allocated Funds &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->alocated_funds)), 2, '.', ',') }}</strong></span>
+                                                    <button style="min-width:90px; border-radius:0;" id="track" data-backdrop="static" data-proponentInfo-id="{{ $proponentInfo->id }}" data-toggle="modal" href="#track_details2" onclick="track_details2(event)" class='btn btn-sm btn-outline-info track_details2'>Track</button>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <span class="ml-3">Administrative Cost : <strong class="text-info">{{ $proponentInfo->admin_cost}}</strong></span>
+                                                    @if($user->section != 6)
+                                                        <button style="min-width:90px; border-radius:0; margin-top:1px" id="transfer_funds" data-backdrop="static" data-toggle="modal" href="#transfer_fundsource" onclick="transferFunds({{ $proponentInfo->id }})" style="width:100px" class='btn btn-sm btn-outline-success ml-2 transfer_funds'>Transfer</button>
+                                                    @endif
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    @if( $proponentInfo->remaining_balance == 0)
+                                                        <span class="ml-3">Remaining Balance &nbsp;: <strong class="text-danger">{{ number_format(floatval(str_replace(',', '', $proponentInfo->remaining_balance)), 2, '.', ',') }}</strong></span>
+                                                    @else
+                                                        <span class="ml-3">Remaining Balance &nbsp;: <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->remaining_balance)), 2, '.', ',') }}</strong></span>
+                                                    @endif
+                                                </div>
+                                                <div class="d-flex justify-content-end mt-2"></div>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                @endforeach
                             </div>
                         </div>
+                    </div>
                 @endforeach
             </div>
             @else
