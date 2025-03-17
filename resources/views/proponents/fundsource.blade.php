@@ -40,7 +40,7 @@
                                                     <td style="padding: 5px;"><strong>{{ !empty($row['sum']) ? number_format($row['sum'], 2, '.', ',') : '0.00' }}</strong></td>
                                                 </tr>
                                                 <tr>
-                                                    <td style="padding: 5px;">Gl Total</td>
+                                                    <td style="padding: 5px;">GL Total</td>
                                                     <td style="padding: 5px; text-align: center;">:</td>
                                                     <td style="padding: 5px;"><strong>{{ !empty($row['totalUtilized']) ? number_format($row['totalUtilized'], 2, '.', ',') : '0.00' }}</strong></td>
                                                 </tr>

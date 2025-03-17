@@ -143,7 +143,9 @@
 
     function openModal() {
         var routeNoo = event.target.getAttribute('data-routeId'); 
-        var src = "https://mis.cvchd7.com/dts/document/trackMaif/" + routeNoo;
+        // var src = "https://mis.cvchd7.com/dts/document/trackMaif/" + routeNoo;
+        var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNoo;
+
         setTimeout(function() {
             $("#trackIframe").attr("src", src);
             $("#iframeModal").css("display", "block");

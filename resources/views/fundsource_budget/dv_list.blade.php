@@ -165,7 +165,9 @@
     function openModal() {
         var routeNoo = event.target.getAttribute('data-routeId');  
         setTimeout(function() {
-            var src = "https://mis.cvchd7.com/dts/document/trackMaif/" + routeNoo;
+            // var src = "https://mis.cvchd7.com/dts/document/trackMaif/" + routeNoo;
+            var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNoo;
+
             $("#trackIframe").attr("src", src);
             $("#iframeModal").css("display", "block");
         }, 100);
