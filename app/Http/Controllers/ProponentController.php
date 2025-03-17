@@ -368,7 +368,8 @@ class ProponentController extends Controller
                 'ids' => $tracking->whereNull('pro_used')->pluck('id')->toArray(),
                 'filter_patients' => $filter_patients,
                 'pat1' => 'none',
-                'ret_id' => 'none'
+                'ret_id' => 'none',
+                'sort_type' => 'desc'
             ]);
         }else{
             return 0;
@@ -455,7 +456,95 @@ class ProponentController extends Controller
             'dv1' => $dv1,
             'ids' => $tracking->whereNull('pro_used')->pluck('id')->toArray(),
             'filter_patients' => $filter_patients,
-            'pat1' => $patient_id == "all" ? 'none' :$pat1
+            'pat1' => $patient_id == "all" ? 'none' :$pat1,
+            'sort_type' => 'desc'
+
+        ]);
+    }
+
+    public function sortData(Request $request){
+        $f_ids = $request->f_id;
+        $patient_id = $request->patient_id;
+        $pat1 = Patients::where('id',$patient_id)->select('fname', 'mname', 'lname')->first();
+        $sort_type = $request->sort_type;
+        $pro_code = $request->pro_code;
+        $ids = Proponent::where('proponent', $pro_code)->pluck('id')->toArray();
+        $info = ProponentInfo::whereIn('proponent_id', $ids)->pluck('id')->toArray();
+
+        $filter_patients = Patients::whereIn('proponent_id', $ids)
+            ->get()
+            ->groupBy(function ($patient) {
+                return $patient->fname . '|' . $patient->lname . '|' . $patient->mname;
+            })
+            ->map(function ($group) {
+                return $group->first(); // Select only the first record in each group
+            });
+        $dv1 = Utilization::whereIn('proponent_id', $ids)
+            ->where('status', 0)
+            ->where('facility_id', 837)
+            ->where(function ($query) {
+                $query->whereHas('dv', function ($query) {
+                    $query->whereColumn('div_id', 'route_no');
+                })->orWhereHas('newDv', function ($query) {
+                    $query->whereColumn('div_id', 'route_no');
+                });
+            })
+            ->with([
+                'fundSourcedata:id,saa',
+                'user:userid,fname,lname',
+            ])
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $dv3_fundsources = Dv3Fundsource::whereIn('info_id', $info)
+            ->with([
+                'dv3' => function ($query){
+                    $query->with([
+                        'facility:id,name',
+                        'user:userid,fname,lname'
+                    ]);
+                },
+                'fundsource:id,saa'
+            ]);
+
+            $f_ids = is_array($f_ids) ? $f_ids : explode(',', $f_ids); 
+
+            if (in_array("all", $f_ids)) {
+                $query = Patients::whereIn('proponent_id', $ids);
+                $ret_id = 0;
+            } else {
+                $query = Patients::whereIn('proponent_id', $ids)->whereIn('facility_id', $f_ids);
+                $ret_id = $f_ids;
+            }
+
+            $query->with('facility:id,name', 'encoded_by:userid,fname,lname,mname', 'gl_user:username,fname,lname');
+
+            if ($patient_id !== null) {
+                if ($patient_id !== "all" && isset($pat1)) {
+                    $query->where('fname', $pat1->fname)
+                        ->where('mname', $pat1->mname)
+                        ->where('lname', $pat1->lname);
+                }
+            }
+
+            $tracking = $query->orderBy('lname', $sort_type)->paginate(20);
+
+        
+        $facilities = Facility::whereIn('id', Patients::whereIn('proponent_id', $ids)->pluck('facility_id')->toArray())->select('id', 'name')->get(); 
+        $proponents = Proponent::selectRaw('MIN(id) as id, proponent')
+                ->groupBy('proponent')
+                ->get();
+        return view('proponents.proponent_util',[
+            'data' => $tracking,
+            'proponents' => $proponents,
+            'ret_id' => $ret_id,
+            'facilities' => $facilities,
+            'dv3' => $dv3_fundsources->orderBy('id', 'desc')->get(),
+            'dv1' => $dv1,
+            'ids' => $tracking->whereNull('pro_used')->pluck('id')->toArray(),
+            'filter_patients' => $filter_patients,
+            'pat1' => $patient_id == "all" ? 'none' :$pat1,
+            'sort_type' => $sort_type
 
         ]);
     }
