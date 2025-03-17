@@ -752,7 +752,10 @@ class DvController extends Controller
             $dv->dv_no = $request->input('dv_no');
             $dv->save();
 
-            $response = Http::withoutVerifying()->get('https://mis.cvchd7.com/dts/document/dv_no/' . $dv->dv_no . '/' . $dv->route_no . '/' .Auth::user()->userid);
+            // $response = Http::withoutVerifying()->get('https://mis.cvchd7.com/dts/document/dv_no/' . $dv->dv_no . '/' . $dv->route_no . '/' .Auth::user()->userid);
+        
+                $response = Http::withoutVerifying()->get('http://192.168.110.17/dts/document/dv_no/' . $dv->dv_no . '/' . $dv->route_no . '/' .Auth::user()->userid);
+
             if($response){
                 // $res = $response;
                 if($response == "0"){

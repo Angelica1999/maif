@@ -434,7 +434,10 @@
             var routeNo = $(link).data('routeid');
             setTimeout(function() { 
                 // var src = "http://192.168.110.135/dts3/document/trackMaif/" + routeNo;
-                var src = "https://mis.cvchd7.com/dts/document/trackMaif/" + routeNo;
+                // var src = "https://mis.cvchd7.com/dts/document/trackMaif/" + routeNo;
+                // var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNo;
+                var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNoo;
+
                 $("#track_iframe").attr("src", src);
                 $('#i_frame').modal('show');
             }, 100);

@@ -58,7 +58,7 @@
                                 <td class="td">
                                     <a href="{{ route('reset.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-success" style="border-radius:0px">Reset</a>
                                     <a href="{{ route('deactivate.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-warning" style="border-radius:0px">Deactivate</a>
-                                    <a href="{{ route('deactivate.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-info" style="border-radius:0px">Activate</a>
+                                    <a href="{{ route('activate.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-info" style="border-radius:0px">Activate</a>
                                 </td>
                             </tr>
                         @endforeach

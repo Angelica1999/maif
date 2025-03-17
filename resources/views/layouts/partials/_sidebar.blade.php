@@ -342,7 +342,7 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('incoming') }}">
                                 <img src="\maif\public\images\incoming_16.png" style="margin-right:12px">
-                                <span class="menu-title">Incomming Send Bills</span>
+                                <span class="menu-title">Incoming Send Bills</span>
                             </a>
                         </li>
                         <li class="nav-item">
