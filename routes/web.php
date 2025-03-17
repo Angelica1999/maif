@@ -175,6 +175,8 @@ Route::get('/proponent/sub-del/{id}', [App\Http\Controllers\ProponentController:
 Route::get('/proponent/sup-update/{id}/{amount}', [App\Http\Controllers\ProponentController::class, 'supUpdate'])->name('update.supplemental');
 Route::get('/proponent/patient-delete/{id}', [App\Http\Controllers\ProponentController::class, 'delGL'])->name('delete.gl');
 Route::get('/proponent/patient-sort/{code}/{id}/{userid}/{on}/{patient_id}', [App\Http\Controllers\ProponentController::class, 'filterData'])->name('filter.gl');
+Route::get('/proponent/patient-sort2/{code}/{id}/{userid}/{on}/{patient_id}', [App\Http\Controllers\ProponentController::class, 'sortData'])->name('sort.gl');
+
 Route::get('/proponent/patient-print/{code}/{ids}/{patient_id}', [App\Http\Controllers\ProponentController::class, 'excelData'])->name('excel.gl');
 Route::get('/proponent/sub-details/{proponent}', [App\Http\Controllers\ProponentController::class, 'subDetails'])->name('details.subtracted');
 Route::get('/proponent/sub-update/{id}/{amount}', [App\Http\Controllers\ProponentController::class, 'subUpdate'])->name('update.subtraction');
