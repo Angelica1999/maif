@@ -24,56 +24,56 @@
             @if(isset($data))
                 <div class="row">
                     @foreach($data as $row)
-                        <div class="col-md-4 mt-2 grid-margin grid-margin-md-0 stretch-card">
+                        <div class="col-md-3 mt-2 grid-margin grid-margin-md-0 stretch-card">
                             <div class="card">
                                 <div class="card-body">
-                                    <div style ="display:flex; justify-content:space-between;">
+                                    <div style="justify-content: space-between; flex-wrap: wrap; align-items: center;">
                                         <b><h3><a href="" data-toggle="modal" class="text-success" onclick="disUtil('{{ $row['proponent']['proponent'] }}')">{{ $row['proponent']['proponent'] }}</a></h3></b>
-                                        <a href="#modified_funds" data-toggle="modal" class="btn btn-sm update_saa" style="min-width:110px; cursor: pointer; text-align:center; color:white; background-color:#417524; border-radius:0;" onclick="addBalance('{{ $row['proponent']['proponent'] }}')">Manage Funds</a>                                      
+                                        <a href="#modified_funds" data-toggle="modal" class="btn btn-sm update_saa" style="min-width:110px;height:30px; cursor: pointer; text-align:center; color:white; background-color:#417524; border-radius:0;" onclick="addBalance('{{ $row['proponent']['proponent'] }}')">Manage Funds</a>                                      
                                     </div>
-                                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                                        <div style="width:70%;">
-                                            <table style="border-collapse: collapse; width: 90%; margin: 0; padding: 0; margin-left:5%">
+                                    <div style="overflow-x: auto; width: 100%; margin-top: 10px;">
+                                        <table class="table-reponsive" style="border-collapse: collapse; width: 90%; margin: 0; padding: 0; margin-left:5%">
+                                            <tbody>
                                                 <tr>
-                                                    <td style="padding: 5px;">Allocated Funds</td>
-                                                    <td style="padding: 5px; text-align: center;">:</td>
-                                                    <td style="padding: 5px;"><strong>{{ !empty($row['sum']) ? number_format($row['sum'], 2, '.', ',') : '0.00' }}</strong></td>
+                                                    <td style="padding:5px">Allocated Funds</td>
+                                                    <td class="text-center" style="padding:5px">:</td>
+                                                    <td style="padding:5px"><strong>{{ number_format($row['sum'] ?? 0, 2, '.', ',') }}</strong></td>
                                                 </tr>
                                                 <tr>
-                                                    <td style="padding: 5px;">GL Total</td>
-                                                    <td style="padding: 5px; text-align: center;">:</td>
-                                                    <td style="padding: 5px;"><strong>{{ !empty($row['totalUtilized']) ? number_format($row['totalUtilized'], 2, '.', ',') : '0.00' }}</strong></td>
+                                                    <td style="padding:5px">GL Total</td>
+                                                    <td class="text-center">:</td>
+                                                    <td><strong>{{ number_format($row['totalUtilized'] ?? 0, 2, '.', ',') }}</strong></td>
                                                 </tr>
                                                 <tr>
-                                                    <td style="padding: 5px;">Disbursement Total</td>
-                                                    <td style="padding: 5px; text-align: center;">:</td>
-                                                    <td style="padding: 5px;"><strong>{{ !empty($row['disbursement']) ? number_format($row['disbursement'], 2, '.', ',') : '0.00' }}</strong></td>
+                                                    <td style="padding:5px">Disbursement Total</td>
+                                                    <td class="text-center">:</td>
+                                                    <td><strong>{{ number_format($row['disbursement'] ?? 0, 2, '.', ',') }}</strong></td>
                                                 </tr>
                                                 <tr>
-                                                    <td style="padding: 5px;">Supplemental Funds</td>
-                                                    <td style="padding: 5px; text-align: center;">:</td>
-                                                    <td style="padding: 5px;">
-                                                        <a href="#supp_tracking" data-backdrop="static" data-toggle="modal" onclick="supDetails('{{ $row['proponent']['proponent'] }}')">
-                                                            <strong>{{ !empty($row['supp']) ? number_format($row['supp'], 2, '.', ',') : '0.00' }}</strong>
+                                                    <td style="padding:5px">Supplemental Funds</td>
+                                                    <td class="text-center">:</td>
+                                                    <td>
+                                                        <a href="#supp_tracking" data-toggle="modal" onclick="supDetails('{{ $row['proponent']['proponent'] }}')">
+                                                            <strong>{{ number_format($row['supp'] ?? 0, 2, '.', ',') }}</strong>
                                                         </a>
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td style="padding: 5px;">Negative Amount</td>
-                                                    <td style="padding: 5px; text-align: center;">:</td>
-                                                    <td style="padding: 5px;">
+                                                    <td style="padding:5px">Negative Amount</td>
+                                                    <td class="text-center">:</td>
+                                                    <td>
                                                         <a href="#sub_tracking" data-toggle="modal" onclick="subDetails('{{ $row['proponent']['proponent'] }}')">
-                                                            <strong>{{ !empty($row['sub']) ? number_format($row['sub'], 2, '.', ',') : '0.00' }}</strong>
+                                                            <strong>{{ number_format($row['sub'] ?? 0, 2, '.', ',') }}</strong>
                                                         </a>
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td style="padding: 5px;">Remaining Funds</td>
-                                                    <td style="padding: 5px; text-align: center;">:</td>
-                                                    <td style="padding: 5px;"><strong>{{ !empty($row['rem']) ? number_format($row['rem'], 2, '.', ',') : '0.00' }}</strong></td>
+                                                    <td style="padding:5px">Remaining Funds</td>
+                                                    <td class="text-center">:</td>
+                                                    <td><strong>{{ number_format($row['rem'] ?? 0, 2, '.', ',') }}</strong></td>
                                                 </tr>
-                                            </table>
-                                        </div>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>

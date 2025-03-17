@@ -27,7 +27,7 @@
             @if(isset($fundsources) && $fundsources->count() > 0)
                 <div class="row">
                     @foreach($fundsources as $fund)
-                        <div class="col-md-4 mt-2 grid-margin grid-margin-md-0 stretch-card">
+                        <div class="col-md-3 mt-2 grid-margin grid-margin-md-0 stretch-card">
                             <div class="card">
                                 <div class="card-body">
                                     <table style="border-collapse: collapse; width: 100%; margin: 0; padding: 0; ">
@@ -39,12 +39,58 @@
                                                     <b><h3><a class="card-title text-success" href="#update_fundsource" onclick="updateFundsource('{{ $fund->id }}')" data-backdrop="static" data-toggle="modal">{{$fund->saa}}</a></h3></b>
                                                 @endif
                                             </td>
-                                            <td style="width:20%"><button style="border-radius:0px; border:1px solid blue" class="btn btn-sm btn-outline-info" onclick="budgetCost({{ $fund->id }}, '{{ $fund->saa }}')">Budget Cost</button></td>
-                                            <td style="text-align:right; padding:0px; width:20%"><button style="width:105px; border-radius:0; border:1px solid teal" id="track" data-fundsource-id="{{  $fund->id }}" data-target="#track_details" onclick="track_details(event)" class='btn btn-sm btn-outline-success track_details'>Tracking</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <button style="border-radius:0px; border:1px solid blue; width:110px;" class="btn btn-sm btn-outline-info" onclick="budgetCost({{ $fund->id }}, '{{ $fund->saa }}')">Budget Cost</button>
+                                                <button style="width:110px; border-radius:0; border:1px solid teal" id="track" data-fundsource-id="{{  $fund->id }}" data-target="#track_details" onclick="track_details(event)" class='btn btn-sm btn-outline-success track_details'>Tracking</button>
+                                            </td>
                                         </tr>
                                     </table>
                                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                                        <div style="width:70%;">
+                                        <table style="border-collapse: collapse; width: 100%; margin-top: 5px; font-size:12px">
+                                            <?php
+                                                $allocated = !Empty($fund->proponentInfo[0]->total_allocated_funds) ? $fund->proponentInfo[0]->total_allocated_funds : 0;
+                                                $admin_cost = !Empty($fund->proponentInfo[0]->total_admin_cost) ? $fund->proponentInfo[0]->total_admin_cost : 0;
+                                                $utilized = !Empty($fund->utilization[0]->total_bbudget_utilize) ? $fund->utilization[0]->total_bbudget_utilize : 0;
+                                                $deduction = (isset($fund->a_cost) && count($fund->a_cost) > 0) ? $fund->a_cost[0]->total_admin_cost : 0;
+                                            ?>
+                                            <tr>
+                                                <td style="width:50%; padding: 5px;">
+                                                    Allocated Funds
+                                                    :
+                                                    <strong class="text-info">{{ number_format(floatval(str_replace(',', '',$allocated)), 2, '.', ',') }}</strong>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width:50%; padding: 5px;">
+                                                    Admin Cost Balance
+                                                    :
+                                                    <strong class="{{ $fund->remaining_balance == 0 ? 'text-danger' : 'text-info' }}">
+                                                        {{ number_format(floatval(str_replace(',', '', $allocated - ($utilized + $admin_cost))), 2, '.', ',') }}
+                                                    </strong>
+
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width:50%; padding: 5px;">
+                                                    Remaining Balance
+                                                    :
+                                                    <strong class="{{ $fund->remaining_balance == 0 ? 'text-danger' : 'text-info' }}">
+                                                        {{ number_format(floatval(str_replace(',', '', $allocated - ($utilized + $admin_cost))), 2, '.', ',') }}
+                                                    </strong>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="3" style="width:50%; padding: 5px;">
+                                                    <button class="btn btn-sm btn-info" href="#budget_funds" onclick="fundsTracking({{ $fund->id }})" data-toggle="modal" style="border-radius: 0; flex: 1; width:110px;">&nbsp;&nbsp;Breakdowns of Funds&nbsp;</button>
+                                                    <button class="btn btn-sm btn-success" href="" onclick="budgetTracking('{{ $fund->saa }}',{{ $fund->id }}, {{ !Empty($fund->admin_cost) ? floatval(str_replace(',', '',$fund->admin_cost)): 0 }}, {{ !Empty($fund->budget_cost) ? floatval(str_replace(',', '',$fund->budget_cost)): 0 }})" data-toggle="modal" style="border-radius: 0; flex: 1; width:110px;">Breakdowns of Charges</button>
+                                                </td>
+                                              
+                                            </tr>
+                                        </table>
+                                        <!-- <div style="width:70%;">
+
                                             <ul class="list-arrow mt-3" style="list-style: none; padding: 0; margin: 0;">
                                                 <?php
                                                     $allocated = !Empty($fund->proponentInfo[0]->total_allocated_funds) ? $fund->proponentInfo[0]->total_allocated_funds : 0;
@@ -69,7 +115,7 @@
                                         <div style="display: flex; gap: 5px;">
                                             <button class="btn btn-sm btn-info" href="#budget_funds" onclick="fundsTracking({{ $fund->id }})" data-toggle="modal" style="border-radius: 0; flex: 1;">&nbsp;&nbsp;Breakdowns of Funds&nbsp;</button>
                                             <button class="btn btn-sm btn-success" href="" onclick="budgetTracking('{{ $fund->saa }}',{{ $fund->id }}, {{ !Empty($fund->admin_cost) ? floatval(str_replace(',', '',$fund->admin_cost)): 0 }}, {{ !Empty($fund->budget_cost) ? floatval(str_replace(',', '',$fund->budget_cost)): 0 }})" data-toggle="modal" style="border-radius: 0; flex: 1;">Breakdowns of Charges</button>
-                                        </div>
+                                        </div> -->
                                     </div>
                                 </div>
                             </div>
