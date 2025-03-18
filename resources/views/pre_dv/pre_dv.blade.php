@@ -5,6 +5,16 @@
         background-color: green;
         color: white;
     }
+    .red-option {
+        background-color: red !important;
+        color: white !important;
+    }
+
+    .green-option {
+        background-color: green !important;
+        color: white !important;
+    }
+
 </style>
 
 <div class="col-md-12 grid-margin stretch-card">
@@ -135,7 +145,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="create_predv" role="dialog" style="overflow-y:scroll;">
+<div class="modal fade" id="create_predv" role="dialog" style="overflow-y:scroll;" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document" style="width:700px">
         <div class="modal-content">
             <div class="modal-header" style="text-align:center">
@@ -222,7 +232,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="update_predv" role="dialog" style="overflow-y:scroll;">
+<div class="modal fade" id="update_predv" role="dialog" style="overflow-y:scroll;" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document" style="width:700px">
         <div class="modal-content">
             <div class="modal-header" style="background-color:#17c964;padding:15px; color:white">
@@ -581,8 +591,6 @@
                 $('.submit_btn').css('display', 'block');
                 edit_stat = 1;
             }
-
-            console.log(stat, stat);
             
             f_id = $('#facility_id').val();
             $.get("{{url('pre-dv/control_nos').'/'}}" + f_id, function (result){

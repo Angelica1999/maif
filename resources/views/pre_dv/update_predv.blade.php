@@ -46,8 +46,7 @@
                     @foreach($row->saas as $index => $row3)
                         <div class="saa_clone" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 2%;">
                             <select style="width: 50%;" class="select2 saa_id" onchange="autoDeduct($(this))" required>
-                                <option value=''>SELECT SAA</option>
-                           
+                                <option value=''></option>
                                 @foreach($info as $row)
                                     <?php
                                         $rem_balance = number_format((float)str_replace(',', '', $row->remaining_balance), 2, '.', ',');
@@ -66,29 +65,49 @@
                                             }
                                         }                            
                                     ?>
-
-                                    <option dataproponentInfo_id="{{$row->id}}" dataprogroup="{{$row->proponent->pro_group}}" dataproponent="{{$row->proponent->id}}" value="{{$row->fundsource_id}}" dataval="{{$row->remaining_balance}}" {{($row3->fundsource_id == $row->fundsource_id && $row3->info_id == $row->id)?'selected':''}}>
-                                        {{$text_display}}
+                                    <option style="background-color:green" dataproponentInfo_id="{{ $row->id }}" dataprogroup="{{ $row->proponent->pro_group }}" dataproponent="{{ $row->proponent->id }}" value="{{ $row->fundsource_id }}" dataval="{{ $row->remaining_balance }}" {{ ($row3->fundsource_id == $row->fundsource_id && $row3->info_id == $row->id)?'selected':'' }}>
+                                        {{ $text_display }} 
                                     </option>
                                 @endforeach
                             </select>
-                            <input placeholder="AMOUNT" class="form-control saa_amount" onkeyup="validateAmount(this)" style="width: 35%;" value="{{number_format(str_replace(',','',$row3->amount), 2, '.',',')}}" required>
-                            <i class="{{($index == 0)?'typcn typcn-plus menu-icon saa_clone_btn' : 'typcn typcn-minus menu-icon saa_remove_btn' }}" style="width:40px; color:white;border: 1px; padding: 2px; {{($index == 0)?'background-color:blue' : 'background-color:red'}}"></i>
+                            <input placeholder="AMOUNT" class="form-control saa_amount" onkeyup="validateAmount(this)" style="width: 35%;" value="{{ number_format(str_replace(',','',$row3->amount), 2, '.',',') }}" required>
+                            <i class="{{ ($index == 0)?'typcn typcn-plus menu-icon saa_clone_btn' : 'typcn typcn-minus menu-icon saa_remove_btn' }}" style="width:40px; color:white;border: 1px; padding: 2px; {{ ($index == 0)?'background-color:blue' : 'background-color:red' }}"></i>
                         </div>
                     @endforeach
                     <div style="display:inline-block;">
                         <span class="text-info">Total fundsource inputted amount:</span>
-                        <span class="text-danger inputted_amount" id="inputted_amount">{{$total_saa}}</span>
+                        <span class="text-danger inputted_amount" id="inputted_amount">{{ $total_saa }}</span>
                     </div>
                 </div>
             </div>
         @endforeach
     </div>
     <div style="display: flex; justify-content: flex-end; margin-top: 5%; margin-bottom:5%">
-        <input class="form-control grand_total" name="grand_total" id="grand_total" style="width: 50%; text-align: center;" placeholder="GRAND TOTAL" value="{{number_format(str_replace(',','',$result->grand_total), 2, '.',',')}}" readonly> 
+        <input class="form-control grand_total" name="grand_total" id="grand_total" style="width: 50%; text-align: center;" placeholder="GRAND TOTAL" value="{{ number_format(str_replace(',','',$result->grand_total), 2, '.',',') }}" readonly> 
     </div>
     <button type="submit" class="btn-sm btn-success updated_submit" style="display:none">SUBMIT</button>
-<!-- </form> -->
+
 <script>
-    $('.select2').select2();
+    $(document).ready(function () {
+    $('.select2').select2({
+        templateResult: function (data) {
+            if (!data.id) {
+                return data.text;
+            }
+
+            var balance = $(data.element).attr("dataval");
+            var text = $(data.element).text(); 
+
+            var color = balance == 0 ? 'red' : 'black'; 
+            return $('<span style="color:' + color + ';">' + text + '</span>');
+        },
+        templateSelection: function (data) {
+            return data.text;
+        },
+        tags: true,
+        placeholder: "SELECT SAA"
+    });
+});
+
+
 </script>
