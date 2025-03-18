@@ -399,19 +399,17 @@ class PrintController extends Controller
         $text_color = imagecolorallocate($image, 0, 0, 0); 
         imagestring($image, 5, 10, 10, $route_no, $text_color);
     
-        // Save the image
         $image_path = 'public/images/' .$route_no.'.png';
         imagepng($image, $image_path);
     
-        // Destroy the image to free up memory
         imagedestroy($image);
     
-        return $image_path; // Return the image path so it can be used later
+        return $image_path;
     }    
 
     public function newDVPDF($id) {
-        $this->genPreImage($id);
-        set_time_limit(0);  // No time limit, will run indefinitely (or until the task finishes)
+        // $this->genPreImage($id);
+        set_time_limit(0); 
        
         $new = NewDV::where('predv_id', $id)->first();
         if($new){
@@ -434,11 +432,18 @@ class PrintController extends Controller
                     }
                 ])->first();
             $extension = PreDVExtension::where('pre_dv_id', $pre_dv->id)->pluck('id');
-            $saas = PreDVSAA::whereIn('predv_extension_id', $extension)->with(
-                ['saa'=> function ($query){
-                    $query->with('image');
-                }]
-            )->get();
+            // $saas = PreDVSAA::whereIn('predv_extension_id', $extension)->with(
+            //     ['saa'=> function ($query){
+            //         $query->with('image');
+            //     }]
+            // )->get();
+            $saas = PreDVSAA::whereIn('predv_extension_id', $extension)
+            ->with('saa:id,saa')
+            ->get()
+            ->sortBy(function ($item) {
+                return [(stripos($item->saa->saa ?? '', 'conap') === 0) ? 0 : 1, $item->saa->saa ?? ''];
+            })->values(); 
+        
 
             $info = AddFacilityInfo::where('facility_id', $pre_dv->facility_id)->first();
             $controls = PreDVControl::whereIn('predv_extension_id', $extension)->get();  
