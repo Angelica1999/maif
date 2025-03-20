@@ -1148,7 +1148,7 @@ class PreDvController extends Controller
         if($type == 'awaiting'){
             $new->ors_no = $request->ors_no;
             $new->obligated_by = Auth::user()->userid;
-            $new->obligated_on =  date('Y-m-d H:i:s');
+            $new->obligated_on = date('Y-m-d H:i:s', strtotime($request->obligated_on));
             $new->status = 1;
             $new->confirm = 1;
             $new->save();
@@ -1163,7 +1163,7 @@ class PreDvController extends Controller
                     $u->budget_utilize = $u->utilize_amount;
                     $u->obligated = 1;
                     $u->obligated_by = Auth::user()->userid;
-                    $u->obligated_on = date('Y-m-d H:i:s');
+                    $u->obligated_on = date('Y-m-d H:i:s', strtotime($request->obligated_on));
                     $u->save();
                     
                     $fund->remaining_balance = (float) str_replace(',','', $fund->remaining_balance) - (float) str_replace(',','', $u->utilize_amount);
