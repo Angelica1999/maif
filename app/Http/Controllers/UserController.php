@@ -25,10 +25,62 @@ class UserController extends Controller{
         $this->middleware('auth');
     }
     
-    public function users(){
-        $users = OnlineUser::with('facility','proponent')->orderBy('id', 'desc')->paginate(50);
+    public function users(Request $req){
+        $users = OnlineUser::with('facility:id,name','proponent:id,proponent')->sortable();
+        if($req->viewAll){
+            $req->keyword = '';
+        }else if($req->keyword){
+            $users->where(function ($query) use ($req) {
+                $query->where('lname', 'LIKE', "%{$req->keyword}%")
+                      ->orWhere('fname', 'LIKE', "%{$req->keyword}%");
+            });
+        }
+
+        if($req->account_type){
+            if($req->account_type == 1){
+                $users->where('user_type', 1);
+            }else if($req->account_type == 2){
+                $users->where('user_type', 2);
+            }else if($req->account_type == 3){
+                $users->where('user_type', 3);
+            }
+        }
+
         return view('users',[
-            'users' => $users
+            'users' => $users->orderBy('id', 'desc')->paginate(50),
+            'keyword' => $req->keyword,
+            'type' => [1,2,3],
+            'account_type' => $req->account_type
+        ]);
+    }
+
+    public function usersActivation(Request $req){
+        $registration = Registration::with('facility','proponent')->sortable();
+      
+        if($req->viewAll){
+            $req->keyword = '';
+        }else if($req->keyword){
+            $registration->where(function ($query) use ($req) {
+                $query->where('lname', 'LIKE', "%{$req->keyword}%")
+                      ->orWhere('fname', 'LIKE', "%{$req->keyword}%");
+            });
+        }
+
+        if($req->account_type){
+            if($req->account_type == 1){
+                $registration->where('user_type', 1);
+            }else if($req->account_type == 2){
+                $registration->where('user_type', 2);
+            }else if($req->account_type == 3){
+                $registration->where('user_type', 3);
+            }
+        }
+// return $req->account_type;
+        return view('user_activation',[
+            'registrations' => $registration->orderBy('id', 'desc')->paginate(50),
+            'keyword' => $req->keyword,
+            'type' => [1,2,3],
+            'account_type' => $req->account_type
         ]);
     }
 
@@ -40,14 +92,6 @@ class UserController extends Controller{
     public function activate($id){
         OnlineUser::where('id', $id)->update(['status' => 0]);
         return redirect()->back()->with('user_activation', true);
-    }
-
-    public function usersActivation(){
-        $registration = Registration::with('facility','proponent')->orderBy('id', 'desc')->paginate(50);
-
-        return view('user_activation',[
-            'registrations' => $registration
-        ]);
     }
 
     public function verifyuser($id)

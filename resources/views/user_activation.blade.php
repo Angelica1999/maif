@@ -10,9 +10,10 @@
         <div class="card-body">
             <form method="GET" action="">
                 <div class="input-group float-right w-50" style="min-width: 600px;">
-                    <input type="text" class="form-control" name="keyword" placeholder="Search..." value="">
+                    <input type="text" class="form-control" name="keyword" placeholder="Search..." value="{{ $keyword }}">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
+                        <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
                     </div>
                 </div>
             </form>
@@ -20,52 +21,76 @@
             <p class="card-description">
                 MAIF-IPP
             </p>
-            @if(isset($registrations) && $registrations->count() > 0)
-                <div class="table-responsive">
-                    <table class="table table-striped">
+            <div class="table-responsive">
+                <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th style="width:50px">Type</th>
-                            <th style="width:150px">Account</th>
-                            <th>Email</th>
-                            <th>Contact</th>
-                            <th style="width:100px"></th>
+                            <th>@sortablelink('fname', 'First Name')
+                            <th>@sortablelink('lname', 'Last Name')
+                            <th>@sortablelink('birthdate', 'Birthdate')
+                            <th>@sortablelink('user_type', 'Type')
+                            <th>
+                                <form method="GET" action="">
+                                    <select id="account" class="form-control account" name="account_type" style="text-align:center" onchange="this.form.submit()">
+                                        <option></option>
+                                        <option value="all">All</option>
+                                        @foreach($type as $row)
+                                            <option value="{{ $row }}" {{ $row == $account_type ? 'selected': '' }}>
+                                                {{ 
+                                                    $row == 1 ? 'Proponent' : 
+                                                    ($row == 2 ? 'Facility' : 'MPU') 
+                                                }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </form>
+                            </th>
+                            <th>@sortablelink('email', 'Email')
+                            <th>@sortablelink('contact_no', 'Contact No')
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($registrations as $row)
+                        @if(isset($registrations) && $registrations->count() > 0)
+
+                            @foreach($registrations as $row)
+                                <tr>
+                                    <td class="td">{{ $row->fname }}</td>
+                                    <td class="td">{{ $row->lname }}</td>
+                                    <td>{{ date('F j, Y', strtotime($row->birthdate)) }} </td>
+                                    <td class="td">
+                                        {{ 
+                                            $row->user_type == 1 ? 'Proponent' : 
+                                            ($row->user_type == 2 ? 'Facility' : 'MPU') 
+                                        }}
+                                    </td>
+                                    <td class="td">
+                                        {{ 
+                                            $row->user_type == 1 ? $row->proponent->proponent : 
+                                            ($row->user_type == 2 ? $row->facility->name : 'MPU') 
+                                        }}
+                                    </td>
+                                    <td class="td">{{$row->email}}</td>
+                                    <td>{{ $row->contact_no }}</td>
+                                    <td class="td">
+                                        <a href="{{ route('verify.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-info" style="color:white; width:80px;border:0px">Verify</a>
+                                        <button type="button" href="#user_cancel" style="width:80px; color:white; border:0px" data-toggle="modal" data-backdrop="static" class="btn btn-xs btn-warning" onclick="cancel({{$row->id}})">Cancel</button>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @else
                             <tr>
-                                <td class="td">{{$row->fname .' '.$row->lname}}</td>
-                                <td class="td">
-                                    {{ 
-                                        $row->user_type == 1 ? 'Proponent' : 
-                                        ($row->user_type == 2 ? 'Facility' : 'MPU') 
-                                    }}
-                                </td>
-                                <td class="td">
-                                    {{ 
-                                        $row->user_type == 1 ? $row->proponent->proponent : 
-                                        ($row->user_type == 2 ? $row->facility->name : 'MPU') 
-                                    }}
-                                </td>
-                                <td class="td">{{$row->email}}</td>
-                                <td class="td">{{$row->contact_no}}</td>
-                                <td class="td">
-                                    <a href="{{ route('verify.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-info" style="color:white; width:80px;">Verify</a>
-                                    <button type="button" href="#user_cancel" style="width:100%; color:white; border" data-toggle="modal" data-backdrop="static" class="btn btn-xs btn-warning" onclick="cancel({{$row->id}})">Cancel</button>
+                                <td colspan="8" style="background-color:white">
+                                    <div class="alert alert-danger" role="alert" style="width: 100%; ">
+                                        <i class="typcn typcn-times menu-icon"></i>
+                                        <strong>No data found!</strong>
+                                    </div>
                                 </td>
                             </tr>
-                        @endforeach
+                        @endif
                     </tbody>
-                    </table>
-                </div>
-            @else
-                <div class="alert alert-danger" role="alert" style="width: 100%;">
-                <i class="typcn typcn-times menu-icon"></i>
-                    <strong>No new account to be registered!</strong>
-                </div>
-            @endif
+                </table>
+            </div>
             <div class="pl-5 pr-5 mt-5">
                 {!! $registrations->appends(request()->query())->links('pagination::bootstrap-5') !!}
             </div>
@@ -162,7 +187,10 @@
 @section('js')
     <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
     <script>
-        // $('#gender').select2();
+        $('#account').select2({
+            tags:true,
+            placeholder:'Account'
+        });
         function cancel(id){
             $('#user_cancel').modal('show');
             $('#cancel_user').attr('action', '{{ route("cancel.user", [":id"]) }}'.replace(':id', id));
