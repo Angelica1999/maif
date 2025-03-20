@@ -518,6 +518,7 @@ class DV3Controller extends Controller
 
             $dv3 = Dv3::where('route_no', $route_no)->first();
             $dv3->obligated_by = $user;
+            $dv3->obligated_on = date('Y-m-d H:i:s', strtotime($request->obligated_on));
             $dv3->ors_no = $ors_no;
             $dv3->remarks = 1;
             $dv3->save();
@@ -531,7 +532,7 @@ class DV3Controller extends Controller
                 $u->budget_utilize = $amount;
                 $u->obligated = 1;
                 $u->obligated_by = Auth::user()->userid;
-                $u->obligated_on = date('Y-m-d');
+                $u->obligated_on = date('Y-m-d H:i:s', strtotime($request->obligated_on));
                 $u->save();
                 $fundsource->remaining_balance = (float) str_replace(',','', $fundsource->remaining_balance) - $amount;
                 $fundsource->save();
@@ -541,6 +542,7 @@ class DV3Controller extends Controller
 
             $dv3 = Dv3::where('route_no', $route_no)->first();
             $dv3->paid_by = $user;
+            $dv3->paid_on = date('Y-m-d');
             $dv3->remarks = 2;
             $dv3->save();
 

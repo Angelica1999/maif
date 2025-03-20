@@ -155,6 +155,10 @@
                                     <span  style="vertical-align: middle;">ORS/BURS No. : {{ $dv3->ors_no }}</span>
                                     @if($section == '6')
                                         <textarea name="ors_no" style="width:140px; height:30px; margin-left: 10px;" class="form-control ors_no" id="ors_no" required>{{ $dv3->ors_no != null ? $dv3->ors_no : $ors }}</textarea>
+                                        <div style="display: flex; align-items: center;">
+                                            <span style="vertical-align: middle;">Date of Obligation : </span>
+                                            &nbsp;<input class="form-control" type="date" asp-for="Obligated" name="obligated_on" style="width: 150px; height: 28px; font-size:8pt" value="{{$dv3?$dv3->obligated_on :(new DateTime())->format('Y-m-d')}}" required>
+                                        </div>
                                     @endif
                                     <!-- <textarea name="ors_no" style="width:150px; height:30px; margin-left: 10px;" class="form-control" required>{{ $ors }}</textarea> -->
                                 </div>

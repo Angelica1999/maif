@@ -146,6 +146,10 @@
                                             <span style="vertical-align: middle;">ORS/BURS No. : *</span>
                                             <textarea name="ors_no" style="width:150px; height:30px; margin-left: 10px;" class="form-control" required>{{ $ors }}</textarea>
                                         </div>
+                                        <div style="display: flex; align-items: center;">
+                                            <span style="vertical-align: middle;">Date of Obligation : </span>
+                                            &nbsp;<input class="form-control" type="date" asp-for="Obligated" name="obligated_on" style="width: 150px; height: 28px; font-size:8pt" value="{{$new_dv?$new_dv->obligated_on :(new DateTime())->format('Y-m-d')}}" required>
+                                        </div>
                                     @else
                                         <span>ORS/BURS No. : {{$new_dv->ors_no}}</span>
                                     @endif
