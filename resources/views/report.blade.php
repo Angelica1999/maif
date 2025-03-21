@@ -33,7 +33,7 @@
                                 <div class="card-body">
                                     <div style ="display:flex; justify-content:space-between;">
                                         <h4 class="card-title" style=" text-align:left;">{{ $proponent->proponent }}</h4>
-                                        <a href="{{ route('proponent.report', ['pro_group' => $proponent->pro_group]) }}" style="height:30px;  background-color:#1D4646; color:white" target="_blank" type="button" class="btn btn-sm">View</a>
+                                        <a href="{{ route('proponent.report', ['pro_group' => $proponent->pro_group]) }}" style="height:30px;  background-color:#1D4646; color:white" type="button" class="btn btn-sm">View</a>
                                     </div>
                                 </div>
                             </div>
