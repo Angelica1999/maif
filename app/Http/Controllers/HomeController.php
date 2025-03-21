@@ -30,6 +30,16 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Arr;
 use DataTables;
 use Kyslik\ColumnSortable\Sortable;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Borders;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use PhpOffice\PhpSpreadsheet\RichText\RichText;
+use PhpOffice\PhpSpreadsheet\Style\Font;
+use PhpOffice\PhpSpreadsheet\Style\Color;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class HomeController extends Controller
 {
@@ -1029,25 +1039,120 @@ class HomeController extends Controller
             ->orderBy('id', 'asc')
             ->get();
         $proponent = Proponent::where('pro_group', $pro_group)->first();
+
+        // excel file before
         $title = $proponent->proponent;
-        $filename = $title.'.xls';
-        header("Content-Type: application/xls");
-        header("Content-Disposition: attachment; filename=$filename");
-        header("Pragma: no-cache");
-        header("Expires: 0");
-        $table_body = "<tr>
-                <th>Route No</th>
-                <th>SAA</th>
-                <th>Facility</th>
-                <th>Allocation</th>
-                <th>Utilize Amount</th>
-                <th>Percentage</th>
-                <th>Discount</th>
-                <th>Balance</th>
-                <th>Patients</th>
-                <th>Created On</th>
-            </tr>";
-            // return $utilization;
+        // $filename = $title.'.xls';
+        // header("Content-Type: application/xls");
+        // header("Content-Disposition: attachment; filename=$filename");
+        // header("Pragma: no-cache");
+        // header("Expires: 0");
+        // $table_body = "<tr>
+        //         <th>Route No</th>
+        //         <th>SAA</th>
+        //         <th>Facility</th>
+        //         <th>Allocation</th>
+        //         <th>Utilize Amount</th>
+        //         <th>Percentage</th>
+        //         <th>Discount</th>
+        //         <th>Balance</th>
+        //         <th>Patients</th>
+        //         <th>Created On</th>
+        //     </tr>";
+
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Adjust column widths
+        $sheet->getColumnDimension('A')->setWidth(2);  
+        $sheet->getColumnDimension('B')->setWidth(20); 
+        $sheet->getColumnDimension('C')->setWidth(30); 
+        $sheet->getColumnDimension('D')->setWidth(55);
+        $sheet->getColumnDimension('E')->setWidth(20);
+        $sheet->getColumnDimension('F')->setWidth(20); 
+        $sheet->getColumnDimension('G')->setWidth(20); 
+        $sheet->getColumnDimension('H')->setWidth(20); 
+        $sheet->getColumnDimension('I')->setWidth(20); 
+        $sheet->getColumnDimension('J')->setWidth(30); 
+        $sheet->getColumnDimension('K')->setWidth(20); 
+
+        $sheet->mergeCells("B1:D1");
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun($title);
+        $normalText->getFont()->setBold(true)->setSize(20); 
+        $sheet->setCellValue('B1', $richText1);
+        $sheet->getRowDimension(1)->setRowHeight(30);
+        $sheet->getStyle('B1')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("ROUTE NO");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('B3', $richText1);
+        $sheet->getStyle('B3')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("SAA NO");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('C3', $richText1);
+        $sheet->getStyle('C3')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("FACILITY");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('D3', $richText1);
+        $sheet->getStyle('D3')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("ALLOCATION");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('E3', $richText1);
+        $sheet->getStyle('E3')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("UTILIZED AMOUNT");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('F3', $richText1);
+        $sheet->getStyle('F3')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("PERCENTAGE");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('G3', $richText1);
+        $sheet->getStyle('G3')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("DISCOUNT");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('H3', $richText1);
+        $sheet->getStyle('H3')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("BALANCE");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('I3', $richText1);
+        $sheet->getStyle('I3')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("PATIENTS");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('J3', $richText1);
+        $sheet->getStyle('J3')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("CREATED ON");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('K3', $richText1);
+        $sheet->getStyle('K3')->getAlignment()->setWrapText(true);
+
+        $sheet->getStyle('B3:K3')
+            ->getAlignment()
+            ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+            ->setVertical(Alignment::VERTICAL_CENTER);
+        $sheet->getRowDimension(3)->setRowHeight(50); 
+
+        $data = [];
+
         $all = ProponentInfo::whereIn('proponent_id', $proponentIds)->get();
         $all_id = ProponentInfo::whereIn('proponent_id', $proponentIds)->pluck('id')->toArray();
 
@@ -1108,14 +1213,14 @@ class HomeController extends Controller
                         if($dv){
                             $saa_Ids = json_decode($dv->fundsource_id);
                             $saa_name = Fundsource::whereIn('id',$saa_Ids)->pluck('saa')->toArray();
-                            $saaString = implode('<br>', $saa_name);
+                            $saaString = implode("\n", $saa_name);
                             $groupIdArray = explode(',', $dv->group_id);
                             $patients = Patients::whereIn('group_id', $groupIdArray)->get();
                             $patient_list = [];
                             foreach($patients as $patient){
                                 $patient_list[] = $patient->lname.', '. $patient->fname .' '. $patient->mname;
                             }
-                            $string_patient =  implode('<br>', $patient_list);
+                            $string_patient =  implode("\n", $patient_list);
                             $trap = 1;
                             if($dv->deduction1 >3){
                                 $trap = 1.12;
@@ -1138,9 +1243,9 @@ class HomeController extends Controller
                                 $discount2 !== null ? $discount2 : null,
                                 $discount3 !== null ? $discount3 : null,
                             ]);
-                            $all_amount = implode('<br>', $amounts);
+                            $all_amount = implode("\n", $amounts);
                             $rem_bal =  $allocation_funds - str_replace(',','', $dv->total_amount);
-                            $discount_all = implode('<br>', $discounts);
+                            $discount_all = implode("\n", $discounts);
                             $percentage = number_format((str_replace(',', '', $dv->total_amount) / $allocation_funds) * 100, 2);
                             $al_disp = number_format($allocation_funds, 2);
                             $rem_disp = number_format($rem_bal, 2);
@@ -1160,8 +1265,8 @@ class HomeController extends Controller
                             }
 
                             $saa_name = Fundsource::whereIn('id',$saa_ids)->pluck('saa')->toArray();
-                            $saaString = implode('<br>', $saa_name);
-                            $all_amount = implode('<br>', $amounts);
+                            $saaString = implode("\n", $saa_name);
+                            $all_amount = implode("\n", $amounts);
                             $rem_bal =  $allocation_funds - str_replace(',','', $amount_total);
                             $percentage = number_format((str_replace(',', '', $amount_total) / $allocation_funds) * 100, 2);
                             $al_disp = number_format($allocation_funds, 2);
@@ -1178,114 +1283,324 @@ class HomeController extends Controller
                        
                             foreach($util as $u){
                                 $saa_ids [] = $u->fundsource_id;
-                                $amounts [] = $u->utilize_amount;
+                                $amounts [] = number_format(str_replace(',','', $u->utilize_amount), 2,'.',',');
                                 $amount_total = $amount_total +str_replace(',','', $u->utilize_amount);
                             }
-                            
                            
                             $saa_name = Fundsource::whereIn('id',$saa_ids)->pluck('saa')->toArray();
-                            $saaString = implode('<br>', $saa_name);
-                            $all_amount = implode('<br>', $amounts);
+                            $saaString = implode("\n", $saa_name);
+                            $all_amount = implode("\n", $amounts);
                             $rem_bal =  $allocation_funds - str_replace(',','', $amount_total);
                             $percentage = number_format((str_replace(',', '', $amount_total) / $allocation_funds) * 100, 2);
                             $al_disp = number_format($allocation_funds, 2);
                             $rem_disp = number_format($rem_bal, 2);
                             $discount_all = 0;
                             $string_patient = '';
+                            // $saaString = str_replace('<br>', "\n", $saaString);
+                            // $all_amount = str_replace('<br>', "\n", $all_amount);
+
                         }
-                        $table_body .= "<tr>
-                            <td style='vertical-align:top;'>$row->route_no</td>
-                            <td style='vertical-align:top;'>$saaString</td>
-                            <td style='vertical-align:top;'>$facility</td>
-                            <td style='vertical-align:top;'>$al_disp</td>
-                            <td style='vertical-align:top;'>$all_amount</td>
-                            <td style='vertical-align:top;'>$percentage %</td>
-                            <td style='vertical-align:top;'>$discount_all</td>
-                            <td style='vertical-align:top;'>$rem_disp</td>
-                            <td style='vertical-align:top;'>$string_patient</td>
-                            <td style='vertical-align:top;'>$created_on</td>
-                        </tr>";
+
+                        $data[] = [
+                            $row->route_no,
+                            $saaString,
+                            $facility,
+                            $al_disp,
+                            $all_amount,
+                            $percentage. " %",
+                            $discount_all,
+                            $rem_disp,
+                            $string_patient,
+                            $created_on
+                        ];
+                        // $table_body .= "<tr>
+                        //     <td style='vertical-align:top;'>$row->route_no</td>
+                        //     <td style='vertical-align:top;'>$saaString</td>
+                        //     <td style='vertical-align:top;'>$facility</td>
+                        //     <td style='vertical-align:top;'>$al_disp</td>
+                        //     <td style='vertical-align:top;'>$all_amount</td>
+                        //     <td style='vertical-align:top;'>$percentage %</td>
+                        //     <td style='vertical-align:top;'>$discount_all</td>
+                        //     <td style='vertical-align:top;'>$rem_disp</td>
+                        //     <td style='vertical-align:top;'>$string_patient</td>
+                        //     <td style='vertical-align:top;'>$created_on</td>
+                        // </tr>";
                         $allocation_funds = $rem_bal;
                     }
                 }
             }
         }else{
-            $table_body .= "<tr>
-                <td colspan=6 style='vertical-align:top;'>No Data Available</td>
-            </tr>";
+            // $table_body .= "<tr>
+            //     <td colspan=6 style='vertical-align:top;'>No Data Available</td>
+            // </tr>";
         }
-        $display =
-            '<h1>'.$title.'</h1>'.
-            '<table cellspacing="1" cellpadding="5" border="1">'.$table_body.'</table>';
+        // $display =
+        //     '<h1>'.$title.'</h1>'.
+        //     '<table cellspacing="1" cellpadding="5" border="1">'.$table_body.'</table>';
 
-        return $display;
+        // return $display;
+        // return $data;
+        $sheet->fromArray($data, null, 'B4');
+
+        $styleArray = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                ],
+            ],
+            'alignment' => [
+                'vertical' => Alignment::VERTICAL_CENTER, 
+                'wrapText' => true, // Enables wrapping
+            ],
+        ];
+        
+        $sheet->getStyle('B3:K' . (count($data) + 3))->applyFromArray($styleArray);
+        // $sheet->getStyle('B4:B' . (count($data) + 3))->getAlignment()->setWrapText(true);
+        $sheet->getStyle('B4:K' . (count($data) + 3))->getAlignment()->setWrapText(true);
+
+        
+        $sheet->getStyle('B4:D' . (count($data) + 3))
+            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        
+        $sheet->getStyle('E4:I' . (count($data) + 3))
+            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+
+        $sheet->getStyle('J4:K' . (count($data) + 3))
+            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+            
+        // Output preparation
+        ob_start();
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        $xlsData = ob_get_contents();
+        ob_end_clean();
+
+        // Filename
+        $filename = $title . date('Ymd') . '.xlsx';
+
+        // Set headers
+        header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        header("Content-Disposition: attachment; filename=$filename");
+        header("Pragma: no-cache");
+        header("Expires: 0");
+
+        // Output the file
+        return $xlsData;
+        exit;
     }
     public function getFacilityReport($facility_id){
         $utilize = Utilization::
                         where('facility_id', $facility_id)
                     ->orWhereJsonContains('facility_id', $facility_id)
-                    ->with('facilitydata')->with('fundSourcedata')->with('proponentdata')->where('status', '<>', '1')->get();
+                    ->with('facilitydata:id,name', 'fundSourcedata', 'proponentdata:id,proponent')->where('status', '<>', '1')->get();
         $title = Facility::where('id', $facility_id)->value('name');
-        $filename = $title.'.xls';
-        header("Content-Type: application/xls");
-        header("Content-Disposition: attachment; filename=$filename");
-        header("Pragma: no-cache");
-        header("Expires: 0");
-        $table_body = "<tr>
-                <th>Fundsource</th>
-                <th>Proponent</th>
-                <th>Utilize Amount</th>
-                <th>Discount</th>
-                <th>Remarks</th>
-                <th>Created On</th>
-            </tr>";
+        // $filename = $title.'.xls';
+        // header("Content-Type: application/xls");
+        // header("Content-Disposition: attachment; filename=$filename");
+        // header("Pragma: no-cache");
+        // header("Expires: 0");
+        // $table_body = "<tr>
+        //         <th>Fundsource</th>
+        //         <th>Proponent</th>
+        //         <th>Utilize Amount</th>
+        //         <th>Discount</th>
+        //         <th>Remarks</th>
+        //         <th>Created On</th>
+        //     </tr>";
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Adjust column widths
+        $sheet->getColumnDimension('A')->setWidth(2);  
+        $sheet->getColumnDimension('B')->setWidth(30); 
+        $sheet->getColumnDimension('C')->setWidth(40); 
+        $sheet->getColumnDimension('D')->setWidth(20);
+        $sheet->getColumnDimension('E')->setWidth(20);
+        $sheet->getColumnDimension('F')->setWidth(30); 
+        $sheet->getColumnDimension('G')->setWidth(20); 
+        $sheet->getColumnDimension('H')->setWidth(20);  
+
+        $sheet->mergeCells("B1:D1");
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun($title);
+        $normalText->getFont()->setBold(true)->setSize(20); 
+        $sheet->setCellValue('B1', $richText1);
+        $sheet->getRowDimension(1)->setRowHeight(30);
+        $sheet->getStyle('B1')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("FUNDSOURCE");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('B3', $richText1);
+        $sheet->getStyle('B3')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("PROPONENT");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('C3', $richText1);
+        $sheet->getStyle('C3')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("UTILIZED AMOUNT");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('D3', $richText1);
+        $sheet->getStyle('D3')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("DISCOUNT");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('E3', $richText1);
+        $sheet->getStyle('E3')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("REMARKS");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('F3', $richText1);
+        $sheet->getStyle('F3')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("CREATED ON");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('G3', $richText1);
+        $sheet->getStyle('G3')->getAlignment()->setWrapText(true);
+
+        $sheet->getStyle('B3:G3')
+            ->getAlignment()
+            ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+            ->setVertical(Alignment::VERTICAL_CENTER);
+        $sheet->getRowDimension(3)->setRowHeight(50); 
+
+        $data = [];
+
         if($utilize){
             foreach($utilize as $row){
                 $created_on = date('F j, Y', strtotime($row->created_at));
                 // return $row->created_at;
                 $saa = $row->fundSourcedata->saa;
-                $proponent = $row->proponentdata->proponent;
+                $proponent = $row->proponentdata ? $row->proponentdata->proponent :'';
                 $discount = $row->discount;
                 $utilize = $row->utilize_amount;
                 $remarks = "processed";
                 if($row->status ==2){ //from
 
-                    $transfer = Transfer::where('id', $row->transfer_id)->with('to_fundsource')->with('to_facilityInfo')->with('to_proponentInfo')->first();
-                          if(is_string($transfer->from_facility)){
-                            $facility_n = Facility::whereIn('id',array_map('intval', json_decode($transfer->from_facility)))->pluck('name')->toArray();
-                            $facility_n = implode(', ', $facility_n);
-                          }else{
-                            $facility_n = Facility::where('id', $transfer->from_facility)->value('name');
-                          }
-                    $remarks = 'transferred to '.$transfer->to_proponentInfo->proponent.' - '.$transfer->to_fundsource->saa.' - '. $facility_n;
+                    $transfer = Transfer::where('id', $row->transfer_id)->with('to_fundsource','to_facilityInfo','to_proponentInfo')->first();
+
+                    if(is_string($transfer->from_facility)){
+                        $facilities = json_decode($transfer->from_facility, true); 
+                    
+                        if (!is_array($facilities)) {
+                            $facilities = [$facilities]; 
+                        }
+                    
+                        $facility_n = Facility::whereIn('id', array_map('intval', $facilities))->pluck('name')->toArray();
+                        $facility_n = implode(', ', $facility_n);
+                    } else {
+                        $facility_n = Facility::where('id', $transfer->from_facility)->value('name');
+                    }
+
+                    if($transfer->to_proponentInfo == null){
+                        $pro_name = '';
+                    }else{
+                        $pro_name = $transfer->to_proponentInfo->proponent;
+                    }
+                    $remarks = 'transferred to '.$pro_name.' - '.$transfer->to_fundsource->saa.' - '. $facility_n;
 
                 }else if($row->status ==3){ //to
 
-                    $transfer = Transfer::where('id', $row->transfer_id)->with('from_fundsource')->with('from_facilityInfo')->with('from_proponentInfo')->first();
-                    if(is_string($transfer->to_facility)){
-                        $facility_n = Facility::whereIn('id',array_map('intval', json_decode($transfer->to_facility)))->pluck('name')->toArray();
+                    $transfer = Transfer::where('id', $row->transfer_id)
+                        ->with('from_fundsource', 'from_facilityInfo', 'from_proponentInfo')
+                        ->first();
+
+                    if (is_string($transfer->to_facility)) {
+                        $facilities = json_decode($transfer->to_facility, true); 
+
+                        if (!is_array($facilities)) {
+                            $facilities = [$facilities]; 
+                        }
+
+                        $facility_n = Facility::whereIn('id', array_map('intval', $facilities))->pluck('name')->toArray();
                         $facility_n = implode(', ', $facility_n);
-                      }else{
+                    } else {
                         $facility_n = Facility::where('id', $transfer->to_facility)->value('name');
-                      }
-                    $remarks = 'transferred from '.$transfer->from_proponentInfo->proponent.' - '.$transfer->from_fundsource->saa.' - '. $facility_n;
+                    }
+
+                    if($transfer->from_proponentInfo == null){
+                        $pro_name = '';
+                    }else{
+                        $pro_name = $transfer->from_proponentInfo->proponent;
+                    }
+                    $remarks = 'transferred from '.$pro_name.' - '.$transfer->from_fundsource->saa.' - '. $facility_n;
                 }
-                $table_body .= "<tr>
-                    <td style='vertical-align:top;'>$saa</td>
-                    <td style='vertical-align:top;'>$proponent</td>
-                    <td style='vertical-align:top;'>$utilize</td>
-                    <td style='vertical-align:top;'>$discount</td>
-                    <td style='vertical-align:top;'>$remarks</td>
-                    <td style='vertical-align:top;'>$created_on</td>
-                    </tr>";
+                // $table_body .= "<tr>
+                //     <td style='vertical-align:top;'>$saa</td>
+                //     <td style='vertical-align:top;'>$proponent</td>
+                //     <td style='vertical-align:top;'>$utilize</td>
+                //     <td style='vertical-align:top;'>$discount</td>
+                //     <td style='vertical-align:top;'>$remarks</td>
+                //     <td style='vertical-align:top;'>$created_on</td>
+                //     </tr>";
+                $data[]=[
+                    $saa,
+                    $proponent,
+                    $utilize ? number_format(str_replace(',','',$utilize),2,'.',',') : 0.00,
+                    $discount > 0 ? number_format(str_replace(',','',$discount),2,'.',',') : 0.00,
+                    $remarks,
+                    $created_on
+                ];
             }
         }
-        
-        $display =
-            '<h1>'.$title.'</h1>'.
-            '<table cellspacing="1" cellpadding="5" border="1">'.$table_body.'</table>';
 
-        return $display;
+        $sheet->fromArray($data, null, 'B4');
+
+        $styleArray = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                ],
+            ],
+            'alignment' => [
+                'vertical' => Alignment::VERTICAL_CENTER, 
+            ],
+        ];
+        
+        $sheet->getStyle('B3:G' . (count($data) + 3))->applyFromArray($styleArray);
+        $sheet->getStyle('B4:G' . (count($data) + 3))->getAlignment()->setWrapText(true);
+
+        $sheet->getStyle('B4:C' . (count($data) + 3))
+            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        
+        $sheet->getStyle('D4:E' . (count($data) + 3))
+            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+
+        $sheet->getStyle('F4:G' . (count($data) + 3))
+            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+            
+        // Output preparation
+        ob_start();
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        $xlsData = ob_get_contents();
+        ob_end_clean();
+
+        // Filename
+        $filename = $title . date('Ymd') . '.xlsx';
+
+        // Set headers
+        header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        header("Content-Disposition: attachment; filename=$filename");
+        header("Pragma: no-cache");
+        header("Expires: 0");
+
+        // Output the file
+        return $xlsData;
+        exit;
+        
+        // $display =
+        //     '<h1>'.$title.'</h1>'.
+        //     '<table cellspacing="1" cellpadding="5" border="1">'.$table_body.'</table>';
+
+        // return $display;
     }
 
     public function updateAmount($patientId, $amount){

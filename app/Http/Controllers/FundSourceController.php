@@ -24,6 +24,16 @@ use App\Models\SubtractedFunds;
 use App\Models\IncludedFacility;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Borders;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use PhpOffice\PhpSpreadsheet\RichText\RichText;
+use PhpOffice\PhpSpreadsheet\Style\Font;
+use PhpOffice\PhpSpreadsheet\Style\Color;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class FundSourceController extends Controller
 {
@@ -1018,26 +1028,106 @@ class FundSourceController extends Controller
             ->orderBy('id', 'desc')
             ->get();
         $title = "List of Proponent";
-        $filename = $title.'.xls';
-        header("Content-Type: application/xls");
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Adjust column widths
+        $sheet->getColumnDimension('A')->setWidth(2);  
+        $sheet->getColumnDimension('B')->setWidth(50); 
+        $sheet->getColumnDimension('C')->setWidth(20); 
+
+        $sheet->mergeCells("B1:C1");
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun($title);
+        $normalText->getFont()->setBold(true)->setSize(20); 
+        $sheet->setCellValue('B1', $richText1);
+        $sheet->getRowDimension(1)->setRowHeight(30);
+        $sheet->getStyle('B1')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("PROPONENT");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('B3', $richText1);
+        $sheet->getStyle('B3')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("PROPONENT CODE");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('C3', $richText1);
+        $sheet->getStyle('C3')->getAlignment()->setWrapText(true);
+
+        $sheet->getStyle('B3:C3')
+            ->getAlignment()
+            ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+            ->setVertical(Alignment::VERTICAL_CENTER);
+        $sheet->getRowDimension(3)->setRowHeight(50); 
+
+        $data = [];
+        // $filename = $title.'.xls';
+        // header("Content-Type: application/xls");
+        // header("Content-Disposition: attachment; filename=$filename");
+        // header("Pragma: no-cache");
+        // header("Expires: 0");
+        // $table_body = "<tr>
+        //         <th>Proponent</th>
+        //         <th>Proponent Code</th>
+        //     </tr>";
+
+
+        foreach($proponents as $row){
+            // $table_body .= "<tr>
+            //     <td style='vertical-align:top;'>$row->proponent</td>
+            //     <td style='vertical-align:top;'>$row->proponent_code</td>
+            // </tr>";
+            $data [] = [
+                $row->proponent,
+                $row->proponent_code
+            ];
+        }
+        // $display =
+        //     '<h1>'.$title.'</h1>'.
+        //     '<table cellspacing="1" cellpadding="5" border="1">'.$table_body.'</table>';
+
+        // return $display;
+
+        $sheet->fromArray($data, null, 'B4');
+
+        $styleArray = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                ],
+            ],
+            'alignment' => [
+                'vertical' => Alignment::VERTICAL_CENTER, 
+            ],
+        ];
+        
+        $sheet->getStyle('B3:C' . (count($data) + 3))->applyFromArray($styleArray);
+        
+        $sheet->getStyle('B4:C' . (count($data) + 3))
+            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+            
+        // Output preparation
+        ob_start();
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        $xlsData = ob_get_contents();
+        ob_end_clean();
+
+        // Filename
+        $filename = $title . date('Ymd') . '.xlsx';
+
+        // Set headers
+        header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         header("Content-Disposition: attachment; filename=$filename");
         header("Pragma: no-cache");
         header("Expires: 0");
-        $table_body = "<tr>
-                <th>Proponent</th>
-                <th>Proponent Code</th>
-            </tr>";
-        foreach($proponents as $row){
-            $table_body .= "<tr>
-                <td style='vertical-align:top;'>$row->proponent</td>
-                <td style='vertical-align:top;'>$row->proponent_code</td>
-            </tr>";
-        }
-        $display =
-            '<h1>'.$title.'</h1>'.
-            '<table cellspacing="1" cellpadding="5" border="1">'.$table_body.'</table>';
 
-        return $display;
+        // Output the file
+        return $xlsData;
+        exit;
     }
 
     public function version2($route_no){

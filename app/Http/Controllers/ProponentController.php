@@ -22,6 +22,16 @@ use App\Models\SupplementalFunds;
 use App\Models\SubtractedFunds;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Log;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Borders;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use PhpOffice\PhpSpreadsheet\RichText\RichText;
+use PhpOffice\PhpSpreadsheet\Style\Font;
+use PhpOffice\PhpSpreadsheet\Style\Color;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class ProponentController extends Controller
 {
@@ -675,20 +685,91 @@ class ProponentController extends Controller
 
         $patients = $query->get();
         $title = $pro[0]->proponent;
-        $filename = $title.'.xls';
-        header("Content-Type: application/xls");
-        header("Content-Disposition: attachment; filename=$filename");
-        header("Pragma: no-cache");
-        header("Expires: 0");
-        $table_body = "<tr>
-                <th>Patient Code</th>
-                <th>Name</th>
-                <th>Guaranteed Amount</th>
-                <th>Actual Amount</th>
-                <th>Facility</th>
-                <th>Created By</th>
-                <th>Created On</th>
-            </tr>";
+        // $filename = $title.'.xls';
+        // header("Content-Type: application/xls");
+        // header("Content-Disposition: attachment; filename=$filename");
+        // header("Pragma: no-cache");
+        // header("Expires: 0");
+        // $table_body = "<tr>
+        //         <th>Patient Code</th>
+        //         <th>Name</th>
+        //         <th>Guaranteed Amount</th>
+        //         <th>Actual Amount</th>
+        //         <th>Facility</th>
+        //         <th>Created By</th>
+        //         <th>Created On</th>
+        //     </tr>";
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Adjust column widths
+        $sheet->getColumnDimension('A')->setWidth(2);  
+        $sheet->getColumnDimension('B')->setWidth(50); 
+        $sheet->getColumnDimension('C')->setWidth(30); 
+        $sheet->getColumnDimension('D')->setWidth(20);
+        $sheet->getColumnDimension('E')->setWidth(20);
+        $sheet->getColumnDimension('F')->setWidth(60); 
+        $sheet->getColumnDimension('G')->setWidth(30); 
+        $sheet->getColumnDimension('H')->setWidth(20);  
+
+        $sheet->mergeCells("B1:D1");
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun($title);
+        $normalText->getFont()->setBold(true)->setSize(20); 
+        $sheet->setCellValue('B1', $richText1);
+        $sheet->getRowDimension(1)->setRowHeight(30);
+        $sheet->getStyle('B1')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("PATIENT CODE");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('B3', $richText1);
+        $sheet->getStyle('B3')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("NAME");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('C3', $richText1);
+        $sheet->getStyle('C3')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("GUARANTEED AMOUNT");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('D3', $richText1);
+        $sheet->getStyle('D3')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("ACTUAL AMOUNT");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('E3', $richText1);
+        $sheet->getStyle('E3')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("FACILITY");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('F3', $richText1);
+        $sheet->getStyle('F3')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("CREATED BY");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('G3', $richText1);
+        $sheet->getStyle('G3')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("CREATED ON");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('H3', $richText1);
+        $sheet->getStyle('H3')->getAlignment()->setWrapText(true);
+
+        $sheet->getStyle('B3:H3')
+            ->getAlignment()
+            ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+            ->setVertical(Alignment::VERTICAL_CENTER);
+        $sheet->getRowDimension(3)->setRowHeight(50); 
+
+        $data = [];
 
         if(count($patients) > 0){
             foreach($patients as $row){
@@ -699,26 +780,80 @@ class ProponentController extends Controller
                 $user = !Empty($row->encoded_by) ? $row->encoded_by->lname .', '.$row->encoded_by->fname : 
                         (!Empty($row->gl_user) ? $row->gl_user->lname.', '.$row->gl_user->fname : '');
                 $on = date('F j, Y', strtotime($row->created_at));
-                $table_body .= "<tr>
-                    <td style='vertical-align:top;'>$row->patient_code</td>
-                    <td style='vertical-align:top;'>$name</td>
-                    <td style='vertical-align:top;'>$guaranteed</td>
-                    <td style='vertical-align:top;'>$actual</td>
-                    <td style='vertical-align:top;'>$facility</td>
-                    <td style='vertical-align:top;'>$user</td>
-                    <td style='vertical-align:top;'>$on</td>
-                </tr>";
+                // $table_body .= "<tr>
+                //     <td style='vertical-align:top;'>$row->patient_code</td>
+                //     <td style='vertical-align:top;'>$name</td>
+                //     <td style='vertical-align:top;'>$guaranteed</td>
+                //     <td style='vertical-align:top;'>$actual</td>
+                //     <td style='vertical-align:top;'>$facility</td>
+                //     <td style='vertical-align:top;'>$user</td>
+                //     <td style='vertical-align:top;'>$on</td>
+                // </tr>";
+                $data [] = [
+                    $row->patient_code,
+                    $name,
+                    $guaranteed,
+                    $actual,
+                    $facility,
+                    $user,
+                    $on
+                ];
             }
         }else{
-            $table_body .= "<tr>
-                <td colspan=7 style='vertical-align:top;'>No Data Available</td>
-            </tr>";
+            // $table_body .= "<tr>
+            //     <td colspan=7 style='vertical-align:top;'>No Data Available</td>
+            // </tr>";
         }
-        $display =
-            '<h1>'.$title.'</h1>'.
-            '<table cellspacing="1" cellpadding="5" border="1">'.$table_body.'</table>';
+        // $display =
+        //     '<h1>'.$title.'</h1>'.
+        //     '<table cellspacing="1" cellpadding="5" border="1">'.$table_body.'</table>';
 
-        return $display;
+        // return $display;
+
+        $sheet->fromArray($data, null, 'B4');
+
+        $styleArray = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                ],
+            ],
+            'alignment' => [
+                'vertical' => Alignment::VERTICAL_CENTER, 
+            ],
+        ];
+        
+        $sheet->getStyle('B3:H' . (count($data) + 3))->applyFromArray($styleArray);
+        $sheet->getStyle('B4:H' . (count($data) + 3))->getAlignment()->setWrapText(true);
+
+        $sheet->getStyle('B4:C' . (count($data) + 3))
+            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        
+        $sheet->getStyle('D4:E' . (count($data) + 3))
+            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+
+        $sheet->getStyle('F4:H' . (count($data) + 3))
+            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+            
+        // Output preparation
+        ob_start();
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        $xlsData = ob_get_contents();
+        ob_end_clean();
+
+        // Filename
+        $filename = $title . date('Ymd') . '.xlsx';
+
+        // Set headers
+        header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        header("Content-Disposition: attachment; filename=$filename");
+        header("Pragma: no-cache");
+        header("Expires: 0");
+
+        // Output the file
+        return $xlsData;
+        exit;
     }
     
 }
