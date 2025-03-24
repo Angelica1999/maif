@@ -79,7 +79,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="summary_display" role="dialog" style="overflow-y:scroll;">
     <div class="modal-dialog modal-lg" role="document" style="width:900px">
         <div class="modal-content" style="border-radius:0px">
@@ -91,25 +90,12 @@
             </div>
             <div class="modal-footer">
                 <button type="button" data-dismiss="modal" style="background-color: gray; color: white; border: none; padding: 8px 15px; cursor: pointer; float:right">CLOSE</button>
-                <button type="button" style="border: none; padding: 8px 15px; cursor: pointer; float:right; color:white; display:none" class="btn-warning sum_return">RETURN</button>
-                <button type="button" style="border: none; padding: 8px 15px; cursor: pointer; float:right; display:none" class="btn-success sum_return">ACCEPT</button>
+                <button type="button" href="#return" data-toggle="modal" data-backdrop="static" style="border: none; padding: 8px 15px; cursor: pointer; float:right; color:white; display:none" onclick="returnTrans(0)" class="btn-warning sum_return">RETURN</button>
+                <button type="button" style="border: none; padding: 8px 15px; cursor: pointer; float:right; display:none" onclick="accept(0)" class="btn-success sum_accept">ACCEPT</button>
             </div>
         </div>
     </div>
 </div>
-
-<div class="modal fade" id="trans_tracking" role="dialog" style="overflow-y:scroll;">
-    <div class="modal-dialog modal-lg" role="document" style="width:300px; height:500px">
-        <div class="modal-content" style="border-radius:0px">
-            <div class="modal-header" style="text-align:center">
-                <h3 class="text-success modal-title"><i style="font-size:20px" class="typcn typcn-printer menu-icon"></i>TRANSMITTAL TRACKING</h3>
-            </div>
-            <div class="trans_tracking">
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="modal fade" id="return" role="dialog" style="overflow-y:scroll;">
     <div class="modal-dialog modal-md" role="document">
         <div class="modal-content" style="border-radius:0px">
@@ -124,6 +110,17 @@
                     <button type="submit" style="border: none; padding: 8px 15px; cursor: pointer; float:right" class="btn-warning">RETURN</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="trans_tracking" role="dialog" style="overflow-y:scroll;">
+    <div class="modal-dialog modal-lg" role="document" style="width:300px; height:500px">
+        <div class="modal-content" style="border-radius:0px">
+            <div class="modal-header" style="text-align:center">
+                <h3 class="text-success modal-title"><i style="font-size:20px" class="typcn typcn-printer menu-icon"></i>TRANSMITTAL TRACKING</h3>
+            </div>
+            <div class="trans_tracking">
+            </div>
         </div>
     </div>
 </div>
@@ -239,6 +236,9 @@
     }
 
     function accept(id){
+        if(id == 0){
+            id= trans_id;
+        }
         $.get("{{ url('transmittal/accept').'/' }}" + id, function(result){
             if(result == 'success'){
                 Swal.fire({
@@ -261,10 +261,15 @@
     });
 
     function returnTrans(id){
+        if(id == 0){
+            id= trans_id;
+        }
+        console.log('id', id);
         $('.id').val(id);
         $('.return_body').html(loading);
         $.get("{{ url('transmittal/references/1').'/' }}" + id, function(result){
             $('.return_body').html(result);
+            console.log(result);
         });
     }
 
