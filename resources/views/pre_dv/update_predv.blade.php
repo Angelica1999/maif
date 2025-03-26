@@ -88,26 +88,25 @@
     <button type="submit" class="btn-sm btn-success updated_submit" style="display:none">SUBMIT</button>
 
 <script>
+    $('.select2').select2();
     $(document).ready(function () {
-    $('.select2').select2({
-        templateResult: function (data) {
-            if (!data.id) {
+        $('.select2').select2({
+            templateResult: function (data) {
+                if (!data.id) {
+                    return data.text;
+                }
+
+                var balance = $(data.element).attr("dataval");
+                var text = $(data.element).text(); 
+
+                var color = balance == 0 ? 'red' : 'black'; 
+                return $('<span style="color:' + color + ';">' + text + '</span>');
+            },
+            templateSelection: function (data) {
                 return data.text;
-            }
-
-            var balance = $(data.element).attr("dataval");
-            var text = $(data.element).text(); 
-
-            var color = balance == 0 ? 'red' : 'black'; 
-            return $('<span style="color:' + color + ';">' + text + '</span>');
-        },
-        templateSelection: function (data) {
-            return data.text;
-        },
-        tags: true,
-        placeholder: "SELECT SAA"
+            },
+            tags: true,
+            placeholder: "SELECT SAA"
+        });
     });
-});
-
-
 </script>

@@ -42,7 +42,7 @@
                     </form>
                 </div>
             </div>
-            <h4 class="card-title">PRE - DV</h4>
+            <h4 class="card-title">PRE - DV <i class="text-danger">Ongoing updates</i></h4>
             <p class="card-description">
                 MAIF-IPP
             </p>
@@ -98,6 +98,7 @@
                                             <button type="button" class="btn btn-xs" style="border-radius:0; background-color:#165A54; color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$row->new_dv->route_no}}" id="track_load" onclick="openModal()">Track</button>
                                             <a href="{{ route('pre.pdf', ['id' => $row->id]) }}" style="background-color:green; border-radius:0; color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
                                             <a href="{{ route('pre.image', ['id' => $row->id]) }}" style="background-color:blue; border-radius:0; color:white; width:55px;" target="_blank" type="button" class="btn btn-xs">Image</a>    
+                                            <a href="{{ route('pre.image', ['id' => $row->id]) }}" style="background-color:teal; border-radius:0; color:white; width:55px;" target="_blank" type="button" class="btn btn-xs">Excel</a>    
                                         @else
                                             <span class="text-danger"><i>dv is not yet created</i></span>
                                         @endif
@@ -265,7 +266,6 @@
         $('.control_option').css('display', 'block');
     }
     function getTransmittal(trans_id){   
-        // $('.fac_control').empty();
         console.log('trans_id', trans_id + '-' + f_id);
         $.get("{{ url('transmittal/details').'/' }}" +trans_id+'/'+f_id, function(result){
             $('.fac_control').html(result);
@@ -339,14 +339,23 @@
 
     function openModal() {
         var routeNoo = event.target.getAttribute('data-routeId'); 
-        // var src = "https://mis.cvchd7.com/dts/document/trackMaif/" + routeNoo;
         var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNoo;
 
-        // $('.modal-body').html(loading);
-        setTimeout(function() {
-            $("#trackIframe").attr("src", src);
-            $("#iframeModal").css("display", "block");
-        }, 150);
+        var base_url = "{{ url('/') }}";
+        $('.modal-body').append('<img class="loadingGif" src="' + base_url + '/public/images/loading.gif" alt="Loading..." style="display:block; margin:auto;">');
+
+        var iframe = $('#trackIframe');
+
+        iframe.hide();
+
+        iframe.attr('src', src);
+    
+        iframe.on('load', function() {
+            iframe.show(); 
+            $('.loadingGif').css('display', 'none');
+        });
+
+        $('#myModal').modal('show');
     }
 
     function error(){
@@ -577,7 +586,9 @@
 
     function updatePre(id, data, stat){
         $('.form_body').html(loading);
+        console.log('resultdsdas', id);
         $.get("{{ url('pre-dv/update/').'/' }}"+id, function(result) {
+            console.log('result');
             $('.form_body').html(result);
             if(data == 1){
                 $('.delete_btn').css('display', 'none');

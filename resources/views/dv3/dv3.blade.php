@@ -306,8 +306,8 @@
         </div>
     </div>
 </div>
-@endsection
 @include('modal')
+@endsection
 @section('js')
     <script src="{{ asset('admin/vendors/daterangepicker-master/moment.min.js?v=1') }}"></script>
     <script src="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.js?v=1') }}"></script>                                        
@@ -395,13 +395,23 @@
 
         function openModal() {
             var routeNoo = event.target.getAttribute('data-routeId'); 
-            // var src = "https://mis.cvchd7.com/dts/document/trackMaif/" + routeNoo;
             var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNoo;
 
-            setTimeout(function() {
-                $("#trackIframe").attr("src", src);
-                $("#iframeModal").css("display", "block");
-            }, 150);
+            var base_url = "{{ url('/') }}";
+            $('.modal-body').append('<img class="loadingGif" src="' + base_url + '/public/images/loading.gif" alt="Loading..." style="display:block; margin:auto;">');
+
+            var iframe = $('#trackIframe');
+
+            iframe.hide();
+
+            iframe.attr('src', src);
+        
+            iframe.on('load', function() {
+                iframe.show(); 
+                $('.loadingGif').css('display', 'none');
+            });
+
+            $('#myModal').modal('show');
         }
 
         function updateDv3(route_no){

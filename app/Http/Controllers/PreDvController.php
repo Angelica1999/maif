@@ -738,16 +738,22 @@ class PreDvController extends Controller
 
         $saas = Fundsource::get();
         $proponents = Proponent::select('proponent')->groupBy('proponent')->get();
-        $facilities = Facility::get();
+        $facilities = Facility::select('id','name')->get();
         $facility_id = (string) $pre_dv->facility_id;
-        $info = ProponentInfo::with('facility', 'fundsource', 'proponent')
+        $info = ProponentInfo::with('facility:id,name', 'fundsource', 'proponent:id,proponent')
             ->where(function ($query) use ($facility_id) {
                 $query->whereJsonContains('proponent_info.facility_id', '702')
                     ->orWhereJsonContains('proponent_info.facility_id', [$facility_id]);
             })
             ->orWhereIn('proponent_info.facility_id', [$facility_id, '702'])
             ->get();
-        // return $pre_dv;
+        // return  [
+        //     'result' => $pre_dv,
+        //     'proponents' => $proponents,
+        //     'saas' => $saas,
+        //     'facilities' => $facilities,
+        //     'info' => $info
+        // ];
         return view('pre_dv.update_predv', [
             'result' => $pre_dv,
             'proponents' => $proponents,
