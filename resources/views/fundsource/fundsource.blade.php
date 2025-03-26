@@ -417,18 +417,25 @@
             });
 
         }
-    
-        function openModal( link) {
-            var routeNo = $(link).data('routeid');
-            setTimeout(function() { 
-                // var src = "http://192.168.110.135/dts3/document/trackMaif/" + routeNo;
-                // var src = "https://mis.cvchd7.com/dts/document/trackMaif/" + routeNo;
-                // var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNo;
-                var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNoo;
 
-                $("#track_iframe").attr("src", src);
-                $('#i_frame').modal('show');
-            }, 100);
+        function openModal(link) {
+            var routeNo = $(link).data('routeid');
+            var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNo;
+            var base_url = "{{ url('/') }}";
+            $('.modal-body').append('<img class="loadingGif" src="' + base_url + '/public/images/loading.gif" alt="Loading..." style="display:block; margin:auto;">');
+
+            var iframe = $('#track_iframe');
+
+            iframe.hide();
+
+            iframe.attr('src', src);
+        
+            iframe.on('load', function() {
+                iframe.show(); 
+                $('.loadingGif').css('display', 'none');
+            });
+
+            $('#i_frame').modal('show');
         }
 
         function number_format(number, decimals, decimalSeparator, thousandsSeparator) {

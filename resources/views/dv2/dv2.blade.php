@@ -8,7 +8,7 @@
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-            <form method="GET" action="{{ route('dv2') }}">
+            <form method="GET" action="">
                 <div class="input-group float-right w-50" style="min-width: 600px;">
                     <input type="text" class="form-control" name="keyword" placeholder="Route/Control No, Amount(Format: 0,000)" value="{{$keyword}}">
                     <div class="input-group-append">
@@ -88,21 +88,29 @@
         </div>
     </div>
 </div>
-
-@endsection
 @include('modal')
+@endsection
 @section('js')
     <script>
         function openModal() {
             var routeNoo = event.target.getAttribute('data-routeId'); 
-            // var src = "https://mis.cvchd7.com/dts/document/trackMaif/" + routeNoo;
             var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNoo;
 
-            // $('.modal-body').html(loading);
-            setTimeout(function() {
-                $("#trackIframe").attr("src", src);
-                $("#iframeModal").css("display", "block");
-            }, 150);
+            var base_url = "{{ url('/') }}";
+            $('.modal-body').append('<img class="loadingGif" src="' + base_url + '/public/images/loading.gif" alt="Loading..." style="display:block; margin:auto;">');
+
+            var iframe = $('#trackIframe');
+
+            iframe.hide();
+
+            iframe.attr('src', src);
+        
+            iframe.on('load', function() {
+                iframe.show(); 
+                $('.loadingGif').css('display', 'none');
+            });
+
+            $('#myModal').modal('show');
         }
 
         function deleteDv2(route_no){

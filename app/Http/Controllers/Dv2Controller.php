@@ -46,7 +46,8 @@ class Dv2Controller extends Controller
             ->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
             ->where('users.userid', '=', Auth::user()->userid)
             ->value('users.section');
-        return view('dv2.dv2',[
+
+            return view('dv2.dv2',[
             'dv2_list' => $dv2_list,
             'keyword' => $request->keyword,
             'section' => $section

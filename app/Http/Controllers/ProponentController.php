@@ -125,17 +125,16 @@ class ProponentController extends Controller
     public function fundsource(Request $request)
     {
         try {
-            $keyword = $request->viewAll ? '' : $request->keyword;
+            $keyword = $request->viewAll ? [] : $request->data_filtering;
             $perPage = 51;
-
             $proponentGroups = Proponent::when($keyword, function ($query) use ($keyword) {
-                    return $query->where('proponent', 'LIKE', "%{$keyword}%");
+                    return $query->whereIn('id', $keyword);
                 })
                 ->select('id', 'proponent')
                 ->orderBy('proponent')
                 ->get()
                 ->groupBy('proponent');
-            
+
             if ($proponentGroups->isEmpty()) {
                 return view('maif.pro_fundsource', [
                     'data' => [],
@@ -285,6 +284,36 @@ class ProponentController extends Controller
                 ];
             });
 
+            $sort = $request->sorting_btn ? $request->sorting_btn : 'desc';
+            $sortDirection = $sort == 'desc' ? 'sortByDesc' : 'sortBy';
+
+            if ($request->sorting_btn) {
+                switch ($request->data_sorting) {
+                    case 1: // Sort by Proponent Name
+                        $allData = $allData->$sortDirection('proponent.name');
+                        break;
+                    case 2: // Sort by Allocated Funds
+                        $allData = $allData->$sortDirection('sum');
+                        break;
+                    case 3: // Sort by GL Total
+                        $allData = $allData->$sortDirection('totalUtilized');
+                        break;
+                    case 4: // Sort by Disbursement Total
+                        $allData = $allData->$sortDirection('disbursement');
+                        break;
+                    case 5: // Sort by Supplemental Funds
+                        $allData = $allData->$sortDirection('supp');
+                        break;
+                    case 6: // Sort by Negative Amount
+                        $allData = $allData->$sortDirection('sub');
+                        break;
+                    case 7: // Sort by Remaining Funds
+                        $allData = $allData->$sortDirection('rem');
+                        break;
+                }
+            }
+
+
             $paginatedData = new LengthAwarePaginator(
                 $allData->forPage(LengthAwarePaginator::resolveCurrentPage(), $perPage),
                 $allData->count(),
@@ -295,9 +324,12 @@ class ProponentController extends Controller
 
             return view('proponents.fundsource', [
                 'data' => $paginatedData,
-                'keyword' => $keyword,
+                'keyword' => $keyword ? $keyword : [],
                 'facilities' => Facility::select('id', 'name')->get(),
-                'user' => Auth::user()->user_type
+                'user' => Auth::user()->user_type,
+                'proponents' => Proponent::select('id', 'proponent')->orderBy('proponent')->get()->groupBy('proponent'),
+                'sort' => $sort == 'asc' ? 'desc' : 'asc',
+                'filter_keyword' => $request->viewAll ? '' : $request->data_sorting
             ]);
 
         } catch (\Exception $e) {

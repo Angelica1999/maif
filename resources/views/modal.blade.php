@@ -14,7 +14,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-            </div>
+            </div>  
             <div class="modal-body" style="text-align:center; color:black">
                 Are you sure you want to select a new facility? If yes, all selected data will be cleared out.
             </div>
@@ -26,7 +26,7 @@
     </div>
 </div>
 <!--end-->
-<div class="modal fade" id="track_details" role="dialog">
+<div class="modal fade" id="track_details" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content" style="border-radius:0px;">
             <div class="modal-header" style="text-align:center">
@@ -61,7 +61,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="budget_track2" role="dialog" aria-hidden="true">
+<div class="modal fade" id="budget_track2" role="dialog" aria-hidden="true" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content" style="border-radius:0px;">
             <div class="modal-header" style="text-align:center">
@@ -80,7 +80,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="cost_tracking" role="dialog" aria-hidden="true">
+<div class="modal fade" id="cost_tracking" role="dialog" aria-hidden="true" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content" style="border-radius:0px;">
             <div class="modal-header" style="text-align:center">
@@ -98,7 +98,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="budget_funds" role="dialog">
+<div class="modal fade" id="budget_funds" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content" style="border-radius:0px;">
             <div class="modal-header" style="text-align:center">
@@ -118,7 +118,7 @@
 </div>
 <!--end budget--> 
 <!--end maif-->
-<div class="modal fade" id="obligate" role="dialog" style="overflow-y:scroll;">
+<div class="modal fade" id="obligate" role="dialog" style="overflow-y:scroll;" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document" style="width:900px">
         <div class="modal-content">
             <div class="modal-header" style="background-color:#17c964;padding:15px; color:white">
@@ -206,7 +206,7 @@
     </div>
 </div>
 <!--end-->
-<div class="modal fade" id="dv_history" tabindex="-1" role="dialog">
+<div class="modal fade" id="dv_history" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content"> 
             <form action="" method="POST">
@@ -222,7 +222,7 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 <!--end-->
-<div class="modal fade" id="update_remarks" tabindex="-1" role="dialog">
+<div class="modal fade" id="update_remarks" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content"> 
             <form action="{{route('update.remarks')}}" id="remarks_update" method="POST">
@@ -247,7 +247,7 @@
     <img src="public\images\loading.gif" alt="Loading..." class="loading-spinner">
 </div> -->
 <!--end-->
-<div class="modal fade" tabindex="-1" role="dialog" id="addPatient">
+<div class="modal fade" tabindex="-1" role="dialog" id="addPatient" aria-hidden="true">
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
             <div class="modal-header" style="background-color: #17c964; color:white" >
@@ -327,7 +327,7 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 <!--end-->
-<div class="modal fade" id="confirm_dv" role="dialog">
+<div class="modal fade" id="confirm_dv" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content" style="border-radius:0px;">
             <div class="modal-header" style="text-align:center">
@@ -347,7 +347,7 @@
     </div>
 </div>
 <!--empty-->
-<div class="modal fade" id="budget_confirm" role="dialog">
+<div class="modal fade" id="budget_confirm" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content" style="border-radius:0px;">
             <div class="modal-header" style="text-align:center">
@@ -366,7 +366,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" tabindex="-1" role="dialog" id="acceptModal" style="margin-top: 30px;z-index: 99999;">
+<div class="modal fade" tabindex="-1" role="dialog" id="acceptModal" style="margin-top: 30px;z-index: 99999;" aria-hidden="true">
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
             <div class="modal-body">

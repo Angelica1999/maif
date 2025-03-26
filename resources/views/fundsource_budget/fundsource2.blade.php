@@ -663,16 +663,37 @@
 
     }
 
-    function openModal( link) {
-        var routeNo = $(link).data('routeid');
-        setTimeout(function() {
-            // var src = "https://mis.cvchd7.com/dts/document/trackMaif/" + routeNo;
-            var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNoo;
+    // function openModal( link) {
+    //     var routeNo = $(link).data('routeid');
+    //     setTimeout(function() {
+    //         // var src = "https://mis.cvchd7.com/dts/document/trackMaif/" + routeNo;
+    //         var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNoo;
 
-            $("#track_iframe").attr("src", src);
-            $('#i_frame').modal('show');
-        },100);
+    //         $("#track_iframe").attr("src", src);
+    //         $('#i_frame').modal('show');
+    //     },100);
+    // }
+
+    function openModal(link) {
+        var routeNoo = $(link).data('routeid');
+        var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNoo;
+
+        $('.modal-body').append('<img class="loadingGif" src="public/images/loading.gif" alt="Loading..." style="display:block; margin:auto;">');
+
+        var iframe = $('#trackIframe');
+
+        iframe.hide();
+
+        iframe.attr('src', src);
+    
+        iframe.on('load', function() {
+            iframe.show(); 
+            $('.loadingGif').css('display', 'none');
+        });
+
+        $('#myModal').modal('show');
     }
+
     function getDv( link) {
         var route_no = $(link).data('routeid');
         var dv_no = $(link).data('dvNo');

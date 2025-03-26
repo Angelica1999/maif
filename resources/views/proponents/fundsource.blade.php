@@ -1,3 +1,19 @@
+<style>
+    .select2-container--default .select2-selection--multiple {
+        min-height: 40px !important; 
+        border-radius: 0 !important;
+    }
+
+    .select2-container--default .select2-selection--single {
+        height: 40px !important; 
+        display: flex;
+        align-items: center;
+    }
+
+    .select2-container .select2-selection--multiple .select2-selection__rendered {
+        line-height: 40px !important;
+    }
+</style>
 @extends('layouts.app')
 @section('content')
 <?php 
@@ -6,88 +22,117 @@
     use App\Models\Facility; 
 ?>
 <div class="col-lg-12 grid-margin stretch-card">
-    <div class="card">
-        <div class="card-body">
-            <form method="GET">
-                <div class="input-group float-right w-50" style="min-width: 600px;">
-                    <input type="text" class="form-control" name="keyword" placeholder="PROPONENT" value="{{ $keyword }}">
-                        <div class="input-group-append">
-                            <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
-                            <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
-                        </div>
+    <div class="card"> 
+        <div class="card-body" style="">
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                <div style="text-align: left;">
+                    <h4 class="card-title">MANAGE FUNDSOURCE: PROPONENTS</h4>
+                    <p class="card-description">MAIF-IPP</p>
                 </div>
-            </form>
-            <h4 class="card-title">MANAGE FUNDSOURCE: PROPONENT</h4>
-            <p class="card-description">
-                MAIF-IPP
-            </p>
-            @if(isset($data))
-                <div class="row">
-                    @foreach($data as $row)
-                        <div class="col-md-3 mt-2 grid-margin grid-margin-md-0 stretch-card">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div style="justify-content: space-between; flex-wrap: wrap; align-items: center;">
-                                        <b><h3><a href="" data-toggle="modal" class="text-success" onclick="disUtil('{{ $row['proponent']['proponent'] }}')">{{ $row['proponent']['proponent'] }}</a></h3></b>
-                                        <a href="#modified_funds" data-toggle="modal" class="btn btn-sm update_saa" style="min-width:110px;height:30px; cursor: pointer; text-align:center; color:white; background-color:#417524; border-radius:0;" onclick="addBalance('{{ $row['proponent']['proponent'] }}')">Manage Funds</a>                                      
-                                    </div>
-                                    <div style="overflow-x: auto; width: 100%; margin-top: 10px;">
-                                        <table class="table-reponsive" style="border-collapse: collapse; width: 90%; margin: 0; padding: 0; margin-left:5%">
-                                            <tbody>
-                                                <tr>
-                                                    <td style="padding:5px">Allocated Funds</td>
-                                                    <td class="text-center" style="padding:5px">:</td>
-                                                    <td style="padding:5px"><strong>{{ number_format($row['sum'] ?? 0, 2, '.', ',') }}</strong></td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="padding:5px">GL Total</td>
-                                                    <td class="text-center">:</td>
-                                                    <td><strong>{{ number_format($row['totalUtilized'] ?? 0, 2, '.', ',') }}</strong></td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="padding:5px">Disbursement Total</td>
-                                                    <td class="text-center">:</td>
-                                                    <td><strong>{{ number_format($row['disbursement'] ?? 0, 2, '.', ',') }}</strong></td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="padding:5px">Supplemental Funds</td>
-                                                    <td class="text-center">:</td>
-                                                    <td>
-                                                        <a href="#supp_tracking" data-toggle="modal" onclick="supDetails('{{ $row['proponent']['proponent'] }}')">
-                                                            <strong>{{ number_format($row['supp'] ?? 0, 2, '.', ',') }}</strong>
-                                                        </a>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="padding:5px">Negative Amount</td>
-                                                    <td class="text-center">:</td>
-                                                    <td>
-                                                        <a href="#sub_tracking" data-toggle="modal" onclick="subDetails('{{ $row['proponent']['proponent'] }}')">
-                                                            <strong>{{ number_format($row['sub'] ?? 0, 2, '.', ',') }}</strong>
-                                                        </a>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="padding:5px">Remaining Funds</td>
-                                                    <td class="text-center">:</td>
-                                                    <td><strong>{{ number_format($row['rem'] ?? 0, 2, '.', ',') }}</strong></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                <div>
+                    <div class="input-group">
+                        <form method="GET" action="">
+                            <div class="input-group">
+                                <select class="form-control data_filtering" name="data_filtering[]" multiple>
+                                    <option></option>
+                                    @foreach($proponents as $row)
+                                        <option value="{{ $row[0]->id }}" {{ in_array($row[0]->id, $keyword) ? 'selected' : '' }}>
+                                            {{ $row[0]->proponent }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div class="input-group-append">
+                                    <select class="data_sorting" name="data_sorting" style="min-width:200px">
+                                        <option></option>
+                                        <option value="1" {{ $filter_keyword == 1 ? 'selected' : ''}}>Proponent</option>
+                                        <option value="2" {{ $filter_keyword == 2 ? 'selected' : ''}}>Allocated Funds</option>
+                                        <option value="3" {{ $filter_keyword == 3 ? 'selected' : ''}}>GL Total</option>
+                                        <option value="4" {{ $filter_keyword == 4 ? 'selected' : ''}}>Disbursement Total</option>
+                                        <option value="5" {{ $filter_keyword == 5 ? 'selected' : ''}}>Supplemental Funds</option>
+                                        <option value="6" {{ $filter_keyword == 6 ? 'selected' : ''}}>Negative Amount</option>
+                                        <option value="7" {{ $filter_keyword == 7 ? 'selected' : ''}}>Remaining Funds</option>
+                                    </select>
+                                    <button style="width:100px; border-radius:0; height:40px" class="btn btn-sm btn-success text-white" value="{{ $sort }}" type="submit" name="sorting_btn"><i class="typcn typcn-filter menu-icon"></i>Sort</button>
+                                    <button style="width:100px; border-radius:0; height:40px" class="btn btn-sm btn-info text-white" value="filtered" type="submit" name="filtered_btn"><i class="typcn typcn-filter menu-icon"></i>Filter</button>
+                                    <button style="width:100px; border-radius:0; height:40px" class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+            
+            <div class="card-body2">
+                @if(isset($data))
+                    <div class="row">
+                        @foreach($data as $row)
+                            <div class="col-md-3 mt-2 grid-margin grid-margin-md-0 stretch-card">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div style="justify-content: space-between; flex-wrap: wrap; align-items: center;">
+                                            <b><h3><a href="" data-toggle="modal" class="text-success" onclick="disUtil('{{ $row['proponent']['proponent'] }}')">{{ $row['proponent']['proponent'] }}</a></h3></b>
+                                            <a href="#modified_funds" data-toggle="modal" class="btn btn-sm update_saa" style="min-width:110px;height:30px; cursor: pointer; text-align:center; color:white; background-color:#417524; border-radius:0;" onclick="addBalance('{{ $row['proponent']['proponent'] }}')">Manage Funds</a>                                      
+                                        </div>
+                                        <div style="overflow-x: auto; width: 100%; margin-top: 10px;">
+                                            <table class="table-reponsive" style="border-collapse: collapse; width: 90%; margin: 0; padding: 0; margin-left:5%; font-size:12px">
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="padding:5px">Allocated Funds</td>
+                                                        <td class="text-center" style="padding:5px">:</td>
+                                                        <td style=""><strong>{{ number_format($row['sum'] ?? 0, 2, '.', ',') }}</strong></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding:5px">GL Total</td>
+                                                        <td class="text-center">:</td>
+                                                        <td><strong>{{ number_format($row['totalUtilized'] ?? 0, 2, '.', ',') }}</strong></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding:5px">Disbursement Total</td>
+                                                        <td class="text-center">:</td>
+                                                        <td><strong>{{ number_format($row['disbursement'] ?? 0, 2, '.', ',') }}</strong></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding:5px">Supplemental Funds</td>
+                                                        <td class="text-center">:</td>
+                                                        <td>
+                                                            <a href="#supp_tracking" data-toggle="modal" onclick="supDetails('{{ $row['proponent']['proponent'] }}')">
+                                                                <strong>{{ number_format($row['supp'] ?? 0, 2, '.', ',') }}</strong>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding:5px">Negative Amount</td>
+                                                        <td class="text-center">:</td>
+                                                        <td>
+                                                            <a href="#sub_tracking" data-toggle="modal" onclick="subDetails('{{ $row['proponent']['proponent'] }}')">
+                                                                <strong>{{ number_format($row['sub'] ?? 0, 2, '.', ',') }}</strong>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding:5px">Remaining Funds</td>
+                                                        <td class="text-center">:</td>
+                                                        <td><strong>{{ number_format($row['rem'] ?? 0, 2, '.', ',') }}</strong></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    @endforeach
+                        @endforeach
+                    </div>
+                @else
+                    <div class="alert alert-danger" role="alert" style="width: 100%;">
+                    <i class="typcn typcn-times menu-icon"></i>
+                        <strong>No fundsource found!</strong>
+                    </div>
+                @endif
+                <div class="pl-5 pr-5 mt-5">
+                    {!! $data->appends(request()->query())->links('pagination::bootstrap-5') !!}
                 </div>
-            @else
-                <div class="alert alert-danger" role="alert" style="width: 100%;">
-                <i class="typcn typcn-times menu-icon"></i>
-                    <strong>No fundsource found!</strong>
-                </div>
-            @endif
-            <div class="pl-5 pr-5 mt-5">
-                {!! $data->appends(request()->query())->links('pagination::bootstrap-5') !!}
             </div>
         </div>
     </div>
@@ -160,7 +205,7 @@
                         </div>
                         <div class="col-md-7">
                             <label style="vertical-align:center">FACILITY: </label>
-                            <select class="form-control js-example-basic-single select2" style="width:100%" id="f_id" name="f_id">
+                            <select class="form-control js-example-basic-single facility_2" style="width:100%" id="f_id" name="f_id">
                                 <option value=""></option>
                                 @foreach($facilities as $row)
                                     <option value="{{ $row->id }}">{{ $row->name }}</option>
@@ -219,11 +264,23 @@
         $('.funds_type').val(1);
     }
 
+    $('.data_sorting').select2({
+        // tags:true,
+        placeholder:"Select data to sort",
+        allowClear: true
+    });
+
+    $('.data_filtering').select2({
+        tags:true,
+        placeholder:"Select proponent to filter",
+        allowClear: true
+    });
+
     function subtracts(){
         $('.funds_type').val(2);
     }
 
-    $('.select2').select2({
+    $('.facility_2').select2({
         placeholder: 'Select Facility',
     });
 
