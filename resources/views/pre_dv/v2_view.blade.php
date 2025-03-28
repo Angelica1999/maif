@@ -261,8 +261,8 @@
                             </td>
                             <td style="width:20%; border-left: 0 ; text-align:right; vertical-align:top" >
                             <br>
-                              <span id="total_debit">{{number_format(($new_dv? $amount - $new_dv->accumulated: $amount),2,'.',',')}}</span><br>
-                              <input type="text" class="accumulated" name="accumulated" style="margin-top:1px;width:120px; height: 20px; text-align:right;" oninput="calculateSubsidy()" onkeyup="validateAmount(this)" value="{{$new_dv?number_format($new_dv->accumulated,2,'.',','):0}}"autocomplete="off">
+                              <span id="total_debit" class="debit_after">{{number_format(($new_dv? $amount - $new_dv->accumulated: $amount),2,'.',',')}}</span><br>
+                              <input type="text" class="accumulated" id="accumulated" name="accumulated" style="margin-top:1px;width:120px; height: 20px; text-align:right;" oninput="calculateSubsidy(this)" onkeyup="validateAmount(this)" value="{{$new_dv?number_format($new_dv->accumulated,2,'.',','):0}}"autocomplete="off">
                             </td>
                             <td style="width:20%; border-left: 0 ; text-align:right; vertical-align:top" >
                               <br><br><br>
@@ -387,11 +387,9 @@
         }
     }
 
-    function calculateSubsidy(){
+    function calculateSubsidy(event){
         var subsidy = parseNumberWithCommas($("#total_amount").text()) || 0;
-        var accumulated = parseNumberWithCommas($(".accumulated").val()) || 0;
-        console.log('subsidy', subsidy);
-        console.log('accumulated', accumulated);
+        var accumulated = parseNumberWithCommas(event.value) || 0;
 
         if(accumulated>subsidy){
             Lobibox.alert('error', {
@@ -402,7 +400,8 @@
             $('#total_debit').text(formatNumberWithCommas(subsidy));
         }else{
             var res = (subsidy-accumulated).toFixed(2);
-            $('#total_debit').text(formatNumberWithCommas(res));
+            // $('#total_debit').text(formatNumberWithCommas(res));
+            $('.debit_after').text(formatNumberWithCommas(res));
         }
     }
 

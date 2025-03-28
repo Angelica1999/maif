@@ -1305,11 +1305,11 @@ class HomeController extends Controller
                             $row->route_no,
                             $saaString,
                             $facility,
-                            $al_disp,
-                            $all_amount,
+                            str_replace(',','',$al_disp),
+                            str_replace(',','',$all_amount),
                             $percentage. " %",
-                            $discount_all,
-                            $rem_disp,
+                            str_replace(',','',$discount_all),
+                            str_replace(',','',$rem_disp),
                             $string_patient,
                             $created_on
                         ];
@@ -1341,6 +1341,10 @@ class HomeController extends Controller
         // return $display;
         // return $data;
         $sheet->fromArray($data, null, 'B4');
+        $sheet->getStyle('E4:F' . (count($data) + 3))
+            ->getNumberFormat()->setFormatCode('#,##0.00');
+        $sheet->getStyle('H4:I' . (count($data) + 3))
+            ->getNumberFormat()->setFormatCode('#,##0.00');
 
         $styleArray = [
             'borders' => [
@@ -1355,7 +1359,6 @@ class HomeController extends Controller
         ];
         
         $sheet->getStyle('B3:K' . (count($data) + 3))->applyFromArray($styleArray);
-        // $sheet->getStyle('B4:B' . (count($data) + 3))->getAlignment()->setWrapText(true);
         $sheet->getStyle('B4:K' . (count($data) + 3))->getAlignment()->setWrapText(true);
 
         
@@ -1543,8 +1546,8 @@ class HomeController extends Controller
                 $data[]=[
                     $saa,
                     $proponent,
-                    $utilize ? number_format(str_replace(',','',$utilize),2,'.',',') : 0.00,
-                    $discount > 0 ? number_format(str_replace(',','',$discount),2,'.',',') : 0.00,
+                    $utilize ? str_replace(',','',$utilize) : 0.00,
+                    $discount > 0 ? str_replace(',','',$discount) : 0.00,
                     $remarks,
                     $created_on
                 ];
@@ -1552,6 +1555,8 @@ class HomeController extends Controller
         }
 
         $sheet->fromArray($data, null, 'B4');
+        $sheet->getStyle('D4:E' . (count($data) + 3))
+            ->getNumberFormat()->setFormatCode('#,##0.00');
 
         $styleArray = [
             'borders' => [

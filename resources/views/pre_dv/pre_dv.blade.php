@@ -14,9 +14,7 @@
         background-color: green !important;
         color: white !important;
     }
-
 </style>
-
 <div class="col-md-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
@@ -38,11 +36,11 @@
                         </div>
                         <input type="hidden" name="f_id" class="fc_id" value="{{ implode(',',$f_id) }}">
                         <input type="hidden" name="b_id" class="user_id" value="{{ implode(',',$b_id) }}">
-                        <input type="hidden" id="generate" name="generate" value="{{$generate}}"></input>
+                        <input type="hidden" id="generate" name="generate" value="{{ $generate }}"></input>
                     </form>
                 </div>
             </div>
-            <h4 class="card-title">PRE - DV <i class="text-danger">Ongoing updates</i></h4>
+            <h4 class="card-title">PRE - DV</h4>
             <p class="card-description">
                 MAIF-IPP
             </p>
@@ -94,13 +92,13 @@
                             @foreach($results as $row)
                                 <tr>
                                     <td>
+                                        <a href="{{ route('pre.excel', ['id' => $row->id]) }}" style="background-color:teal; border-radius:0; color:white; width:55px;" type="button" class="btn btn-xs">Excel</a>    
                                         @if($row->new_dv)                                  
                                             <button type="button" class="btn btn-xs" style="border-radius:0; background-color:#165A54; color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$row->new_dv->route_no}}" id="track_load" onclick="openModal()">Track</button>
                                             <a href="{{ route('pre.pdf', ['id' => $row->id]) }}" style="background-color:green; border-radius:0; color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
                                             <a href="{{ route('pre.image', ['id' => $row->id]) }}" style="background-color:blue; border-radius:0; color:white; width:55px;" target="_blank" type="button" class="btn btn-xs">Image</a>    
-                                            <a href="{{ route('pre.image', ['id' => $row->id]) }}" style="background-color:teal; border-radius:0; color:white; width:55px;" target="_blank" type="button" class="btn btn-xs">Excel</a>    
                                         @else
-                                            <span class="text-danger"><i>dv is not yet created</i></span>
+                                            <a data-toggle="modal" style="border-radius:0; margin-left:5px" title="Create Pre-DV (v2)" data-backdrop="static" href="#view_v2" onclick="viewV1({{ $row->id }})" class="text-danger"><i>dv is not yet created</i></a>
                                         @endif
                                     </td>
                                     <td>
@@ -190,14 +188,14 @@
                                 <div class="control_div">
                                     <div class="control_clone" style="padding: 10px; border: 1px solid lightgray;">
                                         <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 4%;">
-                                            <input class="form-control control_no" style="text-align: center; width: 56%;" placeholder="CONTROL NUMBER" required>
+                                            <input class="form-control control_no" style="text-align: center; width: 56%;" placeholder="CONTROL NUMBER" oninput="this.value = this.value.toUpperCase()" required>
                                             <i class="typcn typcn-plus menu-icon control_clone_btn" style="width:40px;background-color:blue; color:white;border: 1px; padding: 2px;"></i>
                                         </div>
                                         <div style="display: flex; justify-content: space-between;">
-                                            <input placeholder="PATIENT" class="form-control patient_1" style="width: 41%;" required>
+                                            <input placeholder="PATIENT" class="form-control patient_1" style="width: 41%;" oninput="this.value = this.value.toUpperCase()" required>
                                             <input placeholder="AMOUNT/TRANSMITTAL" class="form-control amount" onkeyup="validateAmount(this)" oninput="checkAmount($(this), $(this).val())" style="width: 50%;" required>
                                         </div>
-                                        <input placeholder="PATIENT" class="form-control patient_2" style="width: 41%; margin-top: 5px;">
+                                        <input placeholder="PATIENT" class="form-control patient_2" style="width: 41%; margin-top: 5px;" oninput="this.value = this.value.toUpperCase()">
                                     </div>
                                 </div>
                                 <div style="display: flex; justify-content: flex-end; margin-top: 5%; margin-bottom: 5%;">
@@ -232,7 +230,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="update_predv" role="dialog" style="overflow-y:scroll;" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document" style="width:700px">
         <div class="modal-content">
@@ -253,6 +250,19 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="view_v2" role="dialog" style="overflow-y:scroll;">
+    <div class="modal-dialog modal-lg" role="document" style="width:1000px">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#17c964;padding:15px; color:white">
+                <h4 class="modal-title"><i class="fa fa-plus" style="margin-right:auto;"></i>DV ( new version )</h4>
+                <button type="button" class="close" id="exit" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" style="color:white;">&times;</span></button>
+            </div>
+            <div class="pre_body" style="display: flex; flex-direction: column; align-items: center; padding:15px">
+
+            </div>
+        </div>
+    </div>
+</div>
 @include('modal')
 @endsection
 @section('js')
@@ -261,6 +271,16 @@
 <script src="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.js?v=1') }}"></script>
 
 <script>
+
+    function viewV1(id) {
+        $('.pre_body').empty();
+        $('.pre_body').html(loading);
+
+        console.log('id', id);
+        $.get("{{ url('pre-dv/v2/').'/' }}" + id, function(result) {
+            $('.pre_body').html(result);
+        });
+    }
 
     function displayControl(){
         $('.control_option').css('display', 'block');

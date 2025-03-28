@@ -212,6 +212,7 @@ Route::get('/pre-dv/pre_list', [App\Http\Controllers\PreDvController::class, 'pr
 Route::get('/pre-dv/proponent-clone/{facility_id}', [App\Http\Controllers\PreDvController::class, 'cloneProponent'])->name('clone.proponent');
 Route::get('/pre-dv/saa-clone/{facility_id}', [App\Http\Controllers\PreDvController::class, 'cloneSAA'])->name('clone.saa');
 Route::get('/pre-dv/control-clone', [App\Http\Controllers\PreDvController::class, 'cloneControl'])->name('clone.control');
+Route::get('/pre-dv/exclusion/{ids}', [App\Http\Controllers\PreDvController::class, 'exclude'])->name('new_dv.exclude');
 Route::match(['post', 'get'],'/pre-dv/save', [App\Http\Controllers\PreDvController::class, 'savePreDV'])->name('pre_dv.save');
 Route::get('pre-dv/update/{id}', [App\Http\Controllers\PreDvController::class, 'displayPreDV'])->name('pre.display');
 Route::get('pre-dv/delete/{id}', [App\Http\Controllers\PreDvController::class, 'deletePreDV'])->name('pre.delete');
@@ -245,6 +246,7 @@ Route::get('/bills/view/{id}', [App\Http\Controllers\FacilityController::class, 
 Route::match(['get', 'post'], '/bills/process/{type}/{id}', [App\Http\Controllers\FacilityController::class, 'processBills'])->name('process.bills');
 Route::get('/pre-dv/pdf/{id}', [App\Http\Controllers\PrintController::class, 'prePDF'])->name('pre.pdf');
 Route::get('/pre-dv/image/{id}', [App\Http\Controllers\PrintController::class, 'preImage'])->name('pre.image');
+Route::get('/pre-dv/excel/{id}', [App\Http\Controllers\PreDvController::class, 'preExcel'])->name('pre.excel');
 Route::get('/version2/{id}', [App\Http\Controllers\FundSourceController::class, 'version2'])->name('version2');
 Route::get('/patients', [App\Http\Controllers\HomeController::class, 'patients'])->name('patients');
 Route::get('/patients/forward', [App\Http\Controllers\HomeController::class, 'changeProponent'])->name('change.proponent');

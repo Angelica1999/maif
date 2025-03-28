@@ -89,12 +89,12 @@
                             </div>
                             @foreach($row->controls as $row1)
                                 <div class="card1">
-                                    <input type="text" style="border: 1px solid #000; box-sizing: border-box; margin-left:17%; margin-bottom:15px; text-align:center; width:65%; height:20px; font-size:12px; margin-right:auto;" value="{{$row1->control_no}}">
+                                    <input type="text" style="border: 1px solid #000; box-sizing: border-box; margin-left:17%; margin-bottom:15px; text-align:center; width:65%; height:20px; font-size:12px; margin-right:auto;" value="{{ $row1->control_no }}">
                                     <div style="justify-content: space-between; margin-bottom: 1px;">
-                                        <input type="text" class="" style="border: .5px solid black; text-align:center; width:45%; height:20px; font-size:12px;" value="{{$row1->patient_1}}">
+                                        <input type="text" class="" style="border: .5px solid black; text-align:center; width:45%; height:20px; font-size:12px;" value="{{ $row1->patient_1 }}">
                                         <input type="text" class="" style="text-align:center; width:45%; height:20px; font-size:12px; margin-left:35px" value="{{ number_format(str_replace(',','',$row1->amount), 2, '.',',') }}">
                                     </div>
-                                    <input type="text" class="" style="border: .5px solid black; text-align:center; width:45%; height:20px; font-size:12px;" value="{{$row1->patient_2}}">
+                                    <input type="text" class="" style="border: .5px solid black; text-align:center; width:45%; height:20px; font-size:12px;" value="{{ $row1->patient_2 }}">
                                 </div>
                             @endforeach
                             <div style="margin-bottom:1px">

@@ -156,7 +156,8 @@ class ReportController extends Controller
             ->setVertical(Alignment::VERTICAL_CENTER);
         $sheet->getRowDimension(3)->setRowHeight(50); 
 
-        $fundsources = ProponentInfo::orderBy('fundsource_id', 'ASC')->with('facility', 'proponent', 'fundsource')->get();
+        $fundsources = ProponentInfo::orderBy('fundsource_id', 'ASC')->with('facility:id,name', 'proponent:id,proponent', 'fundsource:id,saa')->get();
+
         $data = [];
         if($fundsources){
 
@@ -197,9 +198,9 @@ class ReportController extends Controller
                     $saa,
                     $proponent,
                     $name,
-                    $fundsource,
-                    $utilization,
-                    $rem,
+                    str_replace(',','',$fundsource),
+                    str_replace(',','',$utilization),
+                    str_replace(',','',$rem),
                     $per."%",
                 ];
             }
@@ -207,6 +208,8 @@ class ReportController extends Controller
         }
 
         $sheet->fromArray($data, null, 'B4');
+        $sheet->getStyle('E4:G' . (count($data) + 3))
+        ->getNumberFormat()->setFormatCode('#,##0.00');
 
         $styleArray = [
             'borders' => [

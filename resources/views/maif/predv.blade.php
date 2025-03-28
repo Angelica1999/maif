@@ -62,12 +62,12 @@
                         </div>
                         @foreach($row->controls as $row1)
                             <div class="card1">
-                                <input type="text" style="border: 1px solid #000; box-sizing: border-box; margin-left:17%; margin-bottom:15px; text-align:center; width:65%; height:20px; font-size:12px; margin-right:auto;" value="{{$row1->control_no}}">
+                                <input type="text" style="border: 1px solid #000; box-sizing: border-box; margin-left:17%; margin-bottom:15px; text-align:center; width:65%; height:20px; font-size:12px; margin-right:auto;" value="{{ $row1->control_no }}" oninput="this.value = this.value.toUpperCase()">
                                 <div style="justify-content: space-between; margin-bottom: 1px;">
-                                    <input type="text" class="" style="border: .5px solid black; text-align:center; width:45%; height:20px; font-size:12px;" value="{{$row1->patient_1}}">
+                                    <input type="text" class="" style="border: .5px solid black; text-align:center; width:45%; height:20px; font-size:12px;" value="{{ $row1->patient_1 }}" oninput="this.value = this.value.toUpperCase()">
                                     <input type="text" class="" style="text-align:center; width:45%; height:20px; font-size:12px; margin-left:35px" value="{{ number_format(str_replace(',','',$row1->amount), 2, '.',',') }}">
                                 </div>
-                                <input type="text" class="" style="border: .5px solid black; text-align:center; width:45%; height:20px; font-size:12px;" value="{{$row1->patient_2}}">
+                                <input type="text" class="" style="border: .5px solid black; text-align:center; width:45%; height:20px; font-size:12px;" value="{{ $row1->patient_2 }}" oninput="this.value = this.value.toUpperCase()">
                             </div>
                         @endforeach
                         <div style="margin-bottom:1px">
@@ -76,7 +76,7 @@
                         @foreach($row->saas as $row2)
                             <!-- <div class="card3"> -->
                                 <div style="justify-content: space-between;"  class="page-break-avoid">
-                                    <input type="text" class="" style="font-size:12px; font-style:italicize; text-align:center; width:45%; height:20px;page-break-inside: avoid;" value="{{$row2->saa->saa}}">
+                                    <input type="text" class="" style="font-size:12px; font-style:italicize; text-align:center; width:45%; height:20px;page-break-inside: avoid;" value="{{ $row2->saa->saa }}">
                                     <input type="text" class="" style="font-style:italicize; text-align:center; width:45%; height:20px; font-size:12px; margin-left:35px; page-break-inside: avoid;" value="{{ number_format(str_replace(',','',$row2->amount), 2, '.',',') }}">
                                 </div>
                             <!-- </div> -->

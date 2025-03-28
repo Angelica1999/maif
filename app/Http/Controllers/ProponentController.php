@@ -126,9 +126,12 @@ class ProponentController extends Controller
     {
         try {
             $keyword = $request->viewAll ? [] : $request->data_filtering;
+            $keyword = $keyword ? $keyword : [];
+            $list = Proponent::whereIn('id', $keyword)->pluck('proponent')->toArray();
+
             $perPage = 51;
-            $proponentGroups = Proponent::when($keyword, function ($query) use ($keyword) {
-                    return $query->whereIn('id', $keyword);
+            $proponentGroups = Proponent::when($list, function ($query) use ($list) {
+                    return $query->whereIn('proponent', $list);
                 })
                 ->select('id', 'proponent')
                 ->orderBy('proponent')
@@ -313,7 +316,7 @@ class ProponentController extends Controller
                 }
             }
 
-
+            // return $allData;
             $paginatedData = new LengthAwarePaginator(
                 $allData->forPage(LengthAwarePaginator::resolveCurrentPage(), $perPage),
                 $allData->count(),
@@ -806,8 +809,8 @@ class ProponentController extends Controller
         if(count($patients) > 0){
             foreach($patients as $row){
                 $name = $row->lname .', '.$row->fname.' '.$row->mname;
-                $guaranteed = number_format(str_replace(',','',$row->guaranteed_amount), 2,'.',',');
-                $actual = number_format($row->actual_amount, 2,'.',',');
+                $guaranteed = str_replace(',','',$row->guaranteed_amount);
+                $actual = str_replace(',','',$row->actual_amount);
                 $facility = $row->facility->name;
                 $user = !Empty($row->encoded_by) ? $row->encoded_by->lname .', '.$row->encoded_by->fname : 
                         (!Empty($row->gl_user) ? $row->gl_user->lname.', '.$row->gl_user->fname : '');
@@ -843,6 +846,8 @@ class ProponentController extends Controller
         // return $display;
 
         $sheet->fromArray($data, null, 'B4');
+        $sheet->getStyle('D4:E' . (count($data) + 3))
+            ->getNumberFormat()->setFormatCode('#,##0.00');
 
         $styleArray = [
             'borders' => [
