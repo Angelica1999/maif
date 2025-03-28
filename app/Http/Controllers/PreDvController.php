@@ -22,6 +22,16 @@ use App\Models\ProponentInfo;
 use App\Models\Utilization;
 use App\Models\Dv2;
 use App\Models\User;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Borders;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use PhpOffice\PhpSpreadsheet\RichText\RichText;
+use PhpOffice\PhpSpreadsheet\Style\Font;
+use PhpOffice\PhpSpreadsheet\Style\Color;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PDF;
 
 class PreDvController extends Controller
@@ -184,7 +194,7 @@ class PreDvController extends Controller
 
         $total = $pre_dv->take(1)->count();        
         $grand_amount = $pre_dv->sum('grand_total');
-        $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(10);
+        $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(20);
         // return $pre_dv;
 
         $pre_ids = PreDv::pluck('facility_id')->unique()->values()->toArray();
@@ -378,6 +388,22 @@ class PreDvController extends Controller
             's_id' => explode(',', $request->s_id),
             'pros' => Proponent::whereIn('id', PreDVExtension::pluck('proponent_id')->toArray())->get()
         ]);
+    }
+
+    public function exclude($ids){
+        $ids = array_map('intval', explode(',', $ids));
+        foreach($ids as $id){
+            $new_dv = NewDV::where('id', $id)->first();
+            if($new_dv->saa_exclusion == 1){
+                $new_dv->saa_exclusion = false;
+                $result = 0;
+            }else{
+                $new_dv->saa_exclusion = true;
+                $result = 1;
+            }
+            $new_dv->save();
+        }
+        return response()->json($result);
     }
 
     public function pre_dvBudget(Request $request, $type)
@@ -734,7 +760,6 @@ class PreDvController extends Controller
                 }
             ]
         )->first();
-        // return $pre_dv;
 
         $saas = Fundsource::get();
         $proponents = Proponent::select('proponent')->groupBy('proponent')->get();
@@ -747,13 +772,6 @@ class PreDvController extends Controller
             })
             ->orWhereIn('proponent_info.facility_id', [$facility_id, '702'])
             ->get();
-        // return  [
-        //     'result' => $pre_dv,
-        //     'proponents' => $proponents,
-        //     'saas' => $saas,
-        //     'facilities' => $facilities,
-        //     'info' => $info
-        // ];
         return view('pre_dv.update_predv', [
             'result' => $pre_dv,
             'proponents' => $proponents,
@@ -761,6 +779,157 @@ class PreDvController extends Controller
             'facilities' => $facilities,
             'info' => $info
         ]);
+    }
+
+    public function preExcel($id){
+        $pre_dv = PreDV::where('id', $id)->with(
+            [
+                'user:userid,fname,lname,mname',
+                'facility:id,name',
+                'new_dv',
+                'extension' => function ($query) {
+                    $query->with(
+                        [
+                            'proponent:id,proponent',
+                            'controls',
+                            'saas' => function ($query) {
+                                $query->with([
+                                    'saa:id,saa'
+                                ]);
+                            }
+                        ]
+                    );
+                }
+            ]
+        )->first();
+
+        $saas = Fundsource::get();
+        $proponents = Proponent::select('proponent')->groupBy('proponent')->get();
+        $facilities = Facility::select('id','name')->get();
+        $facility_id = (string) $pre_dv->facility_id;
+        $info = ProponentInfo::with('facility:id,name', 'fundsource', 'proponent:id,proponent')
+            ->where(function ($query) use ($facility_id) {
+                $query->whereJsonContains('proponent_info.facility_id', '702')
+                    ->orWhereJsonContains('proponent_info.facility_id', [$facility_id]);
+            })
+            ->orWhereIn('proponent_info.facility_id', [$facility_id, '702'])
+            ->get();
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Adjust column widths
+        $sheet->getColumnDimension('A')->setWidth(40);  
+        $sheet->getColumnDimension('B')->setWidth(50); 
+        $sheet->getColumnDimension('C')->setWidth(30); 
+        $sheet->getColumnDimension('D')->setWidth(20);
+        $sheet->getColumnDimension('E')->setWidth(20);
+
+        $sheet->mergeCells("A1:E1");
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("Facility: " . $pre_dv->facility->name);
+        $normalText->getFont()->setBold(true)->setSize(20); 
+        $sheet->setCellValue('A1', $richText1);
+        $sheet->getRowDimension(1)->setRowHeight(30);
+        $sheet->getStyle('A1')->getAlignment()->setWrapText(true);
+        $sheet->getStyle('A1:E1')
+            ->getAlignment()
+            ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+            ->setVertical(Alignment::VERTICAL_CENTER);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("Proponent");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('A2', $richText1);
+        $sheet->getStyle('A2')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("Control Number");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('B2', $richText1);
+        $sheet->getStyle('B2')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("Patient 1");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('C2', $richText1);
+        $sheet->getStyle('C2')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("Patient 2");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('D2', $richText1);
+        $sheet->getStyle('D2')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("Amount");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('E2', $richText1);
+        $sheet->getStyle('E2')->getAlignment()->setWrapText(true);
+
+        $sheet->getStyle('A2:E2')
+            ->getAlignment()
+            ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+            ->setVertical(Alignment::VERTICAL_CENTER);
+
+        $data = [];
+
+        foreach($pre_dv->extension as $index=>$row){
+            foreach($row->controls as $index1 => $row2){
+                $data[] = [
+                    $row->proponent->proponent,
+                    $row2->control_no,
+                    $row2->patient_1,
+                    $row2->patient_2,
+                    $row2->amount
+                ];
+            }
+        }
+
+        $sheet->fromArray($data, null, 'A3');
+        $sheet->getStyle('E3:E' . (count($data) + 2))
+        ->getNumberFormat()->setFormatCode('#,##0.00');
+
+        $styleArray = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                ],
+            ],
+            'alignment' => [
+                'vertical' => Alignment::VERTICAL_CENTER, 
+            ],
+        ];
+        
+        $sheet->getStyle('A2:E' . (count($data) + 2))->applyFromArray($styleArray);
+        $sheet->getStyle('A3:E' . (count($data) + 2))->getAlignment()->setWrapText(true);
+
+        $sheet->getStyle('A3:D' . (count($data) + 2))
+            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        
+        $sheet->getStyle('E3:E' . (count($data) + 2))
+            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+            
+        // Output preparation
+        ob_start();
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        $xlsData = ob_get_contents();
+        ob_end_clean();
+
+        // Filename
+        $facilityName = preg_replace('/[^A-Za-z0-9_\-]/', '_', $pre_dv->facility->name ?? 'Unknown');
+        $filename = "Pre-DV_" . $facilityName . "_" . date('Ymd') . ".xlsx";
+        // Set headers
+        header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        header("Content-Disposition: attachment; filename=$filename");
+        header("Pragma: no-cache");
+        header("Expires: 0");
+
+        // Output the file
+        return $xlsData;
+        exit;
+        
     }
 
     public function updatePreDV(Request $request)

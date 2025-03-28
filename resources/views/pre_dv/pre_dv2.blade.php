@@ -14,15 +14,15 @@ use App\Models\TrackingDetails;
                             <input type="text" class="form-control" name="keyword" placeholder="Search..." value="{{$keyword}}" id="search-input" style="width:350px;">
                             <div class="input-group-append">
                                 <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
-                                <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
-                                <button type="submit" value="filt" style="display:none; background-color:green; color:white; width:79px; font-size:11px" name="filt_dv" id="filt_dv" class="btn btn-xs"><i class="typcn typcn-filter menu-icon"></i>&nbsp;&nbsp;&nbsp;Filter</button>
-                                <button type="button" id="release_btn" data-target="#releaseTo" style="display:none; background:teal; color:white" onclick="putRoutes($(this))" data-backdrop="static" data-toggle="modal" class="btn btn-md">Release All</button>
+                                <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll" style="width:100px"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
+                                <button type="submit" value="filt" style="display:none; background-color:green; color:white; width:100px; font-size:11px" name="filt_dv" id="filt_dv" class="btn btn-xs"><i class="typcn typcn-filter menu-icon"></i>&nbsp;&nbsp;&nbsp;Filter</button>
+                                <button type="button" id="release_btn" data-target="#releaseTo" style="display:none; background:teal; color:white; width:100px;" onclick="putRoutes($(this))" data-backdrop="static" data-toggle="modal" class="btn btn-md">Release All</button>
                                 <input type="hidden" class="all_route" id="all_route" name="all_route">
                             </div>
                         </div>
                         <div class = "input-group">
                             <input type="text" style="text-align:center" class="form-control" id="dates_filter" value="{{ $dates_generated }}" name="dates_filter" />
-                            <button type="submit" id="gen_btn" style="background-color:teal; color:white; width:79px; border-radius: 0; font-size:11px" class="btn btn-xs"><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
+                            <button type="submit" id="gen_btn" style="background-color:#165A54; color:white; width:100px; border-radius: 0; font-size:11px" class="btn btn-xs"><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
                         </div>
                         <input type="hidden" id="generate" name="generate" value="{{$generate}}"></input>
                         <input type="hidden" name="f_id" class="facility_id" value="{{ implode(',',$f_id) }}">
@@ -37,171 +37,187 @@ use App\Models\TrackingDetails;
                 MAIF-IPP
             </p>
             <div class="table-responsive">
-            @if(count($results) > 0)
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th style="padding:5px; min-width:300px"></th>
-                            <th style="text-align:center;min-width:150px ">
-                                <a class="text-info select_all">Release All</a>
-                            </th>
-                            <th>Route</th>
-                            <th>Remarks</th>
-                            <th>Forwarded</th>
-                            <th class="status" style="min-width:100px">Status
-                                <i id="stat_i" class="typcn typcn-filter menu-icon"><i>
-                                <div class="filter" id="stat_div" style="display:none;">
-                                    <select style="width: 120px;" id="stat_select" name="stat_select" multiple>
-                                        <?php $item = [0,1,2]; ?>
-                                        @foreach($item as $d)
-                                            <option value="{{ $d }}" {{ is_array($s_id) && in_array($d, $s_id) ? 'selected' : '' }}>
-                                                {{ $d == 0? 'Pending' : ($d == 1 ? 'Obligated' : 'Paid') }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>  
-                            </th>
-                            <th class="facility">Facility
-                                <i id="fac_i" class="typcn typcn-filter menu-icon"><i>
-                                <div class="filter" id="fac_div" style="display:none;">
-                                    <select style="width: 120px;" id="fac_select" name="fac_select" multiple>
-                                        <?php $check = []; ?>
-                                        @foreach($facility_data as $index => $d)
-                                            @if(!in_array($d->id, $check))
-                                                <option value="{{ $d->id }}" {{ is_array($f_id) && in_array($d->id, $f_id) ? 'selected' : '' }}>
-                                                    {{ $d->name}}
-                                                </option>
-                                                <?php $check[] = $d->id; ?>
-                                            @endif
-                                        @endforeach
-                                    </select>
-                                </div>  
-                            </th>
-                            <th class="proponent" style="min-width: 300px">Proponent
-                                <i id="proponent_i" class="typcn typcn-filter menu-icon"><i>
-                                <div class="filter" id="proponent_div" style="display:none;">
-                                    <select style="width: 120px;" id="proponent_select" name="proponent_select" multiple>
-                                        <?php $check = []; ?>
-                                        @foreach($pros as $d)
-                                            @if(!in_array($d->id, $check))
-                                                <option value="{{ $d->id }}" {{ is_array($p_id) && in_array($d->id, $p_id) ? 'selected' : '' }}>
-                                                    {{ $d->proponent }}
-                                                </option>
-                                                <?php $check[] = $d->id; ?>
-                                            @endif
-                                        @endforeach
-                                    </select>
-                                </div>  
-                            </th>
-                            <th style="min-width:100px">Grand Total</th>
-                            <th class="user" style="min-width:120px">Created By
-                                <i id="by_i" class="typcn typcn-filter menu-icon"><i>
-                                <div class="filter" id="by_div" style="display:none;">
-                                    <select style="width: 120px;" id="by_select" name="by_select" multiple>
-                                        <?php $check = []; ?>
-                                        @foreach($results as $index => $d)
-                                            @if(!in_array($d->user->userid, $check))
-                                                <option value="{{ $d->user->userid }}" {{ is_array($b_id) && in_array($d->user->userid, $b_id) ? 'selected' : '' }}>
-                                                    {{ $d->user->fname .' '.$d->user->lname }}
-                                                </option>
-                                                <?php $check[] = $d->user->userid; ?>
-                                            @endif
-                                        @endforeach
-                                    </select>
-                                </div>  
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($results as $index => $row)
+                @if(count($results) > 0)
+                    <table class="table table-striped">
+                        <thead>
                             <tr>
-                                <td class="td" style="padding:5px;text-align:left">
-                                    @if($row->new_dv)
-                                        <?php
-                                            $routed = TrackingDetails::where('route_no',$row->new_dv->route_no)
-                                                ->count();
-                                            if($routed){
+                                <th style="padding:5px; min-width:300px"></th>
+                                <th style="width:130px">
+                                    <span onclick="exclude_all()" style="color: #007BFF; cursor: pointer;" 
+                                        onmouseover="this.style.color='#0056b3'" 
+                                        onmouseout="this.style.color='#007BFF'">
+                                        Exclude SAA Atts.
+                                    </span>
+                                </th>
+                                <th style="text-align:center;min-width:150px ">
+                                    <span class="select_all" style="color: #007BFF; cursor: pointer;" 
+                                        onmouseover="this.style.color='#0056b3'" 
+                                        onmouseout="this.style.color='#007BFF'">
+                                        Release All
+                                    </span>
+                                </th>
+                                <th>Route</th>
+                                <th>Remarks</th>
+                                <th>Forwarded</th>
+                                <th class="status" style="min-width:100px">Status
+                                    <i id="stat_i" class="typcn typcn-filter menu-icon"><i>
+                                    <div class="filter" id="stat_div" style="display:none;">
+                                        <select style="width: 120px;" id="stat_select" name="stat_select" multiple>
+                                            <?php $item = [0,1,2]; ?>
+                                            @foreach($item as $d)
+                                                <option value="{{ $d }}" {{ is_array($s_id) && in_array($d, $s_id) ? 'selected' : '' }}>
+                                                    {{ $d == 0? 'Pending' : ($d == 1 ? 'Obligated' : 'Paid') }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>  
+                                </th>
+                                <th class="facility" style="min-width: 150px">Facility
+                                    <i id="fac_i" class="typcn typcn-filter menu-icon"><i>
+                                    <div class="filter" id="fac_div" style="display:none;">
+                                        <select style="width: 120px;" id="fac_select" name="fac_select" multiple>
+                                            <?php $check = []; ?>
+                                            @foreach($facility_data as $index => $d)
+                                                @if(!in_array($d->id, $check))
+                                                    <option value="{{ $d->id }}" {{ is_array($f_id) && in_array($d->id, $f_id) ? 'selected' : '' }}>
+                                                        {{ $d->name}}
+                                                    </option>
+                                                    <?php $check[] = $d->id; ?>
+                                                @endif
+                                            @endforeach
+                                        </select>
+                                    </div>  
+                                </th>
+                                <th class="proponent" style="min-width: 150px">Proponent
+                                    <i id="proponent_i" class="typcn typcn-filter menu-icon"><i>
+                                    <div class="filter" id="proponent_div" style="display:none;">
+                                        <select style="width: 120px;" id="proponent_select" name="proponent_select" multiple>
+                                            <?php $check = []; ?>
+                                            @foreach($pros as $d)
+                                                @if(!in_array($d->id, $check))
+                                                    <option value="{{ $d->id }}" {{ is_array($p_id) && in_array($d->id, $p_id) ? 'selected' : '' }}>
+                                                        {{ $d->proponent }}
+                                                    </option>
+                                                    <?php $check[] = $d->id; ?>
+                                                @endif
+                                            @endforeach
+                                        </select>
+                                    </div>  
+                                </th>
+                                <th style="min-width:100px">Grand Total</th>
+                                <th class="user" style="min-width:120px">Created By
+                                    <i id="by_i" class="typcn typcn-filter menu-icon"><i>
+                                    <div class="filter" id="by_div" style="display:none;">
+                                        <select style="width: 120px;" id="by_select" name="by_select" multiple>
+                                            <?php $check = []; ?>
+                                            @foreach($results as $index => $d)
+                                                @if(!in_array($d->user->userid, $check))
+                                                    <option value="{{ $d->user->userid }}" {{ is_array($b_id) && in_array($d->user->userid, $b_id) ? 'selected' : '' }}>
+                                                        {{ $d->user->fname .' '.$d->user->lname }}
+                                                    </option>
+                                                    <?php $check[] = $d->user->userid; ?>
+                                                @endif
+                                            @endforeach
+                                        </select>
+                                    </div>  
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($results as $index => $row)
+                                <tr>
+                                    <td class="td" style="padding:5px;text-align:left">
+                                        @if($row->new_dv)
+                                            <?php
+                                                $routed = TrackingDetails::where('route_no',$row->new_dv->route_no)
+                                                    ->count();
+                                                if($routed){
 
-                                                $doc = TrackingDetails::where('route_no',$row->new_dv->route_no)
-                                                    ->orderBy('id','desc')
-                                                    ->first();
+                                                    $doc = TrackingDetails::where('route_no',$row->new_dv->route_no)
+                                                        ->orderBy('id','desc')
+                                                        ->first();
 
-                                                $doc_id = $doc->id;
-                                                $data_action = $doc->action;
-                                                
-                                                if($data_action){
-                                                    $stat = $data_action;
+                                                    $doc_id = $doc->id;
+                                                    $data_action = $doc->action;
+                                                    
+                                                    if($data_action){
+                                                        $stat = $data_action;
+                                                    }else{
+                                                        $stat = "none";
+                                                    }
+                                                    
                                                 }else{
+                                                    $doc_id= 0;
+                                                    $routed = 0;
                                                     $stat = "none";
                                                 }
-                                                
-                                            }else{
-                                                $doc_id= 0;
-                                                $routed = 0;
-                                                $stat = "none";
-                                            }
-                                        ?>                                   
-                                        <button type="button" class="btn btn-xs" style="background-color:#165A54; border-radius:0; color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$row->new_dv->route_no}}" id="track_load" onclick="openModal()">Track</button>
-                                        <a href="{{ route('new_dv.pdf', ['id' => $row->id]) }}" style="background-color:green; border-radius:0; color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
-                                        <button data-toggle="modal" data-target="#releaseTo" data-id="{{ $doc_id }}" data-route_no="{{ $row->new_dv->route_no }}" onclick="putRoute($(this))" style="background-color:#1E90FF; border-radius:0; color:white; width:85px;" type="button" class="btn btn-xs">Release To</button>
-                                        <button data-toggle="modal" data-target="#acceptModal" data-id="{{ $doc_id }}" data-route_no="{{ $row->new_dv->route_no }}" onclick="acceptModal({{ $doc_id }}, '{{ $row->new_dv->route_no }}')" style="background-color:blue; border-radius:0; color:white; width:85px; display: inline-block" type="button" class="btn btn-xs accept_document">Accept</button>
-                                    @else
-                                        <span class="text-danger"><i>dv is not yet created</i></span>
-                                    @endif
-                                </td>
-                                @if($row->new_dv)
-                                    <td style="padding:5px;text-align:center" class="group-release" data-route_no="{{ $row->new_dv->route_no }}" data-id="{{ $doc_id }}" >
-                                        <input type="checkbox" style="width: 60px; height: 20px;" name="release_dv[]" id="releaseDvId_{{ $index }}" 
-                                            class="group-releaseDv" >
-                                    </td>
-                                @else
-                                    <td></td>
-                                @endif
-                                <td>
-                                    @if($row->new_dv)
-                                        {{$row->new_dv->route_no}}
-                                    @endif
-                                </td>
-                                <td>
-                                    @if($row->new_dv)
-                                        @if($row->new_dv->remarks != null)
-                                            <a href="#update_remarks" onclick="updateRemarks('{{$row->new_dv->route_no}}', '{{($row->new_dv->remarks ==null)?0:$row->new_dv->remarks}}')" data-backdrop="static" data-toggle="modal">{{$row->new_dv->remarks}}</a>
+                                            ?>                                   
+                                            <button type="button" class="btn btn-xs" style="background-color:#165A54; border-radius:0; color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$row->new_dv->route_no}}" id="track_load" onclick="openModal()">Track</button>
+                                            <a href="{{ route('new_dv.pdf', ['id' => $row->id]) }}" style="background-color:green; border-radius:0; color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
+                                            <button data-toggle="modal" data-target="#releaseTo" data-id="{{ $doc_id }}" data-route_no="{{ $row->new_dv->route_no }}" onclick="putRoute($(this))" style="background-color:#1E90FF; border-radius:0; color:white; width:85px;" type="button" class="btn btn-xs">Release To</button>
+                                            <button data-toggle="modal" data-target="#acceptModal" data-id="{{ $doc_id }}" data-route_no="{{ $row->new_dv->route_no }}" onclick="acceptModal({{ $doc_id }}, '{{ $row->new_dv->route_no }}')" style="background-color:blue; border-radius:0; color:white; width:85px; display: inline-block" type="button" class="btn btn-xs accept_document">Accept</button>
                                         @else
-                                            <a href="#update_remarks" onclick="updateRemarks('{{$row->new_dv->route_no}}', '{{($row->new_dv->remarks ==null)?0:$row->new_dv->remarks}}')" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs"><i class="typcn typcn-edit menu-icon" style="color:green; font-size: 24px; width:200px;"></i></a>
+                                            <span class="text-danger"><i>dv is not yet created</i></span>
                                         @endif
+                                    </td>
+                                    
+                                    @if($row->new_dv)
+                                        <td>
+                                            <input type="checkbox" class="exclude_ids" data-id="{{ $row->new_dv->id }}" style="width: 60px; height: 20px;" onclick="exclude({{ $row->new_dv->id }})" {{ $row->new_dv->saa_exclusion ? 'checked' : '' }}>
+                                        </td>
+                                        <td style="padding:5px;text-align:center" class="group-release" data-route_no="{{ $row->new_dv->route_no }}" data-id="{{ $doc_id }}" >
+                                            <input type="checkbox" style="width: 60px; height: 20px;" name="release_dv[]" id="releaseDvId_{{ $index }}" 
+                                                class="group-releaseDv" >
+                                        </td>
+                                    @else
+                                        <td></td>
+                                        <td></td>
                                     @endif
-                                </td>
-                                <td style="text-align:center">
-                                    @if(isset($routed) && $routed > 1)
-                                        <i class="typcn typcn-tick menu-icon" style="font-size: 24px; width:200px;"></i>
-                                    @endif
-                                </td>
-                                <td>{{ $row->new_dv ? ($row->new_dv->status == 0? 'Pending' : ($row->new_dv->status == 1 ? 'Obligated': 'Paid')):'' }}</td>
-                                <td><a data-toggle="modal" data-backdrop="static" href="#view_v2" onclick="viewV1({{$row->id}})">{{ $row->facility ? $row->facility->name : $row->id }}</a></td>
-                                <td>
-                                    @foreach($row->extension as $index => $data)
-                                        {{$data->proponent->proponent}}
-                                        @if($index + 1 % 2 == 0)
-                                        <br>
+                                    <td>
+                                        @if($row->new_dv)
+                                            {{$row->new_dv->route_no}}
                                         @endif
-                                        
-                                        @if($index < count($row->extension) - 1)
-                                            ,
+                                    </td>
+                                    <td>
+                                        @if($row->new_dv)
+                                            @if($row->new_dv->remarks != null)
+                                                <a href="#update_remarks" onclick="updateRemarks('{{$row->new_dv->route_no}}', '{{($row->new_dv->remarks ==null)?0:$row->new_dv->remarks}}')" data-backdrop="static" data-toggle="modal">{{$row->new_dv->remarks}}</a>
+                                            @else
+                                                <a href="#update_remarks" onclick="updateRemarks('{{$row->new_dv->route_no}}', '{{($row->new_dv->remarks ==null)?0:$row->new_dv->remarks}}')" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs"><i class="typcn typcn-edit menu-icon" style="color:green; font-size: 24px; width:200px;"></i></a>
+                                            @endif
                                         @endif
-                                    @endforeach
-                                </td>
-                                <td>{{number_format(str_replace(',','',$row->grand_total), 2, '.',',')}}</td>
-                                <td>{{$row->user->lname .', '.$row->user->fname}}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            @else
-                <div class="alert alert-danger" role="alert" style="width: 100%; margin-top:5px;">
-                    <i class="typcn typcn-times menu-icon"></i>
-                    <strong>No data found!</strong>
-                </div>
-            @endif
+                                    </td>
+                                    <td style="text-align:center">
+                                        @if(isset($routed) && $routed > 1)
+                                            <i class="typcn typcn-tick menu-icon" style="font-size: 24px; width:200px;"></i>
+                                        @endif
+                                    </td>
+                                    <td>{{ $row->new_dv ? ($row->new_dv->status == 0? 'Pending' : ($row->new_dv->status == 1 ? 'Obligated': 'Paid')):'' }}</td>
+                                    <td><a data-toggle="modal" data-backdrop="static" href="#view_v2" onclick="viewV1({{$row->id}})">{{ $row->facility ? $row->facility->name : $row->id }}</a></td>
+                                    <td>
+                                        @foreach($row->extension as $index => $data)
+                                            {{$data->proponent->proponent}}
+                                            @if($index + 1 % 2 == 0)
+                                            <br>
+                                            @endif
+                                            
+                                            @if($index < count($row->extension) - 1)
+                                                ,
+                                            @endif
+                                        @endforeach
+                                    </td>
+                                    <td>{{number_format(str_replace(',','',$row->grand_total), 2, '.',',')}}</td>
+                                    <td>{{$row->user->lname .', '.$row->user->fname}}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @else
+                    <div class="alert alert-danger" role="alert" style="width: 100%; margin-top:5px;">
+                        <i class="typcn typcn-times menu-icon"></i>
+                        <strong>No data found!</strong>
+                    </div>
+                @endif
             </div>
             <div class="alert alert-info" role="alert" style="width: 100%; margin-top:5px;">
                 <strong>Total number of data generated: {{ count($results) }}</strong>
@@ -212,7 +228,6 @@ use App\Models\TrackingDetails;
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="view_v2" role="dialog" style="overflow-y:scroll;">
     <div class="modal-dialog modal-lg" role="document" style="width:1000px">
         <div class="modal-content">
@@ -226,13 +241,58 @@ use App\Models\TrackingDetails;
         </div>
     </div>
 </div>
-
 @include('modal')
 @endsection
 @section('js')
 <script src="{{ asset('admin/vendors/daterangepicker-master/moment.min.js?v=1') }}"></script>
 <script src="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.js?v=1') }}"></script>
 <script>
+    var x_check = 0;
+    function exclude_all(){
+        
+        var all_box = $('.exclude_ids');
+        var ids = [];
+
+        if(x_check == 0){
+            all_box.prop('checked', true)
+            x_check = 1;
+        }else{
+            all_box.prop('checked', false)
+            x_check = 0;
+        }
+        
+        all_box.each(function () {
+            var doc_id = $(this).data('id');
+            ids.push(doc_id);
+        });
+
+        $.get("{{ url('pre-dv/exclusion').'/' }}" + ids, function(result){
+            if(result == 0){ //false
+                Lobibox.notify('success', {
+                    msg: 'Saa included!'
+                });
+            }else{ // true
+                Lobibox.notify('error', {
+                    msg: 'Saa excluded!'
+                });
+            }
+            // location.reload();
+        });
+    }
+    function exclude(id){
+        var ids = [id];
+        $.get("{{ url('pre-dv/exclusion').'/' }}" + ids, function(result){
+            if(result == 0){ //false
+                Lobibox.notify('success', {
+                    msg: 'Saa included!'
+                });
+            }else{ // true
+                Lobibox.notify('error', {
+                    msg: 'Saa excluded!'
+                });
+            }
+        });
+    }
 
     $('#gen_btn').on('click', function(){
         $('#generate').val(1);
