@@ -1345,6 +1345,7 @@ class HomeController extends Controller
             ->getNumberFormat()->setFormatCode('#,##0.00');
         $sheet->getStyle('H4:I' . (count($data) + 3))
             ->getNumberFormat()->setFormatCode('#,##0.00');
+            
 
         $styleArray = [
             'borders' => [

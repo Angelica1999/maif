@@ -237,7 +237,17 @@ class FacilityController extends Controller
 
     public function getTrans($id){
         // $response = Http::get('http://localhost/guaranteeletter/transmittal/summary/'.$id);
-        $response = Http::get('http://192.168.110.7/guaranteeletter/transmittal/summary/'.$id);
+        $token = $this->getToken();
+
+        if ($token != 1) {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token
+            ])->get('http://192.168.110.7/guaranteeletter/api/transmittal/summary/'.$id);            
+        } else {
+            return "Authentication failed.";
+        }
+
+        // $response = Http::get('http://192.168.110.7/guaranteeletter/transmittal/summary/'.$id);
         return $response;
     }
 
@@ -285,15 +295,32 @@ class FacilityController extends Controller
                 $log->save();
                 
                 // Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$trans->id.'/'.Auth::user()->userid.'/received');
-                Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$trans->id.'/'.Auth::user()->userid.'/received');
+                // Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$trans->id.'/'.Auth::user()->userid.'/received');
+                $token = $this->getToken();
+
+                if ($token != 1) {
+                    $response = Http::withHeaders([
+                        'Authorization' => 'Bearer ' . $token
+                    ])->get('http://192.168.110.7/guaranteeletter/api/transmittal/returned/'.$trans->id.'/'.Auth::user()->userid.'/received');            
+                } else {
+                    return "Authentication failed.";
+                }
             }
             return redirect()->back()->with('logbook', true);
         }
     }
 
     public function references($type, $id){
-        $response = Http::get('http://192.168.110.7/guaranteeletter/transmittal/references/'.$id);
+        // $response = Http::get('http://192.168.110.7/guaranteeletter/transmittal/references/'.$id);
         // $response = Http::get('http://localhost/guaranteeletter/transmittal/references/'.$id);
+        $token = $this->getToken();
+        if ($token != 1) {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token
+            ])->get('http://192.168.110.7/guaranteeletter/api/transmittal/references/'.$id);            
+        } else {
+            return "Authentication failed.";
+        }
         $randomBytes = random_bytes(16); 
         return view('facility.return_facility',[
             'references' => $response->json(),
@@ -313,7 +340,16 @@ class FacilityController extends Controller
             $return->save();
         }
         // $reponse = Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$req->id.'/'.Auth::user()->userid.'/returned');
-        $reponse = Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$req->id.'/'.Auth::user()->userid.'/returned');
+        // $reponse = Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$req->id.'/'.Auth::user()->userid.'/returned');
+        $token = $this->getToken();
+        if ($token != 1) {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token
+            ])->get('http://192.168.110.7/guaranteeletter/api/transmittal/returned/'.$req->id.'/'.Auth::user()->userid.'/returned');            
+        } else {
+            return "Authentication failed.";
+        }
+
         Transmittal::where('id', $req->id)->update(['status' => 3, 'remarks' => 3]);
         return redirect()->back()->with('trans_return', true);
     }
@@ -327,13 +363,29 @@ class FacilityController extends Controller
 
     public function returnedDetails($id){
         // return Http::get('http://localhost/guaranteeletter/transmittal/return-remarks/'.$id);
-        return Http::get('http://192.168.110.7/guaranteeletter/transmittal/return-remarks/'.$id);
+        // return Http::get('http://192.168.110.7/guaranteeletter/transmittal/return-remarks/'.$id);
+        $token = $this->getToken();
+        if ($token != 1) {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token
+            ])->get('http://192.168.110.7/guaranteeletter/api/transmittal/return-remarks/'.$id);            
+        } else {
+            return "Authentication failed.";
+        }
     } 
 
     public function acceptTrans($id){
         Transmittal::where('id', $id)->update(['status' => 5, 'remarks' => 5]);
         // $reponse = Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$id.'/'.Auth::user()->userid.'/accept');
-        $reponse = Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$id.'/'.Auth::user()->userid.'/accept');
+        // $reponse = Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$id.'/'.Auth::user()->userid.'/accept');
+        $token = $this->getToken();
+        if ($token != 1) {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token
+            ])->get('http://192.168.110.7/guaranteeletter/api/transmittal/returned/'.$id.'/'.Auth::user()->userid.'/accept');            
+        } else {
+            return "Authentication failed.";
+        }
         return 'success';
     }
 
@@ -346,8 +398,17 @@ class FacilityController extends Controller
 
     public function transDetails($id, $facility_id){
         // $reponse = Http::get('http://localhost/guaranteeletter/transmittal/details/'.$id.'/'.$facility_id);
-        $reponse = Http::get('http://192.168.110.7/guaranteeletter/transmittal/details/'.$id.'/'.$facility_id);
-        return $reponse;
+        // $reponse = Http::get('http://192.168.110.7/guaranteeletter/transmittal/details/'.$id.'/'.$facility_id);
+        $token = $this->getToken();
+        // return $token;
+        if ($token != 1) {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token
+            ])->get('http://192.168.110.7/guaranteeletter/api/transmittal/details/'.$id.'/'.$facility_id);            
+        } else {
+            return "Authentication failed.";
+        }
+        return $response;
     }
 
     public function transRem(Request $req) {
@@ -391,8 +452,17 @@ class FacilityController extends Controller
         $trans->remarks = 2;
         $trans->save();
 
-        Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$trans->id.'/'.Auth::user()->userid.'/received');
+        // Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$trans->id.'/'.Auth::user()->userid.'/received');
         // Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$trans->id.'/'.Auth::user()->userid.'/received');
+
+        $token = $this->getToken();
+        if ($token != 1) {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token
+            ])->get('http://192.168.110.7/guaranteeletter/api/transmittal/returned/'.$trans->id.'/'.Auth::user()->userid.'/received');            
+        } else {
+            return "Authentication failed.";
+        }
 
         return response()->json(['message' => 'Data submitted successfully']);
     }
@@ -413,5 +483,37 @@ class FacilityController extends Controller
             $fc->save();
         }
        return redirect()->back()->with('added_facility', true);
+    }
+
+    public function getToken(){
+        $user = Auth::user();
+        $loginResponse = Http::post('http://192.168.110.7/guaranteeletter/api/login', [
+            'userid' => $user->userid
+        ]);
+        if (isset($loginResponse['token'])) {
+            $token = $loginResponse['token'];
+        } else {
+            return 1;
+            // "Authentication failed. Error: " . ($loginResponse['message'] ?? 'Unknown error');
+        }
+        return $token;
+    }
+
+    public function samsam(){
+
+        $token = $this->getToken();
+
+        if ($token != 1) {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token
+            ])->get('http://192.168.110.7/guaranteeletter/api/test');
+            
+            $data = $response->json();
+        } else {
+            return "Authentication failed.";
+        }
+
+        return $data;
+
     }
 }

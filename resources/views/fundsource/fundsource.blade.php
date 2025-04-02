@@ -83,7 +83,7 @@
                                                     <button style="min-width:90px; border-radius:0;" id="track" data-backdrop="static" data-proponentInfo-id="{{ $proponentInfo->id }}" data-toggle="modal" href="#track_details2" onclick="track_details2(event)" class='btn btn-sm btn-outline-info track_details2'>Track</button>
                                                 </div>
                                                 <div class="d-flex justify-content-between align-items-center">
-                                                    <span class="ml-3">Administrative Cost : <strong class="text-info">{{ $proponentInfo->admin_cost}}</strong></span>
+                                                    <span class="ml-3">Administrative Cost : <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->admin_cost)), 2, '.', ',') }}</strong></span>
                                                     @if($user->section != 6)
                                                         <button style="min-width:90px; border-radius:0; margin-top:1px" id="transfer_funds" data-backdrop="static" data-toggle="modal" href="#transfer_fundsource" onclick="transferFunds({{ $proponentInfo->id }})" style="width:100px" class='btn btn-sm btn-outline-success ml-2 transfer_funds'>Transfer</button>
                                                     @endif
