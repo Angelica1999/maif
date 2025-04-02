@@ -1266,10 +1266,32 @@ class PreDvController extends Controller
                     'remarks' => 6
                 ]);
                 // Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/dv');
-                Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/dv');
+                // Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/dv');
+                $token = $this->getToken();
+                if ($token != 1) {
+                    $response = Http::withHeaders([
+                        'Authorization' => 'Bearer ' . $token
+                    ])->get('http://192.168.110.7/guaranteeletter/api/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/dv');            
+                } else {
+                    return "Authentication failed.";
+                }
             }
         }
         return redirect()->back()->with('pre_dv', true);
+    }
+
+    public function getToken(){
+        $user = Auth::user();
+        $loginResponse = Http::post('http://192.168.110.7/guaranteeletter/api/login', [
+            'userid' => $user->userid
+        ]);
+        if (isset($loginResponse['token'])) {
+            $token = $loginResponse['token'];
+        } else {
+            return 1;
+            // "Authentication failed. Error: " . ($loginResponse['message'] ?? 'Unknown error');
+        }
+        return $token;
     }
 
     public function v2Delete($route_no){
@@ -1350,7 +1372,16 @@ class PreDvController extends Controller
                     'remarks' => 7
                 ]);
                 // Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/obligate');
-                Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/obligate');
+                // Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/obligate');
+
+                $token = $this->getToken();
+                if ($token != 1) {
+                    $response = Http::withHeaders([
+                        'Authorization' => 'Bearer ' . $token
+                    ])->get('http://192.168.110.7/guaranteeletter/api/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/obligate');            
+                } else {
+                    return "Authentication failed.";
+                }
             }
            
             return redirect()->back()->with('pre_dv_update', true);
@@ -1376,7 +1407,15 @@ class PreDvController extends Controller
                 ]);
 
                 // Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/paid');
-                Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/paid');
+                // Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/paid');
+                $token = $this->getToken();
+                if ($token != 1) {
+                    $response = Http::withHeaders([
+                        'Authorization' => 'Bearer ' . $token
+                    ])->get('http://192.168.110.7/guaranteeletter/api/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/paid');            
+                } else {
+                    return "Authentication failed.";
+                }
             }
            
             return redirect()->back()->with('pay_dv', true);

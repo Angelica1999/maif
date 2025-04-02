@@ -145,317 +145,320 @@
 <script src="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.js?v=1') }}"></script>
 
 <script>
-    var select = document.getElementById("date_select");
-    var currentYear = new Date().getFullYear();
-    var selected_year = @json($year);
+    $(document).ready(function(){
+        var select = document.getElementById("date_select");
+        var currentYear = new Date().getFullYear();
+        var selected_year = @json($year);
 
-    for (var year = currentYear; year >= 1900; year--) {
-        var option = document.createElement("option");
-        option.value = year;
-        option.textContent = year;
-        if (year == selected_year) {
-            option.selected = true;
-        }
-        select.appendChild(option);
-    }
-
-    function updateTrend(){
-        window.location.href = "dashboard";
-    }
-
-    $('.date_filter').daterangepicker();   
-    google.charts.load('current', {packages: ['corechart', 'bar']});
-    google.charts.setOnLoadCallback(drawCharts);
-
-    function drawCharts() {
-        drawBarChart();
-        drawBarChart1();
-        drawBarChart2();
-        drawPieChart();
-        drawPieChart1();
-        drawLineChart();
-    }
-
-    function drawBarChart() {
-        var data = google.visualization.arrayToDataTable([
-            ['Proponent', 'Amount'],
-            @foreach($proponents as $row)
-                ['{{ $row['proponent']['proponent'] }}', {{ $row['sum'] }}],
-            @endforeach
-        ]);
-
-        var options = {
-            chartArea: {
-                top: 20,
-                right: 10, 
-                bottom: 50, 
-                left: 270, 
-                width: '85%',
-                height: '100%'
-            },
-            hAxis: {
-                minValue: 1, 
-                logScale: true,
-                textStyle: { fontSize: 11 },
-                gridlines: { count: 7 },
-                slantedText: true,
-                slantedTextAngle: 30 
-            },
-            vAxis: {
-                textStyle: { fontSize: 11, bold: true },
-            },
-            bars: 'horizontal',
-            height: {{ count($proponents) * 25 }},
-            bar: { groupWidth: "90%" }, 
-            legend: { position: "none" },
-            tooltip: { textStyle: { fontSize: 11 } } 
-        };
-
-        var chart = new google.visualization.BarChart(document.getElementById('fundsChart'));
-        chart.draw(data, options);
-    }
-
-    function drawBarChart1() {
-        var facilitiesData = Object.values(@json($facilities)); 
-        
-        var data = google.visualization.arrayToDataTable([
-            ['Facility', 'Amount'],
-            ...facilitiesData.map(row => [row.facility_names, parseFloat(row.total_allocated_funds) || 0]) 
-        ]);
-
-        var options = {
-            chartArea: {
-                top: 20,
-                right: 10, 
-                bottom: 50, 
-                left: 270, 
-                width: '85%',
-                height: '100%'
-            },
-            hAxis: {
-                minValue: 1, 
-                logScale: true,
-                textStyle: { fontSize: 11 },
-                gridlines: { count: 7 },
-                slantedText: true,
-                slantedTextAngle: 30 
-            },
-            vAxis: {
-                textStyle: { fontSize: 11, bold: true }
-            },
-            bars: 'horizontal',
-            height: facilitiesData.length * 25,
-            bar: { groupWidth: "90%" }, 
-            legend: { position: "none" },
-            tooltip: { textStyle: { fontSize: 11 } } 
-        };
-
-        var chart = new google.visualization.BarChart(document.getElementById('fundsChart1'));
-        chart.draw(data, options);
-    }
-
-
-    function drawPieChart() {
-        var total = {{ $total_amount ?? 0 }};
-        var utilized = {{ $total_utilization ?? 0 }};
-        var admin_cost = {{ $total_cost ?? 0 }};
-        var totalAmount = total - admin_cost;
-        var remaining = totalAmount - utilized;
-
-        if (totalAmount <= 0) {
-            console.error("Total amount is zero or negative. Pie chart will not render.");
-            return;
+        for (var year = currentYear; year >= 1900; year--) {
+            var option = document.createElement("option");
+            option.value = year;
+            option.textContent = year;
+            if (year == selected_year) {
+                option.selected = true;
+            }
+            select.appendChild(option);
         }
 
-        var utilizedPercentage = ((utilized / totalAmount) * 100).toFixed(2);
-        var remainingPercentage = ((remaining / totalAmount) * 100).toFixed(2);
-
-        var utilizedFormatted = utilized.toLocaleString();
-        var remainingFormatted = remaining.toLocaleString();
-
-        var data = new google.visualization.DataTable();
-        data.addColumn('string', 'Category');
-        data.addColumn('number', 'Amount');
-        data.addColumn({ type: 'string', role: 'annotation' }); // Show both actual amount and percentage
-
-        data.addRows([
-            ['Utilization', utilized, `${utilizedFormatted}\n(${utilizedPercentage}%)`],
-            ['Remaining Balance', remaining, `${remainingFormatted}\n(${remainingPercentage}%)`]
-        ]);
-
-        var options = {
-            pieHole: 0,
-            legend: { position: 'bottom' },
-            slices: {
-                0: { color: '#4CAF50' }, // Green
-                1: { color: '#FF9800' }  // Orange
-            },
-            pieSliceText: 'annotation', // This will display the formatted text inside the pie slice
-            chartArea: { width: '100%', height: '80%' }
-        };
-
-        var chart = new google.visualization.PieChart(document.getElementById('utilization_chart'));
-        chart.draw(data, options);
-    }
-
-    function drawPieChart1() {
-        var utilized = {{ $total_utilization1 ?? 0 }};
-        var pending = {{ $total_pending ?? 0 }};
-        var paid = {{ $total_paid ?? 0 }};
-        var obligated = {{ $total_obligated ?? 0 }};
-
-        if (utilized <= 0) {
-            Lobibox.notify('error', {
-                msg: 'No Data Available for the Utilization.',
-                sound: true,
-                delay: 1500 
-            });
-
-            setTimeout(function() {
-                window.location.href = "dashboard";
-            }, 1500);
+        function updateTrend(){
+            window.location.href = "dashboard";
         }
 
-        var pendingPercentage = ((pending / utilized) * 100).toFixed(2);
-        var paidPercentage = ((paid / utilized) * 100).toFixed(2);
-        var obligatedPercentage = ((obligated / utilized) * 100).toFixed(2);
+        $('.date_filter').daterangepicker();   
+        google.charts.load('current', {packages: ['corechart', 'bar']});
+        google.charts.setOnLoadCallback(drawCharts);
 
-        var pendingFormatted = pending.toLocaleString();
-        var paidFormatted = paid.toLocaleString();
-        var obligatedFormatted = obligated.toLocaleString();
-
-        var data = new google.visualization.DataTable();
-        data.addColumn('string', 'Category');
-        data.addColumn('number', 'Amount');
-        data.addColumn({ type: 'string', role: 'annotation' });
-
-        data.addRows([
-            ['Pending', pending, `${pendingFormatted}\n(${pendingPercentage}%)`],
-            ['Paid', paid, `${paidFormatted}\n(${paidPercentage}%)`],
-            ['Obligated', obligated, `${obligatedFormatted}\n(${obligatedPercentage}%)`]
-        ]);
-
-        var options = {
-            pieHole: 0,
-            legend: { position: 'bottom', maxLines: 3 },
-            slices: {
-                0: { color: '#FF9800' }, // Orange (Pending)
-                1: { color: '#4CAF50' }, // Green (Paid)
-                2: { color: '#2196F3' }  // Blue (Obligated)
-            },
-            pieSliceText: 'annotation',
-            chartArea: { width: '100%', height: '80%' }
-        };
-
-        var chart = new google.visualization.PieChart(document.getElementById('dv_chart'));
-        chart.draw(data, options);
-    }
-
-    function drawBarChart2() {
-        var data = google.visualization.arrayToDataTable([
-            ['Facility', 'Amount'],
-            @foreach($disbursed as $row)
-                {!! json_encode([$row['facility_name'], (float) $row['total_utilize_amount']]) !!},
-            @endforeach
-        ]);
-
-        var options = {
-            chartArea: {
-                top: 20,
-                right: 10, 
-                bottom: 50, 
-                left: 250, 
-                width: '50%',
-                height: '100%'
-            },
-            hAxis: {
-                minValue: 1, 
-                logScale: true,
-                textStyle: { fontSize: 11 },
-                gridlines: { count: 7 },
-                slantedText: true,
-                slantedTextAngle: 30 
-            },
-            vAxis: {
-                textStyle: { fontSize: 11, bold: true },
-            },
-            bars: 'horizontal',
-            height: {{ count($disbursed) * 25 }},
-            bar: { groupWidth: "90%" }, 
-            legend: { position: "none" },
-            tooltip: { textStyle: { fontSize: 11 } } 
-        };
-
-        var chart = new google.visualization.BarChart(document.getElementById('disbursedChart'));
-        chart.draw(data, options);
-    }  
-
-    function drawLineChart() {
-        var data = new google.visualization.DataTable();
-        data.addColumn('string', 'Month');
-        data.addColumn('number', 'Total Utilize Amount');
-        var check_data = @json($trend);
-        
-        if (Array.isArray(check_data) && check_data.length === 0) {
-            Lobibox.notify('error', {
-                msg: 'No Data Available for the selected year for the utilization trend.',
-                sound: true,
-                delay: 1500 
-            });
-
-            setTimeout(function() {
-                window.location.href = "dashboard";
-            }, 1500);
+        function drawCharts() {
+            drawBarChart();
+            drawBarChart1();
+            drawBarChart2();
+            drawPieChart();
+            drawPieChart1();
+            drawLineChart();
         }
 
-        var rawData = [
-            @foreach($trend as $row)
-                {!! json_encode([$row['month'], (float) $row['total_utilize_amount']]) !!},
-            @endforeach
-        ];
+        function drawBarChart() {
+            var data = google.visualization.arrayToDataTable([
+                ['Proponent', 'Amount'],
+                @foreach($proponents as $row)
+                    ['{{ $row['proponent']['proponent'] }}', {{ $row['sum'] }}],
+                @endforeach
+            ]);
 
-        data.addRows(rawData);
+            var options = {
+                chartArea: {
+                    top: 20,
+                    right: 10, 
+                    bottom: 50, 
+                    left: 270, 
+                    width: '85%',
+                    height: '100%'
+                },
+                hAxis: {
+                    minValue: 1, 
+                    logScale: true,
+                    textStyle: { fontSize: 11 },
+                    gridlines: { count: 7 },
+                    slantedText: true,
+                    slantedTextAngle: 30 
+                },
+                vAxis: {
+                    textStyle: { fontSize: 11, bold: true },
+                },
+                bars: 'horizontal',
+                height: {{ count($proponents) * 25 }},
+                bar: { groupWidth: "90%" }, 
+                legend: { position: "none" },
+                tooltip: { textStyle: { fontSize: 11 } } 
+            };
 
-        var maxValue = Math.max(...rawData.map(row => row[1]));
-
-        var stepSize = 20000000; 
-        var ticks = [];
-        for (var i = stepSize; i <= maxValue + stepSize; i += stepSize) {
-            ticks.push(i);
+            var chart = new google.visualization.BarChart(document.getElementById('fundsChart'));
+            chart.draw(data, options);
         }
 
-        var options = {
-            chartArea: {
-                top: 20,
-                right: 10, 
-                bottom: 50, 
-                left: 70, 
-                width: '80%',
-                height: '75%'
-            },
-            hAxis: {
-                title: 'Month',
-                textStyle: { fontSize: 11 },
-                slantedText: true,
-                slantedTextAngle: 30
-            },
-            vAxis: {
-                title: 'PHP in Millions',
-                textStyle: { fontSize: 11, bold: true },
-                gridlines: { count: ticks.length }, 
-                ticks: ticks,
-                format: 'short' 
-            },
-            legend: { position: "none" },
-            tooltip: { textStyle: { fontSize: 11 } },
-            pointSize: 5,  
-            lineWidth: 3,  
-            curveType: 'function',  
-        };
+        function drawBarChart1() {
+            var facilitiesData = Object.values(@json($facilities)); 
+            
+            var data = google.visualization.arrayToDataTable([
+                ['Facility', 'Amount'],
+                ...facilitiesData.map(row => [row.facility_names, parseFloat(row.total_allocated_funds) || 0]) 
+            ]);
 
-        var chart = new google.visualization.LineChart(document.getElementById('trend_chart'));
-        chart.draw(data, options);
-    }
+            var options = {
+                chartArea: {
+                    top: 20,
+                    right: 10, 
+                    bottom: 50, 
+                    left: 270, 
+                    width: '85%',
+                    height: '100%'
+                },
+                hAxis: {
+                    minValue: 1, 
+                    logScale: true,
+                    textStyle: { fontSize: 11 },
+                    gridlines: { count: 7 },
+                    slantedText: true,
+                    slantedTextAngle: 30 
+                },
+                vAxis: {
+                    textStyle: { fontSize: 11, bold: true }
+                },
+                bars: 'horizontal',
+                height: facilitiesData.length * 25,
+                bar: { groupWidth: "90%" }, 
+                legend: { position: "none" },
+                tooltip: { textStyle: { fontSize: 11 } } 
+            };
 
+            var chart = new google.visualization.BarChart(document.getElementById('fundsChart1'));
+            chart.draw(data, options);
+        }
+
+
+        function drawPieChart() {
+            var total = {{ $total_amount ?? 0 }};
+            var utilized = {{ $total_utilization ?? 0 }};
+            var admin_cost = {{ $total_cost ?? 0 }};
+            var totalAmount = total - admin_cost;
+            var remaining = totalAmount - utilized;
+
+            if (totalAmount <= 0) {
+                console.error("Total amount is zero or negative. Pie chart will not render.");
+                return;
+            }
+
+            var utilizedPercentage = ((utilized / totalAmount) * 100).toFixed(2);
+            var remainingPercentage = ((remaining / totalAmount) * 100).toFixed(2);
+
+            var utilizedFormatted = utilized.toLocaleString();
+            var remainingFormatted = remaining.toLocaleString();
+
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Category');
+            data.addColumn('number', 'Amount');
+            data.addColumn({ type: 'string', role: 'annotation' }); // Show both actual amount and percentage
+
+            data.addRows([
+                ['Utilization', utilized, `${utilizedFormatted}\n(${utilizedPercentage}%)`],
+                ['Remaining Balance', remaining, `${remainingFormatted}\n(${remainingPercentage}%)`]
+            ]);
+
+            var options = {
+                pieHole: 0,
+                legend: { position: 'bottom' },
+                slices: {
+                    0: { color: '#4CAF50' }, // Green
+                    1: { color: '#FF9800' }  // Orange
+                },
+                pieSliceText: 'annotation', // This will display the formatted text inside the pie slice
+                chartArea: { width: '100%', height: '80%' }
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('utilization_chart'));
+            chart.draw(data, options);
+        }
+
+        function drawPieChart1() {
+            var utilized = {{ $total_utilization1 ?? 0 }};
+            var pending = {{ $total_pending ?? 0 }};
+            var paid = {{ $total_paid ?? 0 }};
+            var obligated = {{ $total_obligated ?? 0 }};
+
+            if (utilized <= 0) {
+                Lobibox.notify('error', {
+                    msg: 'No Data Available for the Utilization.',
+                    sound: true,
+                    delay: 1500 
+                });
+
+                setTimeout(function() {
+                    window.location.href = "dashboard";
+                }, 1500);
+            }
+
+            var pendingPercentage = ((pending / utilized) * 100).toFixed(2);
+            var paidPercentage = ((paid / utilized) * 100).toFixed(2);
+            var obligatedPercentage = ((obligated / utilized) * 100).toFixed(2);
+
+            var pendingFormatted = pending.toLocaleString();
+            var paidFormatted = paid.toLocaleString();
+            var obligatedFormatted = obligated.toLocaleString();
+
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Category');
+            data.addColumn('number', 'Amount');
+            data.addColumn({ type: 'string', role: 'annotation' });
+
+            data.addRows([
+                ['Pending', pending, `${pendingFormatted}\n(${pendingPercentage}%)`],
+                ['Paid', paid, `${paidFormatted}\n(${paidPercentage}%)`],
+                ['Obligated', obligated, `${obligatedFormatted}\n(${obligatedPercentage}%)`]
+            ]);
+
+            var options = {
+                pieHole: 0,
+                legend: { position: 'bottom', maxLines: 3 },
+                slices: {
+                    0: { color: '#FF9800' }, // Orange (Pending)
+                    1: { color: '#4CAF50' }, // Green (Paid)
+                    2: { color: '#2196F3' }  // Blue (Obligated)
+                },
+                pieSliceText: 'annotation',
+                chartArea: { width: '100%', height: '80%' }
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('dv_chart'));
+            chart.draw(data, options);
+        }
+
+        function drawBarChart2() {
+            var data = google.visualization.arrayToDataTable([
+                ['Facility', 'Amount'],
+                @foreach($disbursed as $row)
+                    {!! json_encode([$row['facility_name'], (float) $row['total_utilize_amount']]) !!},
+                @endforeach
+            ]);
+
+            var options = {
+                chartArea: {
+                    top: 20,
+                    right: 10, 
+                    bottom: 50, 
+                    left: 250, 
+                    width: '50%',
+                    height: '100%'
+                },
+                hAxis: {
+                    minValue: 1, 
+                    logScale: true,
+                    textStyle: { fontSize: 11 },
+                    gridlines: { count: 7 },
+                    slantedText: true,
+                    slantedTextAngle: 30 
+                },
+                vAxis: {
+                    textStyle: { fontSize: 11, bold: true },
+                },
+                bars: 'horizontal',
+                height: {{ count($disbursed) * 25 }},
+                bar: { groupWidth: "90%" }, 
+                legend: { position: "none" },
+                tooltip: { textStyle: { fontSize: 11 } } 
+            };
+
+            var chart = new google.visualization.BarChart(document.getElementById('disbursedChart'));
+            chart.draw(data, options);
+        }  
+
+        function drawLineChart() {
+            console.log('ds');
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Month');
+            data.addColumn('number', 'Total Utilize Amount');
+            var check_data = @json($trend);
+            
+            if (Array.isArray(check_data) && check_data.length === 0) {
+                Lobibox.notify('error', {
+                    msg: 'No Data Available for the selected year for the utilization trend.',
+                    sound: true,
+                    delay: 1500 
+                });
+
+                setTimeout(function() {
+                    window.location.href = "dashboard";
+                }, 1500);
+            }
+
+            var rawData = [
+                @foreach($trend as $row)
+                    {!! json_encode([$row['month'], (float) $row['total_utilize_amount']]) !!},
+                @endforeach
+            ];
+
+            data.addRows(rawData);
+
+            var maxValue = Math.max(...rawData.map(row => row[1]));
+
+            var stepSize = 20000000; 
+            var ticks = [];
+            for (var i = stepSize; i <= maxValue + stepSize; i += stepSize) {
+                ticks.push(i);
+            }
+
+            var options = {
+                chartArea: {
+                    top: 20,
+                    right: 10, 
+                    bottom: 50, 
+                    left: 70, 
+                    width: '80%',
+                    height: '75%'
+                },
+                hAxis: {
+                    title: 'Month',
+                    textStyle: { fontSize: 11 },
+                    slantedText: true,
+                    slantedTextAngle: 30
+                },
+                vAxis: {
+                    title: 'PHP in Millions',
+                    textStyle: { fontSize: 11, bold: true },
+                    gridlines: { count: ticks.length }, 
+                    ticks: ticks,
+                    format: 'short' 
+                },
+                legend: { position: "none" },
+                tooltip: { textStyle: { fontSize: 11 } },
+                pointSize: 5,  
+                lineWidth: 3,  
+                curveType: 'function',  
+            };
+
+            var chart = new google.visualization.LineChart(document.getElementById('trend_chart'));
+            chart.draw(data, options);
+        }
+    });
+    
 </script>
 @endsection
