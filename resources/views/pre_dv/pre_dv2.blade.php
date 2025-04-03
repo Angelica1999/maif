@@ -339,7 +339,6 @@ use App\Models\TrackingDetails;
         $('.pre_body').empty();
         $('.pre_body').html(loading);
 
-        console.log('id', id);
         $.get("{{ url('pre-dv/v2/').'/' }}" + id, function(result) {
             $('.pre_body').html(result);
         });
@@ -383,16 +382,13 @@ use App\Models\TrackingDetails;
 
     var accept_id;
     var accept_route_no;
+
     function acceptModal(id, route_no){
-        console.log('id', id);
-        console.log('route_no', route_no);
         accept_id = id;
         accept_route_no = route_no;
     }
 
     $('.confirmAccept').on('click', function(){
-        console.log('id', accept_id);
-        console.log('route_no', accept_route_no);
         var remarks = $('#accept_remarks').val();
         $.ajax({
             type: 'POST',

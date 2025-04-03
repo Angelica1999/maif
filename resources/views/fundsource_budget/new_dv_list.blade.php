@@ -126,7 +126,6 @@ use App\Models\TrackingDetails;
 
     function displayFunds(route_no, proponent, id){
         util_id = id;
-        console.log('sd', id);
         $('#budget_confirm').modal('show');
         $('.confirm_budget').html(loading);
         $.get("{{ url('confirm-budget').'/' }}" + id, function(result) {
@@ -136,8 +135,6 @@ use App\Models\TrackingDetails;
 
     function viewV1(route_no, d_id, d_dv_id, confirmation) {
         dv_id = d_dv_id;
-        console.log('dv_id', dv_id);
-        console.log('doc_type', doc_type);
 
         id = d_id;
         // if(doc_type == "accomplished" || doc_type == "deferred" || doc_type == "disbursed"){
@@ -147,7 +144,6 @@ use App\Models\TrackingDetails;
                 $('.pre_body').html(result);
             });
         // }else{
-        //     console.log('else');
         //     $('#confirm_dv').modal('show');
         //     $('#confirmation_main').html(loading);
         //     $.get("{{ url('budget/confirm').'/' }}" + route_no, function(result) {
@@ -173,7 +169,6 @@ use App\Models\TrackingDetails;
     }
 
     function obligate(){
-        console.log('sdad', id);
         $('#confirm_dv').modal('hide');
         con = 1;
         confirm();

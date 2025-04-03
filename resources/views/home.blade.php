@@ -774,7 +774,6 @@
         $('#facility_id').select2();
         $('#proponent_id').select2();
         form_type = 'create';
-        console.log($.fn.select2);
     });
 
     $('#gen_btn').on('click', function(){
@@ -1132,10 +1131,9 @@
     
     function itemChecked(element){
         var parentTd = $(element).closest('td');   
-        console.log('sds');
-
         var patientId = parentTd.attr('data-patient-id');
         var checkboxId = element.attr("id");
+
         if(id_list.includes(patientId)){
             id_list = id_list.filter(id => id !== patientId);
             mail_ids = mail_ids.filter(id => id !== checkboxId);
@@ -1149,7 +1147,6 @@
         }else{
             $('.send_mails').val('').hide();
         }
-        console.log('sds');
     }
 
     var group_a = [];

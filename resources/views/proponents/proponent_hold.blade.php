@@ -92,7 +92,6 @@
 <script>
     $('#proponent_id').select2();
     function resumed(code){
-        console.log('code', code);
         Swal.fire({
             title: 'Release proponent',
             text: "Are you certain you want to remove the hold status for this proponent?",

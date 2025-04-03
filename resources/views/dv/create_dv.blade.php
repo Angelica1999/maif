@@ -445,113 +445,111 @@
 <script>
 
     document.getElementById('dv_form').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-      }
+        if (e.key === 'Enter') {
+            e.preventDefault();
+        }
     });
 
     function calculateSubsidy(){
-      console.log('subsidy click');
-      var subsidy = parseNumberWithCommas($("#totalInput").val()) || 0;
-      var accumulated = parseNumberWithCommas($("#accumulated").val()) || 0;
-      if(accumulated>subsidy){
-        Lobibox.alert('error', {
-          size: 'mini',
-          msg: "Accumulated is greater than total amount."
-        });
-        $("#accumulated").val('');
-        $('#totalDebit').text(formatNumberWithCommas(subsidy));
-      }else{
-        var res = (subsidy-accumulated).toFixed(2);
-        $('#totalDebit').text(formatNumberWithCommas(res));
-      }
+        var subsidy = parseNumberWithCommas($("#totalInput").val()) || 0;
+        var accumulated = parseNumberWithCommas($("#accumulated").val()) || 0;
+        if(accumulated>subsidy){
+            Lobibox.alert('error', {
+                size: 'mini',
+                msg: "Accumulated is greater than total amount."
+            });
+            $("#accumulated").val('');
+            $('#totalDebit').text(formatNumberWithCommas(subsidy));
+        }else{
+            var res = (subsidy-accumulated).toFixed(2);
+            $('#totalDebit').text(formatNumberWithCommas(res));
+        }
     }
 
     $('#submitBtn').on('click', function(e){
-      var saa2Element = window.getComputedStyle(document.getElementById('saa2')).getPropertyValue('display');
-      var saa3Element = window.getComputedStyle(document.getElementById('saa3')).getPropertyValue('display');
+        var saa2Element = window.getComputedStyle(document.getElementById('saa2')).getPropertyValue('display');
+        var saa3Element = window.getComputedStyle(document.getElementById('saa3')).getPropertyValue('display');
 
-      if (saa2Element === 'none') {
-        $('#saa2').val('');
-      } else if(saa3Element === 'none') {
-        $('#saa3').val('');
-      }
-      var group_ids = [];
-      var dropdown1 = $('#dropdownContent1').find('input[type="checkbox"]:checked');
-      dropdown1.each(function(index, checkbox){
+        if (saa2Element === 'none') {
+            $('#saa2').val('');
+        } else if(saa3Element === 'none') {
+            $('#saa3').val('');
+        }
+        var group_ids = [];
+        var dropdown1 = $('#dropdownContent1').find('input[type="checkbox"]:checked');
+
+        dropdown1.each(function(index, checkbox){
+            group_ids.push($(checkbox).data('id'));
+        });
+
+        var dropdown2 = $('#dropdownContent2').find('input[type="checkbox"]:checked');
+        dropdown2.each(function(index, checkbox){
+            group_ids.push($(checkbox).data('id'));
+        });
+
+        var dropdown3 = $('#dropdownContent3').find('input[type="checkbox"]:checked');
+        dropdown3.each(function(index, checkbox){
           group_ids.push($(checkbox).data('id'));
-      });
-      var dropdown2 = $('#dropdownContent2').find('input[type="checkbox"]:checked');
-      dropdown2.each(function(index, checkbox){
-          group_ids.push($(checkbox).data('id'));
-      });
-      var dropdown3 = $('#dropdownContent3').find('input[type="checkbox"]:checked');
-      dropdown3.each(function(index, checkbox){
-        group_ids.push($(checkbox).data('id'));
-      });
-      $('#group_id').val(group_ids);
+        });
+
+        $('#group_id').val(group_ids);
     });
 
     $(document).ready(function() {
           $('#facilityDropdown').select2();
           $('#saa1').select2();
-      });
+    });
       
     function toggleDropdown(event, dropdownIndex) {
-      const dropdownContentId = 'dropdownContent' + dropdownIndex;
-      const dropdownContent = document.getElementById(dropdownContentId);
+        const dropdownContentId = 'dropdownContent' + dropdownIndex;
+        const dropdownContent = document.getElementById(dropdownContentId);
 
-      if (dropdownContent) {
-          if (event.target !== dropdownContent) {
-              dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
-          }
-      }
+        if (dropdownContent) {
+            if (event.target !== dropdownContent) {
+                dropdownContent.style.display = dropdownContent.style.display === 'block' ? 'none' : 'block';
+            }
+        }
     }
 
     function handleDropdownChange(dropdownContent, inputElement) {
-      console.log('one');
-      return function(event) {
-        if (event.target.type === 'checkbox') {
-            inputElement.value = formatNumberWithCommas(getSelectedItems(dropdownContent));
-            fundAmount();
-        }
-      };
+        return function(event) {
+            if (event.target.type === 'checkbox') {
+                inputElement.value = formatNumberWithCommas(getSelectedItems(dropdownContent));
+                fundAmount();
+            }
+        };
     }
     function getSelectedItems(dropdownContent) {
-      const checkboxes = dropdownContent.querySelectorAll('input[type="checkbox"]');
-      const selectedValues = Array.from(checkboxes)
-          .filter(checkbox => checkbox.checked)
-          .map(checkbox => parseNumberWithCommas(checkbox.value) || 0);
-      const sum = selectedValues.reduce((total, value) => parseNumberWithCommas(total) + parseNumberWithCommas(value), 0);
-      return sum;
+        const checkboxes = dropdownContent.querySelectorAll('input[type="checkbox"]');
+        const selectedValues = Array.from(checkboxes)
+            .filter(checkbox => checkbox.checked)
+            .map(checkbox => parseNumberWithCommas(checkbox.value) || 0);
+        const sum = selectedValues.reduce((total, value) => parseNumberWithCommas(total) + parseNumberWithCommas(value), 0);
+        return sum;
     }
 
     $('#inputValue1').on('click', function(){
-      console.log('wanwan', $('#saa2').val());
-      document.getElementById('dropdownContent1').addEventListener('change', handleDropdownChange(document.getElementById('dropdownContent1'), 
-      document.getElementById('inputValue1')));
-      document.getElementById('inputValue1').addEventListener('click', function(event) {
-          toggleDropdown(event, 1);
-      });
+        document.getElementById('dropdownContent1').addEventListener('change', handleDropdownChange(document.getElementById('dropdownContent1'), 
+        document.getElementById('inputValue1')));
+        document.getElementById('inputValue1').addEventListener('click', function(event) {
+            toggleDropdown(event, 1);
+        });
     });
 
     $('#inputValue2').on('click', function(){
-      console.log('wanwan2');
-      document.getElementById('dropdownContent2').addEventListener('change', handleDropdownChange(document.getElementById('dropdownContent2'), 
+        document.getElementById('dropdownContent2').addEventListener('change', handleDropdownChange(document.getElementById('dropdownContent2'), 
         document.getElementById('inputValue2')));
         document.getElementById('inputValue2').addEventListener('click', function(event) {
-        toggleDropdown(event, 2);
-      });
+            toggleDropdown(event, 2);
+        });
     });
     
     $('#inputValue3').on('click', function(){
-      console.log('wanwa3n');
-
-      document.getElementById('dropdownContent3').addEventListener('change', handleDropdownChange(document.getElementById('dropdownContent3'), 
-      document.getElementById('inputValue3')));
-      document.getElementById('inputValue3').addEventListener('click', function(event) {
-        toggleDropdown(event, 3);
-      });
+        document.getElementById('dropdownContent3').addEventListener('change', handleDropdownChange(document.getElementById('dropdownContent3'), 
+        document.getElementById('inputValue3')));
+        document.getElementById('inputValue3').addEventListener('click', function(event) {
+            toggleDropdown(event, 3);
+        });
     });
 
     // $('#facilityDropdown').change(function(){
@@ -566,28 +564,27 @@
         
     });
     $('#saa3').change(function(){
-      $('#inputValue3').prop('disabled', false);
-    
+        $('#inputValue3').prop('disabled', false);
     });
 
     function updateTotal() {
-      var amount1 = parseFloat('inputValue1') || 0;
-      var amount2 = parseFloat('inputValue2') || 0;
-      var amount3 = parseFloat('inputValue3') || 0;
+        var amount1 = parseFloat('inputValue1') || 0;
+        var amount2 = parseFloat('inputValue2') || 0;
+        var amount3 = parseFloat('inputValue3') || 0;
 
-      var deduct1 = parseFloat('inputDeduction1') || 0;
-      var deduct2 = parseFloat('inputDeduction2') || 0;
-      var totaldeduction = deduct1 + deduct2;
-      var total = amount1 + amount2 + amount3;
-      var totalAmount = total - totaldeduction ;
-      var formattedTotal = total.toLocaleString('en-US', { maximumFractionDigits: 2 });
-      var formattedDecduction = totaldeduction.toLocaleString('en-Us', {maximumFractionDigits: 2});
-      var formattedTotalAmount = totalAmount.toLocaleString('en-Us', {maximumFractionDigits: 2});
-      document.querySelector('.total').innerText = '' + formattedTotal;
-      document.querySelector('#totalInput').value = '' + formattedTotal;
+        var deduct1 = parseFloat('inputDeduction1') || 0;
+        var deduct2 = parseFloat('inputDeduction2') || 0;
+        var totaldeduction = deduct1 + deduct2;
+        var total = amount1 + amount2 + amount3;
+        var totalAmount = total - totaldeduction ;
+        var formattedTotal = total.toLocaleString('en-US', { maximumFractionDigits: 2 });
+        var formattedDecduction = totaldeduction.toLocaleString('en-Us', {maximumFractionDigits: 2});
+        var formattedTotalAmount = totalAmount.toLocaleString('en-Us', {maximumFractionDigits: 2});
+        document.querySelector('.total').innerText = '' + formattedTotal;
+        document.querySelector('#totalInput').value = '' + formattedTotal;
 
-      document.querySelector('.totalDeduction').innerText = '' + formattedDecduction;
-      document.querySelector('#totalDeductionInput').value = '' + formattedDecduction;
+        document.querySelector('.totalDeduction').innerText = '' + formattedDecduction;
+        document.querySelector('#totalDeductionInput').value = '' + formattedDecduction;
     }
 
     document.getElementById('inputValue1').addEventListener('input', updateTotal);
@@ -600,19 +597,18 @@
     updateTotal();
     
     function validateAmount(element) {
-      if (event.keyCode === 32) {
-          event.preventDefault();
-      }
-      var cleanedValue = element.value.replace(/[^\d.]/g, '');
-      var numericValue = parseFloat(cleanedValue);
+        if (event.keyCode === 32) {
+            event.preventDefault();
+        }
+        var cleanedValue = element.value.replace(/[^\d.]/g, '');
+        var numericValue = parseFloat(cleanedValue);
 
-      if ((!isNaN(numericValue) || cleanedValue === '' || cleanedValue === '.') &&
-          !(cleanedValue.length === 1 && cleanedValue[0] === '0')) {
-              element.value = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-      }else{
-          element.value = '';
-      }
+        if ((!isNaN(numericValue) || cleanedValue === '' || cleanedValue === '.') &&
+            !(cleanedValue.length === 1 && cleanedValue[0] === '0')) {
+                element.value = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }else{
+            element.value = '';
+        }
     }
-
 </script>
 

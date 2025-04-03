@@ -211,7 +211,6 @@
         }
 
         function payDv(route_no, type){
-            console.log('dv', type);
             $('.modal_body').html(loading);
             $('.modal-title').html(" Disbursement Voucher");
             var url = "{{ url('dv').'/' }}"+route_no +'/' + type;

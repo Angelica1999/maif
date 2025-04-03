@@ -113,7 +113,6 @@
     });
 
     function displayImage(path) {
-        console.log('click', path);
         if(path == null || path == ''){
             alert('No Image Found!')
         }else{
@@ -123,7 +122,6 @@
     }
 
     function getHistory(route_no){
-        console.log('route', route_no);
         $('.modal-body').html(loading);
         var url = "{{ url('/dv/history').'/' }}"+route_no;
         setTimeout(function(){
@@ -140,14 +138,12 @@
      //select_all
      $('.select_all').on('click', function(){
         document.getElementById('release_btn').style.display = 'inline-block';
-        console.log('click');
         $('.group-releaseDv').prop('checked', true);
         $('.group-releaseDv').trigger('change');
     });
     //unselect_all
     $('.unselect_all').on('click', function(){
         document.getElementById('release_btn').style.display = 'none';
-        console.log('click');
         $('.group-releaseDv').prop('checked', false);
         $('.group-releaseDv').trigger('change');
     });
@@ -180,7 +176,6 @@
     @endif
 
     function obligateDv(route_no, type){
-    console.log('dv', type);
         $('.modal_body').html(loading);
         $('.modal-title').html("Disbursement Voucher");
         var url = "{{ url('dv').'/' }}"+route_no +'/' + type;
@@ -207,8 +202,6 @@
         $('#currentID').val($('#release_btn').val());
         $('#multiple').val('multiple');
         $('#op').val(0);
-        console.log('route_no', $('#route_no').val());
-        console.log('route_no', $('#currentID').val());
     }
 
     function putRoute(form){
@@ -216,7 +209,6 @@
         $('#route_no').val(route_no);
         $('#op').val(0);
         $('#currentID').val(form.data('id'));
-        console.log('id', form.data('id'));
         $('#multiple').val('single');
     }
 
@@ -226,8 +218,6 @@
         $('.filter-section').html('<option value="">Select section...</option>')
         $.get("{{ url('getsections').'/' }}"+id, function(result) {
             $.each(result, function(index, optionData) {
-                console.log('res', result);
-
                 $('.filter-section').append($('<option>', {
                     value: optionData.id,
                     text: optionData.description
@@ -276,9 +266,6 @@
     var saa_ident = 0;
     
     function toggleSAADropdowns(data, selected_proponent1, pro_group) {
-        console.log('checkcheck11',saa_ident);
-
-        console.log('check');
         if (saaCounter === 1) {
             remove = 1;
             $('#saa2').select2();
@@ -315,7 +302,6 @@
                 }
             });
         }
-        console.log('checkval',$('#dv').val());
 
         if($('#dv').val() != null || $('#dv').val() != undefined || $('#dv').val() != ''){
             if(selected_proponent1 == undefined){
@@ -326,7 +312,6 @@
             if(saa_ident === 0){
                 saa_ident = 1; 
                 onchangeSaa($('#saa1'), selected_proponent1, pro_group);
-                console.log('checkcheck',saa_ident);
             }
         }   
     }
@@ -387,12 +372,9 @@
 
         var facility_id = $('#facilityDropdown').val();
         var proponentId = $('#saa1').find(':selected').attr('dataproponent');
-        // console.log('facility', facility_id);
-        // console.log('facility', proponentId);
 
         $.get("{{ url('group').'/' }}"+facility_id+'/'+proponentId, function(result) {
-                console.log('res', result);
-                $.each(result, function(index, optionData) {
+            $.each(result, function(index, optionData) {
                 var checkboxLabel = $('<label>');
                 var checkboxInput = $('<input>', {
                     type: 'checkbox',
@@ -433,8 +415,6 @@
     }
 
     function onchangeSaa(data, proponentId, pro_group) {
-        console.log(1, proponentId);
-        console.log(1, pro_group);
 
         //previously requested that saa2 and saa3 will depend on the selected proponent in saa1
 
@@ -448,12 +428,10 @@
             //     fundAmount();
             // }
             // $.get("{{ url('proponentInfo').'/' }}"+facility_id+'/'+pro_group, function(result) {
-            //     console.log('hereres', result);
             //     $('#saa2').append($('<option>', {value: '',text: 'Select SAA'}));
             //     $('#saa3').append($('<option>', {value: '',text: 'Select SAA'}));
             //     $.each(result, function(index, optionData) {
             //         if(optionData.facility !== null){
-            //             console.log('facility', optionData.facility.id);
             //             if(optionData.facility.id == facility_id){
             //                 text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent;
             //             }else{
@@ -504,7 +482,6 @@
         if(facility_id !==0){
             getVat(facility_id);
         }
-        console.log('saa2', $('#saa2').val());
     }
 
     function removeNullOptions() {
@@ -530,17 +507,12 @@
 
     function getVat(facility_id){
         $.get("{{ url('/getvatEwt').'/' }}"+facility_id, function(result) {
-            console.log('result', result);
             if(result == 0){
-                console.log('vat34', $('#vat').val());
                 alert('Please update VAT and EWT of this facility first!');
                 resetFields(0);
             }else{
-                console.log('else', result.vat);
-
                 $('#vat').val(result.vat);
                 $('#ewt').val(result.Ewt);
-                console.log('vat', $('#vat').val());
                 var vat = result.vat;
                 var ewt = result.Ewt
             }
@@ -736,11 +708,9 @@
     }
     function confirmationModal(){
         var saa1 = $('#saa1').val();
-        console.log('confirm', saa1);
         if(saa1 !== null && saa1 !== undefined && saa1 !== ''){
             $('#confirmationModal').modal('show');
             $('#confirmButton').on('click', function(){
-                console.log('remove', remove);
                 if(remove == 2){
                     removeSAADropdowns();
                     removeSAADropdowns1();
@@ -764,13 +734,11 @@
     }
 
     function fundAmount(event) {
-        console.log('amount');
       
         clearTimeout(timer);
         timer = setTimeout(() => {
 
             $('#accumulated').prop('disabled', false);
-            console.log('facility_value', $('#facilityDropdown').val());
             var fac_id=0, new_saa1=0, new_saa2=0, new_saa3=0;
             var selectedSaaId = $('#saa1').val();
             var selectedSaaId2 = $('#saa2').val();
@@ -833,7 +801,6 @@
                     // $('#totalInput').val(all_data.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
                     var accumulated = parseNumberWithCommas(document.getElementById('accumulated').value) || 0;
                     var new_data = (all_data-accumulated).toFixed(2);
-                    console.log('data', new_data);
                     $('#totalDebit').text(new_data.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
 
                     var ewt_input = ((all_data * ewt) / 100).toFixed(2);
@@ -880,7 +847,6 @@
                     var totalDeductEwtVat = parseFloat(parseNumberWithCommas($('#inputDeduction1').val())) +
                                 parseFloat(parseNumberWithCommas($('#inputDeduction2').val()));
 
-                    console.log('check vat', totalDeductEwtVat);
                     $('.totalDeduction').text(totalDeductEwtVat.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
                     setElementValue('#totalDeductionInput', totalDeductEwtVat);
                     // $('#totalDeductionInput').val(totalDeductEwtVat.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
@@ -897,8 +863,6 @@
                     $('#saa3_discount').val((parseFloat($third_vat) + parseFloat($third_ewt)).toFixed(2));
                     
                     var saa1Alcated_fund1 = parseNumberWithCommas(saa1Alocated_Funds1);
-                    console.log('located',saa1Alcated_fund1);
-                    console.log('located',$('#saa2').val());
 
                     var saa1Alcated_fund2 = parseNumberWithCommas(saa1Alocated_Funds2);
                     var saa1Alcated_fund3 = parseNumberWithCommas(saa1Alocated_Funds3);
@@ -914,9 +878,7 @@
                     $('#saa3_utilize').val(con3);
                     
                     var allocated = $('#dv').val();
-                    console.log('dv', allocated);
                     if(allocated !== null && allocated !== undefined && allocated !==''){
-                        console.log('checkpoint', allocated);
                         var save_info1 = parseNumberWithCommas($('#save_saa1').val()) || 0;
                         var save_info2 = parseNumberWithCommas($('#save_saa2').val()) || 0;
                         var save_info3 = parseNumberWithCommas($('#save_saa3').val()) || 0;
@@ -926,7 +888,6 @@
                         }
                         if($('#save_amount2').val() !== null && $('#save_amount2').val() !== undefined && $('#save_amount2').val() !=='' && save_info2 == info2){
                             saa1Alcated_fund2 = saa1Alcated_fund2 + parseFloat($('#save_amount2').val());   
-                            console.log('amounttttt') ;
                         }
                         if($('#save_amount3').val() !== null && $('#save_amount3').val() !== undefined && $('#save_amount3').val() !==''&& save_info3 == info3 ){
                             saa1Alcated_fund3 = saa1Alcated_fund3 + parseFloat($('#save_amount3').val());
@@ -954,7 +915,6 @@
                     saa1Alcated_fund3 = parseFloat(saa1Alcated_fund3);
                     
                     if (con1 > saa1Alcated_fund1) {
-                        console.log('firstcheck');
 
                         if(saa1Alcated_fund1 ==0){
                             $('#inputValue1').val('');
@@ -962,9 +922,7 @@
                             invalid1();
                         }else{
                             invalid('1', function(type) {
-                                console.log('11');
                                 if (type === 'ok') {
-                                    console.log('okii');
                                     $('#inputValue1').val('');
                                     nullVal();
                                     $('#dropdownContent1 input[type="checkbox"]').prop('checked', false);
@@ -988,7 +946,6 @@
                             invalid1();
                         }else{
                             invalid('2', function(type) {
-                                console.log('22');
 
                                 if (type === 'ok') {
                                     $('#inputValue2').val('');
@@ -1009,20 +966,15 @@
                         }
                         
                     }else if(con3>saa1Alcated_fund3){
-                        console.log('thirdcheck');
 
                         $('#inputValue3').val('');
                         $('#dropdownContent3 input[type="checkbox"]').prop('checked', false);
                         invalid1();
                     }    
                 });
-                console.log('saain', $('#saa2').val());
-
             } 
 
         }, 500);
-        console.log('saa22', $('#saa2').val());
-
     }
 
     function saaBalance(inputId, allocatedFunds) {
@@ -1104,7 +1056,6 @@
 
         $('.modal_body').html(loading);
         $('.modal-dv2').html('<i style="font-size:30px" class="typcn typcn-document menu-icon"></i> ' + route_no + ' - Total Amount: ' + amount);
-        console.log('route', route_no);
         var url = "{{ url('/dv2').'/' }}" + route_no;
         setTimeout(function(){
             $.ajax({
@@ -1152,7 +1103,6 @@
                 removeNullOptions();
 
                 $.get("{{ url('/getDv').'/' }}" + dvId, function (result) {
-                    console.log('res', result);
 
                     $('.modal_body').html(first_res);
                     var printButton = $('<a>', {
@@ -1188,7 +1138,6 @@
                         var accumulated = parseNumberWithCommas(result.dv.accumulated);
 
                         var roundedResult = Math.round((totalAmount - accumulated) * 100) / 100; // Round to 2 decimal places
-                        console.log('round', roundedResult);
 
                         $('#totalDebit').text(formatNumberWithCommas(roundedResult.toFixed(2), 2, '.', ','));
 
@@ -1307,7 +1256,6 @@
                             $('#save_saa3').val(result.proponentInfo[2].id);
                             $('#RemoveSAAButton1').prop('disabled', false).show();
                         }
-                        console.log('saa2saa2', document.getElementById('saa2').value);
 
                         $('#control_no').val(result.dv.control_no);
                         $('#forVat_left').val((parseFloat(result.dv.total_amount.replace(/,/g,''))/vat).toFixed(2));
@@ -1315,7 +1263,6 @@
                         $('.total').text(result.dv.total_amount);
                         $('#totalInput').val(result.dv.total_amount);
                         $('.totalDeduction').text(result.dv.total_deduction_amount);
-                        console.log('deduction',result.dv.total_deduction_amount );
                         $('#totalDeduction').val(result.dv.total_deduction_amount);
                         $('.overallTotal').text(result.dv.overall_total_amount);
                         $('#overallTotal').val(result.dv.overall_total_amount);
@@ -1354,31 +1301,30 @@
     }
 
     function deleteDv1(route_no){
-            console.log('route_no', route_no);
-            Lobibox.alert('error',
-                {
-                    size: 'mini',
-                    msg: '<div style="text-align:center;"><i class="typcn typcn-delete menu-icon" style="color:red; font-size:30px"></i>Are you sure you want to delete this?</div>',
-                    buttons:{
-                        ok:{
-                            'class': 'lobibox-btn lobibox-btn-ok',
-                            text: 'Delete',
-                            closeOnClick: true
-                        },
-                        cancel: {
-                            'class': 'lobibox-btn lobibox-btn-cancel',
-                            text: 'Cancel',
-                            closeOnClick: true
-                        }
+        Lobibox.alert('error',
+            {
+                size: 'mini',
+                msg: '<div style="text-align:center;"><i class="typcn typcn-delete menu-icon" style="color:red; font-size:30px"></i>Are you sure you want to delete this?</div>',
+                buttons:{
+                    ok:{
+                        'class': 'lobibox-btn lobibox-btn-ok',
+                        text: 'Delete',
+                        closeOnClick: true
                     },
-                    callback: function(lobibox, type){
-                        if (type == "ok"){
-                            window.location.href="dv1/remove/" + route_no;
-                        }
+                    cancel: {
+                        'class': 'lobibox-btn lobibox-btn-cancel',
+                        text: 'Cancel',
+                        closeOnClick: true
+                    }
+                },
+                callback: function(lobibox, type){
+                    if (type == "ok"){
+                        window.location.href="dv1/remove/" + route_no;
                     }
                 }
-            )
-        }
+            }
+        )
+    }
         
 </script>
 

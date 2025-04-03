@@ -144,7 +144,6 @@
         }
 
         function sendBill(id, type){
-            console.log('id', id);
             if(type == 'return'){
                 $('#send_mpu').modal('show');
                 $('.mpu').attr('action', '{{ route("process.bills", [":type", ":id"]) }}'.replace(':type', type).replace(':id', id));

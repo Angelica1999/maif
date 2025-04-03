@@ -184,7 +184,6 @@
     }
 
     function obligateDv(route_no, type){
-    console.log('dvdsads', type);
         $('.modal_body').html(loading);
         $('.modal-title').html("Obligate Disbursement Voucher");
         var url = "{{ url('dv').'/' }}"+route_no +'/' + type;

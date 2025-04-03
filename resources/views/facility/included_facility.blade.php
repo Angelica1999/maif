@@ -87,7 +87,6 @@
 @section('js')
 <script>
     function released(id){
-        console.log('code', id);
         Swal.fire({
             title: 'Release proponent',
             text: "Are you certain you want to release this facility?",

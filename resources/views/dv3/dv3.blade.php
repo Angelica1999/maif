@@ -380,8 +380,6 @@
             $('#currentID').val($('#release_btn').val());
             $('#multiple').val('multiple');
             $('#op').val(0);
-            console.log('route_no', $('#route_no').val());
-            console.log('route_no', $('#currentID').val());
         }
         
         function putRoute(form){
@@ -389,7 +387,6 @@
             $('#route_no').val(route_no);
             $('#op').val(0);
             $('#currentID').val(form.data('id'));
-            console.log('id', form.data('id'));
             $('#multiple').val('single');
         }
 
@@ -422,7 +419,6 @@
         }
 
         function updateRemarks(route_no, remarks){
-            console.log('remarks', remarks);
             if(remarks != 0){
                 $('.text_remarks').val(remarks);
             }
@@ -456,8 +452,6 @@
             $('.filter-section').html('<option value="">Select section...</option>')
             $.get("{{ url('getsections').'/' }}"+id, function(result) {
                 $.each(result, function(index, optionData) {
-                    console.log('res', result);
-
                     $('.filter-section').append($('<option>', {
                         value: optionData.id,
                         text: optionData.description

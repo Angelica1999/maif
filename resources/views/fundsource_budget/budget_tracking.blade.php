@@ -121,7 +121,6 @@
 <script>
 
     function saveDate(id){
-        console.log('id', id);
         var date = $('#obligated_on').val();
         $.get("{{ url('util-date') }}" + "/" + id +"/"+date, function (result){
             if (result == "success"){
@@ -137,7 +136,6 @@
     }
 
     $(document).on('change', '.editable-input', function () {
-        console.log('here1');
         var orsNo = $(this).val();
         var rowId = $(this).data('id'); 
         var input = $(this);
@@ -185,7 +183,6 @@
     });
 
     $(document).on('change', '.editable-uacs', function () {
-        console.log('here2');
 
         var uacsNo = $(this).val();
         var rowId = $(this).data('id'); 

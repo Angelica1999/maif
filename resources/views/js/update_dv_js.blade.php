@@ -31,7 +31,6 @@
             $('#dv_footer').append(printButton);
                 $('#dv').val(dvId);
                 $('#dv_no').val(result.dv.dv_no);
-                console.log('kkkk', $('#dv').val());
                 if(result.dv.obligated == 1){
                     $('.btn-primary').hide();
                 }else{
@@ -79,10 +78,8 @@
                     saaCounter = 1;
                 } if(result.fund_source[1] !== null && result.fund_source[1] !== undefined){
                     toggleSAADropdowns($('#saa1'), result.proponent[0].id, result.proponent[0].pro_group);
-                    console.log('result', result.fund_source);
                     if(result.dv.amount2 !== null){
                         $('#saa2_infoId').val(result.proponent[1].id);
-                        console.log('saa2', result.fund_source[1].id)
                         $('#RemoveSAAButton').prop('disabled', false).show();
                         $('#saa2').prop('disabled', false).show();
                         setTimeout(function() {
@@ -154,7 +151,6 @@
                     $('#save_saa3').val(result.fund_source[0].id);
                     $('#RemoveSAAButton1').prop('disabled', false).show();
                 }
-                console.log('saa2saa2', document.getElementById('saa2').value);
 
                 $('#control_no').val(result.dv.control_no);
                 $('#forVat_left').val((parseFloat(result.dv.total_amount.replace(/,/g,''))/vat).toFixed(2));
@@ -162,7 +158,6 @@
                 $('.total').text(result.dv.total_amount);
                 $('#totalInput').val(result.dv.total_amount);
                 $('.totalDeduction').text(result.dv.total_deduction_amount);
-                console.log('deduction',result.dv.total_deduction_amount );
                 $('#totalDeduction').val(result.dv.total_deduction_amount);
                 $('.overallTotal').text(result.dv.overall_total_amount);
                 $('#overallTotal').val(result.dv.overall_total_amount);

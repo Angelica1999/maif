@@ -319,7 +319,6 @@
             $('#track_details2').modal('show');
             var info_id = event.target.getAttribute('data-proponentInfo-id');
             var i = 0;
-            console.log('id', info_id);
             
             var url = "{{ url('tracking').'/' }}"+ info_id;
             $.ajax({
@@ -517,10 +516,8 @@
         }
 
         function addTransaction() {
-            console.log('okii');
             event.preventDefault();
             $.get("{{ route('transaction.get') }}",function(result) {
-                console.log('res', result);
                 $("#transaction-container").append(result);
             });
         }
@@ -540,10 +537,8 @@
         }
 
         function proponentCode(proponent){
-            console.log('sadsad');
             if(proponent.val()){
                 var proponent_id = proponent.val()
-                console.log('chaki', proponent_id);
                 var url = "{{ url('proponent').'/' }}"+ proponent_id;
                 setTimeout(function() {
                     $.ajax({
@@ -563,7 +558,6 @@
 
         function version2(data) {
             var route_no = $(data).data('routeid');
-            console.log('route_no',route_no )
             $.get(" {{ url('/version2').'/'}}" + route_no, function (result){
                 $('.v2_body').html(result);
             });

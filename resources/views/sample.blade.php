@@ -612,7 +612,6 @@
             //make username editable
             $('#username').editable({
                 success: function(response, newValue) {
-                    console.log(newValue)
                 }
             });
         });          
