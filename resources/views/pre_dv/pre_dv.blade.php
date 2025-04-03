@@ -276,7 +276,6 @@
         $('.pre_body').empty();
         $('.pre_body').html(loading);
 
-        console.log('id', id);
         $.get("{{ url('pre-dv/v2/').'/' }}" + id, function(result) {
             $('.pre_body').html(result);
         });
@@ -286,7 +285,6 @@
         $('.control_option').css('display', 'block');
     }
     function getTransmittal(trans_id){   
-        console.log('trans_id', trans_id + '-' + f_id);
         $.get("{{ url('transmittal/details').'/' }}" +trans_id+'/'+f_id, function(result){
             $('.fac_control').html(result);
             getGrand();
@@ -318,7 +316,6 @@
     $('#filt_dv').on('click', function(){
         $('.fc_id').val($('#fac_select').val());
         $('.user_id').val($('#by_select').val());
-        console.log('data', $('#by_select').val());
     }); 
 
     $('#create_predv').on('hidden.bs.modal', function () {
@@ -335,7 +332,6 @@
     })
 
     function checkPros(data){
-        console.log('data', data.value);
         var arr = getPros();
         var index = arr.indexOf(data.value);
         if (index !== -1) {
@@ -352,7 +348,6 @@
             pros.push($(this).val());
         });
         return pros;
-        console.log('pros', pros);
     }
     
     var f_id = $('.facility_id').val();
@@ -606,9 +601,7 @@
 
     function updatePre(id, data, stat){
         $('.form_body').html(loading);
-        console.log('resultdsdas', id);
         $.get("{{ url('pre-dv/update/').'/' }}"+id, function(result) {
-            console.log('result');
             $('.form_body').html(result);
             if(data == 1){
                 $('.delete_btn').css('display', 'none');
@@ -659,7 +652,6 @@
         });
 
         return transmittal_ids;
-        console.log('ids', transmittal_ids);
     }
 
     function getGrand(){
@@ -688,7 +680,6 @@
 
     function calculateAmount(data){
         var total = 0;
-        console.log('dsad');
         data.find('.amount').each(function(){
             var amount = parseFloat(($(this).val()).replace(/,/g, '')) || 0;
             total += amount;
@@ -768,7 +759,6 @@
     }
 
     function autoDeduct(element){
-        console.log('samplesample');
         var w_pro = element.closest('.proponent_clone');
         var m_amount = 0;
         w_pro.find('.saa_amount').each(function(){
@@ -787,14 +777,10 @@
             .attr('dataval');
         var saa_rem = parseFloat(dataval.replace(/,/g, ''));
         var total_result = amount_overall - m_amount;
-        console.log('a', saa_rem);
-        console.log('b', total_result);
 
         if(saa_rem >= total_result){
-            console.log('total_result', total_result);
             w_amount.val(total_result.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}));
         }else{
-            console.log('saa', saa_rem);
             w_amount.val(saa_rem.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}));
 
             Lobibox.alert('error',{
@@ -1028,7 +1014,6 @@
         var encodedData = encodeURIComponent(jsonData);
 
         if(edit_stat == 0){
-            console.log('edd');
             if($('#pre_id').val() == undefined){
                 // $('.pre_form').attr('action', "{{ route('pre_dv.save') }}".replace(':data', encodedData));
                 $.ajax({
@@ -1082,7 +1067,6 @@
                 });
             }
         }else if( edit_stat == 1){
-            console.log('edd23');
 
             $.ajax({
                 type: 'POST',
@@ -1096,7 +1080,6 @@
 
                 },
                 success: function (response) {
-                    // console.log('response', response);
                     Lobibox.notify('success', {
                         msg: "Successfully updated this pre_dv!",
                     });

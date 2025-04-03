@@ -91,7 +91,6 @@
     <script>
 
        function image(path) {
-            console.log('click');
             $('#sample_modal').html('<img src="{{ url('storage/app/') }}/' + path + '" alt="Image" class="img-fluid mb-2" style="width: 100%;">');
         }
 

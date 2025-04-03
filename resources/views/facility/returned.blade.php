@@ -145,7 +145,6 @@
     
     function displaySum(id){
         trans_id = id;
-        console.log('id', id);
         $('.summary_body').html(loading);
         $.get("{{ url('transmittal').'/' }}" + id, function(result){
             $('.summary_body').html(result);

@@ -262,7 +262,6 @@
             type: 'GET',
             success: function(response) {
                 var newRows = $(response).filter('tr');
-                console.log('response', newRows);
                 $('#budget_track_funds').html(response);
             },
             error: function(xhr) {
@@ -426,7 +425,6 @@
     }
 
     function updateFundsource(fundsource_id){
-        console.log('id', fundsource_id);
         $('#update_fundsource2').attr('action', "{{ route('update.fundsource', ['type' => 'save', 'fundsource_id' => ':fundsource_id']) }}".replace(':fundsource_id', fundsource_id));
         var url = "{{ url('fundsource').'/' }}" +'display' +'/'+ fundsource_id;
         $.ajax({
@@ -452,7 +450,6 @@
         var date = row.find('.ad_date').val();
         var pro = row.find('.pro_name').val();
         var dv_no = row.find('.dv_no').val();
-        console.log('cost', cost);
         var data = 
             {
                 l_id: l_id,
@@ -475,7 +472,6 @@
                     data: data
             },
             success: function (response) {
-                console.log('response', response);
                 Swal.fire({
                     icon: 'success',            
                     title: 'Success!',
@@ -519,7 +515,6 @@
     }
 
     function fundsTracking(id){
-        console.log('id', id);
         gen();
         $.get("{{ url('budget/funds').'/' }}"+id, function (result){
             $('#budget_track_funds').html(result);
@@ -531,7 +526,6 @@
     function budgetTracking(fundsource, id, amount, budget_amount){
         saa_id = id;
         saa = fundsource;
-        console.log('amount', amount);
         $('#budget_track_body').empty();
         $.get("{{ url('budget/fundsource').'/' }}"+id, function(result){
 
@@ -587,7 +581,6 @@
         $('#track_details').modal('show');
 
         var fundsourceId = event.target.getAttribute('data-fundsource-id');
-        console.log('fundsource',fundsourceId );
         var i = 0;
         var type = "for_modal";
         var url = "{{ url('budget/tracking').'/' }}"+ fundsourceId +'/' + 'for_modal';
@@ -598,7 +591,6 @@
             success: function(result) {
                 $('#t_body').empty(); 
                 $('.tracking_footer').empty();
-                console.log('proponent', result);
                 if(result.length > 0){
                     result.forEach(function(item) {
                         var saa = item.fund_sourcedata && item.fund_sourcedata.saa !== null ? item.fund_sourcedata.saa : '-';
@@ -627,7 +619,6 @@
                         }
                         var beg_balance = item.budget_bbalance.replace(',', '');
                         var utilize = (item.budget_utilize !== null)?number_format(parseFloat(item.budget_utilize.replace(/,/g, '')), 2, '.', ','):'';
-                        console.log("balance", item.div_id);
                         var route = item.div_id.toString();
                         var new_row = '<tr style="text-align:center">' +
                             '<td>' + saa + '</td>' +
@@ -698,8 +689,6 @@
         var route_no = $(link).data('routeid');
         var dv_no = $(link).data('dvNo');
 
-        console.log('check', dv_no);
-
         $('.modal_body').html(loading);
         $('.modal-title').html("Disbursement Voucher");
         var url = "{{ url('dv').'/' }}"+route_no + '/' +'view';
@@ -750,7 +739,6 @@
         var facility_id = event.target.getAttribute('data-facility-id');
         $('.modal_body').html(loading);
         $('.modal-title').html("Transfer Funds");
-        console.log('fundsourceId', fundsourceId);
         var url = "{{ url('fundsource/transfer_funds').'/' }}"+ fundsourceId+'/'+proponent_id+'/'+ facility_id;
         setTimeout(function() {
             $.ajax({

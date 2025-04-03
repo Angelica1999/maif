@@ -158,13 +158,11 @@
     });
 
     var controls = @json($control_nos);
-    console.log('chaka', controls);
 
     function checkNo(data){
       
         var val =$(data).val();
         var existsInControls = controls.includes(val);
-        console.log('chaka', val);
 
         if (existsInControls) {
             alert('Control no ' +val+ ' existed already!')
@@ -194,7 +192,6 @@
         return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     }
     function calculateSum(value){
-        console.log('value',value);
 
         var amountArray = $('.amount_total').map(function() {
             return parseFloat($(this).val().replace(/,/g, '')) || 0;

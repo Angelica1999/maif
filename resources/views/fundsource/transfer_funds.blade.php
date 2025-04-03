@@ -163,9 +163,7 @@
 
     function validateBalance(value){
         var to_transfer = parseFloat(value.replace(/,/g,''));
-        console.log('dasd', to_transfer);
-        console.log('selected_amount', selected_amount);
-
+       
         if( to_transfer > selected_amount){
             Lobibox.alert('error',{
                 size: 'mini',
@@ -178,7 +176,6 @@
     var saa_id, proponent;
 
     function updateProponent(fundsource_id){
-        console.log('fundsource', fundsource_id);
         $('.fac').val('');
         $('.break_fac').empty();
         $('.break_fac').append($('<option>',{
@@ -188,7 +185,6 @@
         saa_id = fundsource_id;
         $('.to_proponent').empty();
         $.get("proponents/lists/" + fundsource_id, function(result) {
-            console.log('res', result);
             $('.to_proponent').append($('<option>',{
                 value : "",
                 text : "Please select proponent"
@@ -220,7 +216,6 @@
     function updateFacility(proponent_id){
         $('.fac').val('');
         proponent = proponent_id
-        console.log('here updateF', proponent_id);
 
         if(proponent_id == "others"){
             $('.to_proponent').empty();
@@ -252,14 +247,12 @@
     }
 
     function updateFacField(pro_info){
-        console.log('chakabell');
         if(pro_info == "others"){
             $('.fac').val('new_fac');
             $('.break_fac').empty();
             $('.break_fac').prop('disabled', true);
 
             $.get("transfer/facility/" + "others", function(result) {
-                console.log('chakabell12',result );
 
                 $('.break_fac').append($('<option>',{
                     value : "",
@@ -283,14 +276,12 @@
         }else{
             $('.to_amount').prop('disabled', false);
         }
-        console.log('value', $('.fac').val());
     }
 
     function generateInfo(saa_id, proponent){
         $('.break_fac').prop('disabled', true);
         $('.break_fac').empty();
         $.get("transfer/proponentInfo/" + saa_id + "/" + proponent, function(result) {
-            console.log('res', result);
             $('.break_fac').append($('<option>', {
                 value: "",
                 text: "Please select Facility"

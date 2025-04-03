@@ -153,7 +153,6 @@
     var trans_id = 0;
     
     function displaySum(id){
-        console.log('dsad');
         trans_id = id;
         $('.summary_body').html(loading);
         $.get("{{ url('transmittal').'/' }}" + id, function(result) {
@@ -164,7 +163,6 @@
 
     function disRem(id){
         $('.rem_id').val(id);
-        console.log(id);
     }
 
 </script>

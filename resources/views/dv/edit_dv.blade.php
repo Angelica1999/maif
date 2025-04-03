@@ -228,8 +228,8 @@ $(document).ready(function() {
             }, 1000); // Change the time interval as needed
         }
     });
+    
     $('#remaining_balance').on('click', function() {
-        console.log('sfsdf');
     });
 
 

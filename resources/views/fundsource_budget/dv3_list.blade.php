@@ -124,7 +124,6 @@
 <script>
 
     var doc_type = @json($type);
-    console.log('doc', doc_type);
 
     $('.filter-division').select2();
     $('.filter-section').select2();
@@ -163,8 +162,6 @@
     }
 
     function updateDv3(route_no){
-        console.log('route_no', route_no);
-        console.log('dadasdsd');
         // if(doc_type == 'unsettled'){
         //     $('#confirm_dv').modal('show');
         //     $('#confirmation_main').html(loading);
@@ -240,7 +237,6 @@
     function displayFunds(route_no, proponent, id){
         util_id = id;
         route = route_no;
-        console.log('sd', id);
         $('#budget_confirm').modal('show');
         $('.confirm_budget').html(loading);
         $.get("{{ url('confirm-budget').'/' }}" + id, function(result) {

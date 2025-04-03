@@ -334,7 +334,6 @@
 
     function sortData(sort_type){
         var f_id = $('#facility').val();
-        console.log('sample', sort_type);
         if (Array.isArray(f_id) && f_id.length === 0) {
             f_id.push("all");
         } else {

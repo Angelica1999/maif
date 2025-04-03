@@ -392,7 +392,6 @@
         }  
 
         function drawLineChart() {
-            console.log('ds');
             var data = new google.visualization.DataTable();
             data.addColumn('string', 'Month');
             data.addColumn('number', 'Total Utilize Amount');

@@ -360,8 +360,6 @@
         var row = $(element).closest('div.clone_saa');   
         var amountInput = row.find('input.amount').val('');
         var info_input = row.find('input.info_id').val(row.find('select.dv3_saa option:selected').attr('dataproponentInfo_id'));
-
-        console.log('Amount value:', row.find('select.dv3_saa option:selected').attr('dataproponentInfo_id'));
     }
 
     var timer;
@@ -373,14 +371,10 @@
         timer = setTimeout(function () {
             var row = $(element).closest('div.clone_saa');
             var info_id = row.find('select.dv3_saa option:selected').attr('dataproponentInfo_id');
-            console.log('Selected Proponent inside validateAmount:', info_id);
             $.get("{{ url('/balance')}}", function(result) {
                 var allocated_funds = (result.allocated_funds.find(item =>item.id == info_id)|| {}).remaining_balance|| 0;
                 allocated_funds = Number(allocated_funds.replace(/[^\d.]/g, ''));
-                console.log('allocated_funds:', allocated_funds);
-                console.log('value:', value);
                 if(value > allocated_funds){
-                    console.log('asdsadsd:', value);
                     Lobibox.alert('error',{
                         size : 'mini',
                         msg : 'Make sure inputted amount is not greater than allocated balance!'
@@ -457,7 +451,6 @@
     
     function getVat(facility_id){
         // $.get("{{ url('/getvatEwt').'/' }}"+facility_id, function(result) {
-        //     console.log('result', result);
         //     if(result == 0){
         //         alert('Please update VAT and EWT of this facility first!');
         //     }else{
@@ -488,7 +481,6 @@
     function handleChangesF(facility_id){
         $.get("{{ url('list/fundsources').'/' }}"+facility_id, function(result) {
 
-            console.log('facility', result.info);
             $('.dv3_address').text(result.facility.address);
             $('.hospitalAddress').text(result.facility.name);
             $('#for_facility_id').val(facility_id);
@@ -499,7 +491,6 @@
             $('#saa2').append($('<option>', {value: '',text: 'Select SAA'}));
             $('#saa3').append($('<option>', {value: '',text: 'Select SAA'}));
             var first = [],sec = [],third = [],fourth = [],fifth = [],six = [];
-            console.log('all_facilities', all_facilities);
             $.each(data_result, function(index, optionData){
                 var rem_balance = parseFloat(optionData.remaining_balance.replace(/,/g, '')).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
 

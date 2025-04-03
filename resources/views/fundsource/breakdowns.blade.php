@@ -292,7 +292,6 @@
                 var proponentCodeInput = element.closest('.row').find('.proponent_code');
                 proponentCodeInput.val('');
             }
-            console.log('Data:', hasMatchingProponent);
         }, 500);
     }
 
@@ -310,7 +309,6 @@
 
     function remove(infoId){
         $.get("{{ url('proponentInfo/').'/' }}"+infoId, function(result) {
-            console.log('rs', result);
         });
     }
 
@@ -351,7 +349,6 @@
                 var proponent = $(clone).find('.proponent').val();
                 var proponent_code = $(clone).find('.proponent_code').val();
                 var proponent_main = $(clone).find('.proponent_main').val();
-                console.log('asdsad', $(clone).find('.proponent_main'));
                 $(clone).find('.row').each(function (rowIndex, row) {
                     nu++;
                     var facility_id = $(row).find('.break_fac').val();
@@ -392,18 +389,9 @@
                     data.facility_id !== undefined 
                 );
             });
-            console.log('Collected before:', formData);
-
             
             // var divisor = {{$fundsource[0]->proponents->count()}};
             // var dividend = Math.round(formData.length/4);
-
-            // console.log('htrry', formData);
-            // console.log('htrry', divisor);
-            // console.log('htrry', dividend % divisor);
-            // console.log('htrry', dividend);
-            // console.log('htrry', dividend/divisor );
-            // console.log('htrry', dividend % divisor );
 
             var count = {{$pro_count}};
             var to_deduct = 0;
@@ -414,8 +402,6 @@
                 // var add1 = Math.floor(formData.length/4);
                 formData.splice(formData.length - count);
         }
-            console.log('Collected Datasdsad:', formData);
-            // console.log('Collected Datasdsad:', formData.length);
             // var count = {{$pro_count}};
             // if(count > 0){
             //     formData.splice(count+click);
@@ -486,7 +472,6 @@
             $('.loading-container').show();
 
             e.preventDefault();
-            console.log('Collected Data:', getData());
 
             var sum =0;
             getData().forEach(item=>{
@@ -516,7 +501,6 @@
                     $('#create_fundsource').modal('hide');
                     $('.loading-container').css('display', 'none');
                     window.location.href = '{{ route("fundsource") }}';
-                    console.log('sadsd', response);
                 },
                 error: function (error) {
                     if (error.status) {

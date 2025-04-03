@@ -1028,7 +1028,6 @@
           
         });
         $(document).on('click', '.select_all', function() {
-            console.log('click', all_patients);
             if(all_patients){
                 $('#patient_table').find('input.group-mailCheckBox').prop('checked', true).trigger('change');
                 $('.send_mails').val('').show();
@@ -1039,7 +1038,6 @@
             }
         });
         // $(document).on('click', '.select_all', function() {
-        //     console.log('click', all_patients);
         //     if (all_patients) {
         //         $('#patient_table').find('input.group-mailCheckBox').each(function() {
         //             if ($(this).data('stat') == 1) {

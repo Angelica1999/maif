@@ -264,12 +264,10 @@
         if(id == 0){
             id= trans_id;
         }
-        console.log('id', id);
         $('.id').val(id);
         $('.return_body').html(loading);
         $.get("{{ url('transmittal/references/1').'/' }}" + id, function(result){
             $('.return_body').html(result);
-            console.log(result);
         });
     }
 
@@ -277,12 +275,10 @@
     
     function displaySum(id, remarks){
         trans_id = id;
-        console.log('id', id);
         $('.summary_body').html(loading);
         $.get("{{ url('transmittal').'/' }}" + id, function(result){
             $('.summary_body').html(result);
             $('#sum_footer').css('display', 'none');
-            console.log('remarks', remarks);
             if(remarks != 2){
                 $('.sum_return').css('display', 'none');
                 $('.sum_accept').css('display', 'none');

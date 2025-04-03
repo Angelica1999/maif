@@ -120,13 +120,11 @@
         }
 
     var controls = @json($control_nos);
-    console.log('chaka', controls);
 
     function checkNo(data){
       
         var val =$(data).val();
         var existsInControls = controls.includes(val);
-        console.log('chaka', val);
 
         if (existsInControls) {
             alert('Control no ' +val+ ' existed already!')
@@ -158,7 +156,6 @@
         }, 0);
         sum = parseFloat(sum.toFixed(2));
 
-        console.log('sum', sum);
         if(sum> {{str_replace(',', '',$dv->total_amount)}}){
             $('.btn-primary').attr('disabled', 'disabled');
             $('.inform_user').text('Calculated Amount is greater than Dv1 total amount!');

@@ -426,7 +426,6 @@
             $('.dv3_saa').prop('disabled', true);
             $('#dv3_date').prop('disabled', true);
         }else if(type == undefined){
-            console.log('undefined also');
             $('.ors_no').css('display', 'none');
             $('.btn-success').css('display', 'none');
             $('.dv3_facility').prop('disabled', true);
@@ -456,7 +455,6 @@
         $(document).on('click', '.container .remove_saa', function () {
             $(this).closest('.clone_saa').remove();
             cal();
-            console.log('remove');
         });
     });
     
@@ -464,8 +462,6 @@
         var row = $(element).closest('div.clone_saa');   
         var amountInput = row.find('input.amount').val('');
         var info_input = row.find('input.info_id').val(row.find('select.dv3_saa option:selected').attr('dataproponentInfo_id'));
-
-        console.log('Amount value:', row.find('select.dv3_saa option:selected').attr('dataproponentInfo_id'));
     }
 
     var timer;
@@ -478,14 +474,11 @@
             var existing = row.find('input.existing');
             var existing_info = row.find('input.existing_info_id');
             var info_id = row.find('select.dv3_saa option:selected').attr('dataproponentInfo_id');
-            console.log('info_id:', info_id);
             $.get("{{ url('/balance')}}", function(result) {
                 var allocated_funds = Number((result.allocated_funds.find(item =>item.id == info_id)|| {}).remaining_balance|| 0);
                 if(existing != 0 && existing_info.val() == info_id){
                     allocated_funds = allocated_funds + Number(existing.val());
-                    console.log('chck', existing_info.val());
                 }
-                console.log('total:', existing.val());
 
                 if(value > allocated_funds){
                     Lobibox.alert('error',{
@@ -563,7 +556,6 @@
     
     function getVat(facility_id){
         // $.get("{{ url('/getvatEwt').'/' }}"+facility_id, function(result) {
-        //     console.log('result', result);
         //     if(result == 0){
         //         alert('Please update VAT and EWT of this facility first!');
         //     }else{
@@ -594,7 +586,6 @@
 
             $('.dv3_address').text(result.facility.address);
             $('.hospitalname').text(result.facility.name);
-            console.log('sfdsf', result.facility.name);
             $('#for_facility_id').val(facility_id);
 
             var data_result = result.info;

@@ -114,7 +114,6 @@
         }
 
         function deleteDv2(route_no){
-            console.log('route_no', route_no);
             Lobibox.alert('error',
                 {
                     size: 'mini',

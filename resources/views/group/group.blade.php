@@ -113,16 +113,9 @@
         },0);
     }
     function addPatient(group_id, facility_id, proponent_id){
-        console.log('patients', facility_id);
-        console.log('patients', proponent_id);
-
         $('.for_group').val(group_id);
         $('.modal_body').html(loading);        
         $.get("{{ url('group/patient').'/' }}"+facility_id+"/"+proponent_id, function(result) {
-            console.log('res', result);
-            console.log('facility_id', facility_id);
-            console.log('proponent_id', proponent_id);
-
             $.each(result, function(index, optionData) {
                 $('.facility').append($('<option>', {
                     value: optionData.id,
