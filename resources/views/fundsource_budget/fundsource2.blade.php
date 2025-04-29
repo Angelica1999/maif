@@ -66,8 +66,9 @@
                                                 <td style="width:50%; padding: 5px;">
                                                     Admin Cost Balance
                                                     :
-                                                    <strong class="{{ $fund->remaining_balance == 0 ? 'text-danger' : 'text-info' }}">
-                                                        {{ number_format(floatval(str_replace(',', '', $allocated - ($utilized + $admin_cost))), 2, '.', ',') }}
+                                                    <strong class="{{ $admin_cost + $fund->budget_cost - $deduction == 0 ? 'text-danger' : 'text-info' }}" onclick="costTracking({{ $fund->id }})">
+                                                        {{ number_format(floatval(str_replace(',', '',$admin_cost + $fund->budget_cost - $deduction)), 2, '.', ',') }}
+                                                        <small class="text-info"><em>(details)</em></small>
                                                     </strong>
 
                                                 </td>
@@ -526,8 +527,11 @@
     function budgetTracking(fundsource, id, amount, budget_amount){
         saa_id = id;
         saa = fundsource;
+        console.log('id', id);
+        console.log('saa', saa);
+
         $('#budget_track_body').empty();
-        $.get("{{ url('budget/fundsource').'/' }}"+id, function(result){
+        $.get("{{ url('budget/fundsource').'/' }}"+saa_id, function(result){
 
             if(result == 'No data available!' && amount == 0 && budget_amount == 0){
                 $('#budget_track2').modal('hide');

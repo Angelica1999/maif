@@ -558,8 +558,10 @@
 
         function version2(data) {
             var route_no = $(data).data('routeid');
+            $('.v2_body').html(loading);
             $.get(" {{ url('/version2').'/'}}" + route_no, function (result){
                 $('.v2_body').html(result);
+                console.log('res', route_no);
             });
             $('#version2').modal('show');
         }

@@ -268,8 +268,7 @@ class FundSourceController2 extends Controller{
                         ]);
                     }
                     ])->where('status', 0)->get();
-
-            $admin_c = AdminCostUtilization::with('fundSourcedata:id,saa')->get();
+            $admin_c = AdminCostUtilization::with('fundSourcedata:id,saa')->where('fundsource_id', $saa->id)->get();
             $combi = $util->merge($admin_c);
             $combi = $combi->sortByDesc('updated_at'); // Change to 'updated_by' if needed
             // return $combi;
@@ -357,7 +356,6 @@ class FundSourceController2 extends Controller{
                     'info' => $info
                 ];
             }
-
             $perPage = 10;
             $dataCollection = collect($data); 
             $all_data = new LengthAwarePaginator(
@@ -367,7 +365,7 @@ class FundSourceController2 extends Controller{
                 null,
                 ['path' => LengthAwarePaginator::resolveCurrentPath()]
             );
-
+            
             return view('fundsource_budget.funds_tracking',[
                 'result' => $all_data,
                 'facilities' => Facility::get()->select('id','name'),

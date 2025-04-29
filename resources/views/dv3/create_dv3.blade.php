@@ -134,8 +134,8 @@
                         <tr>
                             <td height=4% width =12%><b> Payee</td>
                             <td style="width:29%; border-left: 0 "><b> 
-                                <select id="dv3_facility" class="dv3_facility" name="dv3_facility" onchange="getFacility($(this))" style="margin-left:5px;width:260px;" required>
-                                  <option value="">- Select Facility -</option>
+                                <select id="dv3_facility" class="form-control dv3_facility" name="dv3_facility" onchange="getFacility($(this))" style="margin-left:5px;width:260px;" required>
+                                  <option value=""></option>
                                   @foreach($facilities as $facility)
                                     <option value="{{$facility->id}}">{{$facility->name}}</option>
                                   @endforeach  
@@ -334,10 +334,19 @@
 
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 <script>
+    $.fn.modal.Constructor.prototype.enforceFocus = function() {};
 
-    $('.dv3_facility').select2();
-    $('.dv3_saa').select2();
     $(document).ready(function() {
+        $('.dv3_saa').select2({
+            placeholder: 'Select Fundsource'
+        });
+        $('.dv3_facility').select2({
+            placeholder: 'Select Facility'
+        });
+    });
+    
+    $(document).ready(function() {
+
         $(document).off('click', '.container .clone_saa .add_more').on('click', '.container .clone_saa .add_more', function () {
             $('.loading-container').show();
             var $this = $(this);

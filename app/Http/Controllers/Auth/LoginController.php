@@ -32,30 +32,25 @@ class LoginController extends Controller
     {
         $userId = auth()->user()->userid;
 
-            $joinedData = DB::connection('dohdtr')
-                ->table('users')
-                ->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
-                ->where('users.userid', '=', $userId)
-                ->select('users.section')
-                ->first();
+        $joinedData = DB::connection('dohdtr')
+            ->table('users')
+            ->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
+            ->where('users.userid', '=', $userId)
+            ->select('users.section')
+            ->first();
 
-            if ($joinedData) {
-                if ($joinedData->section == 6) {
-                    return RouteServiceProvider::BUDGET;
-                } elseif ($joinedData->section == 105 || $userId == 2760 || $userId == 201400208 || $userId == 200200097
-                            || $joinedData->section == 36 || $joinedData->section == 31) {
-                    return RouteServiceProvider::MAIF;
-                } elseif($userId == 1027 || $userId == 2660){
-                    return RouteServiceProvider::ACCOUNTING;
-                }elseif($joinedData->section == 7){
-                    return RouteServiceProvider::CASHIER;
-                }
+        if ($joinedData) {
+            if ($joinedData->section == 6) {
+                return RouteServiceProvider::BUDGET;
+            } elseif ($joinedData->section == 105 || $userId == 2760 || $userId == 201400208 || $userId == 200200097
+                        || $joinedData->section == 36 || $joinedData->section == 31) {
+                return RouteServiceProvider::MAIF;
+            } elseif($userId == 1027 || $userId == 2660){
+                return RouteServiceProvider::ACCOUNTING;
+            }elseif($joinedData->section == 7){
+                return RouteServiceProvider::CASHIER;
             }
-        // if (auth()->user()->roles == 'maif') {
-        //     return RouteServiceProvider::MAIF;
-        // } elseif (auth()->user()->roles == 'budget') {
-            // return RouteServiceProvider::BUDGET;
-        // }
+        }
     }
 
     /**
