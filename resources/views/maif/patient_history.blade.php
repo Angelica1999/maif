@@ -1,20 +1,20 @@
 <form>
-    <div class="table-container" style="margin:5px; padding:10px">
-        <table class="table table-bordered">
+    <div class="table-container" style="margin:5px; padding:10px; overflow-x: auto; width: 100%;">
+        <table class="table table-bordered" style="width: 100%;">
             <thead>
-                <tr style="background-color:gray; color:black">
-                    <th scope="col">Patient</th>
+                <tr>
+                    <th style="background-color: gray !important; color: white !important;" scope="col">Patient</th>
                     <!-- <th scope="col">Birthdate</th>
                     <th scope="col">Address</th> -->
-                    <th scope="col">Date</th>
-                    <th scope="col">Facility</th>
-                    <th scope="col">Proponent</th>
-                    <th scope="col">Code</th>
-                    <th scope="col">Guaranteed</th>
-                    <th scope="col">Actual</th>
-                    <th scope="col">Remarks</th>
-                    <th scope="col">Modified By</th>
-                    <th scope="col">On</th>
+                    <th style="background-color: gray !important; color: white !important;" scope="col">Date</th>
+                    <th style="background-color: gray !important; color: white !important;" scope="col">Facility</th>
+                    <th style="background-color: gray !important; color: white !important;" scope="col">Proponent</th>
+                    <th style="background-color: gray !important; color: white !important;" scope="col">Code</th>
+                    <th style="background-color: gray !important; color: white !important;" scope="col">Guaranteed</th>
+                    <th style="background-color: gray !important; color: white !important;" scope="col">Actual</th>
+                    <th style="background-color: gray !important; color: white !important;" scope="col">Remarks</th>
+                    <th style="background-color: gray !important; color: white !important;" scope="col">Modified By</th>
+                    <th style="background-color: gray !important; color: white !important;" scope="col">On</th>
                 </tr>
             </thead>
             <tbody id="gl_history">

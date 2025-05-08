@@ -726,15 +726,14 @@
     </div>
 </div>
 <!--end-->
-<div class="modal fade" id="patient_history" tabindex="-1" role="dialog" aria-hidden="true" style="opacity:2">
-    <div class="modal-dialog modal-lg" role="document">
+<div class="modal fade" id="patient_history" tabindex="-1" role="dialog" aria-hidden="true" style="opacity:1">
+    <div class="modal-dialog modal-lg" role="document" style="max-width: 90vw;">
         <div class="modal-content">
             <div class="modal-header" style="vertical-align:middle">
-                <br>
                 <h4 class="text-success" id="title"><i class="typcn typcn-location menu-icon"></i>Patient History</h4><hr/>
                 @csrf
             </div>
-            <div class="p_body">
+            <div class="p_body" style="max-height: 70vh; overflow-y: auto;">
             </div>
             <div class="modal-footer">
                 <button style = "background-color:lightgray"  class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> Close</button>

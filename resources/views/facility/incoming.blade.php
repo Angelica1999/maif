@@ -85,7 +85,7 @@
             <div class="modal-header" style="text-align:center">
                 <h2 class="text-success modal-title">TRANSMITTALS</h2>
             </div>
-            <div class="summary_body" style="display: flex; flex-direction: column; align-items: center; background-color:green">
+            <div class="summary_body" style="display: flex; flex-direction: column; align-items: center;">
                 
             </div>
             <div class="modal-footer">

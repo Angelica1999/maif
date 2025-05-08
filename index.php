@@ -1,6 +1,7 @@
 <?php
 
 // 🚫 Restrict access if domain is gletter.cvchd7.com and path is /maif
+
 if ($_SERVER['HTTP_HOST'] === 'gletter.cvchd7.com' && strpos($_SERVER['REQUEST_URI'], '/maif') === 0) {
     http_response_code(403);
     echo "<h1>403 Forbidden</h1><p>Access to this project is restricted.</p>";
