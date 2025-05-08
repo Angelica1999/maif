@@ -642,11 +642,11 @@ class PrintController extends Controller
             $width = 500;
             foreach($pre_dv->extension as $row){
                 foreach($row->controls as $row1){
-                    $height = $height + 160;
+                    $height = $height + 165;
                     $width = $width + 20;
                 }
                 foreach($row->saas as $row2){
-                    $height = $height + 25;
+                    $height = $height + 30;
                     $width = $width + 5;
                 }
             }

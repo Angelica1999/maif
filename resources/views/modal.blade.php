@@ -61,7 +61,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="budget_track2" role="dialog" aria-hidden="true" aria-hidden="true">
+<div class="modal fade" id="budget_track2" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content" style="border-radius:0px;">
             <div class="modal-header" style="text-align:center">
@@ -80,7 +80,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="cost_tracking" role="dialog" aria-hidden="true" aria-hidden="true">
+<div class="modal fade" id="cost_tracking" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content" style="border-radius:0px;">
             <div class="modal-header" style="text-align:center">

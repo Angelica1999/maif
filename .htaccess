@@ -1,9 +1,13 @@
 <IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Restrict only if domain is gletter.cvchd7.com
+    RewriteCond %{HTTP_HOST} ^gletter\.cvchd7\.com$ [NC]
+    RewriteRule ^.*$ - [F,L]
+
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
     </IfModule>
-
-    RewriteEngine On
 
     # Handle Authorization Header
     RewriteRule ^\..* - [F,L]
@@ -20,4 +24,3 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
-

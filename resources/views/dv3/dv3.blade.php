@@ -28,7 +28,7 @@
                         </div>
                         <div class="input-group">
                             <input type="text" style="text-align:center" style="width:100px" class="form-control" id="filter_dates" value="{{($generated_dates)?$generated_dates:''}}" name="filter_dates" />
-                            <button type="submit" id="gen3_btn" style="background-color:teal; color:white; width:91px" class=""><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
+                            <button type="submit" id="gen3_btn" style="background-color:teal; color:white; width:91px; border-radius:0px" class="btn btn-sm" ><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
                         </div>
                         <input type="hidden" class="all_route" id="all_route" name="all_route">
                         <input type="hidden" id="filter_rem3" name="filter_rem3" value="{{implode(',', $filter_rem3)}}"></input>
@@ -259,22 +259,6 @@
         </div>
     </div>
 </div>
-
-<div class="modal fade" id="create_patient" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel"></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">×</span>
-                </button>
-            </div>
-            <div class="modal_body">
-                
-            </div>
-        </div>
-    </div>
-</div>
 <div class="modal fade" id="create_dv3" role="dialog" style="overflow-y:scroll;">
     <input type="hidden" class="identifier" id="identifier" value="none">
     <div class="modal-dialog modal-lg" role="document" style="width:900px">
@@ -283,8 +267,7 @@
                 <h4 class="modal-title"><i class="fa fa-plus" style="margin-right:auto;"></i> Disbursement Voucher (v3)</h4>
                 <button type="button" class="close" id="exit" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" style="color:white;">&times;</span></button>
             </div>
-            <div class="modal_body">
-                <div class="modal_content"></div>
+            <div class="dv3_body">
             </div>
         </div>
     </div>
@@ -363,15 +346,18 @@
 
         });
 
+        $('#dv3_facility').select2();
+
         function createDv3() {
-            $('.modal_body').html(loading);
+            $('.dv3_body').html(loading);
+            
             $('.modal-title').html("Create Disbursement (v3)");
             var url = "{{ route('dv3.create') }}";
             $.ajax({
                 url: url,
                 type: 'GET',
                 success: function(result) {
-                    $('.modal_body').html(result);
+                    $('.dv3_body').html(result);
                 }
             });
         }
@@ -412,9 +398,9 @@
         }
 
         function updateDv3(route_no){
-            $('.modal_body').html(loading);
+            $('.dv3_body').html(loading);
             $.get("{{url('dv3/update').'/'}}"+route_no, function(result){
-                $('.modal_body').html(result);
+                $('.dv3_body').html(result);
             });
         }
 
@@ -459,8 +445,6 @@
                 });
             });
         });
-
-        
     </script>
 @endsection
 

@@ -273,7 +273,6 @@ Route::get('sampsamp/{id}', [App\Http\Controllers\FundSourceController::class, '
 Route::get('/budget-cost/{id}/{amount}', [App\Http\Controllers\FundSourceController::class, 'budgetCost'])->name('budget.cost');
 Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'dashboard'])->name('dashboard');
 
-
 Route::get('/samsam', [App\Http\Controllers\FacilityController::class, 'samsam'])->name('samsam');
 
 

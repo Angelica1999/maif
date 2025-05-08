@@ -60,12 +60,16 @@
                     </td>
                     <td style="border:1px solid gray; vertical-align:middle">
                         @if($index == 0)
-                            {{ number_format(str_replace(',','',$saa->a_cost[0]->total_admin_cost), 2,'.',',') }}
+                            @if (!empty($saa->a_cost) && isset($saa->a_cost[0]->total_admin_cost))
+                                {{ number_format((float) str_replace(',', '', $saa->a_cost[0]->total_admin_cost), 2, '.', ',') }}
+                            @endif
                         @endif    
                     </td>
                     <td style="border:1px solid gray; vertical-align:middle">
                         @if($index == 0)
-                            {{ number_format(str_replace(',','',$saa->admin_cost + $saa->budget_cost - $saa->a_cost[0]->total_admin_cost), 2,'.',',') }}
+                            @if (!empty($saa->a_cost) && isset($saa->a_cost[0]->total_admin_cost))
+                                {{ number_format(str_replace(',','',$saa->admin_cost + $saa->budget_cost - $saa->a_cost[0]->total_admin_cost), 2,'.',',') }}
+                            @endif
                         @endif    
                     </td>
                 </tr>

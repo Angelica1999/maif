@@ -1150,7 +1150,6 @@ class FundSourceController extends Controller
                 'total' => $total
             ]);
         }else if($new_dv){
-
             $pre_dv = PreDV::where('id', $new_dv->predv_id)->with(
                 [
                     'facility:id,name',
@@ -1170,7 +1169,6 @@ class FundSourceController extends Controller
                     }
                 ]
             )->first();
-        
             return view('maif.predv', [
                 'result' => $pre_dv
             ]);

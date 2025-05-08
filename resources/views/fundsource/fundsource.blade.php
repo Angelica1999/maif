@@ -11,12 +11,11 @@
         border-radius:0;
     }
 </style>
-
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
-        <div class="card-body">
+        <!-- <div class="card-body">
             <form method="GET" action="{{ route('fundsource') }}">
-                <div class="input-group float-right w-50" style="max-width: 600px;">
+                <div class="input-group float-right w-40" style="max-width: 600px;">
                     <input type="text" class="form-control" name="keyword" placeholder="SAA, PROPONENT, FACILITY" value="{{ $keyword }}">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
@@ -24,16 +23,39 @@
                         @if($user->section != 6)
                             <button type="button" id="create_btn" href="#create_fundsource2" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
                         @endif
-                        <!-- <button type="button" href="#create_fundsource" onclick="createFundSource()" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md">Create</button> -->
                     </div>
                 </div>
             </form>
-            <div style="display: flex; align-items: center;">
-                <h4 class="card-title">MANAGE FUNDSOURCE: DV</h4>
-            </div>
+            <h4 class="card-title">MANAGE FUNDSOURCE: DV</h4>
             <p class="card-description">
                 MAIF-IPP
-            </p>
+            </p> -->
+            <div class="card-body">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                    <div class="mb-2 mb-md-0">
+                        <h4 class="card-title">MANAGE FUNDSOURCE: DV</h4>
+                        <p class="card-description">MAIF-IPP</p>
+                    </div>
+
+                    <form method="GET" action="{{ route('fundsource') }}" class="w-50">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="keyword" placeholder="SAA, PROPONENT, FACILITY" style="height:40px" value="{{ $keyword }}">
+                            <div class="input-group-append">
+                                <button class="btn btn-sm btn-info" type="submit">
+                                    <img src="/maif/public/images/icons8_search_16.png">Search
+                                </button> 
+                                <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll">
+                                    <img src="/maif/public/images/icons8_eye_16.png">View All
+                                </button>
+                                @if($user->section != 6)
+                                    <button type="button" id="create_btn" href="#create_fundsource2" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md">
+                                        <img src="/maif/public/images/icons8_create_16.png">Create
+                                    </button>
+                                @endif
+                            </div>
+                        </div>
+                    </form>
+                </div>
             @if(isset($fundsources) && $fundsources->count() >0)
             <div class="row">
                 @foreach($fundsources as $fund)
@@ -558,8 +580,10 @@
 
         function version2(data) {
             var route_no = $(data).data('routeid');
+            $('.v2_body').html(loading);
             $.get(" {{ url('/version2').'/'}}" + route_no, function (result){
                 $('.v2_body').html(result);
+                console.log('res', route_no);
             });
             $('#version2').modal('show');
         }
