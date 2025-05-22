@@ -286,7 +286,13 @@
     $('.submit_btn').on('click', function(){
         $('#update_predv').modal('hide');
         $('#create_predv').modal('hide');
-        $('.loading-container').css('display', 'block');
+        $('.loading-container').modal('show');
+        $('.loading-container').html(loading);
+    });
+
+    $('.delete_btn').on('click', function(){
+        $('#update_predv').modal('hide');
+        $('.loading-container').modal('show');
         $('.loading-container').html(loading);
     });
 
