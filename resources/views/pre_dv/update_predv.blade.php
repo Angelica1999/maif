@@ -28,7 +28,7 @@
                             <div class="control_clone" style="padding: 10px; border: 1px solid lightgray;">
                                 <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 4%;">
                                     <input type="hidden" class="saa_number" value="0">
-                                    <input class="form-control control_no" style="text-align: center; width: 56%;" placeholder="CONTROL NUMBER" value="{{ $row2->control_no }}" oninput="this.value = this.value.toUpperCase()" required>
+                                    <input class="form-control control_no" onblur="checkControlNo(this)" style="text-align: center; width: 56%;" placeholder="CONTROL NUMBER" value="{{ $row2->control_no }}" oninput="this.value = this.value.toUpperCase()" required>
                                     <i class="{{($index1 == 0)?'typcn typcn-plus menu-icon control_clone_btn': 'typcn typcn-minus menu-icon control_remove_btn' }}" style="width:40px; color:white;border: 1px; padding: 2px; {{($index1 == 0)?'background-color:blue' : 'background-color:red'}}"></i>
                                 </div>
                                 <div style="display: flex; justify-content: space-between;">

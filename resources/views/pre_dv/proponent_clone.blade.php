@@ -13,7 +13,7 @@
         <div class="control_div">
             <div class="control_clone" style="padding: 10px; border: 1px solid lightgray;">
                 <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 4%;">
-                    <input class="form-control control_no" style="text-align: center; width: 56%;" placeholder="CONTROL NUMBER" oninput="this.value = this.value.toUpperCase()" required>
+                    <input class="form-control control_no" onblur="checkControlNo(this)" style="text-align: center; width: 56%;" placeholder="CONTROL NUMBER" oninput="this.value = this.value.toUpperCase()" required>
                     <i class="typcn typcn-plus menu-icon control_clone_btn" style="width:40px;background-color:blue; color:white;border: 1px; padding: 2px;"></i>
                 </div>
                 <div style="display: flex; justify-content: space-between;">
