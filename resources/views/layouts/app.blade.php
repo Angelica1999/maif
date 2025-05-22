@@ -30,7 +30,7 @@
    <link rel="stylesheet" href="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.css') }}">
    <style>
       html {
-         font-size: 13px; /* Increasing this will scale everything using rem or em */
+         font-size: 14px; /* Increasing this will scale everything using rem or em */
       }
    </style>
    {{-- @vite(['resources/sass/app.scss', 'resources/js/app.js']) --}}

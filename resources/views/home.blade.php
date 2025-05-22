@@ -76,7 +76,7 @@
                         </div>
                         <div class="input-group">
                             <input type="text" style="text-align:center" class="form-control" id="filter_dates" value="{{($generate_dates)?$generate_dates:''}}" name="filter_dates" />
-                            <button type="submit" id="gen_btn" style="background-color:teal; color:white; width:90px; height:40px; border-radius:0; " class="btn"><i class="typcn typcn-calendar-outline menu-icon"></i>Filter</button>
+                            <button type="submit" id="gen_btn" style="background-color:teal; color:white; width:96px; height:40px; border-radius:0; " class="btn"><i class="typcn typcn-calendar-outline menu-icon"></i>Filter</button>
                         </div>
                         <input type="hidden" name="filter_date" id="filter_date" value="{{implode(',', $filter_date)}}"></input>
                         <input type="hidden" name="filter_fname" id="filter_fname" value="{{implode(',', $filter_fname)}}"></input>
@@ -141,7 +141,7 @@
                                 </button>
                             </div>
                         </th>
-                        <th style="min-width:80px">@sortablelink('remarks', 'Status')</th>
+                        <th style="min-width:90px">@sortablelink('remarks', 'Status')</th>
                         <th>Remarks</th>
                         <th style="min-width:10px; text-align:center;">Group</th>
                         <th style="min-width:140px">Actual Amount</th>
