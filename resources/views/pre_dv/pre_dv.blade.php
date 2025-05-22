@@ -774,7 +774,7 @@
             .closest('.saa_clone')
             .find('.saa_id')
             .find(':selected')
-            .attr('dataval');
+            .attr('dataval')|| "0";
         var saa_rem = parseFloat(dataval.replace(/,/g, ''));
         var total_result = amount_overall - m_amount;
 
