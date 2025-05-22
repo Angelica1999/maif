@@ -261,7 +261,7 @@
                               <td height=30px width =15%>Printed Name</td>
                               <td width =38%><b>ANGIELINE T. ADLAON, CPA, MBA</td>
                               <td height=30px width =15%>Printed Name</td>
-                              <td width =32%><b>JAIME S. BERNADAS, MD, MGM, CESO III</td>
+                              <td width =32%><b>JOSHUA G. BRILLANTES, MD, MPH, CESO IV</td>
                           </tr>
                           <tr class="header">
                               <td height=35px width =15%>Position</td>

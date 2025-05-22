@@ -236,7 +236,7 @@
                             <td>Printed Name</td>
                             <td><b>ANGIELINE T. ADLAON, CPA, MBA</td>
                             <td>Printed Name</td>
-                            <td><b>JAIME S. BERNADAS, MD, MGM, CESO III</td>
+                            <td><b>JOSHUA G. BRILLANTES, MD, MPH, CESO IV</td>
                         </tr>
                         <tr class="header">
                             <td>Position</td>
