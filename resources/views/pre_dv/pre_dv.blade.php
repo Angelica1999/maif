@@ -14,6 +14,18 @@
         background-color: green !important;
         color: white !important;
     }
+    .loading-container {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        /* z-index: 1000;
+        display: none;  */
+    }
+    .loading-spinner {
+        width: 100%; 
+        height: 100%; 
+    }
 </style>
 <div class="col-md-12 grid-margin stretch-card">
     <div class="card">
@@ -188,14 +200,14 @@
                                 <div class="control_div">
                                     <div class="control_clone" style="padding: 10px; border: 1px solid lightgray;">
                                         <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 4%;">
-                                            <input class="form-control control_no" style="text-align: center; width: 56%;" placeholder="CONTROL NUMBER" oninput="this.value = this.value.toUpperCase()" required>
+                                            <input class="form-control control_no" onblur="checkControlNo(this)" style="text-align: center; width: 56%;" placeholder="CONTROL NUMBER" oninput="this.value = this.value.toUpperCase()" required>
                                             <i class="typcn typcn-plus menu-icon control_clone_btn" style="width:40px;background-color:blue; color:white;border: 1px; padding: 2px;"></i>
                                         </div>
                                         <div style="display: flex; justify-content: space-between;">
-                                            <input placeholder="PATIENT" class="form-control patient_1" onclick="checkControlNo(this)" style="width: 41%;" oninput="this.value = this.value.toUpperCase()" required>
-                                            <input placeholder="AMOUNT/TRANSMITTAL" class="form-control amount" onclick="checkControlNo(this)" onkeyup="validateAmount(this)" oninput="checkAmount($(this), $(this).val())" style="width: 50%;" required>
+                                            <input placeholder="PATIENT" class="form-control patient_1" style="width: 41%;" oninput="this.value = this.value.toUpperCase()" required>
+                                            <input placeholder="AMOUNT/TRANSMITTAL" class="form-control amount" onkeyup="validateAmount(this)" oninput="checkAmount($(this), $(this).val())" style="width: 50%;" required>
                                         </div>
-                                        <input placeholder="PATIENT" onclick="checkControlNo(this)" class="form-control patient_2" style="width: 41%; margin-top: 5px;" oninput="this.value = this.value.toUpperCase()">
+                                        <input placeholder="PATIENT" class="form-control patient_2" style="width: 41%; margin-top: 5px;" oninput="this.value = this.value.toUpperCase()">
                                     </div>
                                 </div>
                                 <div style="display: flex; justify-content: flex-end; margin-top: 5%; margin-bottom: 5%;">
@@ -263,14 +275,20 @@
         </div>
     </div>
 </div>
+<div class="loading-container"></div>
 @include('modal')
 @endsection
 @section('js')
-
+<script src="{{ asset('admin/vendors/sweetalert2/sweetalert2.js?v=1') }}"></script>
 <script src="{{ asset('admin/vendors/daterangepicker-master/moment.min.js?v=1') }}"></script>
 <script src="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.js?v=1') }}"></script>
-
 <script>
+    $('.submit_btn').on('click', function(){
+        $('#update_predv').modal('hide');
+        $('#create_predv').modal('hide');
+        $('.loading-container').css('display', 'block');
+        $('.loading-container').html(loading);
+    });
 
     function viewV1(id) {
         $('.pre_body').empty();
@@ -374,9 +392,12 @@
     }
 
     function error(){
-        Lobibox.alert('error', {
-            size: 'mini',
-            msg: 'Select facility first!'
+        Swal.fire({
+            icon: "error",
+            title: "No facility selected!",
+            text: "Select facility first!",
+            // timer: 1000,
+            // showConfirmButton: false 
         });
     }
     
@@ -386,9 +407,10 @@
         var check_vat = $('.facility_id').find(':selected').attr('datavat');
 
         if(check_vat == 0){
-            Lobibox.alert('error', {
-                size: 'mini',
-                msg: 'Please add vat and ewt first!'
+            Swal.fire({
+                icon: "error",
+                title: "No VAT and EWT added",
+                text: "Please add vat and ewt first!"
             });
             $('.facility_id').val('').trigger('change');
         }else if(check_vat == 1){
@@ -1008,10 +1030,12 @@
                 saa_total = saa_total.toFixed(2);
             
                 if(saa_total != parseFloat(total_amount.replace(/,/g, ''))){
-                    Lobibox.alert('error',{
-                        size: 'mini',
-                        msg: 'Mismatch amount, kindly check!'
+                    Swal.fire({
+                        icon: "error",
+                        title: "Mismatch Amount!",
+                        text: "Kindly check added amount!"
                     });
+                    
                     $(proponent_clone).find('.saa_clone').find('.saa_amount').val('');
                     hasErrors = true; // Set error flag
                     return false;
@@ -1070,6 +1094,7 @@
                         Lobibox.notify('success', {
                             msg: "Successfully created pre_dv!",
                         });
+                        
                         location.reload();
                     },
                     error: function (error) {
