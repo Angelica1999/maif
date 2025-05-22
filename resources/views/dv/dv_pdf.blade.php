@@ -225,7 +225,7 @@
                             <td style="border-right:1px solid black; width:12%; padding:5px">Printed Name</td>
                             <td style="border-right:1px solid black; width:38%; padding:5px"><b>ANGIELINE T. ADLAON, CPA, MBA</td>
                             <td style="border-right:1px solid black; width:12%; padding:5px">Printed Name</td>
-                            <td style="border-right:1px solid black; width:38%; padding:5px"><b>JAIME S. BERNADAS, MD, MGM, CESO III</td>
+                            <td style="border-right:1px solid black; width:38%; padding:5px"><b>JOSHUA G. BRILLANTES, MD, MPH, CESO IV</td>
                         </tr>
                         <tr class="header" style="border: 1px solid black; border-top:0px;">
                             <td style="border-right:1px solid black; width:12%;">Position</td>
