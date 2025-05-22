@@ -26,7 +26,7 @@
                             <div class="input-group-append">
                                 <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
                                 <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
-                                <button type="button" class="btn btn-success" data-toggle="modal" href="#create_predv" style="display: inline-flex; align-items: center; border-radius: 0;"><img src="\maif\public\images\icons8_create_16.png" style="margin-right: 5px;"><span style="vertical-align: middle;">Create</span></button>      
+                                <button type="button" class="btn btn-success" data-toggle="modal" href="#create_predv" style="width:95px; display: inline-flex; align-items: center; border-radius: 0;"><img src="\maif\public\images\icons8_create_16.png" style="margin-right: 5px;"><span style="vertical-align: middle;">Create</span></button>      
                                 <button type="submit" value="filt" style="display:none; background-color:green; color:white; width:95px;" name="filt_dv" id="filt_dv" class="btn btn-xs"><i class="typcn typcn-filter menu-icon"></i>&nbsp;&nbsp;&nbsp;Filter</button>
                             </div>
                         </div>
@@ -192,10 +192,10 @@
                                             <i class="typcn typcn-plus menu-icon control_clone_btn" style="width:40px;background-color:blue; color:white;border: 1px; padding: 2px;"></i>
                                         </div>
                                         <div style="display: flex; justify-content: space-between;">
-                                            <input placeholder="PATIENT" class="form-control patient_1" style="width: 41%;" oninput="this.value = this.value.toUpperCase()" required>
-                                            <input placeholder="AMOUNT/TRANSMITTAL" class="form-control amount" onkeyup="validateAmount(this)" oninput="checkAmount($(this), $(this).val())" style="width: 50%;" required>
+                                            <input placeholder="PATIENT" class="form-control patient_1" onclick="checkControlNo(this)" style="width: 41%;" oninput="this.value = this.value.toUpperCase()" required>
+                                            <input placeholder="AMOUNT/TRANSMITTAL" class="form-control amount" onclick="checkControlNo(this)" onkeyup="validateAmount(this)" oninput="checkAmount($(this), $(this).val())" style="width: 50%;" required>
                                         </div>
-                                        <input placeholder="PATIENT" class="form-control patient_2" style="width: 41%; margin-top: 5px;" oninput="this.value = this.value.toUpperCase()">
+                                        <input placeholder="PATIENT" onclick="checkControlNo(this)" class="form-control patient_2" style="width: 41%; margin-top: 5px;" oninput="this.value = this.value.toUpperCase()">
                                     </div>
                                 </div>
                                 <div style="display: flex; justify-content: flex-end; margin-top: 5%; margin-bottom: 5%;">
@@ -722,9 +722,10 @@
         return cons;
     }
 
-    $(document).on('input', '.control_no', function(){
-        var control_clone = $(this).closest('.control_clone');
+    function checkControlNo(data){
+        var control_clone = $(data).closest('.control_clone');
         var control_no = $(control_clone).find('.control_no').val();  
+        console.log('control_no', control_no);
         var cons = controls();
         var index = cons.findIndex(item => item === control_no);
         if (index > -1) {
@@ -737,7 +738,24 @@
             // $(control_clone).find('.control_no').val('');
             return false;
         }
-    });
+    }
+
+    // $(document).on('input', '.control_no', function(){
+    //     var control_clone = $(this).closest('.control_clone');
+    //     var control_no = $(control_clone).find('.control_no').val();  
+    //     var cons = controls();
+    //     var index = cons.findIndex(item => item === control_no);
+    //     if (index > -1) {
+    //         cons.splice(index, 1); 
+    //     }            
+    //     var exist = existing_control.find(item => item === control_no);
+
+    //     if (cons.includes(control_no) || exist) {
+    //         alert('Control no ' +control_no+ ' existed already!')
+    //         // $(control_clone).find('.control_no').val('');
+    //         return false;
+    //     }
+    // });
 
     $(document).on('input', '.amount', function(){
         var p_clone = $(this).closest('.proponent_clone');
