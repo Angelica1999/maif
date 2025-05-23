@@ -242,7 +242,7 @@
                         <input class="form-control grand_total" name="grand_total" style="width: 48%; text-align: center;" placeholder="GRAND TOTAL" readonly>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn-sm btn-secondary" data-dismiss="modal">CLOSE</button>
+                        <button type="button" class="btn-sm btn-secondary crt_btn" data-dismiss="modal" onclick="this.blur();">CLOSE</button>
                         <button type="submit" class="btn-sm btn-success submit_btn">SUBMIT</button>
                     </div>
                 </form>
@@ -291,6 +291,12 @@
 <script src="{{ asset('admin/vendors/daterangepicker-master/moment.min.js?v=1') }}"></script>
 <script src="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.js?v=1') }}"></script>
 <script>
+    var btn_val = 0;
+
+    $('.crt_btn').on('click', function(){
+        btn_val = 1;
+    });
+
     $('.submit_btn').on('click', function(){
         // $('#update_predv .select2').select2('close');
         // $('#update_predv').find(':focus').blur();
@@ -322,6 +328,7 @@
         $.get("{{ url('transmittal/details').'/' }}" +trans_id+'/'+f_id, function(result){
             $('.fac_control').html(result);
             getGrand();
+            getGrandFee();
         });
     }
 
@@ -821,69 +828,68 @@
     }
 
     function autoDeduct(element){
-        var amountValue = parseFloat(element.closest('.saa_clone').find('.saa_amount').val().replace(/,/g, '')) || 0;
-        console.log('samountValue', amountValue);
-        var w_pro = element.closest('.proponent_clone');
-        var m_amount = 0;
-        w_pro.find('.saa_amount').each(function(){
-            var amount = $(this).val().replace(/,/g, ''); 
-            m_amount += parseFloat(amount) || 0;
-        });
-        var w_saa = element.closest('.saa_clone');
-        var w_amount = w_saa.find('.saa_amount');
-        var w_total = element.closest('.card').find('.total_amount');
-        var amount_overall = parseFloat((w_total.val() || "0").replace(/,/g, ''));
 
-        var dataval = element
-            .closest('.saa_clone')
-            .find('.saa_id')
-            .find(':selected')
-            .attr('dataval')|| "0";
-        var saa_rem = parseFloat(dataval.replace(/,/g, ''));
-        var total_result = amount_overall - (m_amount - amountValue);
-        console.log('amount_overall',amount_overall);
-        console.log('m_amount', m_amount);
-        console.log('total_result', total_result);
+        if(btn_val == 0){
+            var amountValue = parseFloat(element.closest('.saa_clone').find('.saa_amount').val().replace(/,/g, '')) || 0;
+            var w_pro = element.closest('.proponent_clone');
+            var m_amount = 0;
+            w_pro.find('.saa_amount').each(function(){
+                var amount = $(this).val().replace(/,/g, ''); 
+                m_amount += parseFloat(amount) || 0;
+            });
+            var w_saa = element.closest('.saa_clone');
+            var w_amount = w_saa.find('.saa_amount');
+            var w_total = element.closest('.card').find('.total_amount');
+            var amount_overall = parseFloat((w_total.val() || "0").replace(/,/g, ''));
 
-        if(saa_rem >= total_result){
-            w_amount.val(total_result.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}));
-        }else{
-            w_amount.val(saa_rem.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}));
+            var dataval = element
+                .closest('.saa_clone')
+                .find('.saa_id')
+                .find(':selected')
+                .attr('dataval')|| "0";
+            var saa_rem = parseFloat(dataval.replace(/,/g, ''));
+            var total_result = amount_overall - (m_amount - amountValue);
 
-            Lobibox.alert('error',{
-                size : 'mini',
-                msg : 'Insufficient balance, would you like to use another saa?',
-                buttons : {
-                    yes: {
-                        'class': 'btn-xs btn-success',
-                        text: 'ADD',
-                        closeOnClick:true
+            if(saa_rem >= total_result){
+                w_amount.val(total_result.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}));
+            }else{
+                w_amount.val(saa_rem.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}));
+
+                Lobibox.alert('error',{
+                    size : 'mini',
+                    msg : 'Insufficient balance, would you like to use another saa?',
+                    buttons : {
+                        yes: {
+                            'class': 'btn-xs btn-success',
+                            text: 'ADD',
+                            closeOnClick:true
+                        },
+                        no: {
+                            'class': 'btn-xs btn-warning',
+                            text: 'NO',
+                            closeOnClick:true
+                        }
                     },
-                    no: {
-                        'class': 'btn-xs btn-warning',
-                        text: 'NO',
-                        closeOnClick:true
-                    }
-                },
-                callback: function (lobibox, type){
-                    if(type == 'yes'){
-                        $.get("{{ url('pre-dv/saa-clone').'/' }}" + f_id, function (result) {
+                    callback: function (lobibox, type){
+                        if(type == 'yes'){
+                            $.get("{{ url('pre-dv/saa-clone').'/' }}" + f_id, function (result) {
 
-                            var clonedElement = w_saa.last().after(result).next();
+                                var clonedElement = w_saa.last().after(result).next();
 
-                            clonedElement.find('.saa_clone_btn')
-                                .removeClass('saa_clone_btn btn-info typcn typcn-plus menu-icon')
-                                .addClass('saa_remove_btn btn-danger')
-                                .css('background-color', 'red')
-                                .text('')
-                                .html('<span class="typcn typcn-minus menu-icon"></span>');
-                        }); 
-                        // w_amount.val(saa_balance.toFixed(2));
+                                clonedElement.find('.saa_clone_btn')
+                                    .removeClass('saa_clone_btn btn-info typcn typcn-plus menu-icon')
+                                    .addClass('saa_remove_btn btn-danger')
+                                    .css('background-color', 'red')
+                                    .text('')
+                                    .html('<span class="typcn typcn-minus menu-icon"></span>');
+                            }); 
+                            // w_amount.val(saa_balance.toFixed(2));
+                        }
                     }
-                }
-            }); 
+                }); 
+            }
+            inputted_fundsource(w_pro);  
         }
-        inputted_fundsource(w_pro);  
     }
 
     $(document).on('input', '.saa_amount', function(){

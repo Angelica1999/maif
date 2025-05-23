@@ -1,7 +1,7 @@
 @include('maif.editable_style')
 
 <style>
-  .loading-container {
+    .loading-container {
         position: fixed;
         top: 50%;
         left: 50%;

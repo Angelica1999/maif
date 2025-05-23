@@ -37,7 +37,7 @@
                                 </div>
                                 <div style="display: flex; justify-content: space-between;">
                                     <input value="{{ $row2->patient_2 }}" class="form-control patient_2" style="width: 41%; margin-top: 5px;" oninput="this.value = this.value.toUpperCase()">
-                                    <input class="form-control prof_fee" onkeyup="validateAmount(this)" value="{{ $row2->prof_fee? number_format(str_replace(',','',$row2->prof_fee), 2, '.',','):0 }}" style="width: 50%; margin-top: 5px;">
+                                    <input class="form-control prof_fee" onkeyup="validateAmount(this)" value="{{ $row2->prof_fee? number_format(str_replace(',','',$row2->prof_fee), 2, '.',','):'' }}" style="width: 50%; margin-top: 5px;">
                                 </div>
                             </div>
                         @endforeach
@@ -112,9 +112,7 @@
             },
             templateSelection: function (data) {
                 return data.text;
-            },
-            tags: true,
-            placeholder: "SELECT SAA"
+            }
         });
     });
 </script>
