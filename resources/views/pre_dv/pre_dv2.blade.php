@@ -42,7 +42,7 @@ use App\Models\TrackingDetails;
                         <thead>
                             <tr>
                                 <th style="padding:5px; min-width:300px"></th>
-                                <th style="width:130px">
+                                <th style="width:140px">
                                     <span onclick="exclude_all()" style="color: #007BFF; cursor: pointer;" 
                                         onmouseover="this.style.color='#0056b3'" 
                                         onmouseout="this.style.color='#007BFF'">

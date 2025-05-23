@@ -70,9 +70,9 @@
 </style>
 <form  method="post" action="{{ route('dv_new.save') }}" id ="new_form"> 
     @csrf   
-    <input type="hidden" name="id" value="{{$result->id}}">
-    <input type="hidden" name="extension_id" value="{{$result->id}}">
-    <input type="hidden" class="new_dv_id" value="{{$new_dv?$new_dv->route_no :0}}">
+    <input type="hidden" name="id" value="{{ $result->id }}">
+    <input type="hidden" name="extension_id" value="{{ $result->id }}">
+    <input type="hidden" class="new_dv_id" value="{{ $new_dv?$new_dv->route_no :0 }}">
     <div class="clearfix"></div>
         <div class="new-times-roman table-responsive">
           <div class="container-fluid">
@@ -136,7 +136,7 @@
                             <td height=4% width =11.7%><b> Payee</td>
                             <td style="width:29%; border-left: 0 "><b> 
                                 <input type="hidden" id ="for_facility_id">
-                                <input id="facilityDropdown" name="facilityname" value="{{$result->facility->name}}" style="margin-left:5px;width:260px;" class="form-control" readonly>
+                                <input id="facilityDropdown" name="facilityname" value="{{ $result->facility->name }}" style="margin-left:5px;width:260px;" class="form-control" readonly>
                             </td>
                             <td style="width:28%; border-left: 0 " >
                                 <span?>Tin/Employee No. :</span>
@@ -150,7 +150,7 @@
                         <tr>
                             <td style="height:30px;"width =12.3% ><b>Address</td>
                             <td style="width:88%; border-left: 0 "><b> 
-                              <p style="color:red;" id="facilityAddress"  class="ft15">{{$result->facility->address}}</p>
+                              <p style="color:red;" id="facilityAddress"  class="ft15">{{ $result->facility->address }}</p>
                               <input type="hidden" name="facilityAddress" id="facilitaddress"></td>
                         </tr>
                     </table>
@@ -167,36 +167,42 @@
                                 Assistance for Indigent Patient Program for
                                 <span id="hospitalAddress" name="hospitalname" style="color:red;"></span>
                                 per billing statement dated to 
-                                <input type="month" name="date_from" style="width: 110px; height: 28px; font-size: 8pt;" value="{{$new_dv ? date('Y-m', strtotime($new_dv->date_from)) : ''}}" required>
-                                <input type="month" name="date_to" style="width: 110px; height: 28px; font-size: 8pt;" value="{{$new_dv && $new_dv->date_to ? date('Y-m', strtotime($new_dv->date_to)) : ''}}">
+                                <input type="month" name="date_from" style="width: 110px; height: 28px; font-size: 8pt;" value="{{ $new_dv ? date('Y-m', strtotime($new_dv->date_from)) : '' }}" required>
+                                <input type="month" name="date_to" style="width: 110px; height: 28px; font-size: 8pt;" value="{{ $new_dv && $new_dv->date_to ? date('Y-m', strtotime($new_dv->date_to)) : '' }}">
                                 in the amount of:</p><br>
                                     <div style="display: flex; align-items: center; flex-wrap: wrap;">
                                         <?php $amount = 0;?>
                                         @foreach($fundsources as $row)
-                                            <input value="{{$row['saa']}}" name="saa" style="width: 200px; height: 42px; margin-bottom:5px; margin-left:5%" readonly>
-                                            <input value="{{number_format(str_replace(',','',$row['amount']), 2, '.', ',')}}" name="amount" style="width:120px; height: 42px; margin-bottom:5px; margin-left:1%" class="ft15" readonly>
-                                            <input value="{{number_format(str_replace(',','',$row['vat']), 2, '.', ',')}}" name="vat" style="margin-left: 8px; width: 80px; height: 42px; margin-bottom:5px" readonly>
-                                            <input value="{{number_format(str_replace(',','',$row['ewt']), 2, '.', ',')}}" name="ewt" style="width: 80px; height: 42px; margin-bottom:5px; margin-left:1%" readonly>
+                                            <input value="{{ $row['saa'] }}" name="saa" style="width: 200px; height: 42px; margin-bottom:5px; margin-left:5%" readonly>
+                                            <input value="{{ number_format(str_replace(',','',$row['amount']), 2, '.', ',') }}" name="amount" style="width:120px; height: 42px; margin-bottom:5px; margin-left:1%" class="ft15" readonly>
+                                            <input value="{{ number_format(str_replace(',','',$row['vat']), 2, '.', ',') }}" name="vat" style="margin-left: 8px; width: 80px; height: 42px; margin-bottom:5px" readonly>
+                                            <input value="{{ number_format(str_replace(',','',$row['ewt']), 2, '.', ',') }}" name="ewt" style="width: 80px; height: 42px; margin-bottom:5px; margin-left:1%" readonly>
                                             <?php $amount += $row['amount']; ?>
                                         @endforeach 
                                     </div>
                                 <br>
                                 <br>
                                 <div>
+                                    <?php
+                                        $data_vat = $result->prof_fee !== null
+                                            ? $result->prof_fee
+                                            : ($info->vat > 3 ? $amount / 1.12 : $amount);
+                                        $vat_ewt = number_format((($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100) + $data_vat * $info->vat / 100, 2,'.',',');
+                                    ?>
                                     <span style="margin-left:20px" class="saa">Vat : </span>
-                                    <input type="text" name="in_vat" value="{{(int)$info->vat}}" id="vat" style="margin-left:32px;width:40px; height: 25px;" oninput="" readonly>
-                                    <input style="width:80px; height: 25px;" name="vat_val" value="{{number_format((($info->vat > 3)?$amount / 1.12 : $amount),2,'.',',')}}">
-                                    <input name="vat_d" value="{{number_format((($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100),2,'.',',')}}" style="width:100px; height: 25px; font-size: 8pt" readonly>
+                                    <input type="text" name="in_vat" value="{{ (int)$info->vat }}" id="vat" style="margin-left:32px;width:40px; height: 25px;" oninput="" readonly>
+                                    <input style="width:80px; height: 25px;" name="vat_val" value="{{ number_format($data_vat ,2,'.',',') }}">
+                                    <input name="vat_d" value="{{ number_format($data_vat * $info->vat / 100,2,'.',',') }}" style="width:100px; height: 25px; font-size: 8pt" readonly>
                                 </div><br>
                                 <div padding-top:10px>
                                     <span style="margin-left:19.5px; margin-top:10px;" class="saa">Ewt : </span>
-                                    <input value="{{(int)$info->Ewt}}" name="in_ewt" style="margin-left:31px;width:40px; height: 25px;" readonly>
+                                    <input value="{{ (int)$info->Ewt }}" name="in_ewt" style="margin-left:31px;width:40px; height: 25px;" readonly>
                                     <input style="margin-left:0px; width:80px; height: 25px;" name="ewt_val" value="{{number_format((($info->vat > 3)?$amount / 1.12 : $amount),2,'.',',')}}">
-                                    <input name="ewt_d" value="{{number_format((($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100),2,'.',',')}}" style="width:100px; height: 25px; font-size: 8pt" readonly>
+                                    <input name="ewt_d" value="{{ number_format((($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100),2,'.',',') }}" style="width:100px; height: 25px; font-size: 8pt" readonly>
                                 </div><br><br>
                                 <div>
                                     <span class="saa">Ref No:</span>
-                                    <input name="control_no" value="{{$control}}" style="width:185px; height: 28px;" readonly>
+                                    <input name="control_no" value="{{ $control }}" style="width:185px; height: 28px;" readonly>
                                 </div>
 
                                 <br><br>
@@ -207,14 +213,17 @@
                             <td style="width:14%; border-left: 0 " ></td>
                             <td style="width:14%; border-left: 0; vertical-align:bottom" class= "header" >
                                 <p id="total_amount" style=" margin-top:10px">{{ number_format($amount, 2,'.',',') }}</p>
-                                <input name="total_amount" type="hidden" value="{{$amount}}">
+                                <input name="total_amount" type="hidden" value="{{ $amount }}">
                                 <input type="hidden" name="total">
                                 <br><br><br><br><br>
-                                <p>{{number_format(((($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100) + (($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100)),2,'.',',')}}</p>
+                                <p>
+                                    {{ $vat_ewt }}
+                                    <!-- {{ number_format(((($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100) + (($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100)),2,'.',',') }} -->
+                                </p>
                                 <br><br><br><br><br>
                                 <input type="hidden" name="totalDeduction" id="totalDeductionInput" class="ft15 totalDeduction">
                                 <span style="text-align:center;">______________</span>
-                                <p style="">{{ number_format(($amount - ((($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100) + (($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100))),2,'.',',')}}</p>
+                                <p style="">{{ number_format($amount - str_replace(',','',$vat_ewt) ,2,'.',',') }}</p>
                             </td>
                           </tr>
                     </table>
@@ -266,8 +275,8 @@
                             </td>
                             <td style="width:20%; border-left: 0 ; text-align:right; vertical-align:top" >
                               <br><br><br>
-                              <span>{{ number_format((($info->vat > 3) ? $amount / 1.12 * $info->vat / 100 : $amount * $info->vat / 100) + (($info->vat > 3) ? $amount / 1.12 * $info->Ewt / 100 : $amount * $info->Ewt / 100), 2, '.',',') }}</span><br>
-                              <span>{{ number_format(($amount - ((($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100) + (($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100))), 2, '.',',')}}</span>
+                              <span>{{ $vat_ewt }}</span><br>
+                              <span>{{ number_format($amount - str_replace(',','',$vat_ewt) ,2,'.',',') }}</span>
                             </td>
                           </tr>
                     </table>
