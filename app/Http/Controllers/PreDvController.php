@@ -692,11 +692,13 @@ class PreDvController extends Controller
         $decodedData = urldecode($request->data);
         $all_data = json_decode($decodedData, true);
         $grand_total = $request->grand_total;
+        $grand_fee = $request->grand_fee;
         $facility_id = $request->facility_id;
 
         $pre_dv = new PreDV();
         $pre_dv->facility_id = $facility_id;
         $pre_dv->grand_total = (float) str_replace(',', '', $grand_total);
+        $pre_dv->prof_fee = (float) str_replace(',', '', $grand_fee);
         $pre_dv->created_by = Auth::user()->userid;
         $pre_dv->trans_id =  $request->transmittal_id ? implode(',', $request->transmittal_id) : null;
         $pre_dv->save();
@@ -722,6 +724,7 @@ class PreDvController extends Controller
                     $controls->patient_2 = $row['patient_2'];
                 }
                 $controls->amount = (float) str_replace(',', '', $row['amount']);
+                $controls->prof_fee = (float) str_replace(',', '', $row['prof_fee']);
                 $controls->save();
             }
 
@@ -939,12 +942,14 @@ class PreDvController extends Controller
         $all_data = json_decode($decodedData, true);
         $id = $request->pre_id;
         $grand_total = (float) str_replace(',','',$request->grand_total);
+        $grand_fee = (float) str_replace(',','',$request->grand_fee);
         $facility_id = $request->facility_id;
         $pre_dv = PreDV::where('id', $id)->first();
 
         if ($pre_dv) {
-            $pre_dv->facility_id = $request->facility_id;
-            $pre_dv->grand_total = str_replace(',', '', $request->grand_total);
+            $pre_dv->facility_id = $facility_id;
+            $pre_dv->grand_total = $grand_total;
+            $pre_dv->prof_fee = $grand_fee;
             $pre_dv->save();
             
             $extension = PreDVExtension::where('pre_dv_id', $id)->pluck('id')->toArray();
@@ -974,6 +979,7 @@ class PreDvController extends Controller
                         $controls->patient_2 = $row['patient_2'];
                     }
                     $controls->amount = (float) str_replace(',', '', $row['amount']);
+                    $controls->prof_fee = (float) str_replace(',', '', $row['prof_fee']);
                     $controls->save();
                 }
     
@@ -1001,6 +1007,7 @@ class PreDvController extends Controller
             $all_data = json_decode($decodedData, true);
             $id = $request->pre_id;
             $grand_total = (float) str_replace(',','',$request->grand_total);
+            $grand_fee = (float) str_replace(',','',$request->grand_fee);
             $facility_id = $request->facility_id;
             $pre_dv = PreDV::where('id', $id)->first();
 
@@ -1008,7 +1015,8 @@ class PreDvController extends Controller
 
             if ($pre_dv) {
                 $pre_dv->facility_id = $request->facility_id;
-                $pre_dv->grand_total = str_replace(',', '', $request->grand_total);
+                $pre_dv->grand_total = $grand_total;
+                $pre_dv->prof_fee = $grand_fee;
                 $pre_dv->save();
                 
                 $extension = PreDVExtension::where('pre_dv_id', $id)->pluck('id')->toArray();
@@ -1045,6 +1053,7 @@ class PreDvController extends Controller
                             $controls->patient_2 = $row['patient_2'];
                         }
                         $controls->amount = (float) str_replace(',', '', $row['amount']);
+                        $controls->prof_fee = (float) str_replace(',', '', $row['prof_fee']);
                         $controls->save();
                     }
         

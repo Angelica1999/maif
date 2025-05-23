@@ -205,9 +205,12 @@
                                         </div>
                                         <div style="display: flex; justify-content: space-between;">
                                             <input placeholder="PATIENT" class="form-control patient_1" style="width: 41%;" oninput="this.value = this.value.toUpperCase()" required>
-                                            <input placeholder="AMOUNT/TRANSMITTAL" class="form-control amount" onkeyup="validateAmount(this)" oninput="checkAmount($(this), $(this).val())" style="width: 50%;" required>
+                                            <input placeholder="AMOUNT/TRANSMITTAL" class="form-control amount" onkeyup="validateAmount(this)" style="width: 50%;" required>
                                         </div>
-                                        <input placeholder="PATIENT" class="form-control patient_2" style="width: 41%; margin-top: 5px;" oninput="this.value = this.value.toUpperCase()">
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <input placeholder="PATIENT" class="form-control patient_2" style="width: 41%; margin-top: 5px;" oninput="this.value = this.value.toUpperCase()">
+                                            <input placeholder="PROFESSIONAL FEE" class="form-control prof_fee" onkeyup="validateAmount(this)" style="width: 50%; margin-top: 5px;">
+                                        </div>
                                     </div>
                                 </div>
                                 <div style="display: flex; justify-content: flex-end; margin-top: 5%; margin-bottom: 5%;">
@@ -230,8 +233,13 @@
                             </div>
                         </div>
                     </div>
-                    <div style="display: flex; justify-content: flex-end; margin-top: 5%; margin-bottom:5%">
-                        <input class="form-control grand_total" name="grand_total" style="width: 50%; text-align: center;" placeholder="GRAND TOTAL" readonly>
+                    <!-- <div style="display: flex; justify-content: space-between; margin-top: 5%;">
+                        <label style="width: 48%; text-align: center;">GRAND TOTAL OF PROFESSIONAL FEE:</label>
+                        <label style="width: 48%; text-align: center;">GRAND TOTAL:</label>
+                    </div> -->
+                    <div style="display: flex; justify-content: space-between; margin-top: 5%; margin-bottom:5%;">
+                        <input class="form-control grand_fee" name="grand_fee" style="width: 48%; text-align: center;" placeholder="TOTAL PROFESSIONAL FEE" readonly>
+                        <input class="form-control grand_total" name="grand_total" style="width: 48%; text-align: center;" placeholder="GRAND TOTAL" readonly>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn-sm btn-secondary" data-dismiss="modal">CLOSE</button>
@@ -269,7 +277,7 @@
                 <h4 class="modal-title"><i class="fa fa-plus" style="margin-right:auto;"></i>DV ( new version )</h4>
                 <button type="button" class="close" id="exit" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" style="color:white;">&times;</span></button>
             </div>
-            <div class="pre_body" style="display: flex; flex-direction: column; align-items: center; padding:15px">
+            <div class="pre_body_dv" style="display: flex; flex-direction: column; align-items: center; padding:15px">
 
             </div>
         </div>
@@ -284,6 +292,8 @@
 <script src="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.js?v=1') }}"></script>
 <script>
     $('.submit_btn').on('click', function(){
+        // $('#update_predv .select2').select2('close');
+        // $('#update_predv').find(':focus').blur();
         $('#update_predv').modal('hide');
         $('#create_predv').modal('hide');
         $('.loading-container').modal('show');
@@ -297,11 +307,11 @@
     });
 
     function viewV1(id) {
-        $('.pre_body').empty();
-        $('.pre_body').html(loading);
+        $('.pre_body_dv').empty();
+        $('.pre_body_dv').html(loading);
 
         $.get("{{ url('pre-dv/v2/').'/' }}" + id, function(result) {
-            $('.pre_body').html(result);
+            $('.pre_body_dv').html(result);
         });
     }
 
@@ -690,10 +700,13 @@
         $('.grand_total').val(Number(grand_total.toFixed(2)).toLocaleString('en-US', { maximumFractionDigits: 2 }));
     }
 
-    function checkAmount(element, value){
-        var element = element.closest
+    function getGrandFee(){
+        var grand_total = 0;
+        $('.prof_fee').each(function(){
+            grand_total += parseFloat(($(this).val()).replace(/,/g, '')) || 0;
+        });
+        $('.grand_fee').val(Number(grand_total.toFixed(2)).toLocaleString('en-US', { maximumFractionDigits: 2 }));
     }
-
 
     function cloneProponent(element){
         if(f_id){
@@ -753,7 +766,6 @@
     function checkControlNo(data){
         var control_clone = $(data).closest('.control_clone');
         var control_no = $(control_clone).find('.control_no').val();  
-        console.log('control_no', control_no);
         var cons = controls();
         var index = cons.findIndex(item => item === control_no);
         if (index > -1) {
@@ -785,6 +797,10 @@
     //     }
     // });
 
+    $(document).on('input', '.prof_fee', function(){
+        getGrandFee();
+    });
+
     $(document).on('input', '.amount', function(){
         var p_clone = $(this).closest('.proponent_clone');
         calculateAmount(p_clone);
@@ -805,10 +821,12 @@
     }
 
     function autoDeduct(element){
+        var amountValue = parseFloat(element.closest('.saa_clone').find('.saa_amount').val().replace(/,/g, '')) || 0;
+        console.log('samountValue', amountValue);
         var w_pro = element.closest('.proponent_clone');
         var m_amount = 0;
         w_pro.find('.saa_amount').each(function(){
-            var amount = $(this).val().replace(/,/g, ''); // Remove commas
+            var amount = $(this).val().replace(/,/g, ''); 
             m_amount += parseFloat(amount) || 0;
         });
         var w_saa = element.closest('.saa_clone');
@@ -822,7 +840,10 @@
             .find(':selected')
             .attr('dataval')|| "0";
         var saa_rem = parseFloat(dataval.replace(/,/g, ''));
-        var total_result = amount_overall - m_amount;
+        var total_result = amount_overall - (m_amount - amountValue);
+        console.log('amount_overall',amount_overall);
+        console.log('m_amount', m_amount);
+        console.log('total_result', total_result);
 
         if(saa_rem >= total_result){
             w_amount.val(total_result.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}));
@@ -924,6 +945,7 @@
         $(this).closest('.proponent_clone').remove();
         
         getGrand();
+        getGrandFee();
         getTransId();
     });
 
@@ -1003,6 +1025,7 @@
                     var patient_1 = $(control_clone).find('.patient_1').val();
                     var patient_2 = $(control_clone).find('.patient_2').val();
                     var amount = $(control_clone).find('.amount').val();
+                    var prof_fee = $(control_clone).find('.prof_fee').val() || 0;
                     var saa_number = $(control_clone).find('.saa_number').val();
                     var exist = existing_control.find(item => item.includes(control_no));
 
@@ -1010,7 +1033,8 @@
                         control_no : control_no,
                         patient_1 : patient_1,
                         patient_2 : patient_2,
-                        amount : amount
+                        amount : amount,
+                        prof_fee : prof_fee,
                     };
                     pro_clone.push(data);
                 });
@@ -1072,7 +1096,8 @@
                         data: encodedData,
                         transmittal_id: trans_ids,
                         facility_id: $('.facility_id').val(),
-                        grand_total: $('.grand_total').val()
+                        grand_total: $('.grand_total').val(),
+                        grand_fee: $('.grand_fee').val() || 0
                     },
                     success: function (response) {
 
@@ -1093,8 +1118,8 @@
                         data: encodedData,
                         facility_id: $('#facility_id').val(),
                         grand_total: $('#grand_total').val(),
+                        grand_fee: $('#grand_fee').val() || 0,
                         pre_id: $('#pre_id').val()
-
                     },
                     success: function (response) {
                         Lobibox.notify('success', {
@@ -1125,8 +1150,8 @@
                     data: encodedData,
                     facility_id: $('#facility_id').val(),
                     grand_total: $('#grand_total').val(),
+                    grand_fee: $('#grand_fee').val() || 0,
                     pre_id: $('#pre_id').val()
-
                 },
                 success: function (response) {
                     Lobibox.notify('success', {
@@ -1146,8 +1171,6 @@
                 }
             });
         }
-
-        
     });
 
 </script>

@@ -1,11 +1,11 @@
     @csrf
     <input type="hidden" class="status" value="1">
-    <input type="hidden" id="pre_id" value="{{$result->id}}" name="pre_id">
+    <input type="hidden" id="pre_id" value="{{ $result->id }}" name="pre_id">
     <div style="width: 100%; display:flex; justify-content: center;text-align:center;">
         <select class="select2 facility_id" style="width: 50%;" id="facility_id" name="facility_id" onchange="getFundsource($(this).val())" required>
             <option value=''>SELECT FACILITY</option>
             @foreach($facilities as $facility)
-              <option value="{{$facility->id}}" {{($result->facility->id == $facility->id)? 'selected': ''}}>{{$facility->name}}</option>
+              <option value="{{ $facility->id }}" {{ ($result->facility->id == $facility->id)? 'selected': '' }}>{{ $facility->name }}</option>
             @endforeach
         </select>
     </div>
@@ -18,7 +18,7 @@
                         <select style="width: 50%; margin-bottom: 10px;" class="select2 proponent" onchange="checkPros(this)" required>
                             <option value=''>SELECT PROPONENT</option>
                             @foreach($proponents as $proponent)
-                            <option value="{{$proponent->proponent}}" {{($row->proponent->proponent == $proponent->proponent)?'selected':'' }}>{{$proponent->proponent}}</option>
+                            <option value="{{ $proponent->proponent }}" {{ ($row->proponent->proponent == $proponent->proponent)?'selected':'' }}>{{$proponent->proponent}}</option>
                             @endforeach
                         </select>
                         <i onclick="cloneProponent($(this))" class="typcn typcn-plus menu-icon" style="width:40px; background-color:blue; color:white;border: 1px; padding: 2px;"></i>
@@ -29,18 +29,21 @@
                                 <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 4%;">
                                     <input type="hidden" class="saa_number" value="0">
                                     <input class="form-control control_no" onblur="checkControlNo(this)" style="text-align: center; width: 56%;" placeholder="CONTROL NUMBER" value="{{ $row2->control_no }}" oninput="this.value = this.value.toUpperCase()" required>
-                                    <i class="{{($index1 == 0)?'typcn typcn-plus menu-icon control_clone_btn': 'typcn typcn-minus menu-icon control_remove_btn' }}" style="width:40px; color:white;border: 1px; padding: 2px; {{($index1 == 0)?'background-color:blue' : 'background-color:red'}}"></i>
+                                    <i class="{{ ($index1 == 0)?'typcn typcn-plus menu-icon control_clone_btn': 'typcn typcn-minus menu-icon control_remove_btn' }}" style="width:40px; color:white;border: 1px; padding: 2px; {{($index1 == 0)?'background-color:blue' : 'background-color:red'}}"></i>
                                 </div>
                                 <div style="display: flex; justify-content: space-between;">
-                                    <input placeholder="PATIENT" class="form-control patient_1" style="width: 41%;" value="{{ $row2->patient_1 }}" oninput="this.value = this.value.toUpperCase()" required>
-                                    <input placeholder="AMOUNT PER TRANSMITTAL" class="form-control amount" value="{{number_format(str_replace(',','',$row2->amount), 2, '.',',')}}" onkeyup="validateAmount(this)" oninput="checkAmount($(this), $(this).val())" style="width: 50%;" required>
+                                    <input class="form-control patient_1" style="width: 41%;" value="{{ $row2->patient_1 }}" oninput="this.value = this.value.toUpperCase()" required>
+                                    <input class="form-control amount" value="{{ number_format(str_replace(',','',$row2->amount), 2, '.',',') }}" onkeyup="validateAmount(this)" style="width: 50%;" required>
                                 </div>
-                                <input placeholder="PATIENT" value="{{ $row2->patient_2 }}" class="form-control patient_2" style="width: 41%; margin-top: 5px;" oninput="this.value = this.value.toUpperCase()">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <input value="{{ $row2->patient_2 }}" class="form-control patient_2" style="width: 41%; margin-top: 5px;" oninput="this.value = this.value.toUpperCase()">
+                                    <input class="form-control prof_fee" onkeyup="validateAmount(this)" value="{{ $row2->prof_fee? number_format(str_replace(',','',$row2->prof_fee), 2, '.',','):0 }}" style="width: 50%; margin-top: 5px;">
+                                </div>
                             </div>
                         @endforeach
                     </div>
                     <div style="display: flex; justify-content: flex-end; margin-top: 5%; margin-bottom: 5%;">
-                        <input class="form-control total_amount" style="width: 60%; text-align: center;" value="{{number_format(str_replace(',','',$row->total_amount), 2, '.',',')}}" placeholder="TOTAL AMOUNT PER PROPONENT" readonly>
+                        <input class="form-control total_amount" style="width: 60%; text-align: center;" value="{{ number_format(str_replace(',','',$row->total_amount), 2, '.',',') }}" placeholder="TOTAL AMOUNT PER PROPONENT" readonly>
                     </div>
                     <?php $total_saa = number_format(str_replace(',','',$row->total_amount), 2, '.',','); ?>
                     @foreach($row->saas as $index => $row3)
@@ -82,8 +85,13 @@
             </div>
         @endforeach
     </div>
-    <div style="display: flex; justify-content: flex-end; margin-top: 5%; margin-bottom:5%">
-        <input class="form-control grand_total" name="grand_total" id="grand_total" style="width: 50%; text-align: center;" placeholder="GRAND TOTAL" value="{{ number_format(str_replace(',','',$result->grand_total), 2, '.',',') }}" readonly> 
+    <div style="display: flex; justify-content: space-between; margin-top: 5%;">
+        <input class="form-control grand_fee" name="grand_fee" id="grand_fee" style="width: 48%; text-align: center;" value="{{ $result->prof_fee ? number_format(str_replace(',','',$result->prof_fee), 2, '.',','):0 }}" readonly>
+        <input class="form-control grand_total" name="grand_total" id="grand_total" style="width: 50%; text-align: center;" value="{{ $result->grand_total ? number_format(str_replace(',','',$result->grand_total), 2, '.',',') : 0 }}" readonly> 
+    </div>
+    <div style="display: flex; justify-content: space-between; margin-bottom:5%; margin-top:1%">
+        <label style="width: 48%; text-align: center;" class="text-info">TOTAL PROFESSIONAL FEE</label>
+        <label style="width: 50%; text-align: center;" class="text-info">GRAND TOTAL</label>
     </div>
     <button type="submit" class="btn-sm btn-success updated_submit" style="display:none">SUBMIT</button>
 

@@ -148,11 +148,17 @@
                                         <td style="border-top:1px solid black;text-align: right; width:25%">{{ number_format($amount, 2, '.',',') }}</td>
                                     </tr>
                                 </table>
+                                <?php
+                                    $data_vat = $pre_dv->prof_fee !== null
+                                        ? $pre_dv->prof_fee
+                                        : ($info->vat > 3 ? $amount / 1.12 : $amount);
+                                    $vat_ewt = number_format((($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100) + $data_vat * $info->vat / 100, 2,'.',',');
+                                ?>
                                 <table style="width: 500px; border-collapse: collapse; margin-top:5px;">
                                     <tr>
                                         <td style="text-align: left;">{{ floor($info->vat) == 3 ? floor($info->vat) . '%' . ' ' . 'Percentage Tax' : floor($info->vat) . '%' . ' ' . 'VAT' }}</td>
-                                        <td style="text-align: right;">{{ number_format((($info->vat > 3)?$amount / 1.12 : $amount),2,'.',',') }}</td>
-                                        <td style="text-align: right;">{{ number_format((($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100),2,'.',',') }}</td>
+                                        <td style="text-align: right;">{{ number_format($data_vat,2,'.',',') }}</td>
+                                        <td style="text-align: right;">{{ number_format($data_vat * $info->vat / 100,2,'.',',') }}</td>
                                     </tr>
                                     <tr>
                                         <td style="text-align: left;">{{ floor($info->Ewt).'%'.' '.'EWT' }}</td>
@@ -162,7 +168,7 @@
                                 </table>
                                 <table style="width: 100%; border-collapse: collapse; margin-top:5px;">
                                     <tr>
-                                        <td style="text-align: left;" colspan="3">Control No:{{ $control}}</td>
+                                        <td style="text-align: left;" colspan="3">Control No:{{ $control }}</td>
                                     </tr>
                                     <tr>
                                         <td></td>
@@ -177,14 +183,15 @@
                                 $one = number_format((($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100),2,'.',',') ;
                                 $two = number_format((($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100),2,'.',',');
                                 $overall = number_format((str_replace(',', '', $one) + str_replace(',', '', $two)), 2, '.', ',');
-                                $rem = number_format((str_replace(',', '', $amount_here) - str_replace(',', '', $overall)), 2, '.', ',');
+                                // $rem = number_format((str_replace(',', '', $amount_here) - str_replace(',', '', $overall)), 2, '.', ',');
+                                $rem = number_format((str_replace(',', '', $amount_here) - str_replace(',', '', $vat_ewt)), 2, '.', ',');
                             ?>
                             <td style="border-right:1px solid black"></td>
                             <td style="border-right:1px solid black"></td>
                             <td style="text-align:center; vertical-align:bottom">
                                 <table style="width: 90%; border-collapse: collapse; margin-top:10px;">
                                     <tr rowspan="5"><td >{{ number_format($amount, 2, '.',',') }}</td></tr>
-                                    <tr rowspan="5"><td style="padding:20px">{{ $overall }}</td></tr>
+                                    <tr rowspan="5"><td style="padding:20px">{{ $vat_ewt }}</td></tr>
                                     <tr><td style="border-bottom:1px solid black;"></td></tr>
                                     <tr><td style="padding:2px">{{ $rem }}</td></tr>
                                 </table>
@@ -236,7 +243,7 @@
                                 <span>{{ number_format(($result?$result->accumulated:0),2,'.',',') }}</span>
                             </td>
                             <td style=" border-left: 0 ; text-align:right; vertical-align:top" >
-                                <br><br><span>{{ $overall }}</span><br>
+                                <br><br><span>{{ $vat_ewt }}</span><br>
                                 <span>{{ $rem }}</span>
                             </td>
                         </tr>
