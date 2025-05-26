@@ -720,24 +720,8 @@ class ProponentController extends Controller
 
         $patients = $query->get();
         $title = $pro[0]->proponent;
-        // $filename = $title.'.xls';
-        // header("Content-Type: application/xls");
-        // header("Content-Disposition: attachment; filename=$filename");
-        // header("Pragma: no-cache");
-        // header("Expires: 0");
-        // $table_body = "<tr>
-        //         <th>Patient Code</th>
-        //         <th>Name</th>
-        //         <th>Guaranteed Amount</th>
-        //         <th>Actual Amount</th>
-        //         <th>Facility</th>
-        //         <th>Created By</th>
-        //         <th>Created On</th>
-        //     </tr>";
-
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
-
         // Adjust column widths
         $sheet->getColumnDimension('A')->setWidth(2);  
         $sheet->getColumnDimension('B')->setWidth(50); 
@@ -747,6 +731,7 @@ class ProponentController extends Controller
         $sheet->getColumnDimension('F')->setWidth(60); 
         $sheet->getColumnDimension('G')->setWidth(30); 
         $sheet->getColumnDimension('H')->setWidth(20);  
+        $sheet->getColumnDimension('I')->setWidth(50);  
 
         $sheet->mergeCells("B1:D1");
         $richText1 = new RichText();
@@ -798,7 +783,13 @@ class ProponentController extends Controller
         $sheet->setCellValue('H3', $richText1);
         $sheet->getStyle('H3')->getAlignment()->setWrapText(true);
 
-        $sheet->getStyle('B3:H3')
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("REMARKS");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('I3', $richText1);
+        $sheet->getStyle('I3')->getAlignment()->setWrapText(true);
+
+        $sheet->getStyle('B3:I3')
             ->getAlignment()
             ->setHorizontal(Alignment::HORIZONTAL_CENTER)
             ->setVertical(Alignment::VERTICAL_CENTER);
@@ -815,15 +806,6 @@ class ProponentController extends Controller
                 $user = !Empty($row->encoded_by) ? $row->encoded_by->lname .', '.$row->encoded_by->fname : 
                         (!Empty($row->gl_user) ? $row->gl_user->lname.', '.$row->gl_user->fname : '');
                 $on = date('F j, Y', strtotime($row->created_at));
-                // $table_body .= "<tr>
-                //     <td style='vertical-align:top;'>$row->patient_code</td>
-                //     <td style='vertical-align:top;'>$name</td>
-                //     <td style='vertical-align:top;'>$guaranteed</td>
-                //     <td style='vertical-align:top;'>$actual</td>
-                //     <td style='vertical-align:top;'>$facility</td>
-                //     <td style='vertical-align:top;'>$user</td>
-                //     <td style='vertical-align:top;'>$on</td>
-                // </tr>";
                 $data [] = [
                     $row->patient_code,
                     $name,
@@ -831,7 +813,8 @@ class ProponentController extends Controller
                     $actual,
                     $facility,
                     $user,
-                    $on
+                    $on,
+                    $row->pat_rem
                 ];
             }
         }else{
@@ -860,8 +843,8 @@ class ProponentController extends Controller
             ],
         ];
         
-        $sheet->getStyle('B3:H' . (count($data) + 3))->applyFromArray($styleArray);
-        $sheet->getStyle('B4:H' . (count($data) + 3))->getAlignment()->setWrapText(true);
+        $sheet->getStyle('B3:I' . (count($data) + 3))->applyFromArray($styleArray);
+        $sheet->getStyle('B4:I' . (count($data) + 3))->getAlignment()->setWrapText(true);
 
         $sheet->getStyle('B4:C' . (count($data) + 3))
             ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);

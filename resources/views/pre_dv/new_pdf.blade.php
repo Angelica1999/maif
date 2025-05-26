@@ -147,11 +147,13 @@
                                         <td style="text-align: left; padding: 2px;font-weight:bold; width:80%">Total</td>
                                         <td style="border-top:1px solid black;text-align: right; width:20%">{{ number_format($amount, 2, '.',',') }}</td>
                                     </tr>
-                                </table>
+                                </table> 
                                 <?php
-                                    $data_vat = $pre_dv->prof_fee !== null
-                                        ? $pre_dv->prof_fee
-                                        : ($info->vat > 3 ? $amount / 1.12 : $amount);
+                                    if ($pre_dv->prof_fee !== null) {
+                                        $data_vat = ($info->vat > 3) ? $pre_dv->prof_fee / 1.12 : $pre_dv->prof_fee;
+                                    } else {
+                                        $data_vat = ($info->vat > 3) ? $amount / 1.12 : $amount;
+                                    } 
                                     $vat_ewt = number_format((($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100) + $data_vat * $info->vat / 100, 2,'.',',');
                                 ?>
                                 <table style="width: 500px; border-collapse: collapse; margin-top:5px;">

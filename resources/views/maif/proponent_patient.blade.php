@@ -1,5 +1,4 @@
 @include('maif.editable_style')
-
 <style>
   .loading-container {
         position: fixed;
@@ -57,7 +56,6 @@
 </style>
 @extends('layouts.app')
 @section('content')
-
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
@@ -117,12 +115,10 @@
                     </form>
                 </div>
             </div>
-           
             <h4 class="card-title">PROPONENT PATIENT</h4>
             <span class="card-description">
                 MAIF-IPP
             </span>
-            
             @if(count($patients) > 0)
             <div class="table-responsive" id ="patient_table_container">
                 <table class="table table-striped" id="patient_table">
@@ -236,7 +232,6 @@
                             <td>
                                 <button type="button" href="#patient_history" data-backdrop="static" style="border-radius:0; width:70px;background-color:#006BC4; color:white; font-size:11px" data-toggle="modal" class="btn btn-xs" onclick="populateHistory({{$patient->id}})"><small>Edit History</small></button>
                                 <button type="button" href="#get_mail" data-backdrop="static" data-toggle="modal" class="btn btn-xs" style="margin-top:1px; border-radius:0; width:70px;background-color:#005C6F; color:white; font-size:11px" onclick="populate({{$patient->id}})"><small>Mail History</small></button>
-                           
                                 <!-- <div style="white-space: nowrap;">
                                     <div style="float:left; display:inline-block;">
                                         <button type="button" href="#patient_history" data-backdrop="static" style="border-radius:0; width:60px; background-color:#006BC4; color:white;" data-toggle="modal" class="btn btn-sm" onclick="populateHistory({{$patient->id}})"><small>Patient</small></button>
