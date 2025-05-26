@@ -184,9 +184,11 @@
                                 <br>
                                 <div>
                                     <?php
-                                        $data_vat = $result->prof_fee !== null
-                                            ? $result->prof_fee
-                                            : ($info->vat > 3 ? $amount / 1.12 : $amount);
+                                        if ($result->prof_fee !== null) {
+                                            $data_vat = ($info->vat > 3) ? $result->prof_fee / 1.12 : $result->prof_fee;
+                                        } else {
+                                            $data_vat = ($info->vat > 3) ? $amount / 1.12 : $amount;
+                                        }                                        
                                         $vat_ewt = number_format((($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100) + $data_vat * $info->vat / 100, 2,'.',',');
                                     ?>
                                     <span style="margin-left:20px" class="saa">Vat : </span>

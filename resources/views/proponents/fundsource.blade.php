@@ -33,16 +33,17 @@
                     <div class="input-group">
                         <form method="GET" action="">
                             <div class="input-group">
-                                <select class="form-control data_filtering" name="data_filtering[]" multiple>
-                                    <option></option>
+                                <select class="form-control select2 data_filtering" style="width:300px; height:40px" name="data_filtering[]" multiple>
+                                    <option value=""></option>
                                     @foreach($proponents as $row)
                                         <option value="{{ $row[0]->id }}" {{ in_array($row[0]->id, $keyword) ? 'selected' : '' }}>
                                             {{ $row[0]->proponent }}
                                         </option>
                                     @endforeach
                                 </select>
+                                <button style="width:100px; border-radius:0; height:40px" class="btn btn-sm btn-info text-white" value="filtered" type="submit" name="filtered_btn"><i class="typcn typcn-filter menu-icon"></i>Filter</button>
                                 <div class="input-group-append">
-                                    <select class="data_sorting" name="data_sorting" style="min-width:200px">
+                                    <select class="data_sorting" name="data_sorting" style="min-width:200px; height:40px">
                                         <option></option>
                                         <option value="1" {{ $filter_keyword == 1 ? 'selected' : ''}}>Proponent</option>
                                         <option value="2" {{ $filter_keyword == 2 ? 'selected' : ''}}>Allocated Funds</option>
@@ -53,7 +54,6 @@
                                         <option value="7" {{ $filter_keyword == 7 ? 'selected' : ''}}>Remaining Funds</option>
                                     </select>
                                     <button style="width:100px; border-radius:0; height:40px" class="btn btn-sm btn-success text-white" value="{{ $sort }}" type="submit" name="sorting_btn"><i class="typcn typcn-filter menu-icon"></i>Sort</button>
-                                    <button style="width:100px; border-radius:0; height:40px" class="btn btn-sm btn-info text-white" value="filtered" type="submit" name="filtered_btn"><i class="typcn typcn-filter menu-icon"></i>Filter</button>
                                     <button style="width:100px; border-radius:0; height:40px" class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
                                 </div>
                             </div>
@@ -151,7 +151,7 @@
             </div>
             <div class="modal-footer budget_track_footer">
                 <button style="background-color:lightgray; border-radius:0px" class="btn btn-default" data-dismiss="modal">CLOSE</button>
-                <a href="#" id="printButton" style="border-radius:0px" class="btn btn-success">Print</a>
+                <a href="#" id="printButton" style="border-radius:0px" class="btn btn-success">EXCEL</a>
                 <button style="display:none; border-radius:0px" class="btn btn-info filter_btn" onclick="filterData()">FILTER</button>
                 <button href="#forward_patient" data-toggle="modal" class="btn btn-warning forward_btn" style="display:none; border-radius:0px">Forward</button>
             </div>
@@ -264,16 +264,15 @@
         $('.funds_type').val(1);
     }
 
-    $('.data_sorting').select2({
-        // tags:true,
-        placeholder:"Select data to sort",
-        allowClear: true
-    });
-
-    $('.data_filtering').select2({
-        tags:true,
-        placeholder:"Select proponent to filter",
-        allowClear: true
+    $(document).ready(function() {
+        $('.data_sorting').select2({
+            placeholder:"Select data to sort",
+            allowClear: true
+        });
+        $('.data_filtering').select2({
+            placeholder:"Select proponent to filter",
+            allowClear: true
+        });
     });
 
     function subtracts(){

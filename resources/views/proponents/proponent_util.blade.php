@@ -20,8 +20,8 @@
         <!-- GL LISTS Tab Content -->
         <div class="tab-pane fade show active" style="border:1px solid gray;" id="custom-gl-lists" role="tabpanel" aria-labelledby="custom-gl-lists-tab">
             <div class="" style="">
-                <table class="table table-list table-hover table-striped" id="track_details">
-                    <thead style="position: sticky; top: 0; background-color: white; z-index: 1;">
+                <table class="table table-list table-hover table-striped" id="track_details" style="border:1px solid black">
+                    <thead style="position: sticky; top: 0; background-color: white; z-index: 1; border:1px solid black">
                         <tr style="font-weight:bold">
                             <th>CODE</th>
                             <th>
@@ -41,8 +41,8 @@
                                     </i>
                                 </div>
                             </th>
-                            <th>GUARANTEED AMOUNT</th>
-                            <th>
+                            <th style="width:200px">GUARANTEED AMOUNT</th>
+                            <th style="width:300px">
                                 <select id="facility" class="form-control facility" style="text-align:center" multiple onchange="displayFilter()">
                                     <option></option>
                                     <option value="all">All</option>
@@ -56,7 +56,8 @@
                                 </select>
                             </th>
                             <th>CREATED BY</th> 
-                            <th>CREATED ON</th>
+                            <th style="width:120px">CREATED ON</th>
+                            <th style="width:200px">REMARKS</th> 
                             <th></th>
                             <th class="text-info" style="text-align:center;" onclick="checkAll()">Select All</th>
                         </tr>
@@ -78,6 +79,7 @@
                                 <td>{{ $row->encoded_by ? $row->encoded_by->lname.', '.$row->encoded_by->fname : 
                                     ($row->gl_user? $row->gl_user->lname.', '.$row->gl_user->fname:'') }}</td>
                                 <td>{{ date('F j, Y', strtotime($row->created_at)) }}</td>
+                                <td>{{ $row->pat_rem }}</td>
                                 <td>
                                     @if($row->transd_id == null || $row->transd_id == '')
                                         <a class="text-danger" onclick="deletePatient({{$row->id}})">remove</a>
