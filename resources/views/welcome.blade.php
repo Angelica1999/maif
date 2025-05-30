@@ -2,8 +2,8 @@
 
 @section('content')
     <div class="text-center">
-        <h4>MAIFIPP</h4>
-        <h6 class="font-weight-light">MAIFIPP System for Private Hospital</h6>
+        <h3>MAIFIPP</h3>
+        <h5 class="font-weight-light">Medical Assistance to Indigent and Financially - Incapacitated Patients for Private Hospitals</h5>
     </div>
     <form class="pt-3" method="POST" action="{{ route('login') }}">
         @csrf

@@ -148,12 +148,19 @@ class FundSourceController extends Controller
                 ->select('users.section')
                 ->first();
 
+        $proponents = Proponent::select( DB::raw('MAX(id) as id'), DB::raw('MAX(proponent) as proponent'),
+            DB::raw('MAX(proponent_code) as proponent_code'))
+            ->groupBy('proponent')
+            ->get(); 
+
         return view('fundsource.fundsource',[
             'fundsources' => $fundsources,
             'keyword' => $request->keyword,
             'utilizations' => $utilizations,
+            'proponents' => $proponents,
             'facilities' => Facility::get(),
-            'user' => $user
+            'user' => $user,
+            'funds_list' => Fundsource::select('id', 'saa')->get()
         ]);
     }
 

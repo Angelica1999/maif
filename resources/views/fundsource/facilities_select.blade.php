@@ -24,5 +24,7 @@
         </div>
     </div>
 <script>
-    $("#"+"{{ $uniqueCode }}").select2();
+    $("#"+"{{ $uniqueCode }}").select2({
+        placeholder:"Select Facilties"
+    });
 </script>

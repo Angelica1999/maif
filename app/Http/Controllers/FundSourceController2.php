@@ -109,31 +109,87 @@ class FundSourceController2 extends Controller{
     }
 
     public function createfundSource2(Request $request){
+        // $funds = $request->input('allocated_funds');
+        // $saas = $request->input('saa');  
+        // $cost_value = $request->input('admin_cost');
+        // foreach($funds as $index => $fund){
+        //     $saa_ex = Fundsource::where('saa', $saas[$index])->first();
 
-        $funds = $request->input('allocated_funds');
-        $saas = $request->input('saa');
-        $cost_value = $request->input('admin_cost');
-        foreach($funds as $index => $fund){
-            $saa_ex = Fundsource::where('saa', $saas[$index])->first();
-          // return $fund ; 
-            if($saa_ex){
-                session()->flash('saa_exist', true);
-            }else{
-                $fundsource = new Fundsource();
-                $fundsource->saa = $saas[$index];
-                $fundsource->alocated_funds = str_replace(',','',$fund);
-                $fundsource->cost_value = $cost_value[$index];
+        //     if($saa_ex){
+        //         session()->flash('saa_exist', true);
+        //     }else{
+        //         $fundsource = new Fundsource();
+        //         $fundsource->saa = $saas[$index];
+        //         $fundsource->alocated_funds = str_replace(',','',$fund);
+        //         $fundsource->cost_value = $cost_value[$index];
 
-                $admin_cost = (double) str_replace(',','',$fund) * ($cost_value[$index]/100);
-                $fundsource->admin_cost = $admin_cost;
-                $fundsource->remaining_balance = (double)str_replace(',','',$fund) - $admin_cost ;
+        //         $admin_cost = (double) str_replace(',','',$fund) * ($cost_value[$index]/100);
+        //         $fundsource->admin_cost = $admin_cost;
+        //         $fundsource->remaining_balance = (double)str_replace(',','',$fund) - $admin_cost ;
                 
-                $fundsource->created_by = Auth::user()->userid;
-                $fundsource->save();
-                session()->flash('fundsource_save', true);
+        //         $fundsource->created_by = Auth::user()->userid;
+        //         $fundsource->save();
+        //         session()->flash('fundsource_save', true);
+        //     }
+        // }
+        // return redirect()->back();
+
+        $data = $request->input('breakdowns');
+
+        if($data){
+            foreach($data as $fundsource){
+                $allocated = str_replace(',','', $fundsource['allocated_fund']);
+                $admin_cost = (double) str_replace(',','', $fundsource['allocated_fund']) * ($fundsource['admin_cost']/100);
+
+                $funds = new Fundsource();
+                $funds->saa = $fundsource['saa'];
+                $funds->alocated_funds = $allocated;
+                $funds->remaining_balance = $allocated - $admin_cost;
+                $funds->admin_cost = $admin_cost;
+                $funds->cost_value = $fundsource['admin_cost'];
+                $funds->created_by = Auth::user()->userid;
+                $funds->save();
+
+                if($fundsource['break_data']){
+                    foreach($fundsource['break_data'] as $breakdown){
+                        $pro_exists = Proponent::where('proponent', $breakdown['proponent'])
+                            ->where('fundsource_id', $funds->id)->where('proponent_code', $breakdown['proponent_code'])->first();
+                        if(!$pro_exists){
+                            $check = Proponent::where('proponent', $breakdown['proponent'])->where('proponent_code', $breakdown['proponent_code'])->first();
+                            $proponent = new Proponent();
+                            $proponent->fundsource_id = $funds->id;
+                            $proponent->proponent = $breakdown['proponent'];
+                            $proponent->proponent_code = $breakdown['proponent_code'];
+                            $proponent->pro_group = 0;
+                            $proponent->created_by = Auth::user()->userid;
+                            $proponent->save();
+                            if($check){
+                                $proponent->pro_group = $check->id;
+                            }else{
+                                $proponent->pro_group = $proponent->id;
+                            }
+                            $proponent->save();
+                            $proponentId = $proponent->id;
+                        }else{
+                            $proponentId = $pro_exists->id;
+                        }
+                        $p_info = new ProponentInfo();
+                        $p_info->main_proponent = $breakdown['proponent_main'];
+                        $p_info->fundsource_id = $funds->id;
+                        $p_info->proponent_id = $proponentId;
+                        $p_info->facility_id = json_encode($breakdown['facility_id']);
+                        $p_info->alocated_funds = $breakdown['alocated_funds'];
+                        $p_info->admin_cost = number_format((double)str_replace(',','',$breakdown['alocated_funds']) * ($funds->cost_value/100) , 2,'.', ',');
+                        $rem = (double)str_replace(',','',$breakdown['alocated_funds']) - (double)str_replace(',','',$p_info->admin_cost);
+                        $p_info->remaining_balance = $rem;
+                        $p_info->facility_funds = $rem;
+                        $p_info->proponent_funds = $rem;
+                        $p_info->created_by = Auth::user()->userid;
+                        $p_info->save();
+                    }
+                }
             }
         }
-        return redirect()->back();
     }
 
     public function pendingDv(Request $request, $type){
