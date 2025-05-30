@@ -39,7 +39,7 @@
 
                 <form method="GET" action="{{ route('fundsource') }}" class="w-50">
                     <div class="input-group">
-                        <input type="text" class="form-control" name="keyword" placeholder="SAA, PROPONENT, FACILITY" style="height:40px" value="{{ $keyword }}">
+                        <input type="text" class="form-control" name="keyword" placeholder="SAA, PROPONENT, FACILITY" value="{{ $keyword }}">
                         <div class="input-group-append">
                             <button class="btn btn-sm btn-info" type="submit">
                                 <img src="/maif/public/images/icons8_search_16.png">Search

@@ -66,32 +66,32 @@
                     <form method="GET" action="{{ route('home') }}">
                         <div class="input-group">
                             <input type="hidden" class="form-control" name="key">
-                            <input type="text" class="form-control" name="keyword" id="search_patient" placeholder="Search..." value="{{$keyword}}" style="width:350px;">
+                            <input type="text" class="form-control" name="keyword" id="search_patient" placeholder="Search..." value="{{ $keyword }}" style="width:350px;">
                             <div class="input-group-append">
                                 <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
                                 <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
                                 <button type="button" href="#create_patient" id="crt_pnt" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
-                                <button type="submit" value="filt" style="display:none; background-color:00563B; color:white;" name="filter_col" id="filter_col" class="btn btn-success btn-md"><i class="typcn typcn-filter menu-icon"></i>&nbsp;&nbsp;&nbsp;Filter</button>
+                                <button type="submit" value="filt" style="display:none; background-color:00563B; color:white;" name="filter_col" id="filter_col" class="btn btn-success btn-md"><i class="typcn typcn-filter menu-icon"></i>Filter Header</button>
                             </div>  
                         </div>
                         <div class="input-group">
-                            <input type="text" style="text-align:center" class="form-control" id="filter_dates" value="{{($generate_dates)?$generate_dates:''}}" name="filter_dates" />
+                            <input type="text" style="text-align:center" class="form-control" id="filter_dates" value="{{ ($generate_dates)?$generate_dates:'' }}" name="filter_dates" />
                             <button type="submit" id="gen_btn" style="background-color:teal; color:white; width:96px; height:40px; border-radius:0; " class="btn"><i class="typcn typcn-calendar-outline menu-icon"></i>Filter</button>
                         </div>
-                        <input type="hidden" name="filter_date" id="filter_date" value="{{implode(',', $filter_date)}}"></input>
-                        <input type="hidden" name="filter_fname" id="filter_fname" value="{{implode(',', $filter_fname)}}"></input>
-                        <input type="hidden" name="filter_mname" id="filter_mname" value="{{implode(',', $filter_mname)}}"></input>
-                        <input type="hidden" name="filter_lname" id="filter_lname" value="{{implode(',', $filter_lname)}}"></input>
-                        <input type="hidden" name="filter_facility" id="filter_facility" value="{{implode(',', $filter_facility)}}"></input>
-                        <input type="hidden" name="filter_proponent" id="filter_proponent" value="{{implode(',', $filter_proponent)}}"></input>
-                        <input type="hidden" name="filter_code" id="filter_code" value="{{implode(',', $filter_code)}}"></input>
-                        <input type="hidden" name="filter_region" id="filter_region" value="{{implode(',', $filter_region)}}"></input>
-                        <input type="hidden" name="filter_province" id="filter_province" value="{{implode(',', $filter_province)}}"></input>
-                        <input type="hidden" name="filter_municipality" id="filter_municipality" value="{{implode(',', $filter_municipality)}}"></input>
-                        <input type="hidden" name="filter_barangay" id="filter_barangay" value="{{implode(',', $filter_barangay)}}"></input>
-                        <input type="hidden" name="filter_on" id="filter_on" value="{{implode(',', $filter_on)}}"></input>
-                        <input type="hidden" name="filter_by" id="filter_by" value="{{implode(',', $filter_by)}}"></input>
-                        <input type="hidden" name="gen" id="gen" value="{{$gen}}"></input>
+                        <input type="hidden" name="filter_date" id="filter_date" value="{{ implode(',', $filter_date) }}"></input>
+                        <input type="hidden" name="filter_fname" id="filter_fname" value="{{ implode(',', $filter_fname) }}"></input>
+                        <input type="hidden" name="filter_mname" id="filter_mname" value="{{ implode(',', $filter_mname) }}"></input>
+                        <input type="hidden" name="filter_lname" id="filter_lname" value="{{ implode(',', $filter_lname) }}"></input>
+                        <input type="hidden" name="filter_facility" id="filter_facility" value="{{ implode(',', $filter_facility) }}"></input>
+                        <input type="hidden" name="filter_proponent" id="filter_proponent" value="{{ implode(',', $filter_proponent) }}"></input>
+                        <input type="hidden" name="filter_code" id="filter_code" value="{{ implode(',', $filter_code) }}"></input>
+                        <input type="hidden" name="filter_region" id="filter_region" value="{{ implode(',', $filter_region) }}"></input>
+                        <input type="hidden" name="filter_province" id="filter_province" value="{{ implode(',', $filter_province) }}"></input>
+                        <input type="hidden" name="filter_municipality" id="filter_municipality" value="{{ implode(',', $filter_municipality) }}"></input>
+                        <input type="hidden" name="filter_barangay" id="filter_barangay" value="{{ implode(',', $filter_barangay) }}"></input>
+                        <input type="hidden" name="filter_on" id="filter_on" value="{{ implode(',', $filter_on) }}"></input>
+                        <input type="hidden" name="filter_by" id="filter_by" value="{{ implode(',', $filter_by) }}"></input>
+                        <input type="hidden" name="gen" id="gen" value="{{ $gen }}"></input>
                     </form>
                     <form method="POST" action="{{ route('sent.mails') }}" class="send_mailform">
                         @csrf

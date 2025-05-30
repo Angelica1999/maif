@@ -877,7 +877,7 @@ class PreDvController extends Controller
         $sheet->setCellValue('F2', $richText1);
         $sheet->getStyle('F2')->getAlignment()->setWrapText(true);
 
-        $sheet->getStyle('A2:E2')
+        $sheet->getStyle('A2:F2')
             ->getAlignment()
             ->setHorizontal(Alignment::HORIZONTAL_CENTER)
             ->setVertical(Alignment::VERTICAL_CENTER);
@@ -891,7 +891,7 @@ class PreDvController extends Controller
                     $row2->control_no,
                     $row2->patient_1,
                     $row2->patient_2,
-                    $row2->prof_fee == null ? 0 : $row2->prof_fee,
+                    $row2->prof_fee == null ? (float) 0.00 : (float) $row2->prof_fee,
                     $row2->amount
                 ];
             }
