@@ -1,3 +1,4 @@
+
 @extends('layouts.app')
 @section('content')
 <div class="container-fluid col-lg-12 grid-margin stretch-card">
@@ -25,7 +26,6 @@
                 <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th></th>
                         <th>Name</th>
                         <th>Address</th>
                         <th>Official Email</th>
@@ -44,11 +44,9 @@
                                     onclick="updateFacility(this)" 
                                     data-backdrop="static" 
                                     data-toggle="modal" 
-                                    class="btn btn-primary btn-sm"
                                     data-main-id="{{ $facility->id }}"
-                                    data-name="{{$facility->name}}">Update</a>
+                                    data-name="{{ $facility->name }}">{{ $facility->name }}</a>
                             </td>
-                            <td class="td">{{ $facility->name }}</td>
                             <td class="td">{{ $facility->address }}</td>
                             <td class="td">{{ $facility->AddFacilityInfo->official_mail ?? '' }}</td>
                             <td class="td">{{ $facility->AddFacilityInfo->cc ?? '' }}</td>
@@ -86,15 +84,13 @@
 
 @endsection
 @section('js')
-    <script>
-    
-        @if(session('facility_save'))
-             <?php session()->forget('facility_save'); ?>
-             Lobibox.notify('success', {
-                msg: 'Successfully saved Facility!'
-             });
-        @endif
-
+<script>
+    @if(session('facility_save'))
+            <?php session()->forget('facility_save'); ?>
+            Lobibox.notify('success', {
+            msg: 'Successfully saved Facility!'
+            });
+    @endif
     function updateFacility(clickedElement) {
         var main_id = $(clickedElement).data('main-id');
         var name = $(clickedElement).data('name');  
@@ -122,6 +118,5 @@
             $("#transaction-container").append(result);
         });
     }
-    </script>
-    
+</script>
 @endsection
