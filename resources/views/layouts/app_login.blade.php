@@ -10,7 +10,7 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
     <style>
         html {
-            font-size: 12px; /* Increasing this will scale everything using rem or em */
+            font-size: 15px; /* Increasing this will scale everything using rem or em */
         }
     </style>
     <!-- base:css -->

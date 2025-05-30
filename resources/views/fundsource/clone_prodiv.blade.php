@@ -2,10 +2,10 @@
     <div class="card" style="border:none;">
         <div class="row">
             <div class="col-md-5">
-                <b><label>Proponent (Main):</label></b>
+                <label>Proponent (Main):</label>
                 <div class="form-group">
                     <select class="form-control proponent_main" id="{{ $uniqueCode . '2' }}" name="proponent_main[]">
-                        <option value="">Select/Input Proponent</option>
+                        <option value=""></option>
                         @foreach($proponents as $proponent)
                             <option value="{{ $proponent->id }}" data-proponent-code="{{ $proponent->proponent_code }}">
                                 {{ $proponent->proponent }}
@@ -17,11 +17,10 @@
         </div>
         <div class="row">
             <div class="col-md-5">
-                <b><label>Proponent:</label></b>
+                <label>Proponent:</label>
                 <div class="form-group">
-                    <!-- <input type="text" class="form-control proponent" name="proponent[]" placeholder="Proponent"> -->
                     <select class="form-control proponent" id="{{ $uniqueCode . '1' }}" name="proponent[]" onchange="proponentCode($(this))" required>
-                        <option value="">Select/Input Proponent</option>
+                        <option value=""></option>
                         @foreach($proponents as $proponent)
                             <option value="{{ $proponent->proponent }}" data-proponent-code="{{ $proponent->proponent_code }}">
                                 {{ $proponent->proponent }}
@@ -31,9 +30,9 @@
                 </div>
             </div>
             <div class="col-md-7">
-                <b><label>Proponent Code:</label></b>
+                <label>Proponent Code:</label>
                 <div class="form-group" style="display: flex; align-items: center;">
-                    <input type="text" class="form-control proponent_code" name="proponent_code[]" placeholder="Proponent Code" style="flex: 1; width:1000px;" oninput="checkCode($(this),this.value)" required>
+                    <input type="text" class="form-control proponent_code" name="proponent_code[]" placeholder="Proponent Code" style="flex: 1; width:1000px;" onblur="checkCode($(this),this.value)" required>
                     <button type="button" class="form-control remove_pro-btn" style="width: 10px; margin-left: 5px; color:white; background-color:#00688B">-</button>
                 </div>
             </div>
@@ -45,7 +44,7 @@
                     <div class="form-group">
                         <div class="facility_select">
                             <select class="form-control break_fac" id="{{ $uniqueCode }}" name="facility_id[id][]" multiple required>
-                                <option value="">Please select facility</option>
+                                <option value=""></option>
                                 @foreach($facilities as $facility)
                                     <option value="{{ $facility->id }}">{{ $facility->name }}</option>
                                 @endforeach
@@ -66,13 +65,17 @@
             </div>
         </div>
     </div>
-
     <hr>
 </div>
 <script>
-    $("#"+"{{ $uniqueCode }}").select2();
+    $("#"+"{{ $uniqueCode }}").select2({
+        placeholder:"Select Facilities"
+    });
     $("#"+"{{ $uniqueCode . '1' }}").select2({
         tags: true,
+        placeholder: "Select/Input Proponent"
     });
-    $("#"+"{{ $uniqueCode . '2' }}").select2();
+    $("#"+"{{ $uniqueCode . '2' }}").select2({
+        placeholder:"Select Proponent"
+    });
 </script>

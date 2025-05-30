@@ -3,28 +3,9 @@
         border: 1px solid;
         color: grey;
     }
-    .clone:last-child .clone_facility-btn {
-        z-index: 1000; 
-    }
-    
-    .loading-container {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 1000;
-        display: none; 
-    }
-
-    .loading-spinner {
-        width: 100%; 
-        height: 100%; 
-    }
-
 </style>
 
 <form id="contractForm" method="POST" action="{{ route('fundsource.save_breakdowns') }}">
-    
     <div class="modal-body">
         <h4>{{$fundsource[0]->saa}} : Php {{number_format($fundsource[0]->alocated_funds, 2, '.', ',')}}</h4>
         <h4 class="breakdown_total">Total Breakdowns : PhP {{number_format($sum, 2, '.', ',')}}</h4>
@@ -36,37 +17,36 @@
             @foreach($fundsource[0]->proponents as $index => $pro)
                 <div class="clone">
                     <div class="card" style="border:none;">
-                    <div class="row">
-                        <div class="col-md-5">
-                            <b><label>Proponent (Main):</label></b>
-                            <div class="form-group">
-                                <select class="form-control proponent_main" id="proponent_main{{ $pro->id }}" name="proponent_main[]">
-                                    <option value="">Select/Input Proponent</option>
-                                    @foreach($proponents as $proponent)
-                                        <option value="{{ $proponent->id }}" 
-                                            {{ $pro->proponentInfo->first() && $pro->proponentInfo->first()->main_proponent == $proponent->id ? 'selected' : '' }}>
-                                            {{ $proponent->proponent }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <script>
-                                    $(document).ready(function () {
-                                        $('#proponent_main{{ $pro->id }}').select2();
-                                        $("#"+"{{ $pro->id . $index }}").select2({
-                                            tags: true,
+                        <div class="row">
+                            <div class="col-md-5">
+                                <b><label>Proponent (Main):</label></b>
+                                <div class="form-group">
+                                    <select class="form-control proponent_main" id="proponent_main{{ $pro->id }}" name="proponent_main[]">
+                                        <option value=""></option>
+                                        @foreach($proponents as $proponent)
+                                            <option value="{{ $proponent->id }}" 
+                                                {{ $pro->proponentInfo->first() && $pro->proponentInfo->first()->main_proponent == $proponent->id ? 'selected' : '' }}>
+                                                {{ $proponent->proponent }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <script>
+                                        $(document).ready(function () {
+                                            $('#proponent_main{{ $pro->id }}').select2({
+                                                placeholder:"Select Main Proponent"
+                                            });
                                         });
-                                    });
-                                </script>
+                                    </script>
+                                </div>
                             </div>
                         </div>
-                    </div>
                         <div class="row">
                             <div class="col-md-5">
                                 <b><label>Proponent:</label></b>
                                 <div class="form-group">
                                     <!-- <input type="text" class="form-control proponent" name="proponent[]" value="{{$pro->proponent}}"> -->
                                     <select class="form-control proponent" id="{{$pro->id . $index}}" name="proponent[]" onchange="proponentCode($(this))" required>
-                                        <option value="">Select/Input Proponent</option>
+                                        <option value=""></option>
                                         @foreach($proponents as $proponent)
                                             <option value="{{ $proponent->proponent }}" {{ ($proponent->proponent == $pro->proponent) ? 'selected' : '' }} data-proponent-code="{{ $proponent->proponent_code }}">
                                                 {{ $proponent->proponent }}
@@ -76,6 +56,7 @@
                                             $(document).ready(function () {
                                                 $("#"+"{{ $pro->id . $index }}").select2({
                                                     tags: true,
+                                                    placeholder: "Select/Input Proponent"
                                                 });
                                             });
                                         </script>
@@ -85,7 +66,7 @@
                             <div class="col-md-7">
                                 <b><label>Proponent Code:</label></b>
                                 <div class="form-group" style="display: flex; align-items: center;">
-                                    <input type="text" class="form-control proponent_code" name="proponent_code[]" value="{{$pro->proponent_code}}" style="flex: 1; width:1000px;" oninput="checkCode($(this),this.value)" required>
+                                    <input type="text" class="form-control proponent_code" name="proponent_code[]" value="{{$pro->proponent_code}}" style="flex: 1; width:1000px;" onblur="checkCode($(this),this.value)" required>
                                     <!-- @if($index == 0) -->
                                         <button type="button" class="form-control clone_pro-btn" style="width: 10px; margin-left: 5px; color:white; background-color:#00688B">+</button>
                                     <!-- @else
@@ -102,11 +83,11 @@
                                         <label>Facility:</label>
                                             <div class="form-group">
                                                 <div class="facility_select">
-                                                    <select class="form-control break_fac" id="{{$proInfo->id}}" name="facility_id[id][]" multiple required
+                                                    <select class="form-control break_fac" id="{{ $proInfo->id }}" name="facility_id[id][]" multiple required
                                                         @if($proInfo->alocated_funds != $proInfo->remaining_balance)
                                                         
                                                         @endif >
-                                                        <option value="">Please select facility</option>
+                                                        <option value=""></option>
 
                                                         @if($proInfo->facility != null)
                                                             @foreach($facilities as $facility)
@@ -149,39 +130,41 @@
                                 </div>
                                 <script>
                                     $(document).ready(function() {
-                                        $("#"+"{{ $proInfo->id}}").select2();
+                                        $("#"+"{{ $proInfo->id}}").select2({
+                                            placeholder:"Select facility"
+                                        });
                                         var count = 0; count++;
                                     });
                                 </script>
                             @endforeach
                         @else
-                        <div class="card1">
-                        <div class="row">
-                            <div class="col-md-5">
-                                <label>Facility:</label>
-                                <div class="form-group">
-                                    <div class="facility_select">
-                                        <select class="form-control break_fac" id="breakdown_select" name="facility_id[]" multiple required>
-                                            <option value="">Please select facility</option>
-                                            @foreach($facilities as $facility)
-                                                <option value="{{ $facility->id }}">{{ $facility->name }}</option>
-                                            @endforeach
-                                        </select>
+                            <div class="card1">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <label>Facility:</label>
+                                        <div class="form-group">
+                                            <div class="facility_select">
+                                                <select class="form-control break_fac" id="breakdown_select" name="facility_id[]" multiple required>
+                                                    <option value=""></option>
+                                                    @foreach($facilities as $facility)
+                                                        <option value="{{ $facility->id }}">{{ $facility->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <label>Allocated Funds:</label>
+                                        <div class="form-group">
+                                            <div class="form-group" style="display: flex; align-items: center;">
+                                                <input type="hidden" class="info_id" value="0">
+                                                <input type="text" class="form-control alocated_funds" id="alocated_funds[]" name="alocated_funds[]" onkeyup="validateAmount(this)" oninput="calculateFunds(this)" placeholder="Allocated Fund" style="flex: 1; width:160px;" required>
+                                                <button type="button" class="form-control btn-info clone_facility-btn" style="width: 5px; margin-left: 5px; color:white; background-color:#355E3B">+</button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-7">
-                                <label>Allocated Funds:</label>
-                                <div class="form-group">
-                                    <div class="form-group" style="display: flex; align-items: center;">
-                                        <input type="hidden" class="info_id" value="0">
-                                        <input type="text" class="form-control alocated_funds" id="alocated_funds[]" name="alocated_funds[]" onkeyup="validateAmount(this)" oninput="calculateFunds(this)" placeholder="Allocated Fund" style="flex: 1; width:160px;" required>
-                                        <button type="button" class="form-control btn-info clone_facility-btn" style="width: 5px; margin-left: 5px; color:white; background-color:#355E3B">+</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                         @endif
                         <hr>
                     </div>
@@ -195,7 +178,7 @@
                             <b><label>Proponent (Main):</label></b>
                             <div class="form-group">
                                 <select class="form-control proponent_main" id="proponent_main" name="proponent_main[]">
-                                    <option value="">Select/Input Proponent</option>
+                                    <option value=""></option>
                                     @foreach($proponents as $proponent)
                                         <option value="{{ $proponent->id }}" data-proponent-code="{{ $proponent->proponent_code }}">
                                             {{ $proponent->proponent }}
@@ -211,7 +194,7 @@
                             <div class="form-group">
                                 <!-- <input type="text" class="form-control proponent" name="proponent[]" placeholder="Proponent"> -->
                                 <select class="form-control proponent" id="proponent" name="proponent[]"  onchange="proponentCode($(this))" required>
-                                    <option value="">Select/Input Proponent</option>
+                                    <option value=""></option>
                                     @foreach($proponents as $proponent)
                                         <option value="{{ $proponent->proponent }}" data-proponent-code="{{ $proponent->proponent_code }}">
                                             {{ $proponent->proponent }}
@@ -223,7 +206,7 @@
                         <div class="col-md-7">
                             <b><label>Proponent Code:</label></b>
                             <div class="form-group" style="display: flex; align-items: center;">
-                                <input type="text" class="form-control proponent_code" name="proponent_code[]" placeholder="Proponent Code" style="flex: 1; width:1000px;" oninput="checkCode($(this),this.value)" required>
+                                <input type="text" class="form-control proponent_code" name="proponent_code[]" placeholder="Proponent Code" style="flex: 1; width:1000px;" onblur="checkCode($(this),this.value)" required>
                                 <button type="button" class="form-control clone_pro-btn" style="width: 10px; margin-left: 5px; color:white; background-color:#00688B">+</button>
                             </div>
                         </div>
@@ -235,7 +218,7 @@
                                 <div class="form-group">
                                     <div class="facility_select">
                                         <select class="form-control break_fac" id="breakdown_select" name="facility_id[]" multiple required>
-                                            <option value="">Please select facility</option>
+                                            <option value=""></option>
                                             @foreach($facilities as $facility)
                                                 <option value="{{ $facility->id }}">{{ $facility->name }}</option>
                                             @endforeach
@@ -254,9 +237,9 @@
                             </div>
                         </div>
                     </div>
-                    </div>
-                    <hr>
                 </div>
+                <hr>
+            </div>
         @endif
     </div>
     <div class="modal-footer">
@@ -264,22 +247,11 @@
         <button type="submit" class="btn btn-primary">Save</button>
     </div>
 </form>
-<div class="loading-container">
-    <img src="public\images\loading.gif" alt="Loading..." class="loading-spinner">
-</div>
-
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 <script>
     var timer;
     var click = 0;
     var remove_click = 0;
-
-    $(document).ready(function () {
-        $('#proponent').select2({
-            tags: true,
-        });
-        $('#proponent_main').select2();
-    });
 
     function checkCode(element, value) {
         setTimeout(() => { 
@@ -288,11 +260,39 @@
                 return item.proponent_code === value;
             });
             if (hasMatchingProponent) {
-                alert('Sorry! This code has been used by another proponent already.');
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Sorry! This code has been used by another proponent already.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
                 var proponentCodeInput = element.closest('.row').find('.proponent_code');
                 proponentCodeInput.val('');
             }
         }, 500);
+        new_code(element, value);
+    }
+
+    function new_code(element, value){
+        value = value.trim();
+        var count = 0;
+
+        $('.proponent_code').each(function () {
+            const currentVal = $(this).val().trim();
+            if (currentVal === value) {
+                count++;
+            }
+        });
+
+        if (count > 1) {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Sorry! This code has been used by another proponent already.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            $(element).val('');
+        }
     }
 
     function proponentCode(selectElement) {
@@ -421,18 +421,30 @@
 
     $(document).ready(function() {
 
-        $('#breakdown_select').select2();
+        $('#breakdown_select').select2({
+            placeholder:"Select Facilties"
+        });
+
+        $('#proponent').select2({
+            tags: true,
+            placeholder:"Select/Input Proponent"
+        });
+
+        $('#proponent_main').select2({
+            placeholder:"Select Proponent"
+        });
+
         $('.clone').on('click', '.clone_pro-btn', function () {
             click = 1 + click;
             $('.loading-container').show();
             var $this = $(this); 
 
             setTimeout(function () {
-                    $.get("{{ route('facilities.get', ['type'=>'div']) }}", function (result) {
-                        $('.modal-body').append(result);
-                        $('.loading-container').css('display', 'none');
-                    });
-                }, 1);  
+                $.get("{{ route('facilities.get', ['type'=>'div']) }}", function (result) {
+                    $('.modal-body').append(result);
+                    $('.loading-container').css('display', 'none');
+                });
+            }, 1);  
         });
 
         $(document).off('click', '.clone .card1 .clone_facility-btn').on('click', '.clone .card1 .clone_facility-btn', function () {
