@@ -827,6 +827,7 @@ class PreDvController extends Controller
         $sheet->getColumnDimension('C')->setWidth(30); 
         $sheet->getColumnDimension('D')->setWidth(20);
         $sheet->getColumnDimension('E')->setWidth(20);
+        $sheet->getColumnDimension('F')->setWidth(20);
 
         $sheet->mergeCells("A1:E1");
         $richText1 = new RichText();
@@ -865,10 +866,16 @@ class PreDvController extends Controller
         $sheet->getStyle('D2')->getAlignment()->setWrapText(true);
 
         $richText1 = new RichText();
-        $normalText = $richText1->createTextRun("Amount");
+        $normalText = $richText1->createTextRun("Professional Fee");
         $normalText->getFont()->setBold(true); 
         $sheet->setCellValue('E2', $richText1);
         $sheet->getStyle('E2')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("Amount");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('F2', $richText1);
+        $sheet->getStyle('F2')->getAlignment()->setWrapText(true);
 
         $sheet->getStyle('A2:E2')
             ->getAlignment()
@@ -884,13 +891,14 @@ class PreDvController extends Controller
                     $row2->control_no,
                     $row2->patient_1,
                     $row2->patient_2,
+                    $row2->prof_fee == null ? 0 : $row2->prof_fee,
                     $row2->amount
                 ];
             }
         }
 
         $sheet->fromArray($data, null, 'A3');
-        $sheet->getStyle('E3:E' . (count($data) + 2))
+        $sheet->getStyle('E3:F' . (count($data) + 2))
         ->getNumberFormat()->setFormatCode('#,##0.00');
 
         $styleArray = [
@@ -904,13 +912,13 @@ class PreDvController extends Controller
             ],
         ];
         
-        $sheet->getStyle('A2:E' . (count($data) + 2))->applyFromArray($styleArray);
-        $sheet->getStyle('A3:E' . (count($data) + 2))->getAlignment()->setWrapText(true);
+        $sheet->getStyle('A2:F' . (count($data) + 2))->applyFromArray($styleArray);
+        $sheet->getStyle('A3:F' . (count($data) + 2))->getAlignment()->setWrapText(true);
 
         $sheet->getStyle('A3:D' . (count($data) + 2))
             ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
         
-        $sheet->getStyle('E3:E' . (count($data) + 2))
+        $sheet->getStyle('E3:F' . (count($data) + 2))
             ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
             
         // Output preparation
