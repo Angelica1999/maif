@@ -150,8 +150,8 @@ class FundSourceController2 extends Controller{
                 $funds->created_by = Auth::user()->userid;
                 $funds->save();
 
-                if($fundsource['break_data']){
-                    foreach($fundsource['break_data'] as $breakdown){
+                if (isset($fundsource['break_data']) && is_array($fundsource['break_data'])) {
+                        foreach($fundsource['break_data'] as $breakdown){
                         $pro_exists = Proponent::where('proponent', $breakdown['proponent'])
                             ->where('fundsource_id', $funds->id)->where('proponent_code', $breakdown['proponent_code'])->first();
                         if(!$pro_exists){
