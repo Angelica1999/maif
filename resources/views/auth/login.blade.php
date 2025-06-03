@@ -1,5 +1,4 @@
 @extends('layouts.app_login')
-
 @section('content')
     <div class="text-center">
         <h3>MAIFIPP</h3>
@@ -9,7 +8,6 @@
         @csrf
         <div class="form-group">
             <input type="text" class="form-control form-control-lg @error('username') is-invalid @enderror" name="username" value="{{ old('username') }}" placeholder="{{ __('Username') }}" required autocomplete="username" autofocus>
-            <!-- <input id="username" value="@if(Session::has('username')){{ Session::get('username') }}@endif" type="text" placeholder="Login using your ID No." class="form-control" name="username"> -->
 
             @error('username')
                 <span class="invalid-feedback" role="alert">
@@ -17,11 +15,11 @@
                 </span>
             @enderror
         </div>
-        <div cl0ass="form-group">
+        <div class="form-group">
             <input type="password" name="password" class="form-control form-control-lg @error('password') is-invalid @enderror" placeholder="{{ __('Password') }}" required autocomplete="current-password">
         </div>
         <div class="mt-3">
-            <button type="submit" class="btn btn-block btn-success btn-lg font-weight-medium auth-form-btn">SIGN IN</a>
+            <button type="submit" class="btn btn-block btn-success btn-lg font-weight-medium auth-form-btn">SIGN IN</button>
         </div>
         <div class="my-2 d-flex justify-content-between align-items-center">
             <div class="form-check form-check-success">
@@ -35,5 +33,5 @@
         {{-- <div class="text-center mt-4 font-weight-light">
             Don't have an account? <a href="register.html" class="text-info">Create</a>
         </div> --}}
-    </form>
+    </form>    
 @endsection
