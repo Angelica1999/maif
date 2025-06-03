@@ -115,10 +115,10 @@
                                     </td>
                                     <td>
                                         @if($row->new_dv)
-                                            {{$row->new_dv->route_no}}
+                                            {{ $row->new_dv->route_no }}
                                         @endif
                                     </td>
-                                    <td><a data-toggle="modal" data-backdrop="static" href="#update_predv" onclick="updatePre( {{$row->id}}, {{$row->new_dv?1:2}}, {{ $row->new_dv && $row->new_dv->edit_status == 1 ? 1: 0 }} )">{{ $row->facility->name }}</a></td>
+                                    <td><a data-toggle="modal" data-backdrop="static" href="#update_predv" onclick="updatePre( {{ $row->id }}, {{ $row->new_dv?1:2 }}, {{ $row->new_dv && $row->new_dv->edit_status == 1 ? 1: 0 }} )">{{ $row->facility->name }}</a></td>
                                     <td>
                                         <?php
                                             $total = 0;
@@ -170,8 +170,8 @@
                         <select class="select2 facility_id" style="width: 50%;" name="facility_id" onchange="getFundsource($(this).val())" required>
                             <option value=''>SELECT FACILITY</option>
                             @foreach($facilities as $facility)
-                                <option datavat="{{($facility->addFacilityInfo && $facility->addFacilityInfo->vat)?1:0}}" 
-                                    value="{{$facility->id}}">{{$facility->name}}</option>
+                                <option datavat="{{ ($facility->addFacilityInfo && $facility->addFacilityInfo->vat)?1:0 }}" 
+                                    value="{{ $facility->id }}">{{ $facility->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -192,7 +192,7 @@
                                     <select style="width: 50%; margin-bottom: 10px;" class="select2 proponent" onchange="checkPros(this)" required>
                                         <option value=''>SELECT PROPONENT</option>
                                         @foreach($proponents as $proponent)
-                                            <option value="{{$proponent->proponent}}">{{$proponent->proponent}}</option>
+                                            <option value="{{ $proponent->proponent }}">{{ $proponent->proponent }}</option>
                                         @endforeach
                                     </select>
                                     <i onclick="cloneProponent($(this))" class="typcn typcn-plus menu-icon" style="width:40px; background-color:blue; color:white;border: 1px; padding: 2px;"></i>
@@ -294,16 +294,7 @@
     var btn_val = 0;
 
     $('.crt_btn').on('click', function(){
-        btn_val = 1;
-    });
-
-    $('.submit_btn').on('click', function(){
-        // $('#update_predv .select2').select2('close');
-        // $('#update_predv').find(':focus').blur();
-        $('#update_predv').modal('hide');
-        $('#create_predv').modal('hide');
-        $('.loading-container').modal('show');
-        $('.loading-container').html(loading);
+        location.reload();
     });
 
     $('.delete_btn').on('click', function(){
@@ -828,7 +819,7 @@
     }
 
     function autoDeduct(element){
-
+        console.log('btn_val', btn_val);
         if(btn_val == 0){
             var amountValue = parseFloat(element.closest('.saa_clone').find('.saa_amount').val().replace(/,/g, '')) || 0;
             var w_pro = element.closest('.proponent_clone');
@@ -1177,6 +1168,11 @@
                 }
             });
         }
+
+        $('#update_predv').modal('hide');
+        $('#create_predv').modal('hide');
+        $('.loading-container').modal('show');
+        $('.loading-container').html(loading);
     });
 
 </script>
