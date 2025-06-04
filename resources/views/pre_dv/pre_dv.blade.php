@@ -1174,7 +1174,5 @@
         $('.loading-container').modal('show');
         $('.loading-container').html(loading);
     });
-
 </script>
-    
 @endsection
