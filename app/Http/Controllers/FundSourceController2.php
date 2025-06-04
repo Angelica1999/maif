@@ -48,16 +48,16 @@ class FundSourceController2 extends Controller{
             ->with(['proponentInfo' => function($query) {
                     $query->selectRaw('
                         fundsource_id, 
-                        sum(CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(18, 2))) - sum(IFNULL(admin_cost, 0)) as total_allocated_funds,
-                        sum(IFNULL(admin_cost, 0)) as total_admin_cost
-                    ')
+                        sum(CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(18, 2))) - sum(CAST(REPLACE(admin_cost, ",", "") AS DECIMAL(18, 2))) as total_allocated_funds,
+                        sum(CAST(REPLACE(admin_cost, ",", "") AS DECIMAL(18, 2))) as total_admin_cost
+                        ')
                     ->groupBy('fundsource_id'); 
                 },
                 'utilization' => function($query) {
                     $query->selectRaw('
                         fundsource_id,
-                        sum(CASE WHEN status = 0 THEN CAST(REPLACE(budget_utilize, ",", "") AS DECIMAL(18, 2)) ELSE 0 END) as total_bbudget_utilize
-                    ')
+                        sum(CASE WHEN status = 0 AND obligated = 1 THEN CAST(REPLACE(budget_utilize, ",", "") AS DECIMAL(18, 2)) ELSE 0 END) as total_bbudget_utilize
+                        ')
                     ->groupBy('fundsource_id');
                 },
                 'a_cost' => function($query) {
