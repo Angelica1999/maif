@@ -61,9 +61,25 @@ class HomeController extends Controller
 
 
     public function index(Request $request){
-        // return $request->input('sort');
-        // return explode(',',$request->filter_fname);
-        
+
+        // if(Auth::user()->userid == 2760){
+        //     $util = Utilization::where('fundsource_id', 6)
+        //     ->where('obligated', 1)
+        //     ->where('budget_bbalance', '<', 6448531.15)
+        //     ->get();
+        //         //    return $util;
+        //         // $num = 162261000.00;
+        //     foreach($util as $row){
+        //         // if($row->budget_bbalance != null){
+        //             $row->budget_bbalance = $row->budget_bbalance + 6012.65;
+        //             $row->save();
+
+        //             // $num = $num - str_replace(',','', $row->budget_utilize);
+
+        //         // }
+        //     }
+        // }
+
         $filter_date = $request->input('filter_dates');
         $order = $request->input('order', 'asc');
 

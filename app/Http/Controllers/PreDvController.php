@@ -194,6 +194,7 @@ class PreDvController extends Controller
 
         $total = $pre_dv->take(1)->count();        
         $grand_amount = $pre_dv->sum('grand_total');
+        $grand_fee = $pre_dv->sum('prof_fee');
         $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(20);
         // return $pre_dv;
 
@@ -216,7 +217,8 @@ class PreDvController extends Controller
             'num_generated' => $total,
             'grand_amount' => $grand_amount,
             'generated_dates' => $gen_date,
-            'total_control' => $totalControls
+            'total_control' => $totalControls,
+            'grand_fee' => $grand_fee
         ]);
     }
 

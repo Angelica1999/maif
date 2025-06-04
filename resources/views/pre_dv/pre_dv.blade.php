@@ -79,7 +79,8 @@
                                         </select>
                                     </div>  
                                 </th>
-                                <th>Number of Transmittals</th>
+                                <th>No. of Transmittals</th>
+                                <th>Professional Fee</th>
                                 <th style="min-width:100px">Grand Total</th>
                                 <th class="user">Created By
                                     <i id="by_i" class="typcn typcn-filter menu-icon"><i>
@@ -128,6 +129,7 @@
                                             echo $total;
                                         ?>
                                     </td>
+                                    <td>{{ $row->prof_fee != null ? number_format(str_replace(',','',$row->prof_fee), 2, '.',',') : '0.00' }}</td>
                                     <td>{{ number_format(str_replace(',','',$row->grand_total), 2, '.',',') }}</td>
                                     <td>{{ $row->user->lname .', '.$row->user->fname }}</td>
                                     <td>{{ date('F j, Y', strtotime($row->created_at)) }}</td>
@@ -145,7 +147,9 @@
             <div class="pl-5 pr-5 mt-5 alert alert-info" role="alert" style="width: 100%; margin-top:5px;">
                 <strong>Total number of data generated: {{ $num_generated }}</strong>
                 <strong style="margin-left: 20px;">|</strong>
-                <strong style="margin-left: 20px;">Total number of transmittals:  {{  number_format($total_control, 2,'.',',') }}</strong>
+                <strong style="margin-left: 20px;">Total No. of transmittals:  {{  number_format($total_control, 2,'.',',') }}</strong>
+                <strong style="margin-left: 20px;">|</strong>
+                <strong style="margin-left: 20px;">Total Professional Fee:  {{  number_format($grand_fee, 2,'.',',') }}</strong>
                 <strong style="margin-left: 20px;">|</strong>
                 <strong style="margin-left: 20px;">Total amount:  {{ number_format($grand_amount, 2,'.',',') }}</strong>
 
