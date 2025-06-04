@@ -78,7 +78,7 @@
                                                     Remaining Balance
                                                     :
                                                     <strong class="{{ $fund->remaining_balance == 0 ? 'text-danger' : 'text-info' }}">
-                                                        {{ number_format(floatval(str_replace(',', '', $allocated - ($utilized + $admin_cost))), 2, '.', ',') }}
+                                                        {{ number_format(floatval(str_replace(',', '', $allocated - $utilized)), 2, '.', ',') }}
                                                     </strong>
                                                 </td>
                                             </tr>
@@ -597,12 +597,13 @@
                 $('.tracking_footer').empty();
                 if(result.length > 0){
                     result.forEach(function(item) {
+                        console.log('item', item);
                         var saa = item.fund_sourcedata && item.fund_sourcedata.saa !== null ? item.fund_sourcedata.saa : '-';
                         var proponentName = item.proponentdata && item.proponentdata.proponent !== null ? item.proponentdata.proponent : '-';
                         var facility = item.facilitydata && item.facilitydata.name !== null ? item.facilitydata.name : '-';
                         var user = item.user_budget && item.user_budget.lname !== null ? item.user_budget.lname +', '+item.user_budget.fname : '-';
 
-                        var timestamp = item.updated_at;
+                        var timestamp = item.obligated_on !== null ? item.obligated_on : item.updated_at;
                         var date = new Date(timestamp);
                         var formattedDate = date.toLocaleString('en-US', {
                             month: 'long',
