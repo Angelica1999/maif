@@ -823,7 +823,6 @@
     }
 
     function autoDeduct(element){
-        console.log('btn_val', btn_val);
         if(btn_val == 0){
             var amountValue = parseFloat(element.closest('.saa_clone').find('.saa_amount').val().replace(/,/g, '')) || 0;
             var w_pro = element.closest('.proponent_clone');

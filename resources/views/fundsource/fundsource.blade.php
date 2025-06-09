@@ -457,8 +457,6 @@
         var main_saa = $(rows).find('#allocated_funds').val() || 0;
         main_saa = parseFloat(main_saa.replace(/[, ]/g, '')) || 0;
 
-        console.log('main_saa', main_saa);
-
         var total = 0;
 
         clone.find('.alocated_funds').each(function () {
@@ -497,7 +495,6 @@
     $('#fundsource_form').submit(function(e) {
         $('.loading-container').show();
         e.preventDefault();
-        console.log('dataaa',getFundsourceData());
         $.ajax({
             type: 'POST',
             url: '{{ route("fundsource_budget.save") }}',
@@ -832,7 +829,6 @@
         $('.v2_body').html(loading);
         $.get(" {{ url('/version2').'/'}}" + route_no, function (result){
             $('.v2_body').html(result);
-            console.log('res', route_no);
         });
         $('#version2').modal('show');
     }

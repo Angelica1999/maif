@@ -527,8 +527,6 @@
     function budgetTracking(fundsource, id, amount, budget_amount){
         saa_id = id;
         saa = fundsource;
-        console.log('id', id);
-        console.log('saa', saa);
 
         $('#budget_track_body').empty();
         $.get("{{ url('budget/fundsource').'/' }}"+saa_id, function(result){
@@ -597,7 +595,6 @@
                 $('.tracking_footer').empty();
                 if(result.length > 0){
                     result.forEach(function(item) {
-                        console.log('item', item);
                         var saa = item.fund_sourcedata && item.fund_sourcedata.saa !== null ? item.fund_sourcedata.saa : '-';
                         var proponentName = item.proponentdata && item.proponentdata.proponent !== null ? item.proponentdata.proponent : '-';
                         var facility = item.facilitydata && item.facilitydata.name !== null ? item.facilitydata.name : '-';
