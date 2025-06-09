@@ -35,4 +35,7 @@ class ProponentInfo extends Model
     public function dv3_funds(){
         return $this->hasMany(Dv3Fundsource::class, 'info_id', 'id');
     }
+    public function utilizations(){
+        return $this->hasMany(Utilization::class, 'proponentinfo_id', 'id');
+    }
 }
