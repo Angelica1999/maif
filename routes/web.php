@@ -142,9 +142,7 @@ Route::match(['get', 'post'],'dv/pay', [App\Http\Controllers\DvController::class
 Route::match(['get', 'post'],'dv/add_dvno', [App\Http\Controllers\DvController::class, 'addDvNo'])->name('dv.add_dvno');
 Route::get('getsections/{id}', [App\Http\Controllers\DvController::class, 'getSections'])->name('division.section');
 Route::post('/document/release', [App\Http\Controllers\DvController::class, 'addRelease'])->name('document.release');
-
 Route::post('/document/accept', [App\Http\Controllers\DvController::class, 'acceptDocument'])->name('document.accept');
-
 Route::get('/sample', [App\Http\Controllers\FundSourceController2::class, 'sample'])->name('sample');
 Route::match(['get', 'post'],'proponentInfo/{infoId}', [App\Http\Controllers\FundSourceController::class, 'removeInfo'])->name('remove.proInfo');
 Route::get('/admin_cost', [App\Http\Controllers\FundSourceController::class, 'adminCost'])->name('admin_cost');
@@ -168,15 +166,12 @@ Route::get('/proponent/util/{code}', [App\Http\Controllers\ProponentController::
 Route::get('/proponent/supplemental/{proponent}/{amount}', [App\Http\Controllers\ProponentController::class, 'supplemental'])->name('proponent.supplemental');
 Route::get('/proponent/subtracted/{proponent}/{amount}', [App\Http\Controllers\ProponentController::class, 'subtracted'])->name('proponent.subtracted');
 Route::get('/proponent/sup-details/{proponent}', [App\Http\Controllers\ProponentController::class, 'supDetails'])->name('details.supplemental');
-
 Route::get('/proponent/sup-del/{id}', [App\Http\Controllers\ProponentController::class, 'delSup'])->name('delete.supplemental');
 Route::get('/proponent/sub-del/{id}', [App\Http\Controllers\ProponentController::class, 'delSub'])->name('delete.subtracted');
-
 Route::get('/proponent/sup-update/{id}/{amount}', [App\Http\Controllers\ProponentController::class, 'supUpdate'])->name('update.supplemental');
 Route::get('/proponent/patient-delete/{id}', [App\Http\Controllers\ProponentController::class, 'delGL'])->name('delete.gl');
 Route::get('/proponent/patient-sort/{code}/{id}/{userid}/{on}/{patient_id}', [App\Http\Controllers\ProponentController::class, 'filterData'])->name('filter.gl');
 Route::get('/proponent/patient-sort2/{code}/{id}/{userid}/{on}/{patient_id}', [App\Http\Controllers\ProponentController::class, 'sortData'])->name('sort.gl');
-
 Route::get('/proponent/patient-print/{code}/{ids}/{patient_id}', [App\Http\Controllers\ProponentController::class, 'excelData'])->name('excel.gl');
 Route::get('/proponent/sub-details/{proponent}', [App\Http\Controllers\ProponentController::class, 'subDetails'])->name('details.subtracted');
 Route::get('/proponent/sub-update/{id}/{amount}', [App\Http\Controllers\ProponentController::class, 'subUpdate'])->name('update.subtraction');
@@ -220,7 +215,6 @@ Route::get('pre-dv/v1/{id}', [App\Http\Controllers\PreDvController::class, 'v1Vi
 Route::get('pre-dv/v2/{id}', [App\Http\Controllers\PreDvController::class, 'v2View'])->name('v2.view');
 Route::match(['post', 'get'],'pre-dv/save/update', [App\Http\Controllers\PreDvController::class, 'updatePreDV'])->name('pre_update.save');
 Route::match(['post', 'get'],'pre-dv/save/modified', [App\Http\Controllers\PreDvController::class, 'modifyPreDV'])->name('pre_modify.save');
-
 Route::get('/pre-dv/version-1', [App\Http\Controllers\PreDvController::class, 'pre_dv1'])->name('pre_dv1');
 Route::get('/pre-dv/version-2', [App\Http\Controllers\PreDvController::class, 'pre_dv2'])->name('pre_dv2');
 Route::post('/pre-dv/dv/new', [App\Http\Controllers\PreDvController::class, 'newDV'])->name('dv_new.save');
@@ -272,7 +266,6 @@ Route::get('/pre-dvv/version-2/pdf/{id}', [App\Http\Controllers\PrintController:
 Route::get('sampsamp/{id}', [App\Http\Controllers\FundSourceController::class, 'getAmount'])->name('amount.get');
 Route::get('/budget-cost/{id}/{amount}', [App\Http\Controllers\FundSourceController::class, 'budgetCost'])->name('budget.cost');
 Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'dashboard'])->name('dashboard');
-
 Route::get('/samsam', [App\Http\Controllers\FacilityController::class, 'samsam'])->name('samsam');
 
 
