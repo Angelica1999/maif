@@ -215,13 +215,6 @@
                                                             }
                                                             
                                                             $text_display = $item->fundsource->saa . ' - ' . $item->proponent->proponent . ' - '.$f_name . $rem_balance;
-
-
-                                                            // if (str_contains($item->facility_id, '702')) {
-                                                            //     $text_display = $item->fundsource->saa . ' - ' . $item->proponent->proponent . ' - ' . 'DOH CVCHD' . ' - ' . $rem_balance;
-                                                            // }else{
-                                                            //     $text_display = $item->fundsource->saa . ' - ' . $item->proponent->proponent . ' - SF - ' . $rem_balance;
-                                                            // }
                                                         }
                                                     ?>
                                                     <option value="{{$item->fundsource_id}}" dataproponentInfo_id="{{$item->id}}" dataprogroup="{{$item->proponent->pro_group}}" data-facilities=""
@@ -235,8 +228,6 @@
                                             <div class="custom-dropdown" style="margin-left: 8px;">
                                                 <input type="text" name="amount[]" id="amount[]" value="{{$row->amount}}" style="width:150px; height: 42px;" onkeyup="validateAmount(this)" oninput="checkedAmount($(this))" class="amount" required autocomplete="off" disabled>
                                             </div>
-                                            <!-- <input type="text" name="vat_amount[]" id="vat_amount" class="vat_amount" value="{{$row->vat}}" style="margin-left: 8px; width: 80px; height: 42px;" class="ft15" readonly required>
-                                            <input type="text" name="ewt_amount[]" id="ewt_amount" class="ewt_amount" value="{{$row->ewt}}" style="width: 80px; height: 42px;" class="ft15" readonly required> -->
                                             <button type="button" id="add_more" class="add_more" class="fa fa-plus" style="border: none; width: 20px; height: 42px; font-size: 11px; cursor: pointer; width: 30px;" disabled>+</button>
                                         </div>
                                         <script>

@@ -213,9 +213,7 @@
 
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 <script>
-     $(document).ready(function() {
-
-
+    $(document).ready(function() {
         $('.updatebtn').on('click', function(){
             $('#muncity_id').prop('disabled', false);
             $('#barangay_id').prop('disabled', false);
@@ -240,45 +238,17 @@
             if ($(this).val() !== '') {
                 setTimeout(function() {
                     $('#loading-image').hide();
-                }, 1000); // Change the time interval as needed
+                }, 1000);
             }
         });
 
-      $('#province_id').change(function() {
- 
-        // $('#muncity_id').prop('disabled', true);
-        // $('#barangay_id').prop('disabled', true);
+        $('#province_id').change(function() {
+            $('#muncity_id').html('<option value="">Please Select a Municipality</option>');
+        });
 
-        $('#muncity_id').html('<option value="">Please Select a Municipality</option>')
-
-        // setTimeout(function() {
-        //     $('#muncity_id').prop('disabled', false);
-        // }, 1000);
-
-      });
-
-      $('#muncity_id').change(function() {
-
-        //  $('#barangay_id').prop('disabled', true);
-         $('#barangay_id').html('<option value="">Please Select Barangay</please>');
-
-        //  setTimeout(function() {
-        //     $('#barangay_id').prop('disabled', false)
-        //  }, 1000);
-
-      });
-
-        //  $('#province_id').change(function() {
-
-        //     if($(this).val() !== ''){
-        //         $('#muncity_id').prop('disabled', false);
-        //     }else {
-        //         $('#muncity_id').prop('disabled', true);
-        //         $('#muncity_id').html('<option value="">Select Municipality</option>');
-        //     }
-          
-        //  });
-
+        $('#muncity_id').change(function() {
+            $('#barangay_id').html('<option value="">Please Select Barangay</please>');
+        });
     });
-    
+        
 </script>

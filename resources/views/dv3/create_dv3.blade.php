@@ -414,15 +414,7 @@
                 total = total + Number($(this).val().replace(/[^\d.]/g, ''));
             }
         });
-        // if(vat> 3){
-        //     $('.deduction').text(formatToLocaleString(total/1.12 * (Number(vat) + Number(ewt)) / 100));
-        //     $('.remaining').text(formatToLocaleString(total- (total/1.12 * (Number(vat) + Number(ewt)) / 100)));
-        // }else{
-        //     $('.deduction').text(formatToLocaleString((total * (Number(vat) + Number(ewt)) / 100). toFixed(2)));
-        //     $('.remaining').text(formatToLocaleString(total- (total * (Number(vat) + Number(ewt)) / 100)));
-        // }
         $('.remaining').text(formatToLocaleString(total));
-        // $('.total_amount').text(formatToLocaleString(total));
         $('.total_amount').val(total);
     }
 
@@ -451,7 +443,7 @@
         if(data.val()) {
             facility_id = data.val();
             handleChangesF(facility_id);
-            getVat(facility_id);
+            // getVat(facility_id);
         }
         $('.add_more').removeAttr('disabled');
         $('.dv3_saa').removeAttr('disabled');
@@ -459,14 +451,14 @@
       }
     
     function getVat(facility_id){
-        // $.get("{{ url('/getvatEwt').'/' }}"+facility_id, function(result) {
-        //     if(result == 0){
-        //         alert('Please update VAT and EWT of this facility first!');
-        //     }else{
-        //         vat = result.vat;
-        //         ewt = result.Ewt
-        //     }
-        // });
+        $.get("{{ url('/getvatEwt').'/' }}"+facility_id, function(result) {
+            if(result == 0){
+                alert('Please update VAT and EWT of this facility first!');
+            }else{
+                vat = result.vat;
+                ewt = result.Ewt
+            }
+        });
     }
 
     function addOption(data){

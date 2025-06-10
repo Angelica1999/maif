@@ -101,27 +101,17 @@ use App\Models\TrackingDetails;
     function confirmed(){
 
         var cs = $('.editable-input').val();
-        // if(cs == ''){
-        //     Swal.fire({
-        //         icon: "error",
-        //         title: "Empty ORS No",
-        //         text: " Ors no is required to confirm this data",
-        //         timer: 1000,
-        //         showConfirmButton: false
-        //     });
-        // }else{
-            $('#checkbox_' + util_id).prop('checked', true);
+        $('#checkbox_' + util_id).prop('checked', true);
 
-            var checkboxes = $('.confirm_check');
-            var allChecked = checkboxes.filter(':not(:checked)').length == 0;
+        var checkboxes = $('.confirm_check');
+        var allChecked = checkboxes.filter(':not(:checked)').length == 0;
 
-            if (allChecked) {
-                $('.budget_obligate').css('display', 'block');
-            } else {
-                $('.budget_obligate').css('display', 'none');
-            }
-            $('#budget_confirm').modal('hide');
-        // }
+        if (allChecked) {
+            $('.budget_obligate').css('display', 'block');
+        } else {
+            $('.budget_obligate').css('display', 'none');
+        }
+        $('#budget_confirm').modal('hide');
     }
 
     function displayFunds(route_no, proponent, id){

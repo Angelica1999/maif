@@ -1,11 +1,7 @@
-
- <!-- Success message container -->
-
 <form id="contractForm" method="POST" action="{{ route('facility.update') }}">
 <input type="hidden" name="main_id" value="{{ $main_id }}">
     <div class="modal-body">
         @csrf
-
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
@@ -13,7 +9,6 @@
                     <input type="text" class="form-control" id="social_worker" name="social_worker" value="{{ $facility->social_worker }}" placeholder="Social Worker" >
                 </div>
             </div>
-
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="social_worker_email">Social Worker Email</label>
@@ -32,14 +27,12 @@
                     <input type="text" class="form-control" id="finance_officer" name="finance_officer" value="{{ $facility->finance_officer }}" placeholder="Finance Officer" >
                 </div>
             </div>
-            
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="finance_officer_email">Finance Officer Email</label>
                     <input type="email" class="form-control" id="finance_officer_email" name="finance_officer_email" value="{{ $facility->finance_officer_email }}" placeholder="Finance Officer Email" >
                 </div>
             </div>
-
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="finance_officer_contact">Finance Officer Contact</label>
@@ -75,16 +68,11 @@
                 </div>
             </div>
       </div>       
-
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            <button type="submit" id="updateButton" class="btn btn-primary">Update Facility</button>
-        </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" id="updateButton" class="btn btn-primary">Update Facility</button>
+    </div>
 </form>
-
-
-
-
 <script>
     $(document).ready(function() {
         @if($facility->cc !== null && $facility->cc !== "")
@@ -125,56 +113,10 @@ document.addEventListener("DOMContentLoaded", function() {
         updateButton.innerText = "Submitting in 3 seconds...";
 
       setTimeout(function () {
-        // Re-enable the button
         updateButton.disabled = false;
-
-        // Reset the button text
         updateButton.innerText = "Update Facility";
-
-        // Submit the form
         contractForm.submit();
       }, delay);
     });
 });
-
-// $(document).ready(function() {
-//         $('#contractForm').submit(function(e) {
-//             e.preventDefault(); // Prevent the default form submission
-
-//             // Simulate form submission delay (e.g., using setTimeout)
-//             setTimeout(function() {
-//                 // Display the success message
-//                 $('#successMessage').show();
-
-//                 // You can also hide the form or close the modal
-//                 // $('#registrationModal').hide();
-//             }, 2000); // Delay for 2 seconds (adjust as needed)
-//         });
-//     });
-
-    // document.addEventListener("DOMContentLoaded", function () {
-    //     var contractForm = document.getElementById("contractForm");
-    //     var submitFormButton = document.getElementById("submitFormButton");
-
-    //     submitFormButton.addEventListener("click", function () {
-    //         if (contractForm.checkValidity()) {
-    //             // Form is valid
-    //             // Display a success message inside the modal
-    //             var successMessage = document.createElement("div");
-    //             successMessage.classList.add("alert", "alert-success");
-    //             successMessage.textContent = "ID {{ $facility->id }} Of Facility updated successfully!";
-    //             var modalBody = document.querySelector(".modal-body");
-    //             modalBody.appendChild(successMessage);
-
-    //             // Close the modal
-    //             $("#yourModalId").modal("hide");
-    //         } else {
-    //             // Form is not valid, trigger Bootstrap's validation styles
-    //             contractForm.classList.add("was-validated");
-    //         }
-    //     });
-    // });
-
-
-  
 </script>

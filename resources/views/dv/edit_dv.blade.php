@@ -1,17 +1,17 @@
 
 <style>
-#patient-code-container {
-    position: relative;
-}
-#loading-image {
-  position: absolute;
-  margin-right: 50px;
-  top: -8%;
-  left: 50%; /* Adjust the position as needed */
-  transform: translateY(-50%, -50%);
-  width: 60px;
-    height: 60px;
-}
+    #patient-code-container {
+        position: relative;
+    }
+    #loading-image {
+        position: absolute;
+        margin-right: 50px;
+        top: -8%;
+        left: 50%; 
+        transform: translateY(-50%, -50%);
+        width: 60px;
+        height: 60px;
+    }
 </style>
 <form id="contractForm" method="POST" action="{{ route('patient.create.save') }}">
     <div class="modal-body">
@@ -23,7 +23,6 @@
                     <input type="text" class="form-control" id="fname" name="fname" placeholder="First Name" required>
                 </div>
             </div>
-
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="lname">Last Name</label>
@@ -31,7 +30,6 @@
                 </div>
             </div>
         </div>
-
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
@@ -39,7 +37,6 @@
                     <input type="text" class="form-control" id="mname" name="mname" placeholder="Middle Name" required>
                 </div>
             </div>
-
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="lname">Date of Birth</label>
@@ -47,15 +44,6 @@
                 </div>
             </div>
         </div>
-        <!-- <div class="row">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label for="fname">Email Address</label>
-                    <input type="email" class="form-control" id="email_ad" name="email_ad" placeholder="example@gmail.com" required>
-                </div>
-            </div>
-        </div> -->
-
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
@@ -81,7 +69,6 @@
                     </select>
                 </div>
             </div>
-
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="lname">Province</label>
@@ -94,9 +81,7 @@
                 </div>
             </div>
         </div>
-
         <div class="row">
-
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="lname">Municipality</label>
@@ -107,7 +92,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="lname">Barangay</label>
@@ -119,7 +103,6 @@
                 </div>
             </div>
         </div>
-
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
@@ -128,22 +111,10 @@
                 </div>
             </div>
         </div>
-
         <hr>
         <strong>Fund Source</strong>
         <hr>
         <div class="row">
-            <!-- <div class="col-md-6">
-                <div class="form-group">
-                    <label >SAA</label>
-                    <select class="js-example-basic-single w-100 select2" id="fundsource_id" name="fundsource_id" onchange="onchangeFundsource($(this))" required>
-                        <option value="">Please select SAA</option>
-                        @foreach($fundsources as $fundsource)
-                            <option value="{{ $fundsource->id }}">{{ $fundsource->saa }}</option>onchangeForPatientCode($(this))
-                        @endforeach
-                    </select>
-                </div>
-            </div> -->
             <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Facility</label>
@@ -160,9 +131,7 @@
                 </div>
             </div>
         </div>
-
         <div class="row">
-            
             <div class="col-md-6">
                 <div class="form-group" id="patient-code-container">
                     <input type="text" class="form-control loading-input" id="patient_code" name="patient_code" placeholder="Patient Code" readonly>
@@ -173,7 +142,6 @@
         <hr>
         <strong>Transaction</strong>
         <hr>
-
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
@@ -181,7 +149,6 @@
                     <input type="text" class="form-control" id="guaranteed_amount" onkeyup= "validateAmount(this)" name="guaranteed_amount" placeholder="Guaranteed Amount">
                 </div>
             </div>
-
             {{-- <div class="col-md-6">
                 <div class="form-group">
                     <label for="fname">Actual Amount</label>
@@ -196,124 +163,52 @@
                 <div id="suggestions"></div>
             </div>
         </div>
-
     </div>
-
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
         <button type="submit" class="btn btn-primary">Create Patient</button>
     </div>
 </form>
-
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
-
-
 <script>
-
-$(document).ready(function() {
-    
-    $('#fundsource_id').on('change', function() {
-        if ($(this).val() !== '') {
-            var selectOptionText = $(this).find('option:selected').text();
-            if(selectOptionText !== 'Please select SAA'){
-                $('#loading-image').show();
+    $(document).ready(function() { 
+        $('#fundsource_id').on('change', function() {
+            if ($(this).val() !== '') {
+                var selectOptionText = $(this).find('option:selected').text();
+                if(selectOptionText !== 'Please select SAA'){
+                    $('#loading-image').show();
+                }
             }
-        }
-    });
-
-    $('#facility_id').on('change', function() {
-        if ($(this).val() !== '') {
-            setTimeout(function() {
-                $('#loading-image').hide();
-            }, 1000); // Change the time interval as needed
-        }
-    });
-    
-    $('#remaining_balance').on('click', function() {
-    });
-
-
-
- // $('#province_id').change(function() {
-        
-        //     $('#muncity_id').prop('disabled', true);
-        //     $('#barangay_id').prop('disabled', true);
-        //     $('#muncity_id').html('<option value="">Please Select a Municipality</option>');
-
-        //     // Enable the Municipality dropdown after a second
-        //     setTimeout(function() {
-        //         $('#muncity_id').prop('disabled', false);
-        //     }, 1000); // 1000 milliseconds = 1 second
-
-        // });
-
-        // $('#muncity_id').change(function() {
-        //     $('#barangay_id').prop('disabled', true);
-        //     $('#barangay_id').html('<option value="">Please Select Barangay</option>')
-                
-        //     setTimeout(function() {
-        //         $('#barangay_id').prop('disabled', false);
-        //     }, 1000);
-        // });
-
-        $('#province_id').change(function() {
-           $('#muncity_id').prop('disabled', true);
-           $('#barangay_id').prop('disabled', true);
-           $('#muncity_id').html('<option value="">Please Select Municipality</option>');
-
-           setTimeout(function() {
-               $('#muncity_id').prop('disabled', false);
-           }, 1000);
-
         });
 
-       $('#muncity_id').change(function() {
-         
-         $('#barangay_id').prop('disabled', true);
-         $('#barangay_id').html('<option value="">Please Select Barangay</option>');
+        $('#facility_id').on('change', function() {
+            if ($(this).val() !== '') {
+                setTimeout(function() {
+                    $('#loading-image').hide();
+                }, 1000); 
+            }
+        });
 
-         setTimeout(function() {
-            $('#barangay_id').prop('disabled', false);
-         }, 1000);
+        $('#province_id').change(function() {
+            $('#muncity_id').prop('disabled', true);
+            $('#barangay_id').prop('disabled', true);
+            $('#muncity_id').html('<option value="">Please Select Municipality</option>');
 
-       });
+            setTimeout(function() {
+                $('#muncity_id').prop('disabled', false);
+            }, 1000);
 
-});
+            });
 
+        $('#muncity_id').change(function() {
+            
+            $('#barangay_id').prop('disabled', true);
+            $('#barangay_id').html('<option value="">Please Select Barangay</option>');
 
+            setTimeout(function() {
+                $('#barangay_id').prop('disabled', false);
+            }, 1000);
 
-
-    // $('#contractForm').submit(function(event) {
-    //     event.preventDefault();
-    //     var loading ="Please Wait Loading....";
-    //     $('.loading_ID').html(loading).show();  // Display loading message
-
-    //     setTimeout(function() {
-    //         var responseData = "Your data here";
-    //         $('#patient_code').val(responseData);
-    //         $('.loading_ID').hide();  // Hide loading message
-    //     }, 2000); // Simulated 2-second delay
-    // });
-
-
-
-    // function displayLoading() {
-    //     var loading = "Loading..."; // Define the loading message
-    //     $('#patient_code').html(loading).show();  // Display loading message
-    // }
-
-    // function hideLoading() {
-    //     $('#patient_code').hide();  // Hide loading message
-    // }
-
-    // $('#contractForm').submit(function(event) {
-    //     event.preventDefault();
-    //     displayLoading(); // Display loading message
-
-    //     setTimeout(function() {
-    //         var responseData = "Your data here";
-    //         $('#patient_code').val(responseData);
-    //         hideLoading(); // Hide loading message
-    //     }, 2000); // Simulated 2-second delay
-    // });
-    </script>
+        });
+    });
+</script>
