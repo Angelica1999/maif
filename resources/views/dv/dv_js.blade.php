@@ -54,62 +54,10 @@
         $('#filter_created').val($('#created_select').val());
         $('#filter_saa').val($('#saa_select').val());
     });
-    $(document).ready(function() {
-        
-        // var table = $('#dv_table').DataTable({
-        //     paging: true,
-        //     deferRender: true,
-        //     pageLength: 50 ,
-        //     initComplete: function () {
-        //         var api = this.api();
-        //         api.columns().every(function (index) {
-        //             if(index < 6 ) return;
-        //             var column = this;
-        //             var header = $(column.header());
-        //             var headerText = header.text().trim();
-        //             var filterDiv = $('<div class="filter_dates"></div>').appendTo(header);
-                    
-        //             var select = $('<select style="width: 120px;" multiple><option value="">' + headerText + '</option></select>')
-        //                 .appendTo(filterDiv)
-        //                 .on('change', function () {
-        //                     var selectedValues = $(this).val();
-        //                     if(index == 8){
-        //                         var val = selectedValues ? selectedValues.join('|') : '';
-        //                         column.search(val, true, false).draw();
-        //                     }else{
-        //                         var val = selectedValues ? selectedValues.map(function(value) {
-        //                                 return $.fn.dataTable.util.escapeRegex(value);
-        //                             }).join('|') : '';
-        //                         column.search(val ? '^(' + val + ')$' : '', true, false).draw();
-        //                     }
-        //                 }).select2();
-
-        //             column.data().unique().sort().each(function (d, j) {
-        //                 if(index == 8){
-        //                     var text = $(d).text().trim(); 
-        //                     select.append('<option value="' + text + '">' + text + '</option>');
-        //                 }else{
-        //                     select.append('<option value="' + d + '">' + d + '</option>');
-        //                 }
-        //             });
-
-        //             filterDiv.hide();
-        //             header.click(function() {
-        //                 $('.filter_dates').hide();
-        //                 $(this).find('.filter_dates').show();
-        //             });
-        //         });
-        //     }
-        // });
-
-        // $('#search-input').on('keyup', function() {
-        //     table.search(this.value).draw();
-        // });
-        
+    $(document).ready(function() {   
         $('#dv_table_length').hide();
         $('#dv_table_filter').hide();
         $('#dv_table_paginate').css('float', 'right');
-
     });
 
     function displayImage(path) {
@@ -415,63 +363,18 @@
     }
 
     function onchangeSaa(data, proponentId, pro_group) {
-
-        //previously requested that saa2 and saa3 will depend on the selected proponent in saa1
-
-        // $('#saa2').empty();
-        // $('#saa3').empty();
        
         var facility_id = $('#facilityDropdown').val();
-        // if(data.val()){
-           
-            // if(update !== 0){
-            //     fundAmount();
-            // }
-            // $.get("{{ url('proponentInfo').'/' }}"+facility_id+'/'+pro_group, function(result) {
-            //     $('#saa2').append($('<option>', {value: '',text: 'Select SAA'}));
-            //     $('#saa3').append($('<option>', {value: '',text: 'Select SAA'}));
-            //     $.each(result, function(index, optionData) {
-            //         if(optionData.facility !== null){
-            //             if(optionData.facility.id == facility_id){
-            //                 text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent;
-            //             }else{
-            //                 text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + optionData.facility.name;
-            //             }
-            //         }else{
-            //             text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent;
-            //         }
-            //         $('#saa2').append($('<option>', {
-            //             value: optionData.fundsource_id,
-            //             text: text_display,
-            //             dataval: optionData.remaining_balance,
-            //             dataproponentInfo_id: optionData.id,
-            //             dataprogroup: optionData.proponent.pro_group,
-            //             dataproponent: optionData.proponent.id
-
-            //         }));
-            //         $('#saa3').append($('<option>', {
-            //             value: optionData.fundsource_id,
-            //             text: text_display,
-            //             dataval: optionData.remaining_balance,
-            //             dataproponentInfo_id: optionData.id,
-            //             dataprogroup: optionData.proponent.pro_group,
-            //             dataproponent: optionData.proponent.id
-
-            //         }));
-            //     });
-            // });
-            
-            if($('#saa2').val()){
-                if(c1 == 1){
-                    $('#inputValue2').val(formatNumberWithCommas(rem));
-                }
+        if($('#saa2').val()){
+            if(c1 == 1){
+                $('#inputValue2').val(formatNumberWithCommas(rem));
             }
-            if($('#saa3').val()){
-                if(c2 == 1){
-                    $('#inputValue3').val(formatNumberWithCommas(rem2));
-                }
+        }
+        if($('#saa3').val()){
+            if(c2 == 1){
+                $('#inputValue3').val(formatNumberWithCommas(rem2));
             }
-        // }   
+        }
     }
 
     function resetFields(facility_id) {
@@ -486,14 +389,6 @@
 
     function removeNullOptions() {
         var dropdown = $('#saa2');
-        // if (dropdown.children().length > 1 && dropdown.children()[1].value === '') {
-        //     dropdown.children().eq(1).remove();
-        // }
-        // if (dropdown.children().length > 1) {
-        //     dropdown.children(':not(:first-child)').filter(function() {
-        //         return this.value === '';
-        //     }).remove();
-        // }
 
         var existingValues = {};
         dropdown.children().slice(1).each(function (index, option) {
@@ -746,13 +641,7 @@
             var vat = $('#vat').val();
             var ewt = $('#ewt').val();
             var facility_id = $('#for_facility_id').val();
-            // var selected_proponent1 = $('#saa1').find(':selected').attr('dataproponent');
             var pro_group = $('#saa1').find(':selected').attr('dataprogroup');
-            // var selected_proponent2 = $('#saa2').find(':selected').attr('dataproponent');
-            // var selected_proponent3 = $('#saa3').find(':selected').attr('dataproponent');
-            // var selected_fac1 = $('#saa1').find(':selected').attr('datafacility');
-            // var selected_fac2 = $('#saa2').find(':selected').attr('datafacility');
-            // var selected_fac3 = $('#saa3').find(':selected').attr('datafacility'); dataproponentInfo_id
             var info1 = $('#saa1').find(':selected').attr('dataproponentInfo_id');
             var info2 = $('#saa2').find(':selected').attr('dataproponentInfo_id');
             var info3 = $('#saa3').find(':selected').attr('dataproponentInfo_id');
@@ -775,30 +664,14 @@
                     var inputValue3 = parseNumberWithCommas(document.getElementById('inputValue3')?.value ?? '0');
 
                     saa1Alocated_Funds = parseNumberWithCommas(saa1Alocated_Funds1);
-                    // $('#saa1_infoId').val((result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId && item.proponent_id == selected_proponent1
-                    //         && item.facility_id == selected_fac1) || {}).proponent_id || 0);
-                    // $('#saa2_infoId').val((result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId2 && item.proponent_id == selected_proponent2
-                    //         && item.facility_id == selected_fac2) || {}).proponent_id || 0);
-                    // $('#saa3_infoId').val((result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId3 && item.proponent_id == selected_proponent3
-                    //         && item.facility_id == selected_fac3) || {}).proponent_id || 0);
 
                     $('#fac_id1').val((result.allocated_funds.find(item =>item.id == info1) || {}).facility_id || 0);
                     $('#fac_id2').val((result.allocated_funds.find(item =>item.id == info2) || {}).facility_id || 0);
                     $('#fac_id3').val((result.allocated_funds.find(item =>item.id == info3) || {}).facility_id || 0);
-                
-                    // new_saa1 = (result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId && item.proponent_id == selected_proponent1
-                    //         && item.facility_id == selected_fac1) || {}).fundsource_id|| 0;
-                    // new_saa2 = (result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId2 && item.proponent_id == selected_proponent2
-                    //         && item.facility_id == selected_fac2) || {}).fundsource_id|| 0;
-                    // new_saa3 = (result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId3 && item.proponent_id == selected_proponent3
-                    //         && item.facility_id == selected_fac3) || {}).fundsource_id|| 0;
-
-                    // fac_id = (result.allocated_funds.find(item =>item.fundsource_id == selectedSaaId3 && item.proponent_id == selected_proponent3) || {}).facility_id|| 0;
                     
                     var all_data = inputValue1 + inputValue2 + inputValue3;
                     $('.total').text(all_data.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
                     setElementValue('#totalInput', all_data);
-                    // $('#totalInput').val(all_data.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
                     var accumulated = parseNumberWithCommas(document.getElementById('accumulated').value) || 0;
                     var new_data = (all_data-accumulated).toFixed(2);
                     $('#totalDebit').text(new_data.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
@@ -849,13 +722,11 @@
 
                     $('.totalDeduction').text(totalDeductEwtVat.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
                     setElementValue('#totalDeductionInput', totalDeductEwtVat);
-                    // $('#totalDeductionInput').val(totalDeductEwtVat.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
                     $('#DeductForCridet').text(totalDeductEwtVat.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
                     var overallTotalInput = parseFloat(parseNumberWithCommas(all_data)) -
                                 parseFloat(parseNumberWithCommas(totalDeductEwtVat));
                     $('.overallTotal').text(overallTotalInput.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
                     setElementValue('#overallTotalInput', overallTotalInput);
-                    // $('#overallTotalInput').val(overallTotalInput.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
                     $('#OverTotalCredit').text(overallTotalInput.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
 
                     $('#saa1_discount').val((parseFloat($first_vat) + parseFloat($first_ewt)).toFixed(2));
@@ -1113,7 +984,6 @@
                         text: 'Generate PDF'
                     });
                     var deleteButton = $('<a>', {
-                        // href: "{{ route('remove.dv', '') }}/" + result.dv.route_no,
                         type: 'button',
                         class: 'btn btn-danger btn-sm',
                         text: 'Remove',

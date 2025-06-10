@@ -97,13 +97,6 @@
                                             }
 
                                         }
-                                        // $name = "";
-                                        // foreach($intArray as $id){
-                                        //     $pro = $proponents->where('id')->value('proponent');
-                                        //     $name = $name .'<br>'.$pro;
-                                        // }
-                                        // echo $name;
-                                        // echo $proponents->where('id', $intArray[0])->value('proponent');
                                     ?>
                                 </td>
                                 <td>{{date('F j, Y', strtotime($dvs->date))}}</td>

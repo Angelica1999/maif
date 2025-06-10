@@ -162,48 +162,23 @@
     }
 
     function updateDv3(route_no){
-        // if(doc_type == 'unsettled'){
-        //     $('#confirm_dv').modal('show');
-        //     $('#confirmation_main').html(loading);
-        //     $.get("{{ url('budget/confirm').'/' }}" + route_no, function(result) {
-        //         $('#confirmation_main').html(result);
-        //     });
-        // }else{
-            $('#confirm_dv').modal('hide');
-            $('#create_dv3').modal('show');
-            $('.dv3_body').html(loading);
-            $.get("{{url('dv3/update').'/'}}"+route_no, function(result){
-                $('.dv3_body').html(result);
-            });
-        // }
+        $('#confirm_dv').modal('hide');
+        $('#create_dv3').modal('show');
+        $('.dv3_body').html(loading);
+        $.get("{{url('dv3/update').'/'}}"+route_no, function(result){
+            $('.dv3_body').html(result);
+        });
     }
 
     function obligate(){
         $('#confirm_dv').modal('hide');
         con = 1;
-        // confirm();
         $('#create_dv3').modal('show');
         $('.dv3_body').html(loading);
         $.get("{{url('dv3/update').'/'}}"+route, function(result){
             $('.dv3_body').html(result);
         });
     }
-
-    // function confirm(){
-    //     $.get("{{ url('confirm').'/' }}" + dv_id, function(result) {
-    //         Swal.fire({
-    //             icon: 'success',
-    //             title: 'Confirmed!',
-    //             text: 'Disbursement was successfully confirmed!',
-    //             timer: 1000, 
-    //             showConfirmButton: false
-    //         }).then(() => {
-    //             if(con == 0){
-    //                 location.reload(); 
-    //             }
-    //         });
-    //     });
-    // }
 
     var util_id = 0;
     var con = 0;
