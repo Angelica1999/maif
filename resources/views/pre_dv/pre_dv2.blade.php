@@ -419,48 +419,6 @@ use App\Models\TrackingDetails;
         });
     });
 
-    // $('.confirmAccept').click(function(){
-    //         var id = $('#acceptModal').data('id');
-    //         var route_no = $('#acceptModal').data('route');
-    //         var remarks = $('#accept_remarks').val();
-    //         var _token = "{{ csrf_token() }}";
-    //         $('[data-id=' + id + ']').addClass('hide');
-    //         $('.loading').show();
-    //         $.ajax({
-    //             url: url,
-    //             type: 'POST',
-    //             data: {
-    //                 id:id,
-    //                 remarks:remarks,
-    //                 _token: _token
-    //             },
-    //             success: function(data){
-    //                 $(document).ready(function () {
-    //                     insertFirebase({
-    //                         "route_no" : data.route_no,
-    //                         "section_owner_id" : data.section_owner_id,
-    //                         "user_accepted_name" : data.user_accepted_name,
-    //                         "section_accepted_id" : data.section_accepted_id,
-    //                         "section_accepted_name" : data.section_accepted_name,
-    //                         "remarks" : data.remarks,
-    //                         "status" : data.status
-    //                     });
-    //                     countIncoming += 1;
-    //                     var count = incomingFunction();
-    //                     $('.badgeIncoming').html(count-countIncoming);
-    //                     Lobibox.notify('success', {
-    //                         msg: 'Accepted successfully!'
-    //                     });
-    //                     $('.loading').hide();
-    //                     if(count-countIncoming == 0){
-    //                         location.reload();
-    //                     }
-    //                     appendOutgoing(id,route_no);
-    //                 });
-    //             }
-    //         });
-    //     });
-
     function updateRemarks(route_no, remarks){
         if(remarks != 0){
             $('.text_remarks').val(remarks);

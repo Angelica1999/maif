@@ -665,7 +665,6 @@
     $('#proponent_i').on('click', function(){
         $('#proponent_select').empty();
         $('#proponent_div').css('display', 'block');
-        // <select style="width: 120px;" id="proponent_select" name="proponent_select" multiple>
         var pros = @json($pros);
         var filter_proponent = @json($filter_proponent);
         filter_proponent = filter_proponent.map(Number);
@@ -772,7 +771,6 @@
     $('#barangay_i').on('click', function(){
         $('#barangay_select').empty();
         $('#barangay_div').css('display', 'block');
-        // <select style="width: 120px;" id="barangay_select" name="barangay_select" multiple>
         var barangay = @json($barangay).filter(item => item !== '' && item !== null);
         var filter_barangay = @json($filter_barangay);
         filter_barangay = filter_barangay.filter(item => item !== '');
@@ -934,7 +932,6 @@
 
         var parentTd = $(element).closest('td');   
         var patientId = parentTd.attr('data-patient-id');
-        // var amount = parentTd.attr('data-amount');
         var row = $(element).closest('tr');   
         var edit = row.find('td.editable-amount');
         var val = edit.attr('data-actual-amount');
@@ -1032,18 +1029,7 @@
                 });
             }
         });
-        // $(document).on('click', '.select_all', function() {
-        //     if (all_patients) {
-        //         $('#patient_table').find('input.group-mailCheckBox').each(function() {
-        //             if ($(this).data('stat') == 1) {
-        //                 $(this).prop('checked', true).trigger('change');
-        //                 id_list.push(String($(this).attr('id').replace('mailCheckboxId_', '')));
-        //                 mail_ids.push($(this).attr('id'));
-        //             }
-        //         });
-        //         $('.send_mails').val('').show();
-        //     }
-        // });
+        
         $(document).on('click', '.unselect_all', function() {
             $('#patient_table').find('input.group-mailCheckBox').prop('checked', false).trigger('change');
             $('.send_mails').val('').hide();

@@ -628,7 +628,6 @@
                             '<td>' + facility + '</td>' +
                             '<td>' + number_format(parseFloat(beg_balance.replace(',', '')), 2, '.', ',') + '</td>' +
                             '<td>' +(item.div_id != 0 ?'<a class="modal-link" href="#i_frame" data-routeId="'+route+'" onclick="openModal(this)">' + utilize + '</a>' :utilize) +'</td>' +
-                            // '<td>' + (item.div_id != 0 ? '<a href="{{ route("dv", ["keyword" => ""]) }}' + encodeURIComponent(route) + '">' + route + '</a>' : '') + '</td>' +
                             '<td>' +(item.div_id != 0 ?'<a class="modal-link" href="#obligate" data-backdrop="static" data-toggle="modal" data-dvNo="'+item.dv_no+'" data-routeId="'+route+'" onclick="getDv(this)">' + item.div_id + '</a>' :'') +'</td>' +
                             '<td>' + item.user_budget.lname +', '+item.user_budget.fname+ '</td>' +
                             '<td>' + formattedDate+'<br>'+ formattedTime + '</td>' +
@@ -653,19 +652,7 @@
                 }
             }
         });
-
     }
-
-    // function openModal( link) {
-    //     var routeNo = $(link).data('routeid');
-    //     setTimeout(function() {
-    //         // var src = "https://mis.cvchd7.com/dts/document/trackMaif/" + routeNo;
-    //         var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNoo;
-
-    //         $("#track_iframe").attr("src", src);
-    //         $('#i_frame').modal('show');
-    //     },100);
-    // }
 
     function openModal(link) {
         var routeNoo = $(link).data('routeid');
@@ -752,21 +739,6 @@
             });
         }, 500);
     }
-
-    // function createFundSource() {
-    //     $('.modal_body').html(loading);
-    //     $('.modal-title').html("Create Fundsource");
-    //     var url = "{{ route('fundsource.create') }}";
-    //     setTimeout(function(){
-    //         $.ajax({
-    //             url: url,
-    //             type: 'GET',
-    //             success: function(result) {
-    //                 $('.modal_body').html(result);
-    //             }
-    //         });
-    //     },500);
-    // }
 
     function addTransaction() {
         event.preventDefault();
