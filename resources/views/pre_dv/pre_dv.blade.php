@@ -782,23 +782,6 @@
         }
     }
 
-    // $(document).on('input', '.control_no', function(){
-    //     var control_clone = $(this).closest('.control_clone');
-    //     var control_no = $(control_clone).find('.control_no').val();  
-    //     var cons = controls();
-    //     var index = cons.findIndex(item => item === control_no);
-    //     if (index > -1) {
-    //         cons.splice(index, 1); 
-    //     }            
-    //     var exist = existing_control.find(item => item === control_no);
-
-    //     if (cons.includes(control_no) || exist) {
-    //         alert('Control no ' +control_no+ ' existed already!')
-    //         // $(control_clone).find('.control_no').val('');
-    //         return false;
-    //     }
-    // });
-
     $(document).on('input', '.prof_fee', function(){
         getGrandFee();
     });

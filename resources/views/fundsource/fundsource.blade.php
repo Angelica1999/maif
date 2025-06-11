@@ -633,19 +633,6 @@
                             }
                         }
                         var item_remarks = item.transfer && item.transfer.remarks !== null ? item.transfer.remarks : ''; 
-                        // if(item.transfer)
-                        // else if(item.status == 2){
-                        //     if(item)
-                        //     stat = 'Transfered/Deducted: ' + (item.transfer && item.transfer.remarks !== null ? item.transfer.remarks : '');
-                        // }else if(item.status == 3){
-                        //     stat = 'Transfered/Added: ' + (item.transfer && item.transfer.remarks !== null ? item.transfer.remarks : '');
-                        // }
-
-                        // stat = splitIntoLines(stat, 35); 
-
-                        // else if(item.status == 1){
-                        //     stat = 'Modified';
-                        // }
                         var beg_balance = item.beginning_balance.replace(',', '');
                         var discount = (item.discount !== null)?number_format(parseFloat(item.discount.replace(/,/g, '')), 2, '.', ','):'';
                         var utilize = (item.utilize_amount !== null)?number_format(parseFloat(item.utilize_amount.replace(/,/g, '')), 2, '.', ','):'';
@@ -657,7 +644,6 @@
                             '<td>' + number_format(parseFloat(beg_balance.replace(',', '')), 2, '.', ',') + '</td>' +
                             '<td>' + discount + '</td>' +
                             '<td>' +(item.div_id != 0 ?'<a class="modal-link" href="#i_frame" data-routeId="'+route+'" onclick="openModal(this)">' + utilize + '</a>' :utilize) +'</td>' +
-                            // '<td>' + (item.div_id != 0 ? '<a href="{{ route("dv", ["keyword" => ""]) }}' + encodeURIComponent(route) + '">' + route + '</a>' : '') + '</td>' +
                             '<td>' + (item.div_id != 0 ? '<a href="{{ url("checkdv").'/' }}' + encodeURIComponent(route) + '">' + route + '</a>' : '') +'</td>'+
                             '<td>' + user + '</td>' +
                             '<td>' + formattedDate+'<br>'+ formattedTime + '</td>' +
@@ -803,26 +789,6 @@
             element.value = ''; 
         }
     }
-
-    // function proponentCode(proponent){
-    //     if(proponent.val()){
-    //         var proponent_id = proponent.val()
-    //         var url = "{{ url('proponent').'/' }}"+ proponent_id;
-    //         setTimeout(function() {
-    //             $.ajax({
-    //                 url: url,
-    //                 type: 'GET',
-    //                 success: function(result){
-    //                     $("#    ").val(result).prop('readonly', true);
-    //                     var selectedText = $('#proponent_exist option:selected').text();
-    //                     $("#proponent").val(selectedText).prop('readonly', true);
-    //                 }
-    //             });
-    //         }, 500);
-    //     }else{
-    //         $("#proponent_code").val('').prop('readonly', false);
-    //     }   
-    // }
 
     function version2(data) {
         var route_no = $(data).data('routeid');

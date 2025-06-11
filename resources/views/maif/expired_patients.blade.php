@@ -706,7 +706,6 @@
     $('#proponent_i').on('click', function(){
         $('#proponent_select').empty();
         $('#proponent_div').css('display', 'block');
-        // <select style="width: 120px;" id="proponent_select" name="proponent_select" multiple>
         var pros = @json($pros);
         var filter_proponent = @json($filter_proponent);
         filter_proponent = filter_proponent.map(Number);
@@ -975,7 +974,6 @@
 
         var parentTd = $(element).closest('td');   
         var patientId = parentTd.attr('data-patient-id');
-        // var amount = parentTd.attr('data-amount');
         var row = $(element).closest('tr');   
         var edit = row.find('td.editable-amount');
         var val = edit.attr('data-actual-amount');
@@ -1105,7 +1103,6 @@
                         $(editableField).text(actual_amount);
                         $(editableField).value(actual_amount);
                         cell.attr('data-actual-amount', actual_amount);
-                        // location.reload();
                         return;  
                     }
                     var c_amount = newValue.replace(/,/g,'');
@@ -1119,7 +1116,6 @@
                         cell.attr('data-actual-amount', actual_amount);
                         $(editableField).text(actual_amount);
                         $(editableField).value(actual_amount);
-                        // location.reload();
                         return;           
                     }
 
@@ -1131,7 +1127,6 @@
                             rounded: true
                         });
                         cell.attr('data-actual-amount', newValue);
-                        // location.reload();
                     });
                 }
             });
@@ -1205,8 +1200,6 @@
                     removeRoute = removeRoute.replace(':id', id);
                     $('.btn.btn-danger').attr('data-id', id).css('display', 'inline-block').text('Remove');
                 }
-                // $('.btn.btn-warning').attr('data-id', id).css('display', 'inline-block');
-
                 $('.fname').val(patient.fname);
                 $('.lname').val(patient.lname);
                 $('.mname').val(patient.mname);
@@ -1225,8 +1218,6 @@
                 $('.guaranteed_amount').val(patient.guaranteed_amount);
                 $('.actl_amnt').show();
                 $('.actual_amount').val(patient.actual_amount);
-                // $('.proponent_id1').val(patient.proponent_id).trigger('change');
-
                 var $proponentSelect = $('.proponent_id1'); 
 
                 for (var i = 0; i < ids.length; i++) {
@@ -1363,8 +1354,6 @@
     }
 
     function onchangeForPatientCode(data) {
-
-        // var facility_id = $('#facility_id').val();
 
         if(facility_id == 0){
             facility_id = $('#facility_id').val();
