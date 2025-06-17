@@ -99,10 +99,10 @@
                         <input type="hidden" class="form-control sent_type" name="sent_type" id="sent_type" value="0">
 
                         <div class="input-group-append" style="display: flex; justify-content: flex-end;">
-                            <button class="btn btn-md send_mails" name="send_mails[]" style="display:none; background-color:green; color:white; height:41px; border-radius:0px; width:100%">Send Mails <img src="\maif\public\images\email_16.png"></button>
+                            <button class="btn btn-md send_mails" name="send_mails[]" id="email_sent" style="display:none; background-color:green; color:white; height:41.5px; border-radius:0px; width:100%">Send Mails <img src="\maif\public\images\email_16.png"></button>
                         </div>
                         <div class="input-group">
-                            <button class="btn btn-md send_mails" name="send_mails[]" id="system_sent" style="display:none; background-color:darkgreen; color:white; height:40px; border-radius:0px; width:100%">Send GL to <img src="{{ asset('images/doh-logo.png') }}" style="width:20px"></button>
+                            <button class="btn btn-md send_mails" name="send_mails[]" id="system_sent" style="display:none; background-color:darkgreen; color:white; height:41px; border-radius:0px; width:100%">Send GL to <img src="{{ asset('images/doh-logo.png') }}" style="width:20px"></button>
                         </div>
                     </form>
                     <form method="POST" action="{{ route('save.group') }}">
@@ -246,20 +246,26 @@
                                         target="_blank" 
                                         type="button" 
                                         class="btn btn-xs">Print</a>
-                                        <a href="{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}" 
-                                        type="button" 
-                                        style="margin-top:1px; border-radius:0; width:50px;" 
-                                        class="btn btn-success btn-xs" 
-                                        id="send_btn">Send</a>
+                                        @if($patient->facility_id && !in_array($patient->facility_id, $onhold_facs))
+                                            <a href="{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}" 
+                                            type="button" 
+                                            style="margin-top:1px; border-radius:0; width:50px;" 
+                                            class="btn btn-success btn-xs" 
+                                            id="send_btn">Send</a>
+                                        @endif
                                     </div>
-                                    <a href="{{ route('patient.accept', ['id' => $patient->id]) }}" style="margin-left:10px; font-size:14px"  title="Send this GL to facility">
-                                        <i class="fa fa-paper-plane"></i>
-                                    </a>
+                                    @if($patient->sent_type == null || $patient->fc_status == 'returned')
+                                        <a href="{{ route('patient.accept', ['id' => $patient->id]) }}" style="margin-left:10px; font-size:14px"  title="Send this GL to facility">
+                                            <i class="fa fa-paper-plane"></i>
+                                        </a>
+                                    @endif
                                 </div>
                             </td>
-                            <td style="text-align:center;" class="group-email" data-patient-id="{{ $patient->id }}" >
+                            <td style="text-align:center;" class="group-email" data-patient-id="{{ $patient->id }}">
                                 <input class="sent_mails[] " id="mail_ids[]" name="mail_ids[]" type="hidden">
                                 <input type="checkbox" style="width: 60px; height: 20px;" name="mailCheckbox[]" id="mailCheckboxId_{{ $patient->id }}" 
+                                    data-patient-stat="{{ $patient->sent_type == null || $patient->fc_status == 'returned' ? 1 : 0 }}"
+                                    data-patient-stat2="{{ $patient->facility_id && !in_array($patient->facility_id, $onhold_facs) ? 1 : 0 }}"
                                     class="group-mailCheckBox" onclick="itemChecked($(this))">
                             </td>
                             <td style="text-align:center">
@@ -268,7 +274,7 @@
                                 @endif
                             </td>
                             <td>
-                                    {{ $patient->pat_rem }}   
+                                {{ $patient->pat_rem }}   
                             </td>
                             <td style="text-align:center;" class="group-amount" data-patient-id="{{ $patient->id }}" data-proponent-id="{{ $patient->proponent_id }}" 
                                 data-amount="{{ $patient->actual_amount }}" data-facility-id="{{ $patient->facility_id }}" >
@@ -285,7 +291,7 @@
                             <td class="td">{{ number_format((float) str_replace(',', '', $patient->guaranteed_amount), 2, '.', ',') }}</td>
                             <td>{{date('F j, Y', strtotime($patient->date_guarantee_letter))}}</td>
                             <td class="td">
-                                <a href="#update_patient" onclick="editPatient('{{ $patient->id }}')" data-backdrop="static" data-toggle="modal">
+                                <a href="#update_patient" onclick="editPatient('{{ $patient->id }}', '{{ $patient->facility_id && !in_array($patient->facility_id, $onhold_facs) ? 1 : 0 }}')" data-backdrop="static" data-toggle="modal">
                                     {{ $patient->fname }}
                                 </a>
                             </td>   
@@ -698,9 +704,9 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" id="close_modal" data-dismiss="modal">Close</button>
-                        <button type="submit" id="create_pat_btn" class="btn btn-primary">Update</button>
-                        <button type="submit" id="update_send" name="update_send" value="upsend" class="btn btn-success" style="color:white" >Update & Send</button>
-                        <a type="button" class="btn btn-danger" onclick="removePatient()" style="display:none; color:white">Remove</a>
+                        <button type="submit" id="update_pat_btn" class="btn btn-primary" style="display:block;" >Update</button>
+                        <button type="submit" id="update_send" name="update_send" value="upsend" class="btn btn-success" style="display:block; color:white" >Update & Send</button>
+                        <a type="button" id="remove_pat_btn" class="btn btn-danger" onclick="removePatient()" style="display:none; color:white">Remove</a>
                         <a type="button" class="btn btn-warning" onclick="returnPatient()" style="display:none; color:white">Return</a>
                     </div>
                 </form>
@@ -1127,7 +1133,30 @@
     var id_list = [];
     var mail_ids = [];
     var selectedProponentId = 0, selectedFacilityId = 0;
-    
+
+    function getStat(){
+        var all_stat = [];
+        $('.group-mailCheckBox:checked').each(function(){ 
+            var element = $(this);  
+            var data_stat = element.attr('data-patient-stat');
+            all_stat.push(data_stat);
+        });
+
+        return all_stat;
+    }
+
+    function getStat2(){
+        var all_stat = [];
+        $('.group-mailCheckBox:checked').each(function(){ 
+            var element = $(this);  
+            var data_stat = element.attr('data-patient-stat2');
+            all_stat.push(data_stat);
+        });
+
+        return all_stat;
+    }
+
+
     function itemChecked(element){
         var parentTd = $(element).closest('td');   
         var patientId = parentTd.attr('data-patient-id');
@@ -1144,8 +1173,17 @@
         if(id_list.length != 0){
             $('.send_mails').val(id_list).show();
         }else{
-            $('.send_mails').val('').hide();
+            $('.send_mails').val(id_list).hide();
         }
+
+        if (getStat().includes('0')) {
+            $('#system_sent').hide();
+        }
+
+        if (getStat2().includes('0')) {
+            $('#email_sent').hide();
+        }
+        
     }
 
     var group_a = [];
@@ -1247,6 +1285,12 @@
             // if(all_patients){
                 $('#patient_table').find('input.group-mailCheckBox').prop('checked', true).trigger('change');
                 $('.send_mails').val('').show();
+                if (getStat().includes('0')) {
+                    $('#system_sent').hide();
+                }
+                if (getStat2().includes('0')) {
+                    $('#email_sent').hide();
+                }
 
                 // $('#patient_table').find('input.group-mailCheckBox:checked').each(function() {
                 //     var p_id = $(this).val(); // or use $(this).data('id') if the ID is stored as a data attribute
@@ -1380,7 +1424,7 @@
 
     var edit_c = 0;
 
-    function editPatient(id) {
+    function editPatient(id, stat) {
         form_type='update';
         var patient;
         $.get("{{url('/gl/update').'/'}}" + id, function(result){
@@ -1431,6 +1475,20 @@
                 $('.patient_code').val(patient.patient_code);
                 $('.remaining_balance').val(patient.remaining_balance);
                 $('.pat_rem').val(patient.pat_rem);
+
+                if (patient.sent_type == null || patient.fc_status == "returned") {
+                    $('#update_pat_btn').css('display', 'block');
+                    $('#remove_pat_btn').css('display', 'block');
+                    if (stat != 0) {
+                        $('#update_send').css('display', 'block');
+                    } else {
+                        $('#update_send').css('display', 'none');
+                    }
+                } else {
+                    $('#update_pat_btn').css('display', 'none');
+                    $('#update_send').css('display', 'none');
+                    $('#remove_pat_btn').css('display', 'none');
+                }
             }
             edit_c = 0;
         });

@@ -11,6 +11,7 @@ use App\Models\Fundsource;
 use App\Models\User;
 use App\Models\Patients;
 use App\Models\Facility;
+use App\Models\AddFacilityInfo;
 use App\Models\Dv;
 use App\Models\NewDV;
 use App\Models\Dv2;
@@ -111,6 +112,42 @@ class ProponentController extends Controller
         ]);
     }
 
+    public function sendHold(Request $req){
+        $proponents = Proponent::select(
+                DB::raw('MAX(id) as id'), 
+                DB::raw('MAX(proponent) as proponent'), 
+                DB::raw('MAX(proponent_code) as proponent_code')
+            )
+            ->groupBy('proponent_code')
+            ->whereNotNull('sent_status')
+            ->orderBy('id', 'desc');
+        
+        $on_hold = Proponent::select(
+                DB::raw('MAX(id) as id'), 
+                DB::raw('MAX(proponent) as proponent'), 
+                DB::raw('MAX(proponent_code) as proponent_code')
+            )
+            ->groupBy('proponent_code')
+            ->whereNull('sent_status')
+            ->orderBy('id', 'desc')
+            ->get();
+        
+        if ($req->viewAll) {
+            $req->keyword = '';
+        } else if ($req->keyword) {
+            $proponents->where(function($query) use ($req) {
+                $query->where('proponent', 'LIKE', "%{$req->keyword}%")
+                    ->orWhere('proponent_code', 'LIKE', "%{$req->keyword}%");
+            });
+        }
+
+        return view('proponents.proponent_hold_send', [
+            'proponents' => $proponents->paginate(50),
+            'keyword' => $req->keyword,
+            'hold' => $on_hold
+        ]);
+    }
+
     public function holdPro(Request $req){
         if($req->proponent_id){
             Proponent::whereIn('proponent_code', $req->proponent_id)->update(['status' => 1]);
@@ -118,8 +155,12 @@ class ProponentController extends Controller
         }
     }
 
-    public function release($code){
-        Proponent::where('proponent_code', $code)->update(['status' => null]);
+    public function release($type, $code){
+        if($type == 1 ){
+            Proponent::where('proponent_code', $code)->update(['status' => null]);
+        }else if($type == 2){
+            AddFacilityInfo::where('facility_id', $code)->update(['sent_status' => null]);
+        }
     }
 
     public function fundsource(Request $request)

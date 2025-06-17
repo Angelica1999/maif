@@ -632,7 +632,7 @@ class PrintController extends Controller
             ]
         )->first();
         
-        if($pre_dv){
+        if($pre_dv){    
 
             $data = [
                 'result' => $pre_dv

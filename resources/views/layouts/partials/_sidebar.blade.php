@@ -386,10 +386,24 @@
                         </ul>
                         <ul class="nav flex-column sub-menu">
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('on-hold') }}">
+                                <a class="nav-link" href="#">
                                     <img src="\maif\public\images\proponents_16.png" style="margin-right:12px">
                                     <span class="menu-title">HOLD GL</span>
                                 </a>
+                                <ul class="nav flex-column sub-menu">
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ route('on-hold') }}">
+                                            <img src="\maif\public\images\proponents_16.png" style="margin-right:5px">
+                                            <span class="menu-title" style="margin-left:5px">CREATING GL</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ route('send-hold') }}">
+                                            <img src="\maif\public\images\proponents_16.png" style="margin-right:5px">
+                                            <span class="menu-title" style="margin-left:5px">SENDING GL(email)</span>
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
                         </ul>
                         <ul class="nav flex-column sub-menu">

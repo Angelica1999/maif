@@ -691,11 +691,6 @@ class FundSourceController extends Controller
             ->whereNull('status')
             ->get();
 
-        // if(Auth::user()->userid == 2760){
-        //     $proponents = Proponent::select( DB::raw('MAX(proponent) as proponent'), DB::raw('MAX(id) as id'))
-        //     ->groupBy('proponent') ->whereIn('id', $ids)
-        //     ->get();
-        // }
         return $proponents;
     }
 

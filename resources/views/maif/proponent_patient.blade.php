@@ -96,10 +96,10 @@
                         <input type="hidden" class="form-control sent_type" name="sent_type" id="sent_type" value="0">
 
                         <div class="input-group" >
-                            <button class="btn btn-md send_mails" name="send_mails[]" style="display:none; background-color:green; color:white; height:38.7px; border-radius:0px; width:120px">Send Mails <img src="\maif\public\images\email_16.png"></button>
+                            <button class="btn btn-md send_mails" name="send_mails[]" id="email_sent" style="display:none; background-color:green; color:white; height:41px; border-radius:0px; width:130px">Send Mails <img src="\maif\public\images\email_16.png"></button>
                         </div>
                         <div class="input-group">
-                            <button class="btn btn-md send_mails" name="send_mails[]" id="system_sent" style="display:none; background-color:darkgreen; color:white; height:41px; border-radius:0px; width:120px">Send GL to <img src="{{ asset('images/doh-logo.png') }}" style="width:20px"></button>
+                            <button class="btn btn-md send_mails" name="send_mails[]" id="system_sent" style="display:none; background-color:darkgreen; color:white; height:40px; border-radius:0px; width:130px">Send GL to <img src="{{ asset('images/doh-logo.png') }}" style="width:20px"></button>
                         </div>
                     </form>
                     <form method="POST" action="{{ route('save.group') }}">
@@ -247,7 +247,9 @@
                                 <div style="display: flex; align-items: center; gap: 5px;">
                                     <div>
                                         <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}" style="border-radius:0; background-color:teal;color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
-                                        <a href="{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}" type="button" style="margin-top:1px; border-radius:0; width:50px;" class="btn btn-success btn-xs" id="send_btn">Send</a>
+                                        @if($patient->facility_id && !in_array($patient->facility_id, $onhold_facs))
+                                            <a href="{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}" type="button" style="margin-top:1px; border-radius:0; width:50px;" class="btn btn-success btn-xs" id="send_btn">Send</a>
+                                        @endif    
                                     </div>
                                     @if($patient->sent_type == 1 || $patient->fc_status == 'returned')
                                         <a href="{{ route('patient.accept', ['id' => $patient->id]) }}" style="margin-left:10px; font-size:14px"  title="Send this GL to facility">
@@ -265,7 +267,9 @@
                                 data-patient-id="{{ $patient->id }}" >
                                 <input class="sent_mails[] " id="mail_ids[]" name="mail_ids[]" type="hidden">
                                 <input type="checkbox" style="width: 60px; height: 20px;" name="mailCheckbox[]" id="mailCheckboxId_{{ $patient->id }}" 
-                                    data-stat="{{ $patient->sent_type == 1 || $patient->fc_status == 'returned' ? 1 : 0 }}" class="group-mailCheckBox" onclick="itemChecked($(this))">
+                                    data-stat="{{ $patient->sent_type == 1 || $patient->fc_status == 'returned' ? 1 : 0 }}" 
+                                    data-patient-stat2="{{ $patient->facility_id && !in_array($patient->facility_id, $onhold_facs) ? 1 : 0 }}"
+                                    class="group-mailCheckBox" onclick="itemChecked($(this))">
                             </td>
                             <td style="text-align:center">
                                 {{ $patient->sent_type == 1 ? 'Sent from Proponent' : ($patient->sent_type == 2 ? 'Returned back to Proponent' : ( $patient->sent_type == 3 ? 'Credentials checked by MPU' : 'Credentials Check' )) }}
@@ -904,7 +908,29 @@
     var id_list = [];
     var mail_ids = [];
     var selectedProponentId = 0, selectedFacilityId = 0;
-    
+
+    function getStat(){
+        var all_stat = [];
+        $('.group-mailCheckBox:checked').each(function(){ 
+            var element = $(this);  
+            var data_stat = element.attr('data-stat');
+            all_stat.push(data_stat);
+        });
+
+        return all_stat;
+    }
+
+    function getStat2(){
+        var all_stat = [];
+        $('.group-mailCheckBox:checked').each(function(){ 
+            var element = $(this);  
+            var data_stat = element.attr('data-patient-stat2');
+            all_stat.push(data_stat);
+        });
+
+        return all_stat;
+    }
+
     function itemChecked(element){
         var parentTd = $(element).closest('td');   
         var patientId = parentTd.attr('data-patient-id');
@@ -921,6 +947,12 @@
             $('.send_mails').val(id_list).show();
         }else{
             $('.send_mails').val('').hide();
+        }
+        if (getStat().includes('0')) {
+            $('#system_sent').hide();
+        }
+        if (getStat2().includes('0')) {
+            $('#email_sent').hide();
         }
     }
 
@@ -1027,6 +1059,13 @@
                     id_list.push(String(p.id));
                     mail_ids.push('mailCheckboxId_'+p.id);
                 });
+
+                if (getStat().includes('0')) {
+                    $('#system_sent').hide();
+                }
+                if (getStat2().includes('0')) {
+                    $('#email_sent').hide();
+                }
             }
         });
         
