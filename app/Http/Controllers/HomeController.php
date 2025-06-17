@@ -2234,10 +2234,10 @@ class HomeController extends Controller
             do {
                 $random = rand(10, 99); 
                 $patient_code = $proponent->proponent_code . '-' . 
-                                $this->getAcronym($patient->facility->name) . 
-                                date('YmdHis') . 
-                                $user->id . 
-                                $random;
+                    $this->getAcronym($patient->facility->name) . 
+                    date('YmdHis') . 
+                    $user->id . 
+                    $random;
                 $check_code = Patients::where('patient_code', $patient_code)->first();
             } while ($check_code);
             
