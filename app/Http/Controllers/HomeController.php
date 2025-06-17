@@ -20,6 +20,7 @@ use App\Models\Dv3;
 use App\Models\NewDV;
 use App\Models\Utilization;
 use App\Models\TrackingDetails;
+use App\Models\AddFacilityInfo;
 use App\Models\PatientLogs;
 use App\Models\MailHistory;
 use App\Models\ReturnedPatients;
@@ -62,23 +63,10 @@ class HomeController extends Controller
 
     public function index(Request $request){
 
-        // if(Auth::user()->userid == 2760){
-        //     $util = Utilization::where('fundsource_id', 6)
-        //     ->where('obligated', 1)
-        //     ->where('budget_bbalance', '<', 6448531.15)
-        //     ->get();
-        //         //    return $util;
-        //         // $num = 162261000.00;
-        //     foreach($util as $row){
-        //         // if($row->budget_bbalance != null){
-        //             $row->budget_bbalance = $row->budget_bbalance + 6012.65;
-        //             $row->save();
-
-        //             // $num = $num - str_replace(',','', $row->budget_utilize);
-
-        //         // }
-        //     }
-        // }
+        $proponents = Proponent::where('status', 1)->get();
+        foreach($proponents as $data){
+            Proponent::where('proponent', $data->proponent)->update(['status'=>1]);
+        }
 
         $filter_date = $request->input('filter_dates');
         $order = $request->input('order', 'asc');
@@ -319,7 +307,8 @@ class HomeController extends Controller
             'generate_dates' => $filter_date,
             'gen' => $request->gen,
             'order' => $order,
-            'id_pat' => ''
+            'id_pat' => '',
+            'onhold_facs' => AddFacilityInfo::where('sent_status', 1)->pluck('id')->toArray()
         ]);
      }
 
@@ -2206,7 +2195,8 @@ class HomeController extends Controller
             'generate_dates' => $filter_date,
             'gen' => $request->gen,
             'order' => $order,
-            'id_pat' => ''
+            'id_pat' => '',
+            'onhold_facs' => AddFacilityInfo::where('sent_status', 1)->pluck('id')->toArray()
         ]);
     }
 

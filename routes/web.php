@@ -158,7 +158,7 @@ Route::get('fundsources/transfer/proponentInfo/{fundsource_id}/{proponent_id}',[
 Route::get('fundsources/transfer/facility/{facility_id}',[App\Http\Controllers\FundSourceController::class, 'fetchFacility'])->name('facility.get');
 Route::get('/proponents', [App\Http\Controllers\ProponentController::class, 'proponentList'])->name('proponents');
 Route::get('/on-hold', [App\Http\Controllers\ProponentController::class, 'onHold'])->name('on-hold');
-Route::get('/release/{code}', [App\Http\Controllers\ProponentController::class, 'release'])->name('release');
+Route::get('/release/{type}/{code}', [App\Http\Controllers\ProponentController::class, 'release'])->name('release');
 Route::post('/hold/proponents', [App\Http\Controllers\ProponentController::class, 'holdPro'])->name('hold.proponent');
 Route::match(['get', 'post'],'proponent/update', [App\Http\Controllers\ProponentController::class, 'updateProponent'])->name('proponent.update');
 Route::get('/proponent-fundsource', [App\Http\Controllers\ProponentController::class, 'fundsource'])->name('proponents.fundsource');
@@ -267,6 +267,8 @@ Route::get('sampsamp/{id}', [App\Http\Controllers\FundSourceController::class, '
 Route::get('/budget-cost/{id}/{amount}', [App\Http\Controllers\FundSourceController::class, 'budgetCost'])->name('budget.cost');
 Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'dashboard'])->name('dashboard');
 Route::get('/samsam', [App\Http\Controllers\FacilityController::class, 'samsam'])->name('samsam');
+Route::get('/sending-hold', [App\Http\Controllers\FacilityController::class, 'sendHold'])->name('send-hold');
+Route::post('/sending-gl/hold', [App\Http\Controllers\FacilityController::class, 'holdSendFacility'])->name('hold.sending_gl');
 
 
 
