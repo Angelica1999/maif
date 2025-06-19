@@ -120,12 +120,13 @@ class PrintController extends Controller
         }elseif($request->sent_type == 1){
             foreach($ids as $id){
                 $pat = Patients::where('id', $id)->first();
-                if($pat->sent_type == 1 || $pat->fc_status == "returned"){
+                // return $pat;
+                // if($pat->sent_type == 1 || $pat->fc_status == "returned"){
                     Patients::where('id', $id)->update([
                         'fc_status' => 'referred',
                         'sent_type' => 3
                     ]);
-                }
+                // }
             }
             return redirect()->back()->with('process_gl', true);
         }

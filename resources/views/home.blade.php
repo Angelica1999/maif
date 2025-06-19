@@ -255,7 +255,7 @@
                                         @endif
                                     </div>
                                     @if($patient->sent_type == null || $patient->fc_status == 'returned')
-                                        <a href="{{ route('patient.accept', ['id' => $patient->id]) }}" style="margin-left:10px; font-size:14px"  title="Send this GL to facility">
+                                        <a href="{{ route('patient.accept', ['id' => $patient->id]) }}" style="margin-left:10px; font-size:20px"  title="Send this GL to facility">
                                             <i class="fa fa-paper-plane"></i>
                                         </a>
                                     @endif
@@ -270,7 +270,7 @@
                             </td>
                             <td style="text-align:center">
                                 @if($patient->remarks == 1)
-                                    <i class="typcn typcn-tick menu-icon">
+                                    <i style="font-size:15px" class="typcn typcn-tick menu-icon">
                                 @endif
                             </td>
                             <td>
