@@ -238,12 +238,18 @@
                             </a>
                         </li> -->
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ route('home') }}">
+                            <a class="nav-link" href="#">
                                 <img src="\maif\public\images\patients_16.png" style="margin-right:12px">
                                 <span class="menu-title">Guarantee Letter (MPU)</span>
                                 &nbsp;&nbsp;<i class="typcn typcn-arrow-sorted-down menu-icon"></i>
                             </a>
                             <ul class="nav flex-column sub-menu">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('home') }}">
+                                        <img src="\maif\public\images\letter_16.png" style="margin-right:12px">
+                                        <span class="menu-title">GL Lists</span>
+                                    </a>
+                                </li>
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('returned.patients') }}">
                                         <img src="\maif\public\images\letter_16.png" style="margin-right:12px">
@@ -365,7 +371,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#" >
                             <i><img class="menu-icon" src="\maif\public\images\user_account_16.png"></i>
-                            <span class="menu-title" style="margin-left:20px">Accounts</span>
+                            <span class="menu-title" style="margin-left:12px">Accounts</span>
                             <i class="typcn typcn-arrow-sorted-down menu-icon"></i>
                         </a>
                         <ul class="nav flex-column sub-menu">
@@ -394,13 +400,13 @@
                                     <li class="nav-item">
                                         <a class="nav-link" href="{{ route('on-hold') }}">
                                             <img src="\maif\public\images\proponents_16.png" style="margin-right:5px">
-                                            <span class="menu-title" style="margin-left:5px">CREATING GL</span>
+                                            <span class="menu-title" style="margin-left:5px">Proponent</span>
                                         </a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link" href="{{ route('send-hold') }}">
                                             <img src="\maif\public\images\proponents_16.png" style="margin-right:5px">
-                                            <span class="menu-title" style="margin-left:5px">SENDING GL(email)</span>
+                                            <span class="menu-title" style="margin-left:5px">Facility</span>
                                         </a>
                                     </li>
                                 </ul>
