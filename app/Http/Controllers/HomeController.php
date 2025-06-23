@@ -81,15 +81,13 @@ class HomeController extends Controller
             'proponentData:id,proponent',
             'pat_remarks:patient_id,remarks'
         ])->where('pro_used', null);
-        //  -- for date range
+
         if($request->gen){
             $dateRange = explode(' - ', $filter_date);
             $start_date = date('Y-m-d', strtotime($dateRange[0]));
             $end_date = date('Y-m-d', strtotime($dateRange[1]));
             $patients = $patients ->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59'])->where('pro_used', null);
         }
-
-        // -- for search
 
         if($request->viewAll){
 
@@ -110,10 +108,8 @@ class HomeController extends Controller
             $filter_date = '';
             $request->gen = '';
 
-
         }else if($request->keyword){
-            // return $patients->where('pro_used', null)->orderBy('id', 'desc')->paginate(50);
-
+          
             $keyword = $request->keyword;
             $patients = $patients->where(function ($query) use ($keyword) {
                 $query->where('pro_used', null)
@@ -144,8 +140,6 @@ class HomeController extends Controller
                     });
             });
         }
-
-        // -- for table header sorting
 
         $date = clone ($patients);
         $fname = clone ($patients);
@@ -308,7 +302,7 @@ class HomeController extends Controller
             'gen' => $request->gen,
             'order' => $order,
             'id_pat' => '',
-            'onhold_facs' => AddFacilityInfo::where('sent_status', 1)->pluck('id')->toArray()
+            'onhold_facs' => AddFacilityInfo::where('sent_status', 1)->pluck('facility_id')->toArray()
         ]);
      }
 
