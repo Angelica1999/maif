@@ -22,7 +22,21 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/returned-gl', [App\Http\Controllers\HomeController::class, 'returnedPatients'])->name('returned.patients');
 Route::get('/expired-gl', [App\Http\Controllers\HomeController::class, 'expiredPatients'])->name('expired.patients');
+
 // Route::get('/data/{type}', [App\Http\Controllers\HomeController::class, 'getData'])->name('get.data');
+Route::get('/get-names', [App\Http\Controllers\HomeController::class, 'getNames'])->name('get.names');
+Route::get('/get-dates', [App\Http\Controllers\HomeController::class, 'getDates'])->name('get.dates');
+Route::get('/get-mname', [App\Http\Controllers\HomeController::class, 'getMNames'])->name('get.m_names');
+Route::get('/get-lname', [App\Http\Controllers\HomeController::class, 'getLNames'])->name('get.l_names');
+Route::get('/get-facility', [App\Http\Controllers\HomeController::class, 'getFacilities'])->name('get.facilities');
+Route::get('/get-proponent', [App\Http\Controllers\HomeController::class, 'getProponents'])->name('get.proponents');
+Route::get('/get-region', [App\Http\Controllers\HomeController::class, 'getRegion'])->name('get.region');
+Route::get('/get-provinces', [App\Http\Controllers\HomeController::class, 'getProvinces'])->name('get.province');
+Route::get('/get-municipalities', [App\Http\Controllers\HomeController::class, 'getMunicipalities'])->name('get.municipalities');
+Route::get('/get-barangay', [App\Http\Controllers\HomeController::class, 'getBarangay'])->name('get.barangay');
+Route::get('/get-created_at', [App\Http\Controllers\HomeController::class, 'getCreatedAt'])->name('get.created_at');
+Route::get('/get-created_by', [App\Http\Controllers\HomeController::class, 'getCreatedBy'])->name('get.created_by');
+
 Route::get('/facilities', [App\Http\Controllers\FacilityController::class, 'index'])->name('facility');
 Route::get('facility/edit/{main_id}', [App\Http\Controllers\FacilityController::class, 'facilityEdit'])->name('facility.edit');
 Route::post('facility/update', [App\Http\Controllers\FacilityController::class, 'facilityUpdate'])->name('facility.update');
