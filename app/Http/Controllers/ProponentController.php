@@ -382,6 +382,268 @@ class ProponentController extends Controller
         }
     }
 
+    public function excelPSummary()
+    {
+        $proponentGroups = Proponent::select('id', 'proponent')
+            ->orderBy('proponent')
+            ->get()
+            ->groupBy('proponent');
+
+        if ($proponentGroups->isEmpty()) {
+            return view('maif.pro_fundsource', [
+                'data' => [],
+                'keyword' => $keyword,
+                'facilities' => Facility::select('id', 'name')->get(),
+                'user' => Auth::user()->user_type
+            ]);
+        }
+
+        $allProponentIds = $proponentGroups->map(function ($group) {
+            return $group->pluck('id')->toArray();
+        });
+
+        $fundsData = ProponentInfo::whereIn('proponent_id', $allProponentIds->flatten()->toArray())
+            ->selectRaw('
+                proponent_id,
+                SUM(CAST(NULLIF(REPLACE(COALESCE(alocated_funds, "0"), ",", ""), "") AS DECIMAL(20,2))) as total_funds,
+                SUM(CAST(NULLIF(REPLACE(COALESCE(admin_cost, "0"), ",", ""), "") AS DECIMAL(20,2))) as admin_cost
+            ')
+            ->groupBy('proponent_id')
+            ->get()
+            ->groupBy('proponent_id');
+
+        $utilizationData = Patients::whereIn('proponent_id', $allProponentIds->flatten()->toArray())
+            ->where(function ($query) {
+                $query->where('expired', '!=', 1)
+                    ->orWhereNull('expired');
+            })
+            ->selectRaw('
+                proponent_id,
+                SUM(
+                    CASE 
+                        WHEN actual_amount IS NOT NULL AND actual_amount != "" 
+                        THEN CAST(REPLACE(actual_amount, ",", "") AS DECIMAL(20, 2))
+                        ELSE CAST(REPLACE(COALESCE(guaranteed_amount, "0"), ",", "") AS DECIMAL(20, 2))
+                    END
+                ) as total_utilized
+            ')
+            ->groupBy('proponent_id')
+            ->get()
+            ->groupBy('proponent_id');
+
+        $supplementalFunds = SupplementalFunds::whereIn('proponent', $proponentGroups->keys())
+            ->selectRaw('
+                proponent,
+                SUM(CAST(NULLIF(REPLACE(COALESCE(amount, "0"), ",", ""), "") AS DECIMAL(20,2))) as total_amount
+            ')
+            ->groupBy('proponent')
+            ->get()
+            ->keyBy('proponent');
+
+        $subtractedFunds = DB::table('subtracted_funds')
+            ->whereIn('proponent', $proponentGroups->keys())
+            ->selectRaw('
+                proponent,
+                SUM(CAST(NULLIF(REPLACE(COALESCE(amount, "0"), ",", ""), "") AS DECIMAL(20,2))) as total_amount
+            ')
+            ->groupBy('proponent')
+            ->get()
+            ->keyBy('proponent');
+
+        $dv1Data = Utilization::whereIn('proponent_id', $allProponentIds->flatten()->toArray())
+            ->where('status', 0)
+            ->where('facility_id', 837)
+            ->where(function ($query) {
+                $query->whereHas('dv', function ($q) {
+                    $q->whereColumn('div_id', 'route_no');
+                })->orWhereHas('newDv', function ($q) {
+                    $q->whereColumn('div_id', 'route_no');
+                });
+            })
+            ->selectRaw('
+                proponent_id,
+                SUM(CAST(NULLIF(REPLACE(COALESCE(utilize_amount, "0"), ",", ""), "") AS DECIMAL(20,2))) as total_amount
+            ')
+            ->groupBy('proponent_id')
+            ->get()
+            ->groupBy('proponent_id');
+
+        $dv3Data= Utilization::whereIn('proponent_id', $allProponentIds->flatten()->toArray())
+            ->where('status', 0)
+            ->where(function ($query) {
+                $query->whereHas('dv3', function ($q) {
+                    $q->whereColumn('div_id', 'route_no');
+                });
+            })
+            ->selectRaw('
+                proponent_id,
+                SUM(CAST(NULLIF(REPLACE(COALESCE(utilize_amount, "0"), ",", ""), "") AS DECIMAL(20,2))) as total_amount
+            ')
+            ->groupBy('proponent_id')
+            ->get()
+            ->groupBy('proponent_id');
+
+        $allData = $proponentGroups->map(function ($proponentGroup, $proponentName) use (
+            $fundsData,
+            $utilizationData,
+            $supplementalFunds,
+            $subtractedFunds,
+            $dv1Data,
+            $dv3Data
+        ) {
+            $proponentIds = $proponentGroup->pluck('id');
+            
+            $totalFunds = 0;
+            $totalAdminCost = 0;
+            $totalUtilized = 0;
+            $totalDv1Amount = 0;
+            $totalDv3Amount = 0;
+
+            foreach ($proponentIds as $id) {
+                if ($fundsData->has($id)) {
+                    $fundInfo = $fundsData->get($id)->first();
+                    $totalFunds += $fundInfo->total_funds ?? 0;
+                    $totalAdminCost += $fundInfo->admin_cost ?? 0;
+                }
+
+                if ($utilizationData->has($id)) {
+                    $totalUtilized += $utilizationData->get($id)->sum('total_utilized');
+                }
+
+                if ($dv1Data->has($id)) {
+                    $totalDv1Amount += $dv1Data->get($id)->sum('total_amount');
+                }
+                if ($dv3Data->has($id)) {
+                    $totalDv3Amount += $dv3Data->get($id)->sum('total_amount');
+                }
+            }
+
+            $supp = $supplementalFunds->get($proponentName)?->total_amount ?? 0;
+            $sub = $subtractedFunds->get($proponentName)?->total_amount ?? 0;
+
+            $netFunds = $totalFunds - $totalAdminCost;
+            $remaining = $netFunds - $totalUtilized;
+            $finalRemaining = $remaining + $supp - ($totalDv1Amount + $sub);
+
+            return [
+                'proponent' => $proponentName,
+                'sum' => round($netFunds, 2) != 0 ? round($netFunds, 2) : '0.00',
+                'totalUtilized' => round($totalUtilized, 2) != 0 ? round($totalUtilized, 2) : '0.00',
+                'disbursement' => round($totalDv1Amount + $totalDv3Amount, 2) != 0 ? round($totalDv1Amount + $totalDv3Amount, 2) : '0.00',
+                'supp' => round($supp, 2) != 0 ? round($supp, 2) : '0.00',
+                'sub' => round($sub, 2) != 0 ? round($sub, 2) : '0.00',
+                'rem' => round($finalRemaining - $totalDv3Amount , 2) != 0 ? round($finalRemaining - $totalDv3Amount , 2) : '0.00',
+            ];
+
+        })->values()->all();
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Adjust column widths
+        $sheet->getColumnDimension('A')->setWidth(50);  
+        $sheet->getColumnDimension('B')->setWidth(30); 
+        $sheet->getColumnDimension('C')->setWidth(30); 
+        $sheet->getColumnDimension('D')->setWidth(30);
+        $sheet->getColumnDimension('E')->setWidth(30);
+        $sheet->getColumnDimension('F')->setWidth(30);
+        $sheet->getColumnDimension('G')->setWidth(30);
+
+        $sheet->getStyle('A1:G1')
+            ->getAlignment()
+            ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+            ->setVertical(Alignment::VERTICAL_CENTER);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("PROPONENT");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('A1', $richText1);
+        $sheet->getStyle('A1')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("ALLOCATED FUNDS");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('B1', $richText1);
+        $sheet->getStyle('B1')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("GL TOTAL");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('C1', $richText1);
+        $sheet->getStyle('C1')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("DISBURSEMENT TOTAL");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('D1', $richText1);
+        $sheet->getStyle('D1')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("SUPPLEMENTAL FUNDS");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('E1', $richText1);
+        $sheet->getStyle('E1')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("NEGATIVE AMOUNT");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('F1', $richText1);
+        $sheet->getStyle('F1')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("REMAINING FUNDS");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('G1', $richText1);
+        $sheet->getStyle('G1')->getAlignment()->setWrapText(true);
+
+        $data = $allData;
+        $sheet->fromArray($data, null, 'A2');
+        $sheet->getStyle('B2:G' . (count($data) + 2))
+        ->getNumberFormat()->setFormatCode('#,##0.00');
+
+        $styleArray = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                ],
+            ],
+            'alignment' => [
+                'vertical' => Alignment::VERTICAL_CENTER, 
+            ],
+        ];
+        
+        $sheet->getStyle('A2:G' . (count($data) + 1))->applyFromArray($styleArray);
+        $sheet->getStyle('A2:G' . (count($data) + 1))->getAlignment()->setWrapText(true);
+
+        $sheet->getStyle('A2:A' . (count($data) + 1))
+            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        
+        $sheet->getStyle('B2:G' . (count($data) + 1))
+            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+            
+        // Output preparation
+        ob_start();
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        $xlsData = ob_get_contents();
+        ob_end_clean();
+
+        // Filename
+        $filename = "Proponent Summary" . date('Ymd') . ".xlsx";
+        // Set headers
+        header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        header("Content-Disposition: attachment; filename=$filename");
+        header("Pragma: no-cache");
+        header("Expires: 0");
+
+        // Output the file
+        return $xlsData;
+        exit;
+
+
+
+    }
+
     public function delGL($id){
         $patient = Patients::where('id', $id)->first();
 

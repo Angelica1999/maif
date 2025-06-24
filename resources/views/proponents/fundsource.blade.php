@@ -33,7 +33,7 @@
                     <div class="input-group">
                         <form method="GET" action="">
                             <div class="input-group">
-                                <select class="form-control select2 data_filtering" style="width:300px; height:40px" name="data_filtering[]" multiple>
+                                <select class="form-control select2 data_filtering" style="display:none" name="data_filtering[]" multiple>
                                     <option value=""></option>
                                     @foreach($proponents as $row)
                                         <option value="{{ $row[0]->id }}" {{ in_array($row[0]->id, $keyword) ? 'selected' : '' }}>
@@ -43,7 +43,7 @@
                                 </select>
                                 <button style="width:100px; border-radius:0; height:40px" class="btn btn-sm btn-info text-white" value="filtered" type="submit" name="filtered_btn"><i class="typcn typcn-filter menu-icon"></i>Filter</button>
                                 <div class="input-group-append">
-                                    <select class="data_sorting" name="data_sorting" style="min-width:200px; height:40px">
+                                    <select class="form-control data_sorting" name="data_sorting" style="display:none">
                                         <option></option>
                                         <option value="1" {{ $filter_keyword == 1 ? 'selected' : ''}}>Proponent</option>
                                         <option value="2" {{ $filter_keyword == 2 ? 'selected' : ''}}>Allocated Funds</option>
@@ -55,15 +55,14 @@
                                     </select>
                                     <button style="width:100px; border-radius:0; height:40px" class="btn btn-sm btn-success text-white" value="{{ $sort }}" type="submit" name="sorting_btn"><i class="typcn typcn-filter menu-icon"></i>Sort</button>
                                     <button style="width:100px; border-radius:0; height:40px" class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
+                                    <a href="{{ route('excel.proponent_summary') }}" style="background-color:teal; border-radius:0; color:white;" type="button" class="btn btn-sum">Excel Summary</a>    
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
-
             <div class="clearfix"></div>
-            
             <div class="card-body2">
                 @if(isset($data))
                     <div class="row">
@@ -266,12 +265,18 @@
 
     $(document).ready(function() {
         $('.data_sorting').select2({
-            placeholder:"Select data to sort",
-            allowClear: true
+            minimumInputLength: 0,
+            placeholder: "Select data to sort",
+            allowClear: true,
+            closeOnSelect: false, 
+            width: '200px',
         });
         $('.data_filtering').select2({
-            placeholder:"Select proponent to filter",
-            allowClear: true
+            minimumInputLength: 0,
+            placeholder: "Select Proponent to filter",
+            allowClear: true,
+            closeOnSelect: false, 
+            width: '200px',
         });
     });
 
