@@ -706,8 +706,7 @@ class HomeController extends Controller
             'facility:id,name',
             'proponentData:id,proponent',
             'pat_remarks:patient_id,remarks'
-        ])
-        ->whereNull('pro_used'); 
+        ])->whereNull('pro_used'); 
         // Apply date range filter early
         if ($request->gen && $filter_date) {
             $dateRange = explode(' - ', $filter_date);
@@ -936,7 +935,7 @@ class HomeController extends Controller
             'filter_on' => explode(',', $request->filter_on ?? ''),
             'filter_by' => explode(',', $request->filter_by ?? ''),
             
-            'onhold_facs' => AddFacilityInfo::where('sent_status', 1)->pluck('id')->toArray()
+            'onhold_facs' => AddFacilityInfo::where('sent_status', 1)->pluck('facility_id')->toArray()
         ];
     }
 
