@@ -235,14 +235,11 @@
                                         @if($patient->sent_type == null || $patient->fc_status == 'returned')
                                             <a href="{{ route('patient.accept', ['id' => $patient->id]) }}" style="margin-left:8px; background-color:#0077b6; color:white; width:70px; font-size:11px" 
                                                 class="btn btn-xs" title="Forward to Facility"><i class="fa fa-share-square"></i> F2F</a>
-                                            <!-- <a href="{{ route('patient.accept', ['id' => $patient->id]) }}" style="margin-left:10px; font-size:20px"  title="Send this GL to facility">
-                                                <i class="fa fa-paper-plane"></i>
-                                            </a> -->
                                         @endif
-                                        @if($patient->sent_type == null || $patient->fc_status == 'returned')
+                                        <!-- @if($patient->sent_type == null || $patient->fc_status == 'returned')
                                             <a href="{{ route('patient.accept', ['id' => $patient->id]) }}" style="background-color:#0b6e4f; color:white; margin-left:8px; width:70px; font-size:11px; margin-top:1px" 
                                                title="Retrieve GL" class="btn btn-xs"><i class="fa fa-undo"></i> Rtrv</a>
-                                        @endif
+                                        @endif -->
                                     </div>
                                     
                                 </div>
