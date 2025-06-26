@@ -87,7 +87,8 @@ class FundSourceController2 extends Controller{
             'utilization' => function($query) {
                 $query->selectRaw('
                     fundsource_id,
-                    sum(CASE WHEN status = 0 AND obligated = 1 THEN CAST(REPLACE(budget_utilize, ",", "") AS DECIMAL(18, 2)) ELSE 0 END) as total_bbudget_utilize
+                    sum(CASE WHEN status = 0 AND obligated = 1 THEN CAST(REPLACE(budget_utilize, ",", "") AS DECIMAL(18, 2)) ELSE 0 END) as total_bbudget_utilize,
+                    sum(CASE WHEN status = 2 AND transfer_type = 2 THEN CAST(REPLACE(utilize_amount, ",", "") AS DECIMAL(18, 2)) ELSE 0 END) as transfer_from_rem
                 ')
                 ->groupBy('fundsource_id');
             },

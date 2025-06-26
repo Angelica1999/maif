@@ -53,6 +53,7 @@
                                                 $allocated = !Empty($fund->proponentInfo[0]->total_allocated_funds) ? $fund->proponentInfo[0]->total_allocated_funds : 0;
                                                 $admin_cost = !Empty($fund->proponentInfo[0]->total_admin_cost) ? $fund->proponentInfo[0]->total_admin_cost : 0;
                                                 $utilized = !Empty($fund->utilization[0]->total_bbudget_utilize) ? $fund->utilization[0]->total_bbudget_utilize : 0;
+                                                $transfer_from_rem = !Empty($fund->utilization[0]->transfer_from_rem) ? $fund->utilization[0]->transfer_from_rem : 0;
                                                 $deduction = (isset($fund->a_cost) && count($fund->a_cost) > 0) ? $fund->a_cost[0]->total_admin_cost : 0;
                                             ?>
                                             <tr>
@@ -78,7 +79,7 @@
                                                     Remaining Balance
                                                     :
                                                     <strong class="{{ $fund->remaining_balance == 0 ? 'text-danger' : 'text-info' }}">
-                                                        {{ number_format(floatval(str_replace(',', '', $allocated - $utilized)), 2, '.', ',') }}
+                                                        {{ number_format(floatval(str_replace(',', '', $allocated - ($utilized + $transfer_from_rem))), 2, '.', ',') }}
                                                     </strong>
                                                 </td>
                                             </tr>

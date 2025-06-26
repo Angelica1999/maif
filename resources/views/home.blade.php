@@ -241,7 +241,6 @@
                                                title="Retrieve GL" class="btn btn-xs"><i class="fa fa-undo"></i> Rtrv</a>
                                         @endif -->
                                     </div>
-                                    
                                 </div>
                             </td>
                             <td style="text-align:center;" class="group-email" data-patient-id="{{ $patient->id }}">
@@ -1427,7 +1426,7 @@
                         suggestions.push('Breakdowns: ');
                         suggestions.push('Allocated Funds - ' + formatBalance(result.total_funds));
                         suggestions.push('Sum of all GL - ' + formatBalance(result.gl_sum));
-                        // suggestions.push('DV - ' + formatBalance(result.disbursement));
+                        suggestions.push('DV - ' + formatBalance(result.disbursement));
                         suggestions.push('Supplemental Funds - ' + formatBalance(result.supplemental));
                         suggestions.push('Negative Amount - ' + formatBalance(result.subtracted));
                         suggestions.push('Remaining Funds - ' + formatBalance(result.balance));
