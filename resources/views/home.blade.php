@@ -796,18 +796,18 @@
             });
         }
 
-        initializeSelect2("#date_select", '{{ route("get.dates") }}', "Date");
-        initializeSelect2("#fname_select", '{{ route("get.names") }}', "First Name");
-        initializeSelect2("#mname_select", '{{ route("get.m_names") }}', "Middle Name");
-        initializeSelect2("#lname_select", '{{ route("get.l_names") }}', "Last Name");
+        initializeSelect2("#date_select", '{{ route("get.dates", ["type" => "1"]) }}', "Date");
+        initializeSelect2("#fname_select", '{{ route("get.names", ["type" => "1"]) }}', "First Name");
+        initializeSelect2("#mname_select", '{{ route("get.m_names", ["type" => "1"]) }}', "Middle Name");
+        initializeSelect2("#lname_select", '{{ route("get.l_names", ["type" => "1"]) }}', "Last Name");
         initializeSelect2("#facility_select", '{{ route("get.facilities") }}', "Facility");
         initializeSelect2("#proponent_select", '{{ route("get.proponents") }}', "Proponent");
-        initializeSelect2("#region_select", '{{ route("get.region") }}', "Region");
-        initializeSelect2("#province_select", '{{ route("get.province") }}', "Province");
-        initializeSelect2("#muncity_select", '{{ route("get.municipalities") }}', "Municipality");
-        initializeSelect2("#barangay_select", '{{ route("get.barangay") }}', "Barangay");
-        initializeSelect2("#on_select", '{{ route("get.created_at") }}', "Created On");
-        initializeSelect2("#by_select", '{{ route("get.created_by") }}', "Created By");
+        initializeSelect2("#region_select", '{{ route("get.region", ["type" => "1"]) }}', "Region");
+        initializeSelect2("#province_select", '{{ route("get.province", ["type" => "1"]) }}', "Province");
+        initializeSelect2("#muncity_select", '{{ route("get.municipalities", ["type" => "1"]) }}', "Municipality");
+        initializeSelect2("#barangay_select", '{{ route("get.barangay", ["type" => "1"]) }}', "Barangay");
+        initializeSelect2("#on_select", '{{ route("get.created_at", ["type" => "1"]) }}', "Created On");
+        initializeSelect2("#by_select", '{{ route("get.created_by", ["type" => "1"]) }}', "Created By");
     });
 
     $(function() {

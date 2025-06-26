@@ -141,87 +141,77 @@
                         <th style="min-width:10px; text-align:center;">Group</th>
                         <th style="min-width:140px">Actual Amount</th>
                         <th style="min-width:100px">Guaranteed </th>
-                        <th style="min-width:120px; text-align:center;">@sortablelink('date_guarantee_letter', 'Date') <i id="date_i" class="typcn typcn-filter menu-icon"></i>
-                            <div class="filter" id="date_div" style="display:none;">
-                                <select style="width: 120px;" id="date_select" name="date_select" multiple></select>
+                        <th style="min-width:120px;">
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <select class="form-control filter" style="display:none" id="date_select" name="date_select" multiple></select>
+                                @sortablelink('date_guarantee_letter', '⇅')
                             </div>
                         </th>
-                        <th style="min-width:150px; text-align:center;">@sortablelink('fname', 'Firstname')<i id="fname_i" class="typcn typcn-filter menu-icon"></i>
-                            <div class="filter" id="fname_div" style="display:none;">
-                                <select style="width: 120px;" id="fname_select" name="fname_select" multiple>
-                                </select>
+                        <th style="min-width:120px; text-align:center;">
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <select class="form-control filter" style="display:none;" id="fname_select" name="fname_select" multiple></select>
+                                @sortablelink('fname', '⇅')
                             </div>
                         </th>
-                        <th style="min-width:150px; text-align:center;">@sortablelink('mname', 'Middlename')<i id="mname_i" class="typcn typcn-filter menu-icon"></i>
-                            <div class="filter" id="mname_div" style="display:none;">
-                                <select style="width: 120px;" id="mname_select" name="mname_select" multiple>
-                                </select>
+                        <th style="min-width:120px; text-align:center;">
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <select class="form-control filter" style="display:none;" id="mname_select" name="mname_select" multiple></select>
+                                @sortablelink('mname', '⇅')
                             </div>
                         </th>
-                        <th style="min-width:150px; text-align:center;">@sortablelink('lname', 'Lastname')<i id="lname_i" class="typcn typcn-filter menu-icon"></i>
-                            <div class="filter" id="lname_div" style="display:none;">
-                                <select style="width: 120px;" id="lname_select" name="lname_select" multiple>
-                                </select>
+                        <th style="min-width:120px; text-align:center;">
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <select class="form-control filter" style="display:none;" id="lname_select" name="lname_select" multiple></select>
+                                @sortablelink('lname', '⇅')
                             </div>
                         </th>
-                        <th style="min-width:150px; text-align:center;">
-                            <a href="{{ route('home', ['sort' => 'facility']) }}">Facility</a><i id="facility_i" class="typcn typcn-filter menu-icon"></i>
-                            <div class="filter" id="facility_div" style="display:none;">
-                                <select style="width: 120px;" id="facility_select" name="facility_select" multiple>
-                                </select>
+                        <th style="min-width:120px; text-align:center;">
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <select class="form-control filter" style="display:none;" id="facility_select" name="facility_select" multiple></select>
+                                <a href="{{ route('home', ['sort' => 'facility','order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">⇅</a>
                             </div>
                         </th>
-                        <th style="min-width:150px; text-align:center;">
-                            <a href="{{ route('home', ['sort' => 'proponent']) }}">Proponent</a><i id="proponent_i" class="typcn typcn-filter menu-icon"></i>
-                            <div class="filter" id="proponent_div" style="display:none;">
-                                <select style="width: 120px;" id="proponent_select" name="proponent_select" multiple>
-                                </select>
+                        <th style="min-width:120px; text-align:center;">
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <select class="form-control filter" style="display:none;" id="proponent_select" name="proponent_select" multiple></select>
+                                <a href="{{ route('home', ['sort' => 'proponent','order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">⇅</a>
                             </div>
                         </th>
-                        <th>@sortablelink('patient_code', 'Code')
-                        </th>
-                        <th style="min-width:150px;">@sortablelink('region', 'Region') <i id="region_i" class="typcn typcn-filter menu-icon"></i>
-                            <div class="filter" id="region_div" style="display:none;">
-                                <select style="width: 120px;" id="region_select" name="region_select" multiple>
-                                </select>
+                        <th style="text-align:center; vertial-align:middle">@sortablelink('patient_code', 'Code ⇅')</th>
+                        <th style="min-width:120px;">
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <select class="form-control filter" style="display:none;" id="region_select" name="region_select" multiple></select>
+                                @sortablelink('region', '⇅')
                             </div>
                         </th>
-                        <th style="min-width:150px; text-align:center;">
-                            <a href="{{ route('home', ['sort' => 'province', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">Province</a>
-                            <i id="province_i" class="typcn typcn-filter menu-icon"></i>
-                            <div class="filter" id="province_div" style="display:none;">
-                                <select style="width: 120px;" id="province_select" name="province_select" multiple>
-                                </select>
+                        <th style="min-width:130px; text-align:center;">
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <select class="form-control filter" style="display:none;" id="province_select" name="province_select" multiple></select>
+                                <a href="{{ route('home', ['sort' => 'province', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">⇅</a>
                             </div>
                         </th>
                         <th style="min-width:150px; text-align:center;">
-                            <a href="{{ route('home', ['sort' => 'municipality', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">Municipality</a>
-                            <i id="muncity_i" class="typcn typcn-filter menu-icon"></i>
-                            <div class="filter" id="muncity_div" style="display:none;">
-                                <select style="width: 120px;" id="muncity_select" name="muncity_select" multiple>
-                                </select>
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <select class="form-control filter" style="display:none;" id="muncity_select" name="muncity_select" multiple></select>
+                                <a href="{{ route('home', ['sort' => 'municipality', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">⇅</a>
                             </div>
                         </th>
                         <th style="min-width:150px; text-align:center;">
-                            <a href="{{ route('home', ['sort' => 'barangay', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">Barangay</a>
-                            <i id="barangay_i" class="typcn typcn-filter menu-icon"></i>
-                            <div class="filter" id="barangay_div" style="display:none;">
-                                <select style="width: 120px;" id="barangay_select" name="barangay_select" multiple>
-                                </select>
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <select class="form-control filter" style="display:none;" id="barangay_select" name="barangay_select" multiple></select>
+                                <a href="{{ route('home', ['sort' => 'barangay', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">⇅</a>
                             </div>
                         </th>
-                        <th style="min-width:150px">@sortablelink('created_at', 'Created On') <i id="on_i" class="typcn typcn-filter menu-icon"></i>
-                            <div class="filter" id="on_div" style="display:none;">
-                                <select style="width: 120px;" id="on_select" name="on_select" multiple>
-                                </select>
+                        <th style="min-width:150px">
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <select class="form-control filter" style="display:none;" id="on_select" name="on_select" multiple></select>
+                                @sortablelink('created_at', '⇅')
                             </div>
                         </th>
-                        <th style="min-width:190px">
-                            <a href="{{ route('home', ['sort' => 'encoded_by', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">Created By</a>
-                            <i id="by_i" class="typcn typcn-filter menu-icon"></i>
-                            <div class="filter" id="by_div" style="display:none;">
-                                <select style="width: 120px;" id="by_select" name="by_select" multiple>
-                                </select>
+                        <th style="min-width:150px">
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <select class="form-control filter" style="display:none;" id="by_select" name="by_select" multiple></select>
+                                <a href="{{ route('home', ['sort' => 'encoded_by', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">⇅</a>
                             </div>
                         </th>
                     </tr>
@@ -336,8 +326,8 @@
                 </table>
             </div>
             @else
-                <div class="alert alert-danger" role="alert" style="width: 100%; margin-top:40px">
-                <i class="typcn typcn-times menu-icon"></i>
+                <div class="alert alert-danger" role="alert" style="width: 100%; margin-top:50px">
+                    <i class="typcn typcn-times menu-icon"></i>
                     <strong>No patient found!</strong>
                 </div>
             @endif
@@ -547,6 +537,127 @@
 @include('maif.editable_js')
 
 <script>
+    $(document).ready(function () {
+        $('.fa-sort').hide();
+
+        function initializeSelect2(selector, route, placeholder) {
+            $(selector).select2({
+                ajax: {
+                    url: route,
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            search: params.term || '',
+                            page: params.page || 1,
+                            _token: '{{ csrf_token() }}'
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data.results,
+                            pagination: {
+                                more: data.has_more
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 0,
+                placeholder: placeholder,
+                allowClear: true,
+                closeOnSelect: false,
+                width: '100%',
+                templateResult: function (option) {
+                    if (option.loading) return option.text;
+                    return $('<span>' + option.text + '</span>');
+                },
+                templateSelection: function (option) {
+                    return option.text;
+                }
+            });
+
+            $(selector).on('select2:select', function (e) {
+                console.log(`Selected from ${selector}:`, e.params.data);
+            });
+
+            $(selector).on('select2:unselect', function (e) {
+                console.log(`Unselected from ${selector}:`, e.params.data);
+            });
+
+            $(selector).on('select2:opening', function () {
+                console.log(`Opening ${selector} dropdown...`);
+            });
+        }
+
+        initializeSelect2("#date_select", '{{ route("get.dates", ["type" => "2"]) }}', "Date");
+        initializeSelect2("#fname_select", '{{ route("get.names", ["type" => "2"]) }}', "First Name");
+        initializeSelect2("#mname_select", '{{ route("get.m_names", ["type" => "2"]) }}', "Middle Name");
+        initializeSelect2("#lname_select", '{{ route("get.l_names", ["type" => "2"]) }}', "Last Name");
+        initializeSelect2("#facility_select", '{{ route("get.facilities") }}', "Facility");
+        initializeSelect2("#proponent_select", '{{ route("get.proponents") }}', "Proponent");
+        initializeSelect2("#region_select", '{{ route("get.region", ["type" => "2"]) }}', "Region");
+        initializeSelect2("#province_select", '{{ route("get.province", ["type" => "2"]) }}', "Province");
+        initializeSelect2("#muncity_select", '{{ route("get.municipalities", ["type" => "2"]) }}', "Municipality");
+        initializeSelect2("#barangay_select", '{{ route("get.barangay", ["type" => "2"]) }}', "Barangay");
+        initializeSelect2("#on_select", '{{ route("get.created_at", ["type" => "2"]) }}', "Created On");
+        initializeSelect2("#by_select", '{{ route("get.created_by", ["type" => "2"]) }}', "Created By");
+    });
+
+    $(function() {
+        $('#filter_dates').daterangepicker();
+    });
+
+    $('#system_sent').on('click', function(){
+        $('.sent_type').val(1);
+    });
+
+    $('#crt_pnt').on('click', function(){
+        $('#region').select2();
+        $('#province_id').select2();
+        $('#muncity_id').select2();
+        $('#province_id').select2();
+        $('#barangay_id').select2();
+        $('#facility_id').select2();
+        $('#proponent_id').select2();
+        form_type = 'create';
+    });
+
+    $('#gen_btn').on('click', function(){
+        $('#gen').val('1');
+    });
+
+    $('.filter').on('click', function(){
+        $('#filter_col').css('display', 'block');
+    });
+
+    var selectFields = [
+        '#date_select',
+        '#fname_select',
+        '#mname_select',
+        '#lname_select',
+        '#facility_select',
+        '#proponent_select',
+        '#region_select',
+        '#province_select',
+        '#muncity_select',
+        '#barangay_select',
+        '#on_select',
+        '#by_select'
+    ];
+
+    $(selectFields.join(',')).on('select2:select select2:unselect', function () {
+        var hasValue = selectFields.some(selector => {
+            return $(selector).val() && $(selector).val().length > 0;
+        });
+
+        if (hasValue) {
+            $('#filter_col').show();
+        } else {
+            $('#filter_col').hide();
+        }
+    });
     $(function() {
         $('#filter_dates').daterangepicker();
     });
@@ -576,288 +687,9 @@
         $('#filter_barangay').val($('#barangay_select').val());
         $('#filter_on').val($('#on_select').val());
         $('#filter_by').val($('#by_select').val());
+    });
 
-    });
-    $('#date_i').on('click', function(){
-        $('#date_select').empty();
-        $('#date_div').css('display', 'block');
-        var date = @json($date);
-        var filter_date = @json($filter_date);
-        var filtered = filter_date.filter(item => item !== '');
-        date.forEach(function(optionData) {
-            var date_obj = moment(optionData);
-            var isSelected = false;
-            if(filtered.length !== 0){
-              isSelected = filter_date.includes(optionData) ? true : false;
-            }
-            $('#date_select').append($('<option>', {
-                value: optionData,
-                text: date_obj.format('MMMM d, YYYY'),
-                selected: isSelected
-            }));
-        });
-    });
-    $('#fname_i').on('click', function(){
-        $('#fname_div').css('display', 'block');
-        var fname = @json($fname);
-        var filter_fname = @json($filter_fname);
-        var filtered = filter_fname.filter(item => item !== '');
-        fname.forEach(function(optionData) {
-            var isSelected = false;
-            if(filtered.length !== 0){
-              isSelected = filter_fname.includes(optionData) ? true : false;
-            }
-            $('#fname_select').append($('<option>', {
-                value: optionData,
-                text: optionData,
-                selected: isSelected
-            }));
-        });
-    });
-    $('#mname_i').on('click', function(){
-        $('#mname_div').css('display', 'block');
-        var mname = @json($mname);
-        var filter_mname = @json($filter_mname);
-        var filtered = filter_mname.filter(item => item !== '');
-        mname.forEach(function(optionData) {
-            var isSelected = false;
-            if(filtered.length !== 0){
-              isSelected = filter_mname.includes(optionData) ? true : false;
-            }
-            $('#mname_select').append($('<option>', {
-                value: optionData,
-                text: optionData,
-                selected: isSelected
-            }));
-        });
-    });
-    $('#lname_i').on('click', function(){
-        $('#lname_div').css('display', 'block');
-        var lname = @json($lname);
-        var filter_lname = @json($filter_lname);
-        var filtered = filter_lname.filter(item => item !== '');
-        lname.forEach(function(optionData) {
-            var isSelected = false;
-            if(filtered.length !== 0){
-              isSelected = filter_lname.includes(optionData) ? true : false;
-            }
-            $('#lname_select').append($('<option>', {
-                value: optionData,
-                text: optionData,
-                selected: isSelected
-            }));
-        });
-    });
-    $('#facility_i').on('click', function(){
-        $('#facility_div').css('display', 'block');
-        var fc_list = @json($fc_list);
-        var filter_facility = @json($filter_facility);
-        filtered = filter_facility.map(Number);
-        fc_list.forEach(function(optionData) {
-            var isSelected = false;
-            var optionId = Number(optionData.id);
-            if(filtered.length !== 0){
-              isSelected = filtered.includes(optionId) ? true : false;
-            }
-            $('#facility_select').append($('<option>', {
-                value: optionData.id,
-                text: optionData.name,
-                selected: isSelected
-            }));
-        });
-    });
-    $('#proponent_i').on('click', function(){
-        $('#proponent_select').empty();
-        $('#proponent_div').css('display', 'block');
-        var pros = @json($pros);
-        var filter_proponent = @json($filter_proponent);
-        filter_proponent = filter_proponent.map(Number);
-        pros.forEach(function(optionData) {
-            var isSelected = false;
-            var optionId = Number(optionData.id);
-            if(filter_proponent.length !== 0){
-              isSelected = filter_proponent.includes(optionId) ? true : false;
-            }
-            $('#proponent_select').append($('<option>', {
-                value: optionData.id,
-                text: optionData.proponent,
-                selected: isSelected
-            }));
-        });
-    });
-    $('#region_i').on('click', function(){
-        $('#region_div').css('display', 'block');
-        $('#region_select').empty();
-        var region = @json($region);
-        var filter_region = @json($filter_region);
-        filter_region = filter_region.filter(item => item !== '');
-        region.forEach(function(optionData) {
-            var isSelected = false;
-            if(filter_region.length !== 0){
-              isSelected = filter_region.includes(optionData) ? true : false;
-            }
-            $('#region_select').append($('<option>', {
-                value: optionData,
-                text: optionData,
-                selected: isSelected
-            }));
-        });
-    });
-    $('#province_i').on('click', function(){
-        $('#province_select').empty();
-        $('#province_div').css('display', 'block');
-        var province = @json($pro1).filter(item => item !== '' && item !== null);
-        var filter_province = @json($filter_province);
-        filter_province = filter_province.filter(item => item !== '');
-        province.forEach(function(optionData) {
-            var isSelected = false;
-            if(filter_province.length !== 0){
-              isSelected = filter_province.includes(optionData) ? true : false;
-            }
-            $('#province_select').append($('<option>', {
-                value: optionData,
-                text: optionData,
-                selected: isSelected
-            }));
-        });
-
-        var province2 = @json($prvnc);
-        var prov = @json($filter_facility);
-        prov = prov.map(Number);
-        province2.forEach(function(optionData) {
-            var isSelected = false;
-            var optionId = Number(optionData.id);
-            if(prov.length !== 0){
-              isSelected = prov.includes(optionId) ? true : false;
-            }
-            $('#province_select').append($('<option>', {
-                value: optionData.id,
-                text: optionData.description,
-                selected: isSelected
-            }));
-        });
-
-    });
-    $('#muncity_i').on('click', function(){
-        $('#muncity_select').empty();
-        $('#muncity_div').css('display', 'block');
-        var muncity = @json($muncity).filter(item => item !== '' && item !== null);
-        var filter_muncity = @json($filter_municipality);
-        filter_muncity = filter_muncity.filter(item => item !== '');
-        muncity.forEach(function(optionData) {
-            var isSelected = false;
-            if(filter_muncity.length !== 0){
-              isSelected = filter_muncity.includes(optionData) ? true : false;
-            }
-            $('#muncity_select').append($('<option>', {
-                value: optionData,
-                text: optionData,
-                selected: isSelected
-            }));
-        });
-
-        var muncity2 = @json($mncty);
-        var f_mun = @json($filter_municipality);
-        f_mun = f_mun.map(Number);
-        muncity2.forEach(function(optionData) {
-            var isSelected = false;
-            var optionId = Number(optionData.id);
-            if(f_mun.length !== 0){
-              isSelected = f_mun.includes(optionId) ? true : false;
-            }
-            $('#muncity_select').append($('<option>', {
-                value: optionData.id,
-                text: optionData.description,
-                selected: isSelected
-            }));
-        });
-    });
-    $('#barangay_i').on('click', function(){
-        $('#barangay_select').empty();
-        $('#barangay_div').css('display', 'block');
-        var barangay = @json($barangay).filter(item => item !== '' && item !== null);
-        var filter_barangay = @json($filter_barangay);
-        filter_barangay = filter_barangay.filter(item => item !== '');
-        barangay.forEach(function(optionData) {
-            var isSelected = false;
-            if(filter_barangay.length !== 0){
-              isSelected = filter_barangay.includes(optionData) ? true : false;
-            }
-            $('#barangay_select').append($('<option>', {
-                value: optionData,
-                text: optionData,
-                selected: isSelected
-            }));
-        });
-
-        var barangay2 = @json($brgy);
-        var f_brgy = @json($filter_barangay);
-        f_brgy = f_brgy.map(Number);
-        barangay2.forEach(function(optionData) {
-            var isSelected = false;
-            var optionId = Number(optionData.id);
-            if(f_brgy.length !== 0){
-              isSelected = f_brgy.includes(optionId) ? true : false;
-            }
-            $('#barangay_select').append($('<option>', {
-                value: optionData.id,
-                text: optionData.description,
-                selected: isSelected
-            }));
-        });
-    });
-    $('#on_i').on('click', function(){
-        $('#on_select').empty();
-        $('#on_div').css('display', 'block');
-        var on = @json($on);
-        var filter_on = @json($filter_on);
-        filter_on = filter_on.filter(item => item !== '');
-        on.forEach(function(optionData) {
-            var date_obj = moment(optionData);
-            var isSelected = false;
-            if(filter_on.length !== 0){
-              isSelected = filter_on.includes(optionData) ? true : false;
-            }
-            $('#on_select').append($('<option>', {
-                value: date_obj.format('YYYY-MM-DD'),
-                text: moment(optionData).format('MMMM D, YYYY'),
-                selected: isSelected
-            }));
-        });
-
-    });
-    $('#by_i').on('click', function(){
-        $('#by_select').empty();
-        $('#by_div').css('display', 'block');
-        var by = @json($by);
-        var filter_by = @json($filter_by);
-        filter_by = filter_by.map(Number);
-        by.forEach(function(optionData) {
-            var isSelected = false;
-            var optionId = Number(optionData.userid);
-            if(filter_by.length !== 0){
-              isSelected = filter_by.includes(optionId) ? true : false;
-            }
-            $('#by_select').append($('<option>', {
-                value: optionData.userid,
-                text: optionData.lname + ", "+ optionData.fname,
-                selected: isSelected
-            }));
-        });
-    });
-    $('#date_select').select2();
-    $('#fname_select').select2();
-    $('#mname_select').select2();
-    $('#lname_select').select2();
-    $('#facility_select').select2();
-    $('#proponent_select').select2();
     $('#code_select').select2();
-    $('#region_select').select2();
-    $('#province_select').select2();
-    $('#muncity_select').select2();
-    $('#barangay_select').select2();
-    $('#on_select').select2();
-    $('#by_select').select2();
 
     $('#fname_select').change(function() {
         var selectedValues = $(this).val();
