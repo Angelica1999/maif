@@ -781,7 +781,9 @@ class FundSourceController extends Controller
         });
         
         // $balance = ($info_sum + $supplemental) - ($subtracted + $dv3_sum + $dv_sum + $pat_sum) ;
-        $balance = ($info_sum + $supplemental) - ($subtracted + $pat_sum) ;
+        // $balance = ($info_sum + $supplemental) - ($subtracted + $pat_sum) ;
+        $balance = ($info_sum + $supplemental) - ($subtracted + $pat_sum + $dv_sum) ;
+
         $facility = Facility::find($facility_id);
         $patient_code = $proponent->proponent_code.'-'.$this->getAcronym($facility->name).date('YmdHis').$user->id;
         $total = ProponentInfo::whereIn('proponent_id', $proponent_ids)
@@ -793,9 +795,10 @@ class FundSourceController extends Controller
             'total_funds' => $info_sum,
             'supplemental' => $supplemental,
             'subtracted' => $subtracted,
-            'disbursement' => $dv3_sum + $dv_sum,
+            // 'disbursement' => $dv3_sum + $dv_sum,
+            'disbursement' => $dv_sum,
             'gl_sum' => round($pat_sum, 2),
-            'list'=> $saaa ,
+            // 'list'=> $saaa ,
             'dsad' => count($saaa)
         ];
     }
