@@ -2774,7 +2774,7 @@ class HomeController extends Controller
             'gen' => $request->gen,
             'order' => $order,
             'id_pat' => '',
-            'onhold_facs' => AddFacilityInfo::where('sent_status', 1)->pluck('id')->toArray()
+            'onhold_facs' => AddFacilityInfo::where('sent_status', 1)->pluck('facility_id')->toArray()
         ]);
     }
 

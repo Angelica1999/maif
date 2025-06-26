@@ -517,47 +517,47 @@ class FacilityController extends Controller
 
     }
 
-    public function sendHold(Request $req){
-        $facilities = AddFacilityInfo::select('id','facility_id')->with('facility:id,name')
-            ->whereNotNull('sent_status');
-        // return $facilities->get();
-        $on_hold = Facility::with('addFacilityInfo')
-            ->whereRelation('addFacilityInfo', 'sent_status', null)
-            ->orderBy('name', 'asc')
-            ->select('id', 'name')
-            ->get();
-        
-        if ($req->viewAll) {
-            $req->keyword = '';
-        } else if ($req->keyword) {
-            $facilities->where(function($query) use ($req) {
-                $query->where('name', 'LIKE', "%{$req->keyword}%");
-            });
-        }
-
-        return view('facility.facility_hold_send', [
-            'facilities' => $facilities->paginate(50),
-            'keyword' => $req->keyword,
-            'hold' => $on_hold
-        ]);
-    }
-
-    public function holdSendFacility(Request $req){
-        if($req->facility_id){
-            foreach($req->facility_id as $id){
-                $info = AddFacilityInfo::where('facility_id', $id)->first();
-                if($info){
-                    $info->sent_status = 1;
-                    $info->save();
-                }else{
-                    $new_info = new AddFacilityInfo();
-                    $new_info->facility_id = $id;
-                    $new_info->sent_status = 1;
-                    $new_info->created_by = Auth::user()->userid;
-                    $new_info->save();
-                }
+        public function sendHold(Request $req){
+            $facilities = AddFacilityInfo::select('id','facility_id')->with('facility:id,name')
+                ->whereNotNull('sent_status');
+            // return $facilities->get();
+            $on_hold = Facility::with('addFacilityInfo')
+                ->whereRelation('addFacilityInfo', 'sent_status', null)
+                ->orderBy('name', 'asc')
+                ->select('id', 'name')
+                ->get();
+            
+            if ($req->viewAll) {
+                $req->keyword = '';
+            } else if ($req->keyword) {
+                $facilities->where(function($query) use ($req) {
+                    $query->where('name', 'LIKE', "%{$req->keyword}%");
+                });
             }
-            return redirect()->back();
+
+            return view('facility.facility_hold_send', [
+                'facilities' => $facilities->paginate(50),
+                'keyword' => $req->keyword,
+                'hold' => $on_hold
+            ]);
         }
-    }
+
+        public function holdSendFacility(Request $req){
+            if($req->facility_id){
+                foreach($req->facility_id as $id){
+                    $info = AddFacilityInfo::where('facility_id', $id)->first();
+                    if($info){
+                        $info->sent_status = 1;
+                        $info->save();
+                    }else{
+                        $new_info = new AddFacilityInfo();
+                        $new_info->facility_id = $id;
+                        $new_info->sent_status = 1;
+                        $new_info->created_by = Auth::user()->userid;
+                        $new_info->save();
+                    }
+                }
+                return redirect()->back();
+            }
+        }
 }
