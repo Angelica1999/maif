@@ -222,7 +222,7 @@
                                     onclick="populate({{ $patient->id }})"><i class="fa fa-envelope"></i> Logs</button>
                             </td>
                             <td class="td" style="padding:0px">
-                                <div style="display: flex; align-items: right; gap: 5px;">
+                                <div style="display: flex; align-items: right; gap: 5px; text-align:center">
                                     <div>
                                         <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}" style="background-color:teal; color:white; width:70px; font-size:11px" 
                                             target="_blank" type="button" class="btn btn-xs"><i class="fa fa-print"></i> Print</a>
@@ -236,8 +236,8 @@
                                             <a href="{{ route('patient.accept', ['id' => $patient->id]) }}" style="background-color:#0077b6; color:white; width:70px; font-size:11px" 
                                                 class="btn btn-xs" title="Forward to Facility"><i class="fa fa-share-square"></i> F2F</a>
                                         @endif
-                                        <!-- @if($patient->sent_type == null || $patient->fc_status == 'returned')
-                                            <a href="{{ route('patient.accept', ['id' => $patient->id]) }}" style="background-color:#0b6e4f; color:white; width:70px; font-size:11px; margin-top:1px" 
+                                        <!-- @if($patient->fc_status != 'retrieved')
+                                            <a href="#" style="background-color:#0b6e4f; color:white; width:70px; font-size:11px; margin-top:1px" 
                                                title="Retrieve GL" class="btn btn-xs"><i class="fa fa-undo"></i> Rtrv</a>
                                         @endif -->
                                     </div>
