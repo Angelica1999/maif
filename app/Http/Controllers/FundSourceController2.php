@@ -19,6 +19,16 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Kyslik\ColumnSortable\Sortable;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Borders;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use PhpOffice\PhpSpreadsheet\RichText\RichText;
+use PhpOffice\PhpSpreadsheet\Style\Font;
+use PhpOffice\PhpSpreadsheet\Style\Color;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class FundSourceController2 extends Controller{
 
@@ -108,6 +118,129 @@ class FundSourceController2 extends Controller{
             'section' => $section
         ]);
     }
+
+    public function excelBudget(Request $request) {
+
+        $fundsources = Fundsource::orderByRaw("CASE WHEN saa LIKE 'conap%' THEN 0 ELSE 1 END, saa ASC")
+            ->with([
+                'proponentInfo' => function($query) {
+                    $query->selectRaw('
+                        fundsource_id, 
+                        SUM(CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(18,2))) - SUM(CAST(REPLACE(admin_cost, ",", "") AS DECIMAL(18,2))) AS total_allocated_funds,
+                        SUM(CAST(REPLACE(admin_cost, ",", "") AS DECIMAL(18,2))) AS total_admin_cost
+                    ')->groupBy('fundsource_id');
+                },
+                'utilization' => function($query) {
+                    $query->selectRaw('
+                        fundsource_id,
+                        SUM(CASE WHEN status = 0 AND obligated = 1 THEN CAST(REPLACE(budget_utilize, ",", "") AS DECIMAL(18,2)) ELSE 0 END) AS total_bbudget_utilize
+                    ')->groupBy('fundsource_id');
+                },
+                'a_cost' => function($query) {
+                    $query->selectRaw('
+                        fundsource_id,
+                        SUM(CAST(REPLACE(admin_cost, ",", "") AS DECIMAL(18,2))) AS total_admin_cost
+                    ')->groupBy('fundsource_id');
+                }
+            ])
+            ->where('created_by', '!=', "2760")->get();
+
+        $data = [];
+
+        foreach ($fundsources as $fund) {
+            $allocated = optional($fund->proponentInfo->first())->total_allocated_funds ?? 0;
+            $utilized  = optional($fund->utilization->first())->total_bbudget_utilize ?? 0;
+
+            $data[] = [
+                $fund->saa,
+                $allocated ? $allocated : "0.00",
+                $utilized ? $utilized : "0.00",
+                $allocated - $utilized == 0 ? "0.00" : $allocated - $utilized
+            ];
+        }
+        
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Adjust column widths
+        $sheet->getColumnDimension('A')->setWidth(50);  
+        $sheet->getColumnDimension('B')->setWidth(30); 
+        $sheet->getColumnDimension('C')->setWidth(30); 
+        $sheet->getColumnDimension('D')->setWidth(30); 
+
+        $sheet->getStyle('A1:D1')
+            ->getAlignment()
+            ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+            ->setVertical(Alignment::VERTICAL_CENTER);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("SAA");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('A1', $richText1);
+        $sheet->getStyle('A1')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("ALLOCATED FUNDS");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('B1', $richText1);
+        $sheet->getStyle('B1')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("OBLIGATED");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('C1', $richText1);
+        $sheet->getStyle('C1')->getAlignment()->setWrapText(true);
+
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("REMAINING BALANCE");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('D1', $richText1);
+        $sheet->getStyle('D1')->getAlignment()->setWrapText(true);
+
+        $sheet->fromArray($data, null, 'A2');
+        $sheet->getStyle('B2:D' . (count($data) + 2))
+        ->getNumberFormat()->setFormatCode('#,##0.00');
+
+        $styleArray = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                ],
+            ],
+            'alignment' => [
+                'vertical' => Alignment::VERTICAL_CENTER, 
+            ],
+        ];
+        
+        $sheet->getStyle('A2:D' . (count($data) + 1))->applyFromArray($styleArray);
+        $sheet->getStyle('A2:D' . (count($data) + 1))->getAlignment()->setWrapText(true);
+
+        $sheet->getStyle('A2:A' . (count($data) + 1))
+            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        
+        $sheet->getStyle('B2:D' . (count($data) + 1))
+            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+            
+        // Output preparation
+        ob_start();
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        $xlsData = ob_get_contents();
+        ob_end_clean();
+
+        // Filename
+        $filename = "Summary" . date('Ymd') . ".xlsx";
+        // Set headers
+        header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        header("Content-Disposition: attachment; filename=$filename");
+        header("Pragma: no-cache");
+        header("Expires: 0");
+
+        // Output the file
+        return $xlsData;
+        exit;
+    }
+
 
     public function createfundSource2(Request $request){
         // $funds = $request->input('allocated_funds');

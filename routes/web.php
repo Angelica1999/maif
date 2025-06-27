@@ -128,6 +128,7 @@ Route::match(['get', 'post'],'patient/{patient_id}', [App\Http\Controllers\HomeC
 Route::match(['get', 'post'],'group/patient/{facility_id}/{proponent_id}', [App\Http\Controllers\HomeController::class, 'getPatients'])->name('get.patients');
 Route::post('group/patient/list', [App\Http\Controllers\HomeController::class, 'updateGroupList'])->name('save.patients');
 Route::get('/fundsource_budget', [App\Http\Controllers\FundSourceController2::class, 'fundSource2'])->name('fundsource_budget');
+Route::get('/budget/excel-summary', [App\Http\Controllers\FundSourceController2::class, 'excelBudget'])->name('fundsource_budget.summary');
 Route::post('/fundsource_budget/create', [App\Http\Controllers\FundSourceController2::class, 'createfundSource2'])->name('fundsource_budget.save');
 Route::get('/dvlist/{type}', [App\Http\Controllers\FundSourceController2::class, 'pendingDv'])->name('fundsource_budget.pendingDv');
 Route::get('/budget/fundsource/{id}', [App\Http\Controllers\FundSourceController2::class, 'budgetTracking'])->name('budget.tracking');
