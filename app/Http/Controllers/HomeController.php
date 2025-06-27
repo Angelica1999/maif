@@ -2530,6 +2530,14 @@ class HomeController extends Controller
         ]);
         return redirect()->back()->with('process_gl', true);
     }
+    
+    public function retrievePat($id, $remarks){
+        Patients::where('id', $id)->update([
+            'fc_status' => 'retrieved',
+            'rtrv_remarks' => $remarks
+        ]);
+        return response()->json(['status' => 'success']);
+    }
 
     public function patientsSAmple(Request $request){
 

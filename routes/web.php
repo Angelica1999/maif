@@ -60,6 +60,7 @@ Route::get('/group/remove_patient/{id}', [App\Http\Controllers\HomeController::c
 Route::get('/patient/send-to-facility/{id}', [App\Http\Controllers\HomeController::class, 'facilitySend'])->name('facility.send');
 Route::match(['get', 'post'],'/patient/return/{id}', [App\Http\Controllers\HomeController::class, 'returnPatient'])->name('patient.return');
 Route::get('/patient/accept/{id}', [App\Http\Controllers\HomeController::class, 'acceptPat'])->name('patient.accept');
+Route::get('/patient/retrieve/{id}/{remarks}', [App\Http\Controllers\HomeController::class, 'retrievePat'])->name('patient.retrieve');
 Route::get('/mail/history/{id}', [App\Http\Controllers\HomeController::class, 'mailHistory'])->name('mail.history');
 Route::get('/patient/history/{id}', [App\Http\Controllers\HomeController::class, 'patientHistory'])->name('patient.history');
 Route::get('/patient/pdf', [App\Http\Controllers\PrintController::class, 'patientPdf'])->name('patient.pdf');
