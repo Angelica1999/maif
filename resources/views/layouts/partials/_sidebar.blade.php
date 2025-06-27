@@ -83,6 +83,12 @@
                                 <span class="menu-title">MAIFIPP</span>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('fundsource_budget.summary') }}">
+                                <img src="\maif\public\images\maip_funds_16.png" style="margin-right:12px">
+                                <span class="menu-title">Budget Summary</span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
             </ul>

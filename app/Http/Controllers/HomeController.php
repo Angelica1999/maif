@@ -2419,7 +2419,7 @@ class HomeController extends Controller
 
         $patientLogs = new PatientLogs();
         $patientLogs->patient_id = $patient->id;
-        $patientLogs->fill(Arr::except($patient->toArray(), ['status', 'sent_type', 'user_type', 'transd_id', 'fc_status', 'expired', 'pro_used']));
+        $patientLogs->fill(Arr::except($patient->toArray(), ['status', 'sent_type', 'user_type', 'transd_id', 'fc_status', 'expired', 'pro_used', 'rtrv_remarks']));
         unset($patientLogs->id);
         $patientLogs->save();
         
@@ -2801,7 +2801,7 @@ class HomeController extends Controller
 
             $patientLogs = new PatientLogs();
             $patientLogs->patient_id = $patient->id;
-            $patientLogs->fill(Arr::except($patient->toArray(), ['status', 'sent_type', 'user_type', 'transd_id', 'fc_status', 'expired', 'pro_used']));
+            $patientLogs->fill(Arr::except($patient->toArray(), ['status', 'sent_type', 'user_type', 'transd_id', 'fc_status', 'expired', 'pro_used', 'rtrv_remarks']));
             unset($patientLogs->id);
             $patientLogs->save();
             $patientLogs->update([

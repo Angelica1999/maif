@@ -640,8 +640,6 @@ class ProponentController extends Controller
         return $xlsData;
         exit;
 
-
-
     }
 
     public function delGL($id){
