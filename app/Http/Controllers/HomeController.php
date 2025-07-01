@@ -814,7 +814,7 @@ class HomeController extends Controller
                 SELECT 1 FROM dohdtr.users 
                 WHERE dohdtr.users.userid = patients.created_by
             )
-        ");
+        ")->whereNotNull('sent_type');
 
         if ($request->gen && $filter_date) {
             $dateRange = explode(' - ', $filter_date);
