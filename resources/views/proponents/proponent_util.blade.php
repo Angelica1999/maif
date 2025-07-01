@@ -82,7 +82,9 @@
                                 <td>{{ $row->pat_rem }}</td>
                                 <td>
                                     @if($row->transd_id == null || $row->transd_id == '')
-                                        <a class="text-danger" onclick="deletePatient({{$row->id}})">remove</a>
+                                        @if($row->fc_status != "referred" && $row->fc_status != "accepted")
+                                            <a class="text-danger" onclick="deletePatient({{$row->id}})">remove {{ $row->fc_status }}</a>
+                                        @endif
                                     @endif
                                 </td>
                                 <td style="text-align:center;" class="group-email" data-row-id="{{ $row->id }}" >

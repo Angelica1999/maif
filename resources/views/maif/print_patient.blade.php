@@ -91,7 +91,7 @@
                         <tr style="border: 1px solid lightgray;">
                             <td style="border: 1px solid lightgray; padding:14px">Hospital Bills / laboratory / Procedures / Medicine</td>
                             <td class="text-center" style="border: 1px solid lightgray;">{{ number_format(str_replace(',', '', $patient->guaranteed_amount), 2, '.', ',') }}</td>
-                            <td style="border: 1px solid lightgray;">{{$patient->created_at}}</td>
+                            <td style="border: 1px solid lightgray;">{{ $patient->created_at }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -100,11 +100,12 @@
                     <span class="static-data"><strong>P {{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }}</strong></span>
                 </p>
                 <div class="row align-items-start ml-1"> 
-                    <p class="ml-1">{{$patient->patient_code}}<br><br>
+                    <p class="ml-1">{{ $patient->patient_code }}<br><br>
                         Notes:<br>
                         <i>50% maximum applicable for PF</i><br>
                         Non-Convertible to cash<br><br>
-                        Encoded by: {{$patient->created_by}}
+                        Encoded by: {{ $patient->created_by }}<br>
+                        Valid until December 31, {{ date('Y', strtotime($patient->date_guarantee_letter)) }}
                     </p>
                 </div>
                 <table class="table table-white" style="border-collapse: collapse; width: 100%; margin-top:10px;">

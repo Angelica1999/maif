@@ -42,7 +42,7 @@
                                     @endforeach
                                 </select>
                                 <button style="width:100px; border-radius:0; height:40px" class="btn btn-sm btn-info text-white" value="filtered" type="submit" name="filtered_btn"><i class="typcn typcn-filter menu-icon"></i>Filter</button>
-                                <div class="input-group-append">
+                                <div class="input-group-append">    
                                     <select class="form-control data_sorting" name="data_sorting" style="display:none">
                                         <option></option>
                                         <option value="1" {{ $filter_keyword == 1 ? 'selected' : ''}}>Proponent</option>
@@ -55,7 +55,7 @@
                                     </select>
                                     <button style="width:100px; border-radius:0; height:40px" class="btn btn-sm btn-success text-white" value="{{ $sort }}" type="submit" name="sorting_btn"><i class="typcn typcn-filter menu-icon"></i>Sort</button>
                                     <button style="width:100px; border-radius:0; height:40px" class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
-                                    <a href="{{ route('excel.proponent_summary') }}" style="background-color:teal; border-radius:0; color:white;" type="button" class="btn btn-sum">Excel Summary</a>    
+                                    <a href="{{ route('excel.proponent_summary') }}" style="background-color:teal; border-radius:0; color:white; height:40px" type="button" class="btn btn-sum">Excel Summary</a>    
                                 </div>
                             </div>
                         </form>
@@ -71,7 +71,7 @@
                                 <div class="card">
                                     <div class="card-body">
                                         <div style="justify-content: space-between; flex-wrap: wrap; align-items: center;">
-                                            <b><h3><a href="" data-toggle="modal" class="text-success" onclick="disUtil('{{ $row['proponent']['proponent'] }}')">{{ $row['proponent']['proponent'] }}</a></h3></b>
+                                            <b><h3><a href="" data-toggle="modal" data-backdrop="static" class="text-success" onclick="disUtil('{{ $row['proponent']['proponent'] }}')">{{ $row['proponent']['proponent'] }}</a></h3></b>
                                             <a href="#modified_funds" data-toggle="modal" class="btn btn-sm update_saa" style="min-width:110px;height:30px; cursor: pointer; text-align:center; color:white; background-color:#417524; border-radius:0;" onclick="addBalance('{{ $row['proponent']['proponent'] }}')">Manage Funds</a>                                      
                                         </div>
                                         <div style="overflow-x: auto; width: 100%; margin-top: 10px;">
