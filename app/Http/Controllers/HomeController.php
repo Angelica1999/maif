@@ -814,7 +814,7 @@ class HomeController extends Controller
                 SELECT 1 FROM dohdtr.users 
                 WHERE dohdtr.users.userid = patients.created_by
             )
-        ");
+        ")->whereNotNull('sent_type');
 
         if ($request->gen && $filter_date) {
             $dateRange = explode(' - ', $filter_date);
@@ -2529,6 +2529,14 @@ class HomeController extends Controller
             'sent_type' => 3
         ]);
         return redirect()->back()->with('process_gl', true);
+    }
+    
+    public function retrievePat($id, $remarks){
+        Patients::where('id', $id)->update([
+            'fc_status' => 'retrieved',
+            'rtrv_remarks' => $remarks
+        ]);
+        return response()->json(['status' => 'success']);
     }
 
     public function patientsSAmple(Request $request){

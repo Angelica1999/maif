@@ -222,25 +222,37 @@
                                     onclick="populate({{ $patient->id }})"><i class="fa fa-envelope"></i> Logs</button>
                             </td>
                             <td class="td" style="padding:0px">
-                                <div style="display: flex; align-items: right; gap: 5px; text-align:center">
-                                    <div>
-                                        <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}" style="background-color:teal; color:white; width:70px; font-size:11px" 
-                                            target="_blank" type="button" class="btn btn-xs"><i class="fa fa-print"></i> Print</a>
+                                <div style="display: flex; align-items: center; gap: 5px; text-align:center; height: 100%">
+                                    <div style="display: flex; flex-direction: column; justify-content: center; text-align: center; height: 70px;">
+                                        <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}"
+                                            style="background-color:teal; color:white; width:70px; font-size:11px"
+                                            target="_blank" type="button" class="btn btn-xs">
+                                            <i class="fa fa-print"></i> Print
+                                        </a>
                                         @if($patient->facility_id && !in_array($patient->facility_id, $onhold_facs))
-                                            <a href="{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}" type="button" style="margin-top:1px;  width:70px; font-size:11px" 
-                                                class="btn btn-success btn-xs" id="send_btn"><i class="fa fa-paper-plane"></i> Send</a>
+                                            <a href="{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}"
+                                                type="button" style="margin-top:1px; width:70px; font-size:11px"
+                                                class="btn btn-success btn-xs" id="send_btn">
+                                                <i class="fa fa-paper-plane"></i> Send
+                                            </a>
                                         @endif
                                     </div>
-                                    <div>
+                                    <div style="display: flex; flex-direction: column; justify-content: center; height: 70px;">
                                         @if($patient->sent_type == null || $patient->fc_status == 'returned')
-                                            <a href="{{ route('patient.accept', ['id' => $patient->id]) }}" style="background-color:#0077b6; color:white; width:70px; font-size:11px" 
-                                                class="btn btn-xs" title="Forward to Facility"><i class="fa fa-share-square"></i> F2F</a>
+                                            <a href="{{ route('patient.accept', ['id' => $patient->id]) }}"
+                                                style="background-color:#0077b6; color:white; width:70px; font-size:11px"
+                                                class="btn btn-xs" title="Forward to Facility">
+                                                <i class="fa fa-share-square"></i> F2F
+                                            </a>
                                         @endif
-                                        <!-- @if($patient->fc_status != 'retrieved')
-                                            <a href="#" style="background-color:#0b6e4f; color:white; width:70px; font-size:11px; margin-top:1px" 
-                                               title="Retrieve GL" class="btn btn-xs"><i class="fa fa-undo"></i> Rtrv</a>
+                                        <!-- @if($patient->fc_status != 'retrieved' && $patient->fc_status != 'returned' 
+                                            && $patient->transd_id == null && $patient->fc_status == 'referred')
+                                            <button style="background-color:#0b6e4f; color:white; width:70px; font-size:11px; margin-top:1px"
+                                                title="Retrieve GL" class="btn btn-xs" onclick="retrieveGL({{ $patient->id }})">
+                                                <i class="fa fa-undo"></i> Rtrv
+                                            </button>
                                         @endif -->
-                                    </div>
+                                    </div> 
                                 </div>
                             </td>
                             <td style="text-align:center;" class="group-email" data-patient-id="{{ $patient->id }}">
@@ -271,7 +283,7 @@
                                 <a href="#" class="number_editable"  title="Actual Amount" id="{{ $patient->id }}">{{!Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}</a>
                             </td>
                             <td class="td">{{ number_format((float) str_replace(',', '', $patient->guaranteed_amount), 2, '.', ',') }}</td>
-                            <td>{{date('F j, Y', strtotime($patient->date_guarantee_letter))}}</td>
+                            <td>{{ date('F j, Y', strtotime($patient->date_guarantee_letter)) }}</td>
                             <td class="td">
                                 <a href="#update_patient" onclick="editPatient('{{ $patient->id }}', '{{ $patient->facility_id && !in_array($patient->facility_id, $onhold_facs) ? 1 : 0 }}')" data-backdrop="static" data-toggle="modal">
                                     {{ $patient->fname }}
@@ -322,7 +334,7 @@
                 </table>
             </div>
             @else
-                <div class="alert alert-danger" role="alert" style="width: 100%;">
+                <div class="alert alert-danger" role="alert" style="width: 100%; margin-top:50px">
                 <i class="typcn typcn-times menu-icon"></i>
                     <strong>No patient found!</strong>
                 </div>
@@ -742,6 +754,50 @@
 <script src="{{ asset('admin/vendors/datatables.net-bs4/dataTables.bootstrap4.js') }}"></script> -->
 @include('maif.editable_js')
 <script>
+
+    function retrieveGL(id){
+        Swal.fire({
+            title: 'Retrieve GL',
+            input: 'text', 
+            inputLabel: 'Remarks',
+            inputPlaceholder: '...',
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
+            cancelButtonText: 'Cancel',
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'Cannot be retrieved without remarks!';
+                }
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var remarks = encodeURIComponent(result.value); 
+                fetch(`patient/retrieve/${id}/${remarks}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}' 
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    Swal.fire('Success!', 'Your data has been submitted.', 'success');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                })
+                .catch(error => {
+                    Swal.fire('Error!', 'There was an error submitting your data.', 'error');
+                });
+            }
+        });
+    }
+    
     $(document).ready(function () {
         $('.fa-sort').hide();
 
