@@ -143,7 +143,7 @@ class FundSourceController2 extends Controller{
                     ')->groupBy('fundsource_id');
                 }
             ])
-            ->where('created_by', '!=', "2760")->get();
+            ->where('created_by', '!=', "2760")->orWhere('saa', "")->get();
 
         $data = [];
 
