@@ -566,7 +566,17 @@ class HomeController extends Controller
             'facility:id,name',
             'proponentData:id,proponent',
             'pat_remarks:patient_id,remarks'
-        ])->whereNull('pro_used'); 
+        ])->where(function ($query) {
+            $query->whereNull('pro_used')
+                  ->where(function ($q) {
+                      $q->whereNull('fc_status')
+                        ->orWhere('fc_status', '!=', 'returned');
+                  })
+                  ->where(function ($q) {
+                      $q->whereNull('expired')
+                        ->orWhere('expired', '!=', 1);
+                  });
+        });
 
         if ($request->gen && $filter_date) {
             $dateRange = explode(' - ', $filter_date);

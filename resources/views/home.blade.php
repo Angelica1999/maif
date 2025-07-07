@@ -245,13 +245,13 @@
                                                 <i class="fa fa-share-square"></i> F2F
                                             </a>
                                         @endif
-                                        <!-- @if($patient->fc_status != 'retrieved' && $patient->fc_status != 'returned' 
+                                        @if($patient->fc_status != 'retrieved' && $patient->fc_status != 'returned' 
                                             && $patient->transd_id == null && $patient->fc_status == 'referred')
                                             <button style="background-color:#0b6e4f; color:white; width:70px; font-size:11px; margin-top:1px"
                                                 title="Retrieve GL" class="btn btn-xs" onclick="retrieveGL({{ $patient->id }})">
                                                 <i class="fa fa-undo"></i> Rtrv
                                             </button>
-                                        @endif -->
+                                        @endif
                                     </div> 
                                 </div>
                             </td>
@@ -749,9 +749,6 @@
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 <script src="{{ asset('admin/vendors/x-editable/bootstrap-editable.min.js?v=1') }}"></script>
 <script src="{{ asset('admin/vendors/daterangepicker-master/moment.min.js?v=1') }}"></script>
-<script src="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.js?v=1') }}"></script>
-<!-- <script src="{{ asset('admin/vendors/datatables.net/jquery.dataTables.js') }}"></script>
-<script src="{{ asset('admin/vendors/datatables.net-bs4/dataTables.bootstrap4.js') }}"></script> -->
 @include('maif.editable_js')
 <script>
 
