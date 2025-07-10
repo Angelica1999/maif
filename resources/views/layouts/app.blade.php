@@ -68,7 +68,8 @@
    <script src="{{ asset('Lobibox/lobibox.js?v=').date('His') }}"></script>
    <script src="{{ asset('admin/vendors/sweetalert2/sweetalert2.js?v=1') }}"></script>
    <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
-
+   <script src="{{ asset('admin/vendors/daterangepicker-master/moment.min.js?v=1') }}"></script>
+   <script src="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.js?v=1') }}"></script>
    <!-- <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>

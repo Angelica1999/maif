@@ -54,6 +54,10 @@
         background-color: #fff; 
         box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4); 
     }
+    .set_width {
+        width: 100px;
+        border-radius: 0;
+    }
 </style>
 @extends('layouts.app')
 @section('content')
@@ -66,17 +70,17 @@
                     <form method="GET" action="{{ route('home') }}">
                         <div class="input-group">
                             <input type="hidden" class="form-control" name="key">
-                            <input type="text" class="form-control" name="keyword" id="search_patient" placeholder="Search..." value="{{ $keyword }}" style="width:350px;">
+                            <input type="text" class="form-control" name="keyword" id="search_patient" placeholder="Search..." value="{{ $keyword }}" style="width:400px;">
                             <div class="input-group-append">
-                                <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
-                                <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
-                                <button type="button" href="#create_patient" id="crt_pnt" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
-                                <button type="submit" value="filt" style="display:none; background-color:00563B; color:white; width:130px;" name="filter_col" id="filter_col" class="btn btn-success btn-md"><i class="typcn typcn-filter menu-icon"></i>Filter Header</button>
+                                <button class="btn btn-md btn-info uniform-button" type="submit" style="border-radius:0;"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
+                                <button class="btn btn-md btn-warning text-white uniform-button" style="border-radius:0;" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png"> View All</button>
+                                <button type="button" href="#create_patient" id="crt_pnt" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md set_width"><img src="\maif\public\images\icons8_create_16.png">Create</button>
+                                <button type="submit" value="filt" style="display:none; background-color:00563B; color:white;" name="filter_col" id="filter_col" class="btn btn-md set_width"><i class="typcn typcn-filter menu-icon"></i>Filter</button>
                             </div>  
                         </div>
                         <div class="input-group">
                             <input type="text" style="text-align:center" class="form-control" id="filter_dates" value="{{ ($generate_dates)?$generate_dates:'' }}" name="filter_dates" />
-                            <button type="submit" id="gen_btn" style="background-color:teal; color:white; width:130px; height:40px; border-radius:0;" class="btn"><i class="typcn typcn-calendar-outline menu-icon"></i>Filter by Date</button>
+                            <button type="submit" id="gen_btn" style="background-color:teal; color:white; height:40px; border-radius:0;" class="btn set_width"><i class="typcn typcn-calendar-outline menu-icon"></i> Range</button>
                         </div>
                         <input type="hidden" name="filter_date" id="filter_date" value="{{ implode(',', $filter_date) }}"></input>
                         <input type="hidden" name="filter_fname" id="filter_fname" value="{{ implode(',', $filter_fname) }}"></input>
@@ -97,12 +101,11 @@
                         @csrf
                         <input type="hidden" class="form-control idss" name="idss" id="idss" >
                         <input type="hidden" class="form-control sent_type" name="sent_type" id="sent_type" value="0">
-
-                        <div class="input-group-append" style="display: flex; justify-content: flex-end;">
-                            <button class="btn btn-md send_mails" name="send_mails[]" id="email_sent" style="display:none; background-color:green; color:white; height:41.5px; border-radius:0px; width:100%">Send Mails <img src="\maif\public\images\email_16.png"></button>
+                        <div class="input-group" style="display: flex;">
+                            <button class="btn btn-md send_mails" name="send_mails[]" id="email_sent" style="display:none; background-color:green; color:white; border-radius:0px; width:125px">Send Mails <img src="\maif\public\images\email_16.png"></button>
                         </div>
-                        <div class="input-group">
-                            <button class="btn btn-md send_mails" name="send_mails[]" id="system_sent" style="display:none; background-color:darkgreen; color:white; height:41px; border-radius:0px; width:100%">Send GL to <img src="{{ asset('images/doh-logo.png') }}" style="width:20px"></button>
+                        <div class="input-group" style="display: flex;">
+                            <button class="btn btn-md send_mails" name="send_mails[]" id="system_sent" style="display:none; background-color:darkgreen; color:white;border-radius:0px; width:125px">Send GL to <img src="{{ asset('images/doh-logo.png') }}" width="13px"></button>
                         </div>
                     </form>
                     <form method="POST" action="{{ route('save.group') }}">
@@ -118,8 +121,7 @@
                     </form>
                 </div>
             </div>
-           
-            <h4 class="card-title">MANAGE PATIENTS    {{ $order }}</h4>
+            <h4 class="card-title">MANAGE PATIENTS</h4>
             <span class="card-description">
                 MAIF-IPP
             </span>
@@ -127,210 +129,207 @@
             @if(count($patients) > 0)
             <div class="table-responsive" id ="patient_table_container">
                 <table class="table table-striped" id="patient_table">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th></th>
-                        <th><span class="text-info select_all" title="Select/Unselect All"><i class="fa fa-check"></i>All</span></th>
-                        <th style="min-width:90px">@sortablelink('remarks', 'Status')</th>
-                        <th>Remarks</th>
-                        <th style="min-width:10px; text-align:center;">Group</th>
-                        <th style="min-width:140px">Actual Amount</th>
-                        <th style="min-width:100px">Guaranteed </th>
-                        <th style="min-width:120px;">
-                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                                <select class="form-control filter" style="display:none" id="date_select" name="date_select" multiple></select>
-                                @sortablelink('date_guarantee_letter', '⇅')
-                            </div>
-                        </th>
-                        <th style="min-width:120px; text-align:center;">
-                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                                <select class="form-control filter" style="display:none;" id="fname_select" name="fname_select" multiple></select>
-                                @sortablelink('fname', '⇅')
-                            </div>
-                        </th>
-                        <th style="min-width:120px; text-align:center;">
-                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                                <select class="form-control filter" style="display:none;" id="mname_select" name="mname_select" multiple></select>
-                                @sortablelink('mname', '⇅')
-                            </div>
-                        </th>
-                        <th style="min-width:120px; text-align:center;">
-                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                                <select class="form-control filter" style="display:none;" id="lname_select" name="lname_select" multiple></select>
-                                @sortablelink('lname', '⇅')
-                            </div>
-                        </th>
-                        <th style="min-width:120px; text-align:center;">
-                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                                <select class="form-control filter" style="display:none;" id="facility_select" name="facility_select" multiple></select>
-                                <a href="{{ route('home', ['sort' => 'facility','order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">⇅</a>
-                            </div>
-                        </th>
-                        <th style="min-width:120px; text-align:center;">
-                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                                <select class="form-control filter" style="display:none;" id="proponent_select" name="proponent_select" multiple></select>
-                                <a href="{{ route('home', ['sort' => 'proponent','order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">⇅</a>
-                            </div>
-                        </th>
-                        <th style="text-align:center; vertial-align:middle">@sortablelink('patient_code', 'Code ⇅')</th>
-                        <th style="min-width:120px;">
-                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                                <select class="form-control filter" style="display:none;" id="region_select" name="region_select" multiple></select>
-                                @sortablelink('region', '⇅')
-                            </div>
-                        </th>
-                        <th style="min-width:130px; text-align:center;">
-                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                                <select class="form-control filter" style="display:none;" id="province_select" name="province_select" multiple></select>
-                                <a href="{{ route('home', ['sort' => 'province', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">⇅</a>
-                            </div>
-                        </th>
-                        <th style="min-width:150px; text-align:center;">
-                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                                <select class="form-control filter" style="display:none;" id="muncity_select" name="muncity_select" multiple></select>
-                                <a href="{{ route('home', ['sort' => 'municipality', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">⇅</a>
-                            </div>
-                        </th>
-                        <th style="min-width:150px; text-align:center;">
-                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                                <select class="form-control filter" style="display:none;" id="barangay_select" name="barangay_select" multiple></select>
-                                <a href="{{ route('home', ['sort' => 'barangay', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">⇅</a>
-                            </div>
-                        </th>
-                        <th style="min-width:150px">
-                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                                <select class="form-control filter" style="display:none;" id="on_select" name="on_select" multiple></select>
-                                @sortablelink('created_at', '⇅')
-                            </div>
-                        </th>
-                        <th style="min-width:150px">
-                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                                <select class="form-control filter" style="display:none;" id="by_select" name="by_select" multiple></select>
-                                <a href="{{ route('home', ['sort' => 'encoded_by', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">⇅</a>
-                            </div>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody id="list_body">
-                    @foreach($patients as $index=> $patient)
+                    <thead>
                         <tr>
-                            <td >
-                                <button type="button" href="#patient_history" data-backdrop="static" style="width:70px;background-color:#006BC4; color:white; font-size:11px" data-toggle="modal" class="btn btn-xs" 
-                                    onclick="populateHistory({{ $patient->id }})"><i class="fa fa-history"></i> Pt. Hx</button>
-                                <button type="button" href="#get_mail" data-backdrop="static" data-toggle="modal" class="btn btn-xs" style="margin-top:1px; width:70px; background-color:#005C6F; color:white; font-size:11px" 
-                                    onclick="populate({{ $patient->id }})"><i class="fa fa-envelope"></i> Logs</button>
-                            </td>
-                            <td class="td" style="padding:0px">
-                                <div style="display: flex; align-items: center; gap: 5px; text-align:center; height: 100%">
-                                    <div style="display: flex; flex-direction: column; justify-content: center; text-align: center; height: 70px;">
-                                        <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}"
-                                            style="background-color:teal; color:white; width:70px; font-size:11px"
-                                            target="_blank" type="button" class="btn btn-xs">
-                                            <i class="fa fa-print"></i> Print
-                                        </a>
-                                        @if($patient->facility_id && !in_array($patient->facility_id, $onhold_facs))
-                                            <a href="{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}"
-                                                type="button" style="margin-top:1px; width:70px; font-size:11px"
-                                                class="btn btn-success btn-xs" id="send_btn">
-                                                <i class="fa fa-paper-plane"></i> Send
-                                            </a>
-                                        @endif
-                                    </div>
-                                    <div style="display: flex; flex-direction: column; justify-content: center; height: 70px;">
-                                        @if($patient->sent_type == null || $patient->fc_status == 'returned')
-                                            <a href="{{ route('patient.accept', ['id' => $patient->id]) }}"
-                                                style="background-color:#0077b6; color:white; width:70px; font-size:11px"
-                                                class="btn btn-xs" title="Forward to Facility">
-                                                <i class="fa fa-share-square"></i> F2F
-                                            </a>
-                                        @endif
-                                        @if($patient->fc_status != 'retrieved' && $patient->fc_status != 'returned' 
-                                            && $patient->transd_id == null && $patient->fc_status == 'referred')
-                                            <button style="background-color:#0b6e4f; color:white; width:70px; font-size:11px; margin-top:1px"
-                                                title="Retrieve GL" class="btn btn-xs" onclick="retrieveGL({{ $patient->id }})">
-                                                <i class="fa fa-undo"></i> Rtrv
-                                            </button>
-                                        @endif
-                                    </div> 
+                            <th></th>
+                            <th></th>
+                            <th><span class="text-info select_all" title="Select/Unselect All"><i class="fa fa-check"></i>All</span></th>
+                            <th style="min-width:90px">@sortablelink('remarks', 'Status')</th>
+                            <th>Remarks</th>
+                            <th style="min-width:10px; text-align:center;">Group</th>
+                            <th style="min-width:140px">Actual Amount</th>
+                            <th style="min-width:100px">Guaranteed </th>
+                            <th style="min-width:120px;">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <select class="form-control filter" style="display:none" id="date_select" name="date_select" multiple></select>
+                                    @sortablelink('date_guarantee_letter', '⇅')
                                 </div>
-                            </td>
-                            <td style="text-align:center;" class="group-email" data-patient-id="{{ $patient->id }}">
-                                <input class="sent_mails[] " id="mail_ids[]" name="mail_ids[]" type="hidden">
-                                <input type="checkbox" style="width: 60px; height: 20px;" name="mailCheckbox[]" id="mailCheckboxId_{{ $patient->id }}" 
-                                    data-patient-stat="{{ $patient->sent_type == null || $patient->fc_status == 'returned' ? 1 : 0 }}"
-                                    data-patient-stat2="{{ $patient->facility_id && !in_array($patient->facility_id, $onhold_facs) ? 1 : 0 }}"
-                                    class="group-mailCheckBox" onclick="itemChecked($(this))">
-                            </td>
-                            <td style="text-align:center">
-                                @if($patient->remarks == 1)
-                                    <i style="font-size:15px" class="fa fa-check">
-                                @endif
-                            </td>
-                            <td>
-                                {{ $patient->pat_rem }}   
-                            </td>
-                            <td style="text-align:center;" class="group-amount" data-patient-id="{{ $patient->id }}" data-proponent-id="{{ $patient->proponent_id }}" 
-                                data-amount="{{ $patient->actual_amount }}" data-facility-id="{{ $patient->facility_id }}" >
-                                @if($patient->group_id == null)
-                                <input type="checkbox" style="width: 60px; height: 20px;" name="someCheckbox[]" id="someCheckboxId_{{ $patient->id }}" 
-                                    class="group-checkbox" onclick="groupItem($(this))">
-                                @else
-                                    w/group
-                                @endif
-                            </td>
-                            <td class="editable-amount" data-actual-amount="{{ !Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','):0 }}" data-patient-id="{{ $patient->id }}" data-guaranteed-amount="{{str_replace(',', '', $patient->guaranteed_amount)}}">
-                                <a href="#" class="number_editable"  title="Actual Amount" id="{{ $patient->id }}">{{!Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}</a>
-                            </td>
-                            <td class="td">{{ number_format((float) str_replace(',', '', $patient->guaranteed_amount), 2, '.', ',') }}</td>
-                            <td>{{ date('F j, Y', strtotime($patient->date_guarantee_letter)) }}</td>
-                            <td class="td">
-                                <a href="#update_patient" onclick="editPatient('{{ $patient->id }}', '{{ $patient->facility_id && !in_array($patient->facility_id, $onhold_facs) ? 1 : 0 }}')" data-backdrop="static" data-toggle="modal">
-                                    {{ $patient->fname }}
-                                </a>
-                            </td>   
-                            <td class="td">{{ $patient->mname }}</td>
-                            <td class="td">{{ $patient->lname }}</td>
-                            <td class="td">{{ $patient->facility->name }}</td>
-                            <td class="td">{{ $patient->proponentData ? $patient->proponentData->proponent : 'N/A' }}</td>
-                            <td class="td">{{ $patient->patient_code}}</td>
-                            {{-- <td>
-                                @if(isset($patient->facility->description))
-                                    {{ $patient->facility->description }}
-                                @else
-                                    {{ $patient->other_facility }}
-                                @endif
-                            </td> --}}
-                            <td class="td">{{ $patient->region }}</td>
-                            <td class="td">
-                                @if(isset($patient->province->description))
-                                    {{ $patient->province->description }}
-                                @else
-                                    {{ $patient->other_province }}
-                                @endif
-                            </td>
-                            <td class="td">
-                                @if(isset($patient->muncity->description))
-                                    {{ $patient->muncity->description }}
-                                @else
-                                    {{ $patient->other_muncity }}
-                                @endif
-                            </td>
-                            <td class="td">
-                                @if(isset($patient->barangay->description))
-                                    {{ $patient->barangay->description }}
-                                @else
-                                    {{ $patient->other_barangay }}
-                                @endif
-                            </td>
-                            <td style="text-align:center">
-                                {{ date('F j, Y', strtotime($patient->created_at)) }}<br>
-                                ( {{  date('H:i:s', strtotime($patient->created_at)) }} )
-                            </td>
-                            <td class="td">{{ $patient->user_type == null ? $patient->encoded_by->lname .', '. $patient->encoded_by->fname: ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td>
+                            </th>
+                            <th style="min-width:120px; text-align:center;">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <select class="form-control filter" style="display:none;" id="fname_select" name="fname_select" multiple></select>
+                                    @sortablelink('fname', '⇅')
+                                </div>
+                            </th>
+                            <th style="min-width:120px; text-align:center;">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <select class="form-control filter" style="display:none;" id="mname_select" name="mname_select" multiple></select>
+                                    @sortablelink('mname', '⇅')
+                                </div>
+                            </th>
+                            <th style="min-width:120px; text-align:center;">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <select class="form-control filter" style="display:none;" id="lname_select" name="lname_select" multiple></select>
+                                    @sortablelink('lname', '⇅')
+                                </div>
+                            </th>
+                            <th style="min-width:120px; text-align:center;">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <select class="form-control filter" style="display:none;" id="facility_select" name="facility_select" multiple></select>
+                                    <a href="{{ route('home', ['sort' => 'facility','order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">⇅</a>
+                                </div>
+                            </th>
+                            <th style="min-width:120px; text-align:center;">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <select class="form-control filter" style="display:none;" id="proponent_select" name="proponent_select" multiple></select>
+                                    <a href="{{ route('home', ['sort' => 'proponent','order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">⇅</a>
+                                </div>
+                            </th>
+                            <th style="text-align:center; vertial-align:middle">@sortablelink('patient_code', 'Code ⇅')</th>
+                            <th style="min-width:120px;">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <select class="form-control filter" style="display:none;" id="region_select" name="region_select" multiple></select>
+                                    @sortablelink('region', '⇅')
+                                </div>
+                            </th>
+                            <th style="min-width:130px; text-align:center;">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <select class="form-control filter" style="display:none;" id="province_select" name="province_select" multiple></select>
+                                    <a href="{{ route('home', ['sort' => 'province', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">⇅</a>
+                                </div>
+                            </th>
+                            <th style="min-width:150px; text-align:center;">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <select class="form-control filter" style="display:none;" id="muncity_select" name="muncity_select" multiple></select>
+                                    <a href="{{ route('home', ['sort' => 'municipality', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">⇅</a>
+                                </div>
+                            </th>
+                            <th style="min-width:150px; text-align:center;">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <select class="form-control filter" style="display:none;" id="barangay_select" name="barangay_select" multiple></select>
+                                    <a href="{{ route('home', ['sort' => 'barangay', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">⇅</a>
+                                </div>
+                            </th>
+                            <th style="min-width:150px">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <select class="form-control filter" style="display:none;" id="on_select" name="on_select" multiple></select>
+                                    @sortablelink('created_at', '⇅')
+                                </div>
+                            </th>
+                            <th style="min-width:150px">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <select class="form-control filter" style="display:none;" id="by_select" name="by_select" multiple></select>
+                                    <a href="{{ route('home', ['sort' => 'encoded_by', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">⇅</a>
+                                </div>
+                            </th>
                         </tr>
-                    @endforeach
-                </tbody>
+                    </thead>
+                    <tbody id="list_body">
+                        @foreach($patients as $index=> $patient)
+                            <tr>
+                                <td>
+                                    <button type="button" href="#patient_history" data-backdrop="static" style="width:70px;background-color:#006BC4; color:white; font-size:11px" data-toggle="modal" class="btn btn-xs" 
+                                        onclick="populateHistory({{ $patient->id }})"><i class="fa fa-history"></i> Pt. Hx</button>
+                                    <button type="button" href="#get_mail" data-backdrop="static" data-toggle="modal" class="btn btn-xs" style="margin-top:1px; width:70px; background-color:#005C6F; color:white; font-size:11px" 
+                                        onclick="populate({{ $patient->id }})"><i class="fa fa-envelope"></i> Logs</button>
+                                </td>
+                                <td class="td" style="padding:0px">
+                                    <div style="display: flex; align-items: center; gap: 5px; text-align:center; height: 100%">
+                                        <div style="display: flex; flex-direction: column; justify-content: center; text-align: center; height: 70px;">
+                                            <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}"
+                                                style="background-color:teal; color:white; width:70px; font-size:11px"
+                                                target="_blank" type="button" class="btn btn-xs">
+                                                <i class="fa fa-print"></i> Print
+                                            </a>
+                                            @if($patient->facility_id && !in_array($patient->facility_id, $onhold_facs))
+                                                <a href="{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}"
+                                                    type="button" style="margin-top:1px; width:70px; font-size:11px"
+                                                    class="btn btn-success btn-xs" id="send_btn">
+                                                    <i class="fa fa-paper-plane"></i> Send
+                                                </a>
+                                            @endif
+                                        </div>
+                                        <div style="display: flex; flex-direction: column; justify-content: center; height: 70px;">
+                                        @if($patient->facility_id && in_array($patient->facility_id, $onhold_facs))
+
+                                            @if($patient->sent_type == null || $patient->fc_status == 'returned')
+                                                <button 
+                                                    onclick="forwardPatient({{ !in_array($patient->facility_id, $active_facility) ? 1 : 0 }}, '{{ route('patient.accept', ['id' => $patient->id]) }}')"
+                                                    style="background-color:#0077b6; color:white; width:70px; font-size:11px"
+                                                    class="btn btn-xs" title="Forward to Facility">
+                                                    <i class="fa fa-share-square"></i> F2F
+                                                </button>
+                                            @endif
+                                            @endif
+                                            @if($patient->fc_status != 'retrieved' && $patient->fc_status != 'returned' 
+                                                && $patient->transd_id == null && $patient->fc_status == 'referred')
+                                                <button style="background-color:#0b6e4f; color:white; width:70px; font-size:11px; margin-top:1px"
+                                                    title="Retrieve GL" class="btn btn-xs" onclick="retrieveGL({{ $patient->id }})">
+                                                    <i class="fa fa-undo"></i> Rtrv
+                                                </button>
+                                            @endif
+                                        </div> 
+                                    </div>
+                                </td>
+                                <td style="text-align:center;" class="group-email" data-patient-id="{{ $patient->id }}">
+                                    <input class="sent_mails[] " id="mail_ids[]" name="mail_ids[]" type="hidden">
+                                    <input type="checkbox" style="width: 60px; height: 20px;" name="mailCheckbox[]" id="mailCheckboxId_{{ $patient->id }}" 
+                                        data-patient-stat="{{ $patient->sent_type == null || $patient->fc_status == 'returned' ? 1 : 0 }}"
+                                        data-patient-stat2="{{ $patient->facility_id && !in_array($patient->facility_id, $onhold_facs) ? 1 : 0 }}"
+                                        class="group-mailCheckBox" onclick="itemChecked($(this))">
+                                </td>
+                                <td style="text-align:center">
+                                    @if($patient->remarks == 1)
+                                        <i style="font-size:15px" class="fa fa-check">
+                                    @endif
+                                </td>
+                                <td>
+                                    {{ $patient->pat_rem }}   
+                                </td>
+                                <td style="text-align:center;" class="group-amount" data-patient-id="{{ $patient->id }}" data-proponent-id="{{ $patient->proponent_id }}" 
+                                    data-amount="{{ $patient->actual_amount }}" data-facility-id="{{ $patient->facility_id }}" >
+                                    @if($patient->group_id == null)
+                                    <input type="checkbox" style="width: 60px; height: 20px;" name="someCheckbox[]" id="someCheckboxId_{{ $patient->id }}" 
+                                        class="group-checkbox" onclick="groupItem($(this))">
+                                    @else
+                                        w/group
+                                    @endif
+                                </td>
+                                <td class="editable-amount" data-actual-amount="{{ !Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','):0 }}" data-patient-id="{{ $patient->id }}" data-guaranteed-amount="{{str_replace(',', '', $patient->guaranteed_amount)}}">
+                                    <a href="#" class="number_editable"  title="Actual Amount" id="{{ $patient->id }}">{{!Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}</a>
+                                </td>
+                                <td class="td">{{ number_format((float) str_replace(',', '', $patient->guaranteed_amount), 2, '.', ',') }}</td>
+                                <td>{{ date('F j, Y', strtotime($patient->date_guarantee_letter)) }}</td>
+                                <td class="td">
+                                    <a href="#update_patient" onclick="editPatient('{{ $patient->id }}', '{{ $patient->facility_id && !in_array($patient->facility_id, $onhold_facs) ? 1 : 0 }}')" data-backdrop="static" data-toggle="modal">
+                                        {{ $patient->fname }}
+                                    </a>
+                                </td>   
+                                <td class="td">{{ $patient->mname }}</td>
+                                <td class="td">{{ $patient->lname }}</td>
+                                <td class="td">{{ $patient->facility->name }}</td>
+                                <td class="td">{{ $patient->proponentData ? $patient->proponentData->proponent : 'N/A' }}</td>
+                                <td class="td">{{ $patient->patient_code}}</td>
+                                <td class="td">{{ $patient->region }}</td>
+                                <td class="td">
+                                    @if(isset($patient->province->description))
+                                        {{ $patient->province->description }}
+                                    @else
+                                        {{ $patient->other_province }}
+                                    @endif
+                                </td>
+                                <td class="td">
+                                    @if(isset($patient->muncity->description))
+                                        {{ $patient->muncity->description }}
+                                    @else
+                                        {{ $patient->other_muncity }}
+                                    @endif
+                                </td>
+                                <td class="td">
+                                    @if(isset($patient->barangay->description))
+                                        {{ $patient->barangay->description }}
+                                    @else
+                                        {{ $patient->other_barangay }}
+                                    @endif
+                                </td>
+                                <td style="text-align:center">
+                                    {{ date('F j, Y', strtotime($patient->created_at)) }}<br>
+                                    ( {{  date('H:i:s', strtotime($patient->created_at)) }} )
+                                </td>
+                                <td class="td">{{ $patient->user_type == null ? $patient->encoded_by->lname .', '. $patient->encoded_by->fname: ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
                 </table>
             </div>
             @else
@@ -744,13 +743,32 @@
 <div class="loading-container">
     <img src="public\images\loading.gif" alt="Loading..." class="loading-spinner">
 </div>
+<div id="loading_indicator" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 1050;">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+        <div class="spinner-border text-success" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <p>Loading patient data...</p>
+    </div>
+</div>
 @endsection
 @section('js')
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 <script src="{{ asset('admin/vendors/x-editable/bootstrap-editable.min.js?v=1') }}"></script>
-<script src="{{ asset('admin/vendors/daterangepicker-master/moment.min.js?v=1') }}"></script>
 @include('maif.editable_js')
 <script>
+
+    function forwardPatient(status, forwardUrl) {
+        if (status == 1) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Not Allowed',
+                text: 'No System Account Found!',
+            });
+        } else {
+            window.location.href = forwardUrl;
+        }
+    }
 
     function retrieveGL(id){
         Swal.fire({
@@ -1006,7 +1024,6 @@
         return all_stat;
     }
 
-
     function itemChecked(element){
         var parentTd = $(element).closest('td');   
         var patientId = parentTd.attr('data-patient-id');
@@ -1134,7 +1151,6 @@
 
         var select_val = 0;
         $(document).on('click', '.select_all', function() {
-            // if(all_patients){
             if(select_val == 0){
                 $('#patient_table').find('input.group-mailCheckBox').prop('checked', true).trigger('change');
                 $('.send_mails').val('').show();
@@ -1266,6 +1282,9 @@
     function editPatient(id, stat) {
         form_type='update';
         var patient;
+
+        $('#loading_indicator').show();
+
         $.get("{{url('/gl/update').'/'}}" + id, function(result){
             patient = result.patients;
             ids = result.ids;
@@ -1330,6 +1349,14 @@
                 }
             }
             edit_c = 0;
+
+            $('#loading_indicator').hide();
+
+            $('#update_patient').modal({
+                backdrop: 'static',
+                keyboard: false
+            });
+            
         });
     }
     

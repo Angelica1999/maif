@@ -85,7 +85,7 @@
     });
     function resumed(code){
         Swal.fire({
-            title: 'Release proponent',
+            title: 'Release Facility',
             text: "Are you certain you want to remove the hold status for this facility?",
             icon: 'warning',
             showCancelButton: true,

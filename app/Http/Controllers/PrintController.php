@@ -9,6 +9,7 @@ use App\Models\MailHistory;
 use App\Models\AddFacilityInfo;
 use App\Models\Dv2;
 use App\Models\Facility;
+use App\Models\OnlineUser;
 use App\Models\Fundsource_Files;
 use App\Models\Fundsource;
 use App\Models\Proponent;
@@ -107,6 +108,9 @@ class PrintController extends Controller
 
     public function sendMultiple(Request $request)
     {
+        $active_facility = OnlineUser::where('user_type', 2)->pluck('type_identity')->toArray();
+        $onhold_facs = AddFacilityInfo::where('sent_status', 1)->pluck('facility_id')->toArray();
+
         $ids = $request->input('send_mails');
         $ids = array_map('intval', explode(',', $ids[0]));
         set_time_limit(0);
@@ -120,13 +124,12 @@ class PrintController extends Controller
         }elseif($request->sent_type == 1){
             foreach($ids as $id){
                 $pat = Patients::where('id', $id)->first();
-                // return $pat;
-                // if($pat->sent_type == 1 || $pat->fc_status == "returned"){
+                if(in_array($pat->facility_id, $active_facility) && in_array($pat->facility_id, $onhold_facs)){
                     Patients::where('id', $id)->update([
                         'fc_status' => 'referred',
                         'sent_type' => 3
-                    ]);
-                // }
+                    ]); 
+                }
             }
             return redirect()->back()->with('process_gl', true);
         }

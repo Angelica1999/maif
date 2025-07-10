@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Models\Transfer;
 use App\Models\Dv;
 use App\Models\Dv2;
+use App\Models\OnlineUser;
 use App\Models\Dv3;
 use App\Models\NewDV;
 use App\Models\Utilization;
@@ -41,6 +42,7 @@ use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use PhpOffice\PhpSpreadsheet\Style\Font;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use Carbon\Carbon;
 
 class HomeController extends Controller
 {
@@ -65,9 +67,25 @@ class HomeController extends Controller
         $search = $request->get('search', '');
         $page = $request->get('page', 1);
         $perPage = 50;
-
+        
         if($type == 1){
             $query = Patients::select('fname')
+                ->distinct()
+                ->orderBy('fname');
+        }else if($type == 2){
+            $query = Patients::select('fname')
+                ->where(function ($query) {
+                    $query->whereNull('pro_used')
+                        ->where('fc_status', "returned");
+                })
+                ->distinct()
+                ->orderBy('fname');
+        }else if($type == 3){
+            $query = Patients::select('fname')
+                ->where(function ($query) {
+                    $query->whereNull('pro_used')
+                        ->where('expired', 1);
+                })
                 ->distinct()
                 ->orderBy('fname');
         }else{
@@ -110,6 +128,22 @@ class HomeController extends Controller
             $query = Patients::select('date_guarantee_letter')
                 ->distinct()
                 ->orderBy('date_guarantee_letter');
+        }else if($type == 2){
+            $query = Patients::select('date_guarantee_letter')
+                ->where(function ($query) {
+                    $query->whereNull('pro_used')
+                        ->where('fc_status', "returned");
+                })
+                ->distinct()
+                ->orderBy('date_guarantee_letter');
+        }else if($type == 3){
+            $query = Patients::select('date_guarantee_letter')
+                ->where(function ($query) {
+                    $query->whereNull('pro_used')
+                        ->where('expired', 1);
+                })
+                ->distinct()
+                ->orderBy('date_guarantee_letter');
         }else{
             $query = Patients::select('date_guarantee_letter')
                 ->whereRaw("
@@ -150,6 +184,22 @@ class HomeController extends Controller
             $query = Patients::select('mname')
                 ->distinct()
                 ->orderBy('mname');
+        }else if($type == 2){
+            $query = Patients::select('mname')
+                ->where(function ($query) {
+                    $query->whereNull('pro_used')
+                        ->where('fc_status', "returned");
+                })
+                ->distinct()
+                ->orderBy('mname');
+        }else if($type == 3){
+            $query = Patients::select('mname')
+                ->where(function ($query) {
+                    $query->whereNull('pro_used')
+                        ->where('expired', 1);
+                })
+                ->distinct()
+                ->orderBy('mname');
         }else{
             $query = Patients::select('mname')
                 ->whereRaw("
@@ -188,6 +238,22 @@ class HomeController extends Controller
 
         if($type == 1){
             $query = Patients::select('lname')
+                ->distinct()
+                ->orderBy('lname');
+        }else if($type == 2){
+            $query = Patients::select('lname')
+                ->where(function ($query) {
+                    $query->whereNull('pro_used')
+                        ->where('fc_status', "returned");
+                })
+                ->distinct()
+                ->orderBy('lname');
+        }else if($type == 3){
+            $query = Patients::select('lname')
+                ->where(function ($query) {
+                    $query->whereNull('pro_used')
+                        ->where('expired', 1);
+                })
                 ->distinct()
                 ->orderBy('lname');
         }else{
@@ -287,6 +353,22 @@ class HomeController extends Controller
             $query = Patients::select('region')
                          ->distinct()
                          ->orderBy('region');
+        }else if($type == 2){
+            $query = Patients::select('region')
+                ->where(function ($query) {
+                    $query->whereNull('pro_used')
+                        ->where('fc_status', "returned");
+                })
+                ->distinct()
+                ->orderBy('region');
+        }else if($type == 3){
+            $query = Patients::select('region')
+                ->where(function ($query) {
+                    $query->whereNull('pro_used')
+                        ->where('expired', 1);
+                })
+                ->distinct()
+                ->orderBy('region');
         }else{
             $query = Patients::select('region')
                 ->whereRaw("
@@ -326,6 +408,22 @@ class HomeController extends Controller
         if($type == 1){
             $query1 = DB::table('patients')
                 ->select(DB::raw("DISTINCT other_province AS province"))
+                ->whereNotNull('other_province');
+        }else if($type == 2){
+            $query1 = DB::table('patients')
+                ->select(DB::raw("DISTINCT other_province AS province"))
+                ->where(function ($query) {
+                    $query->whereNull('pro_used')
+                        ->where('fc_status', "returned");
+                })
+                ->whereNotNull('other_province');
+        }else if($type == ){
+            $query1 = DB::table('patients')
+                ->select(DB::raw("DISTINCT other_province AS province"))
+                ->where(function ($query) {
+                    $query->whereNull('pro_used')
+                        ->where('expired', 1);
+                })
                 ->whereNotNull('other_province');
         }else{
             $query1 = DB::table('patients')
@@ -379,6 +477,22 @@ class HomeController extends Controller
             $query1 = DB::table('patients')
                 ->select(DB::raw("DISTINCT other_muncity AS municipality"))
                 ->whereNotNull('other_muncity');
+        }else if($type == 2){
+            $query1 = DB::table('patients')
+            ->select(DB::raw("DISTINCT other_muncity AS municipality"))
+            ->where(function ($query) {
+                    $query->whereNull('pro_used')
+                        ->where('fc_status', "returned");
+                })
+                ->whereNotNull('other_muncity');
+        }else if($type == 3){
+            $query1 = DB::table('patients')
+            ->select(DB::raw("DISTINCT other_muncity AS municipality"))
+            ->where(function ($query) {
+                    $query->whereNull('pro_used')
+                        ->where('expired', 1);
+                })
+                ->whereNotNull('other_muncity');
         }else{
             $query1 = DB::table('patients')->select(DB::raw("DISTINCT other_muncity AS municipality"))
                 ->whereNotNull('other_muncity')
@@ -430,6 +544,22 @@ class HomeController extends Controller
             $query1 = DB::table('patients')
                 ->select(DB::raw("DISTINCT other_barangay AS barangay"))
                 ->whereNotNull('other_barangay');
+        }else if($type == 2){
+            $query1 = DB::table('patients')
+            ->select(DB::raw("DISTINCT other_barangay AS barangay"))
+            ->where(function ($query) {
+                    $query->whereNull('pro_used')
+                        ->where('fc_status', "returned");
+                })
+            ->whereNotNull('other_barangay');
+        }else if($type == 3){
+            $query1 = DB::table('patients')
+            ->select(DB::raw("DISTINCT other_barangay AS barangay"))
+            ->where(function ($query) {
+                    $query->whereNull('pro_used')
+                        ->where('expired', 1);
+                })
+            ->whereNotNull('other_barangay');
         }else{
             $query1 = DB::table('patients')
                 ->select(DB::raw("DISTINCT other_barangay AS barangay"))
@@ -481,6 +611,20 @@ class HomeController extends Controller
         if($type == 1){
             $query = Patients::select(DB::raw('DATE(created_at) as created_date'))
                 ->distinct()->orderBy('created_date');
+        }else if($type == 2){
+            $query = Patients::select(DB::raw('DATE(created_at) as created_date'))
+                ->where(function ($query) {
+                    $query->whereNull('pro_used')
+                        ->where('fc_status', "returned");
+                })
+                ->distinct()->orderBy('created_date');
+        }else if($type == 3){
+            $query = Patients::select(DB::raw('DATE(created_at) as created_date'))
+                ->where(function ($query) {
+                    $query->whereNull('pro_used')
+                        ->where('expired', 1);
+                })
+                ->distinct()->orderBy('created_date');
         }else{
             $query = Patients::select(DB::raw('DATE(created_at) as created_date'))
             ->whereRaw("
@@ -518,6 +662,20 @@ class HomeController extends Controller
         if($type == 1){
             $query = Patients::select('created_by')
                         ->distinct()->pluck('created_by')->toArray();
+        }else if($type == 2){
+            $query = Patients::select('created_by')
+                ->where(function ($query) {
+                    $query->whereNull('pro_used')
+                        ->where('fc_status', "returned");
+                })
+                ->distinct()->pluck('created_by')->toArray();
+        }else if($type == 3){
+            $query = Patients::select('created_by')
+                ->where(function ($query) {
+                    $query->whereNull('pro_used')
+                        ->where('expired', 1);
+                })
+                ->distinct()->pluck('created_by')->toArray();
         }else{
             $query = Patients::select('created_by')
             ->whereRaw("
@@ -649,6 +807,7 @@ class HomeController extends Controller
             'gen' => $request->gen,
             'order' => $order,
             'id_pat' => '',
+            'active_facility' => OnlineUser::where('user_type', 2)->pluck('type_identity')->toArray()
         ], $filterData));
     }
 
@@ -900,14 +1059,18 @@ class HomeController extends Controller
         ], $filterData));
     }
 
-     public function returnedPatients(Request $request){
-        
-        $filter_date = $request->input('filter_dates');
-        $order = $request->input('order', 'asc');
+    public function returnedPatients(Request $request)
+    {
+        Proponent::whereIn('proponent', 
+            Proponent::where('status', 1)->pluck('proponent')
+        )->update(['status' => 1]);
 
-        $patients = Patients::with([
+        $filter_date = $request->input('filter_dates');
+        $order = $request->input('order');
+
+        $baseQuery = Patients::with([
             'province:id,description',
-            'muncity:id,description',
+            'muncity:id,description', 
             'barangay:id,description',
             'encoded_by:userid,fname,lname,mname',
             'gl_user:username,fname,lname',
@@ -919,318 +1082,93 @@ class HomeController extends Controller
                 ->where('fc_status', "returned");
         });
 
-        if($request->gen){
+        if ($request->gen && $filter_date) {
             $dateRange = explode(' - ', $filter_date);
             $start_date = date('Y-m-d', strtotime($dateRange[0]));
             $end_date = date('Y-m-d', strtotime($dateRange[1]));
-            $patients = $patients ->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59'])
-            ->where(function ($query) {
-                $query->whereNull('pro_used')
-                    ->where('fc_status', 'returned');
-            });
+            $baseQuery->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59']);
         }
 
-        // -- for search
-
-        if($request->viewAll){
-
-            $request->keyword = '';
-            $request->filter_date = '';
-            $request->filter_fname = '';
-            $request->filter_mname = '';
-            $request->filter_lname = '';
-            $request->filter_facility = '';
-            $request->filter_proponent = '';
-            $request->filter_code = '';
-            $request->filter_region = '';
-            $request->filter_province = '';
-            $request->filter_muncity = '';
-            $request->filter_barangay = '';
-            $request->filter_on = '';
-            $request->filter_by = '';
+        if ($request->viewAll) {
+            $request->merge([
+                'keyword' => '',
+                'filter_date' => '',
+                'filter_fname' => '',
+                'filter_mname' => '',
+                'filter_lname' => '',
+                'filter_facility' => '',
+                'filter_proponent' => '',
+                'filter_code' => '',
+                'filter_region' => '',
+                'filter_province' => '',
+                'filter_muncity' => '',
+                'filter_barangay' => '',
+                'filter_on' => '',
+                'filter_by' => '',
+                'gen' => ''
+            ]);
             $filter_date = '';
-            $request->gen = '';
-
-
-        }else if($request->keyword){
-
+        } elseif ($request->keyword) {
             $keyword = $request->keyword;
-            $patients = $patients->where(function ($query) use ($keyword) {
-                $query->where(function ($query) {
-                            $query->whereNull('pro_used')
-                                ->where('fc_status', 'returned');
-                        })
-                    ->where(function ($query) use ($keyword) {
-                        $query->where('fname', 'LIKE', "%$keyword%")
-                            ->orWhere('lname', 'LIKE', "%$keyword%")
-                            ->orWhere('mname', 'LIKE', "%$keyword%")
-                            ->orWhere('region', 'LIKE', "%$keyword%")
-                            ->orWhere('other_province', 'LIKE', "%$keyword%")
-                            ->orWhere('other_muncity', 'LIKE', "%$keyword%")
-                            ->orWhere('other_barangay', 'LIKE', "%$keyword%")
-                            ->orWhere('patient_code', 'LIKE', "%$keyword%");
+            $baseQuery->where(function ($query) use ($keyword) {
+                $query->where('fname', 'LIKE', "%$keyword%")
+                    ->orWhere('lname', 'LIKE', "%$keyword%")
+                    ->orWhere('mname', 'LIKE', "%$keyword%")
+                    ->orWhere('region', 'LIKE', "%$keyword%")
+                    ->orWhere('other_province', 'LIKE', "%$keyword%")
+                    ->orWhere('other_muncity', 'LIKE', "%$keyword%")
+                    ->orWhere('other_barangay', 'LIKE', "%$keyword%")
+                    ->orWhere('patient_code', 'LIKE', "%$keyword%")
+                    ->orWhereHas('facility', function ($q) use ($keyword) {
+                        $q->where('name', 'LIKE', "%$keyword%");
                     })
-                    ->orWhereHas('facility', function ($query) use ($keyword) {
-                        $query->where('name', 'LIKE', "%$keyword%");
+                    ->orWhereHas('proponentData', function ($q) use ($keyword) {
+                        $q->where('proponent', 'LIKE', "%$keyword%");
                     })
-                    ->orWhereHas('proponentData', function ($query) use ($keyword) {
-                        $query->where('proponent', 'LIKE', "%$keyword%");
+                    ->orWhereHas('barangay', function ($q) use ($keyword) {
+                        $q->where('description', 'LIKE', "%$keyword%");
                     })
-                    ->orWhereHas('barangay', function ($query) use ($keyword) {
-                        $query->where('description', 'LIKE', "%$keyword%");
+                    ->orWhereHas('muncity', function ($q) use ($keyword) {
+                        $q->where('description', 'LIKE', "%$keyword%");
                     })
-                    ->orWhereHas('muncity', function ($query) use ($keyword) {
-                        $query->where('description', 'LIKE', "%$keyword%");
-                    })
-                    ->orWhereHas('province', function ($query) use ($keyword) {
-                        $query->where('description', 'LIKE', "%$keyword%");
+                    ->orWhereHas('province', function ($q) use ($keyword) {
+                        $q->where('description', 'LIKE', "%$keyword%");
                     });
             });
         }
 
-        // -- for table header sorting
+        $this->applyColumnFilters($baseQuery, $request);
 
-        $date = clone ($patients);
-        $fname = clone ($patients);
-        $mname = clone ($patients);
-        $lname = clone ($patients);
-        $facs = clone ($patients);
-        $code = clone ($patients);
-        $proponent = clone ($patients);
-        $region = clone ($patients);
-        $province = clone ($patients);
-        $muncity = clone ($patients);
-        $barangay = clone ($patients);
-        $on = clone ($patients);
-        $by = clone ($patients);
+        $this->applySorting($baseQuery, $request);
 
-        if ($request->sort && $request->input('sort') == 'facility') {
-            $patients = $patients->sortable(['facility.name' => 'asc'])
-            ->where(function ($query) {
-                $query->whereNull('pro_used')
-                    ->where('fc_status', 'returned');
-            });
-        }else if ($request->sort && $request->input('sort') == 'proponent') {
-            $patients = $patients->sortable(['proponentData.proponent' => 'asc'])
-            ->where(function ($query) {
-                $query->whereNull('pro_used')
-                    ->where('fc_status', 'returned');
-            });
-        }else if ($request->sort && $request->input('sort') == 'province') {
-            $patients = $patients->leftJoin('province', 'province.id', '=', 'patients.province_id')
-                ->where(function ($query) {
-                    $query->whereNull('pro_used')
-                        ->where('fc_status', 'returned');
-                })
-                ->orWhere('fc_status', 'returned')
-                ->orderBy('patients.other_province', $request->input('order'))
-                ->orderBy('province.description', $request->input('order')) 
-                ->select('patients.*');
-        }else if ($request->sort && $request->input('sort') == 'municipality') {
-            
-            $patients = $patients->leftJoin('muncity', 'muncity.id', '=', 'patients.muncity_id')
-                ->where(function ($query) {
-                    $query->whereNull('pro_used')
-                        ->where('fc_status', 'returned');
-                })
-                ->orWhere('fc_status', 'returned')
-                ->orderBy('patients.other_muncity', $request->input('order'))
-                ->orderBy('muncity.description', $request->input('order')) 
-                ->select('patients.*');
+        $patients = $baseQuery->orderBy('updated_at', 'desc')->paginate(50);
+        $filter_type = 1;
+        $filterData = $this->getFilterData($request, $filter_type);
 
-        }else if ($request->sort && $request->input('sort') == 'barangay') {
-            
-            $patients = $patients->leftJoin('barangay', 'barangay.id', '=', 'patients.barangay_id')
-                ->where(function ($query) {
-                    $query->whereNull('pro_used')
-                        ->where('fc_status', 'returned');
-                })
-                ->orWhere('fc_status', 'returned')
-                ->orderBy('patients.other_barangay', $request->input('order'))
-                ->orderBy('barangay.description', $request->input('order')) 
-                ->select('patients.*');
-
-        }else if ($request->sort && $request->input('sort') == 'encoded_by') {
-        
-            $patients = $patients
-                ->where(function ($query) {
-                    $query->whereNull('pro_used')
-                        ->where('fc_status', 'returned');
-                })->orWhere('fc_status', 'returned')
-                ->orderBy(
-                    \DB::connection('dohdtr')
-                        ->table('users')
-                        ->select('lname')
-                        ->whereColumn('users.userid', 'patients.created_by'),
-                        $request->input('order')
-                );
-        }else{
-            $patients->sortable(['id' => 'desc']);
-        }
-        // for filtering column
-        if($request->filter_date){
-            $patients = $patients->whereIn('date_guarantee_letter', explode(',',$request->filter_date))
-                ->where(function ($query) {
-                    $query->whereNull('pro_used')
-                        ->where('fc_status', 'returned');
-                });
-        }
-        if($request->filter_fname){
-            $patients = $patients->whereIn('fname', explode(',',$request->filter_fname))
-            ->where(function ($query) {
-                $query->whereNull('pro_used')
-                    ->where('fc_status', 'returned');
-            });
-        }
-        if($request->filter_mname){
-            $patients = $patients->whereIn('mname', explode(',',$request->filter_date))
-            ->where(function ($query) {
-                $query->whereNull('pro_used')
-                    ->where('fc_status', 'returned');
-            });
-        }
-        if($request->filter_lname){
-            $patients = $patients->whereIn('lname', explode(',',$request->filter_lname))
-            ->where(function ($query) {
-                $query->whereNull('pro_used')
-                    ->where('fc_status', 'returned');
-            });
-        }
-        if($request->filter_facility){
-            $patients = $patients->whereIn('facility_id', explode(',',$request->filter_facility))
-            ->where(function ($query) {
-                $query->whereNull('pro_used')
-                    ->where('fc_status', 'returned');
-            });
-        }
-        if($request->filter_proponent){
-            $patients = $patients->whereIn('proponent_id', explode(',',$request->filter_proponent))
-            ->where(function ($query) {
-                $query->whereNull('pro_used')
-                    ->where('fc_status', 'returned');
-            });
-        }
-        if($request->filter_code){
-            $patients = $patients->whereIn('patient_code', explode(',',$request->filter_code))
-            ->where(function ($query) {
-                $query->whereNull('pro_used')
-                    ->where('fc_status', 'returned');
-            });
-        }
-        if($request->filter_region){
-            $patients = $patients->whereIn('region', explode(',',$request->filter_region))
-            ->where(function ($query) {
-                $query->whereNull('pro_used')
-                    ->where('fc_status', 'returned');
-            });
-        }
-        if($request->filter_province){
-            $patients = $patients->whereIn('province_id', explode(',',$request->filter_province))
-                ->orWhereIn('other_province', explode(',',$request->filter_province))
-                ->where(function ($query) {
-                    $query->whereNull('pro_used')
-                        ->where('fc_status', 'returned');
-                });
-        }
-        if($request->filter_municipality){
-            $patients = $patients->whereIn('muncity_id', explode(',',$request->filter_municipality))
-                ->orWhereIn('other_muncity', explode(',',$request->filter_municipality))
-                ->where(function ($query) {
-                    $query->whereNull('pro_used')
-                        ->where('fc_status', 'returned');
-                });
-        }
-        if($request->filter_barangay){
-            $patients = $patients->whereIn('barangay_id', explode(',',$request->filter_barangay))
-                ->orWhereIn('other_barangay', explode(',',$request->filter_barangay))
-                ->where(function ($query) {
-                $query->whereNull('pro_used')
-                    ->where('fc_status', 'returned');
-            });
-        }
-        if($request->filter_on){
-            $patients = $patients->whereIn(DB::raw('DATE(created_at)'), explode(',',$request->filter_on))
-                ->where(function ($query) {
-                    $query->whereNull('pro_used')
-                        ->where('fc_status', 'returned');
-                });
-        }
-        if($request->filter_by){
-            $patients = $patients->whereIn('created_by', explode(',',$request->filter_by))
-                ->where(function ($query) {
-                    $query->whereNull('pro_used')
-                        ->where('fc_status', 'returned');
-                });
-        }
-
-        $fc_list = Facility::whereIn('id', $facs->groupBy('facility_id')->pluck('facility_id'))->select('id','name')->get();
-        $pros = Proponent::whereIn('id', $proponent->groupBy('proponent_id')->pluck('proponent_id'))->select('id','proponent')->get();
-        $users = User::whereIn('userid', $by->groupBy('created_by')->pluck('created_by'))->select('userid','lname', 'fname')->get();
-        $brgy = Barangay::whereIn('id', $barangay->groupBy('barangay_id')->pluck('barangay_id'))->select('id','description')->get();
-        $mncty = Muncity::whereIn('id', $muncity->groupBy('muncity_id')->pluck('muncity_id'))->select('id','description')->get();
-        $prvnc = Province::whereIn('id', $province->groupBy('province_id')->pluck('province_id'))->select('id','description')->get();
-        $on = $on->groupBy(DB::raw('DATE(created_at)'))->pluck(DB::raw('MAX(DATE(created_at))'));
-        $all_pat = clone ($patients);
-        $proponents_code = Proponent::groupBy('proponent_code')->select(DB::raw('MAX(proponent) as proponent'),
-            DB::raw('MAX(proponent_code) as proponent_code'),DB::raw('MAX(id) as id') )->get();
-        // return $patients->paginate(10);
-        return view('maif.returned_patients', [
-            'patients' => $patients->where(function ($query) {
-                            $query->whereNull('pro_used')
-                                ->where('fc_status', 'returned');
-                            })
-                        ->orderBy('updated_at', 'desc')->paginate(50),
+        return view('maif.returned_patients', array_merge([
+            'patients' => $patients,
             'keyword' => $request->keyword,
-            'provinces' => Province::get(),
-            'municipalities' => Muncity::get(),
-            'proponents' => $proponents_code,
-            'barangays' => Barangay::get(),
-            'facilities' => Facility::get(),
             'user' => Auth::user(),
-            'date' =>  $date->groupBy('date_guarantee_letter')->pluck('date_guarantee_letter'),
-            'fname' => $fname->groupBy('fname')->pluck('fname'),
-            'mname' => $mname->groupBy('mname')->pluck('mname'),
-            'lname' => $lname->groupBy('lname')->pluck('lname'),
-            'fc_list' => $fc_list,
-            'pros' => $pros,
-            'code' => $code->groupBy('patient_code')->pluck('patient_code'),
-            'region' => $region->groupBy('region')->pluck('region'),
-            'pro1' => $province->groupBy('other_province')->pluck('other_province'),
-            'prvnc' => $prvnc,
-            'muncity' => $province->groupBy('other_muncity')->pluck('other_muncity'),
-            'mncty' => $mncty,
-            'barangay' => $barangay->groupBy('other_barangay')->pluck('other_barangay'),
-            'brgy' => $brgy,
-            'on' => $on,
-            'by' => $users,
-            'filter_date' => explode(',',$request->filter_date),
-            'filter_fname' => explode(',',$request->filter_fname),
-            'filter_mname' => explode(',',$request->filter_mname),
-            'filter_lname' => explode(',',$request->filter_lname),
-            'filter_facility' => explode(',',$request->filter_facility),
-            'filter_proponent' => explode(',',$request->filter_proponent),
-            'filter_code' => explode(',',$request->filter_code),
-            'filter_region' => explode(',',$request->filter_region),
-            'filter_province' => explode(',',$request->filter_province),
-            'filter_municipality' => explode(',',$request->filter_municipality),
-            'filter_barangay' => explode(',',$request->filter_barangay),
-            'filter_on' => explode(',',$request->filter_on),
-            'filter_by' => explode(',',$request->filter_by),
             'generate_dates' => $filter_date,
             'gen' => $request->gen,
             'order' => $order,
-            'id_pat' => ''
-        ]);
+            'id_pat' => '',
+            'active_facility' => OnlineUser::where('user_type', 2)->pluck('type_identity')->toArray()
+        ], $filterData));
     }
 
-    public function expiredPatients(Request $request){
-        
-        $filter_date = $request->input('filter_dates');
-        $order = $request->input('order', 'asc');
+    public function expiredPatients(Request $request)
+    {
+        Proponent::whereIn('proponent', 
+            Proponent::where('status', 1)->pluck('proponent')
+        )->update(['status' => 1]);
 
-        $patients = Patients::with([
+        $filter_date = $request->input('filter_dates');
+        $order = $request->input('order');
+
+        $baseQuery = Patients::with([
             'province:id,description',
-            'muncity:id,description',
+            'muncity:id,description', 
             'barangay:id,description',
             'encoded_by:userid,fname,lname,mname',
             'gl_user:username,fname,lname',
@@ -1242,309 +1180,79 @@ class HomeController extends Controller
                 ->where('expired', 1);
         });
 
-        if($request->gen){
+        if ($request->gen && $filter_date) {
             $dateRange = explode(' - ', $filter_date);
             $start_date = date('Y-m-d', strtotime($dateRange[0]));
             $end_date = date('Y-m-d', strtotime($dateRange[1]));
-            $patients = $patients ->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59'])
-            ->where(function ($query) {
-                $query->whereNull('pro_used')
-                    ->where('expired', 1);
-            });
+            $baseQuery->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59']);
         }
 
-        // -- for search
-
-        if($request->viewAll){
-
-            $request->keyword = '';
-            $request->filter_date = '';
-            $request->filter_fname = '';
-            $request->filter_mname = '';
-            $request->filter_lname = '';
-            $request->filter_facility = '';
-            $request->filter_proponent = '';
-            $request->filter_code = '';
-            $request->filter_region = '';
-            $request->filter_province = '';
-            $request->filter_muncity = '';
-            $request->filter_barangay = '';
-            $request->filter_on = '';
-            $request->filter_by = '';
+        if ($request->viewAll) {
+            $request->merge([
+                'keyword' => '',
+                'filter_date' => '',
+                'filter_fname' => '',
+                'filter_mname' => '',
+                'filter_lname' => '',
+                'filter_facility' => '',
+                'filter_proponent' => '',
+                'filter_code' => '',
+                'filter_region' => '',
+                'filter_province' => '',
+                'filter_muncity' => '',
+                'filter_barangay' => '',
+                'filter_on' => '',
+                'filter_by' => '',
+                'gen' => ''
+            ]);
             $filter_date = '';
-            $request->gen = '';
-
-
-        }else if($request->keyword){
-            // return $patients->where('pro_used', null)->orderBy('id', 'desc')->paginate(50);
-
+        } elseif ($request->keyword) {
             $keyword = $request->keyword;
-            $patients = $patients->where(function ($query) use ($keyword) {
-                $query->where(function ($query) {
-                            $query->whereNull('pro_used')
-                                ->where('fc_status', 'returned');
-                        })
-                    ->where(function ($query) use ($keyword) {
-                        $query->where('fname', 'LIKE', "%$keyword%")
-                            ->orWhere('lname', 'LIKE', "%$keyword%")
-                            ->orWhere('mname', 'LIKE', "%$keyword%")
-                            ->orWhere('region', 'LIKE', "%$keyword%")
-                            ->orWhere('other_province', 'LIKE', "%$keyword%")
-                            ->orWhere('other_muncity', 'LIKE', "%$keyword%")
-                            ->orWhere('other_barangay', 'LIKE', "%$keyword%")
-                            ->orWhere('patient_code', 'LIKE', "%$keyword%");
+            $baseQuery->where(function ($query) use ($keyword) {
+                $query->where('fname', 'LIKE', "%$keyword%")
+                    ->orWhere('lname', 'LIKE', "%$keyword%")
+                    ->orWhere('mname', 'LIKE', "%$keyword%")
+                    ->orWhere('region', 'LIKE', "%$keyword%")
+                    ->orWhere('other_province', 'LIKE', "%$keyword%")
+                    ->orWhere('other_muncity', 'LIKE', "%$keyword%")
+                    ->orWhere('other_barangay', 'LIKE', "%$keyword%")
+                    ->orWhere('patient_code', 'LIKE', "%$keyword%")
+                    ->orWhereHas('facility', function ($q) use ($keyword) {
+                        $q->where('name', 'LIKE', "%$keyword%");
                     })
-                    ->orWhereHas('facility', function ($query) use ($keyword) {
-                        $query->where('name', 'LIKE', "%$keyword%");
+                    ->orWhereHas('proponentData', function ($q) use ($keyword) {
+                        $q->where('proponent', 'LIKE', "%$keyword%");
                     })
-                    ->orWhereHas('proponentData', function ($query) use ($keyword) {
-                        $query->where('proponent', 'LIKE', "%$keyword%");
+                    ->orWhereHas('barangay', function ($q) use ($keyword) {
+                        $q->where('description', 'LIKE', "%$keyword%");
                     })
-                    ->orWhereHas('barangay', function ($query) use ($keyword) {
-                        $query->where('description', 'LIKE', "%$keyword%");
+                    ->orWhereHas('muncity', function ($q) use ($keyword) {
+                        $q->where('description', 'LIKE', "%$keyword%");
                     })
-                    ->orWhereHas('muncity', function ($query) use ($keyword) {
-                        $query->where('description', 'LIKE', "%$keyword%");
-                    })
-                    ->orWhereHas('province', function ($query) use ($keyword) {
-                        $query->where('description', 'LIKE', "%$keyword%");
+                    ->orWhereHas('province', function ($q) use ($keyword) {
+                        $q->where('description', 'LIKE', "%$keyword%");
                     });
             });
         }
 
-        // -- for table header sorting
+        $this->applyColumnFilters($baseQuery, $request);
 
-        $date = clone ($patients);
-        $fname = clone ($patients);
-        $mname = clone ($patients);
-        $lname = clone ($patients);
-        $facs = clone ($patients);
-        $code = clone ($patients);
-        $proponent = clone ($patients);
-        $region = clone ($patients);
-        $province = clone ($patients);
-        $muncity = clone ($patients);
-        $barangay = clone ($patients);
-        $on = clone ($patients);
-        $by = clone ($patients);
+        $this->applySorting($baseQuery, $request);
 
-        if ($request->sort && $request->input('sort') == 'facility') {
-            $patients = $patients->sortable(['facility.name' => 'asc'])
-            ->where(function ($query) {
-                $query->whereNull('pro_used')
-                    ->where('expired', 1);
-            });
-        }else if ($request->sort && $request->input('sort') == 'proponent') {
-            $patients = $patients->sortable(['proponentData.proponent' => 'asc'])
-            ->where(function ($query) {
-                $query->whereNull('pro_used')
-                    ->where('expired', 1);
-            });
-        }else if ($request->sort && $request->input('sort') == 'province') {
-            $patients = $patients->leftJoin('province', 'province.id', '=', 'patients.province_id')
-                ->where(function ($query) {
-                    $query->whereNull('pro_used')
-                        ->where('expired', 1);
-                })
-                ->orWhere('fc_status', 'returned')
-                ->orderBy('patients.other_province', $request->input('order'))
-                ->orderBy('province.description', $request->input('order')) 
-                ->select('patients.*');
-        }else if ($request->sort && $request->input('sort') == 'municipality') {
-            
-            $patients = $patients->leftJoin('muncity', 'muncity.id', '=', 'patients.muncity_id')
-                ->where(function ($query) {
-                    $query->whereNull('pro_used')
-                        ->where('expired', 1);
-                })
-                ->orWhere('fc_status', 'returned')
-                ->orderBy('patients.other_muncity', $request->input('order'))
-                ->orderBy('muncity.description', $request->input('order')) 
-                ->select('patients.*');
+        $patients = $baseQuery->orderBy('updated_at', 'desc')->paginate(50);
+        $filter_type = 1;
+        $filterData = $this->getFilterData($request, $filter_type);
 
-        }else if ($request->sort && $request->input('sort') == 'barangay') {
-            
-            $patients = $patients->leftJoin('barangay', 'barangay.id', '=', 'patients.barangay_id')
-                ->where(function ($query) {
-                    $query->whereNull('pro_used')
-                        ->where('expired', 1);
-                })
-                ->orWhere('fc_status', 'returned')
-                ->orderBy('patients.other_barangay', $request->input('order'))
-                ->orderBy('barangay.description', $request->input('order')) 
-                ->select('patients.*');
-
-        }else if ($request->sort && $request->input('sort') == 'encoded_by') {
-        
-            $patients = $patients
-                ->where(function ($query) {
-                    $query->whereNull('pro_used')
-                        ->where('expired', 1);
-                })->orWhere('fc_status', 'returned')
-                ->orderBy(
-                    \DB::connection('dohdtr')
-                        ->table('users')
-                        ->select('lname')
-                        ->whereColumn('users.userid', 'patients.created_by'),
-                        $request->input('order')
-                );
-        }else{
-            $patients->sortable(['id' => 'desc']);
-        }
-        // for filtering column
-        if($request->filter_date){
-            $patients = $patients->whereIn('date_guarantee_letter', explode(',',$request->filter_date))
-                ->where(function ($query) {
-                    $query->whereNull('pro_used')
-                        ->where('expired', 1);
-                });
-        }
-        if($request->filter_fname){
-            $patients = $patients->whereIn('fname', explode(',',$request->filter_fname))
-            ->where(function ($query) {
-                $query->whereNull('pro_used')
-                    ->where('expired', 1);
-            });
-        }
-        if($request->filter_mname){
-            $patients = $patients->whereIn('mname', explode(',',$request->filter_date))
-            ->where(function ($query) {
-                $query->whereNull('pro_used')
-                    ->where('expired', 1);
-            });
-        }
-        if($request->filter_lname){
-            $patients = $patients->whereIn('lname', explode(',',$request->filter_lname))
-            ->where(function ($query) {
-                $query->whereNull('pro_used')
-                    ->where('expired', 1);
-            });
-        }
-        if($request->filter_facility){
-            $patients = $patients->whereIn('facility_id', explode(',',$request->filter_facility))
-            ->where(function ($query) {
-                $query->whereNull('pro_used')
-                    ->where('expired', 1);
-            });
-        }
-        if($request->filter_proponent){
-            $patients = $patients->whereIn('proponent_id', explode(',',$request->filter_proponent))
-            ->where(function ($query) {
-                $query->whereNull('pro_used')
-                    ->where('expired', 1);
-            });
-        }
-        if($request->filter_code){
-            $patients = $patients->whereIn('patient_code', explode(',',$request->filter_code))
-            ->where(function ($query) {
-                $query->whereNull('pro_used')
-                    ->where('expired', 1);
-            });
-        }
-        if($request->filter_region){
-            $patients = $patients->whereIn('region', explode(',',$request->filter_region))
-            ->where(function ($query) {
-                $query->whereNull('pro_used')
-                    ->where('expired', 1);
-            });
-        }
-        if($request->filter_province){
-            $patients = $patients->whereIn('province_id', explode(',',$request->filter_province))
-                ->orWhereIn('other_province', explode(',',$request->filter_province))
-                ->where(function ($query) {
-                    $query->whereNull('pro_used')
-                        ->where('expired', 1);
-                });
-        }
-        if($request->filter_municipality){
-            $patients = $patients->whereIn('muncity_id', explode(',',$request->filter_municipality))
-                ->orWhereIn('other_muncity', explode(',',$request->filter_municipality))
-                ->where(function ($query) {
-                    $query->whereNull('pro_used')
-                        ->where('expired', 1);
-                });
-        }
-        if($request->filter_barangay){
-            $patients = $patients->whereIn('barangay_id', explode(',',$request->filter_barangay))
-                ->orWhereIn('other_barangay', explode(',',$request->filter_barangay))
-                ->where(function ($query) {
-                $query->whereNull('pro_used')
-                    ->where('expired', 1);
-            });
-        }
-        if($request->filter_on){
-            $patients = $patients->whereIn(DB::raw('DATE(created_at)'), explode(',',$request->filter_on))
-                ->where(function ($query) {
-                    $query->whereNull('pro_used')
-                        ->where('expired', 1);
-                });
-        }
-        if($request->filter_by){
-            $patients = $patients->whereIn('created_by', explode(',',$request->filter_by))
-                ->where(function ($query) {
-                    $query->whereNull('pro_used')
-                        ->where('expired', 1);
-                });
-        }
-
-        $fc_list = Facility::whereIn('id', $facs->groupBy('facility_id')->pluck('facility_id'))->select('id','name')->get();
-        $pros = Proponent::whereIn('id', $proponent->groupBy('proponent_id')->pluck('proponent_id'))->select('id','proponent')->get();
-        $users = User::whereIn('userid', $by->groupBy('created_by')->pluck('created_by'))->select('userid','lname', 'fname')->get();
-        $brgy = Barangay::whereIn('id', $barangay->groupBy('barangay_id')->pluck('barangay_id'))->select('id','description')->get();
-        $mncty = Muncity::whereIn('id', $muncity->groupBy('muncity_id')->pluck('muncity_id'))->select('id','description')->get();
-        $prvnc = Province::whereIn('id', $province->groupBy('province_id')->pluck('province_id'))->select('id','description')->get();
-        $on = $on->groupBy(DB::raw('DATE(created_at)'))->pluck(DB::raw('MAX(DATE(created_at))'));
-        $all_pat = clone ($patients);
-        $proponents_code = Proponent::groupBy('proponent_code')->select(DB::raw('MAX(proponent) as proponent'),
-            DB::raw('MAX(proponent_code) as proponent_code'),DB::raw('MAX(id) as id') )->get();
-        // return $patients->paginate(10);
-        return view('maif.expired_patients', [
-            'patients' => $patients->where(function ($query) {
-                            $query->whereNull('pro_used')
-                                ->where('expired', 1);
-                            })
-                        ->orderBy('updated_at', 'desc')->paginate(50),
+        return view('maif.expired_patients', array_merge([
+            'patients' => $patients,
             'keyword' => $request->keyword,
-            'provinces' => Province::get(),
-            'municipalities' => Muncity::get(),
-            'proponents' => $proponents_code,
-            'barangays' => Barangay::get(),
-            'facilities' => Facility::get(),
             'user' => Auth::user(),
-            'date' =>  $date->groupBy('date_guarantee_letter')->pluck('date_guarantee_letter'),
-            'fname' => $fname->groupBy('fname')->pluck('fname'),
-            'mname' => $mname->groupBy('mname')->pluck('mname'),
-            'lname' => $lname->groupBy('lname')->pluck('lname'),
-            'fc_list' => $fc_list,
-            'pros' => $pros,
-            'code' => $code->groupBy('patient_code')->pluck('patient_code'),
-            'region' => $region->groupBy('region')->pluck('region'),
-            'pro1' => $province->groupBy('other_province')->pluck('other_province'),
-            'prvnc' => $prvnc,
-            'muncity' => $province->groupBy('other_muncity')->pluck('other_muncity'),
-            'mncty' => $mncty,
-            'barangay' => $barangay->groupBy('other_barangay')->pluck('other_barangay'),
-            'brgy' => $brgy,
-            'on' => $on,
-            'by' => $users,
-            'filter_date' => explode(',',$request->filter_date),
-            'filter_fname' => explode(',',$request->filter_fname),
-            'filter_mname' => explode(',',$request->filter_mname),
-            'filter_lname' => explode(',',$request->filter_lname),
-            'filter_facility' => explode(',',$request->filter_facility),
-            'filter_proponent' => explode(',',$request->filter_proponent),
-            'filter_code' => explode(',',$request->filter_code),
-            'filter_region' => explode(',',$request->filter_region),
-            'filter_province' => explode(',',$request->filter_province),
-            'filter_municipality' => explode(',',$request->filter_municipality),
-            'filter_barangay' => explode(',',$request->filter_barangay),
-            'filter_on' => explode(',',$request->filter_on),
-            'filter_by' => explode(',',$request->filter_by),
             'generate_dates' => $filter_date,
             'gen' => $request->gen,
             'order' => $order,
-            'id_pat' => ''
-        ]);
+            'id_pat' => '',
+            'active_facility' => OnlineUser::where('user_type', 2)->pluck('type_identity')->toArray()
+        ], $filterData));
     }
 
     public function fetchAdditionalData(){
