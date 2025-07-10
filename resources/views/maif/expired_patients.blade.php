@@ -1,5 +1,4 @@
 @include('maif.editable_style')
-
 <style>
   .loading-container {
         position: fixed;
@@ -54,6 +53,10 @@
         background-color: #fff; 
         box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4); 
     }
+    .set_width {
+        width: 100px;
+        border-radius: 0;
+    }
 </style>
 @extends('layouts.app')
 @section('content')
@@ -66,38 +69,39 @@
                     <form method="GET">
                         <div class="input-group">
                             <input type="hidden" class="form-control" name="key">
-                            <input type="text" class="form-control" name="keyword" id="search_patient" placeholder="Search..." value="{{$keyword}}" style="width:350px;">
+                            <input type="text" class="form-control" name="keyword" id="search_patient" placeholder="Search..." value="{{ $keyword }}" style="width:400px;">
                             <div class="input-group-append">
                                 <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
-                                <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
-                                <button type="submit" value="filt" style="display:none; background-color:00563B; color:white;" name="filter_col" id="filter_col" class="btn btn-success btn-md"><i class="typcn typcn-filter menu-icon"></i>&nbsp;&nbsp;&nbsp;Filter</button>
+                                <button class="btn btn-sm btn-warning text-white set_width" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
+                                <button type="submit" value="filt" style="display:none; background-color:00563B; color:white;" name="filter_col" id="filter_col" class="btn btn-md set_width"><i class="typcn typcn-filter menu-icon"></i>Filter</button>
                             </div>  
                         </div>
                         <div class="input-group">
-                            <input type="text" style="text-align:center" class="form-control" id="filter_dates" value="{{($generate_dates)?$generate_dates:''}}" name="filter_dates" />
-                            <button type="submit" id="gen_btn" style="background-color:teal; color:white; width:78px; height:40px; border-radius:0; " class="btn"><i class="typcn typcn-calendar-outline menu-icon"></i>Filter</button>
-
+                            <input type="text" style="text-align:center" class="form-control" id="filter_dates" value="{{ ($generate_dates)?$generate_dates:'' }}" name="filter_dates" />
+                            <button type="submit" id="gen_btn" style="background-color:teal; color:white; border-radius:0; " class="btn set_width"><i class="typcn typcn-calendar-outline menu-icon"></i>Range</button>
                         </div>
-                        <input type="hidden" name="filter_date" id="filter_date" value="{{implode(',', $filter_date)}}"></input>
-                        <input type="hidden" name="filter_fname" id="filter_fname" value="{{implode(',', $filter_fname)}}"></input>
-                        <input type="hidden" name="filter_mname" id="filter_mname" value="{{implode(',', $filter_mname)}}"></input>
-                        <input type="hidden" name="filter_lname" id="filter_lname" value="{{implode(',', $filter_lname)}}"></input>
-                        <input type="hidden" name="filter_facility" id="filter_facility" value="{{implode(',', $filter_facility)}}"></input>
-                        <input type="hidden" name="filter_proponent" id="filter_proponent" value="{{implode(',', $filter_proponent)}}"></input>
-                        <input type="hidden" name="filter_code" id="filter_code" value="{{implode(',', $filter_code)}}"></input>
-                        <input type="hidden" name="filter_region" id="filter_region" value="{{implode(',', $filter_region)}}"></input>
-                        <input type="hidden" name="filter_province" id="filter_province" value="{{implode(',', $filter_province)}}"></input>
-                        <input type="hidden" name="filter_municipality" id="filter_municipality" value="{{implode(',', $filter_municipality)}}"></input>
-                        <input type="hidden" name="filter_barangay" id="filter_barangay" value="{{implode(',', $filter_barangay)}}"></input>
-                        <input type="hidden" name="filter_on" id="filter_on" value="{{implode(',', $filter_on)}}"></input>
-                        <input type="hidden" name="filter_by" id="filter_by" value="{{implode(',', $filter_by)}}"></input>
-                        <input type="hidden" name="gen" id="gen" value="{{$gen}}"></input>
+                        <input type="hidden" name="filter_date" id="filter_date" value="{{ implode(',', $filter_date) }}"></input>
+                        <input type="hidden" name="filter_fname" id="filter_fname" value="{{ implode(',', $filter_fname) }}"></input>
+                        <input type="hidden" name="filter_mname" id="filter_mname" value="{{ implode(',', $filter_mname) }}"></input>
+                        <input type="hidden" name="filter_lname" id="filter_lname" value="{{ implode(',', $filter_lname) }}"></input>
+                        <input type="hidden" name="filter_facility" id="filter_facility" value="{{ implode(',', $filter_facility) }}"></input>
+                        <input type="hidden" name="filter_proponent" id="filter_proponent" value="{{ implode(',', $filter_proponent) }}"></input>
+                        <input type="hidden" name="filter_code" id="filter_code" value="{{ implode(',', $filter_code) }}"></input>
+                        <input type="hidden" name="filter_region" id="filter_region" value="{{ implode(',', $filter_region) }}"></input>
+                        <input type="hidden" name="filter_province" id="filter_province" value="{{ implode(',', $filter_province) }}"></input>
+                        <input type="hidden" name="filter_municipality" id="filter_municipality" value="{{ implode(',', $filter_municipality) }}"></input>
+                        <input type="hidden" name="filter_barangay" id="filter_barangay" value="{{ implode(',', $filter_barangay) }}"></input>
+                        <input type="hidden" name="filter_on" id="filter_on" value="{{ implode(',', $filter_on) }}"></input>
+                        <input type="hidden" name="filter_by" id="filter_by" value="{{ implode(',', $filter_by) }}"></input>
+                        <input type="hidden" name="gen" id="gen" value="{{ $gen }}"></input>
                     </form>
                     <form method="POST" action="{{ route('sent.mails') }}" class="send_mailform">
                         @csrf
-                        <div class="input-group-append" style="display: flex; justify-content: flex-end;">
-                            <button class="btn btn-md send_mails" name="send_mails[]" style="display:none; background-color:green; color:white; height:40px">Send Mails</button>
-                            <input type="hidden" class="form-control idss" name="idss" id="idss" >
+                        <div class="input-group" style="display: flex;">
+                            <button class="btn btn-md send_mails" name="send_mails[]" id="email_sent" style="display:none; background-color:green; color:white; border-radius:0px; width:125px">Send Mails <img src="\maif\public\images\email_16.png"></button>
+                        </div>
+                        <div class="input-group" style="display: flex;">
+                            <button class="btn btn-md send_mails" name="send_mails[]" id="system_sent" style="display:none; background-color:darkgreen; color:white;border-radius:0px; width:125px">Send GL to <img src="{{ asset('images/doh-logo.png') }}" width="15px"></button>
                         </div>
                     </form>
                     <form method="POST" action="{{ route('save.group') }}">
@@ -114,7 +118,7 @@
                 </div>
             </div>
            
-            <h4 class="card-title">MANAGE PATIENTS</h4>
+            <h4 class="card-title">MANAGE PATIENTS (EXPIRED)</h4>
             <span class="card-description">
                 MAIF-IPP
             </span>
@@ -122,210 +126,197 @@
             @if(count($patients) > 0)
             <div class="table-responsive" id ="patient_table_container">
                 <table class="table table-striped" id="patient_table">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th></th>
-                        <th style="text-align:center">
-                            <div style="display: flex; gap: 1px;">
-                                <button class="btn-info select_all" style="width: 25px; display: flex; justify-content: center; align-items: center;">
-                                    <i class="typcn typcn-input-checked"></i>
-                                </button>
-                                <button class="btn-danger unselect_all" style="width: 25px; display: flex; justify-content: center; align-items: center;">
-                                    <i class="typcn typcn-times menu-icon"></i>
-                                </button>
-                            </div>
-                        </th>
-                        <th style="min-width:80px">@sortablelink('remarks', 'Status')</th>
-                        <th>Remarks</th>
-                        <th style="min-width:10px; text-align:center;">Group</th>
-                        <th style="min-width:140px">Actual Amount</th>
-                        <th style="min-width:100px">Guaranteed </th>
-                        <th style="min-width:120px; text-align:center;">@sortablelink('date_guarantee_letter', 'Date') <i id="date_i" class="typcn typcn-filter menu-icon"></i>
-                            <div class="filter" id="date_div" style="display:none;">
-                                <select style="width: 120px;" id="date_select" name="date_select" multiple></select>
-                            </div>
-                        </th>
-                        <th style="min-width:150px; text-align:center;">@sortablelink('fname', 'Firstname')<i id="fname_i" class="typcn typcn-filter menu-icon"></i>
-                            <div class="filter" id="fname_div" style="display:none;">
-                                <select style="width: 120px;" id="fname_select" name="fname_select" multiple>
-                                </select>
-                            </div>
-                        </th>
-                        <th style="min-width:150px; text-align:center;">@sortablelink('mname', 'Middlename')<i id="mname_i" class="typcn typcn-filter menu-icon"></i>
-                            <div class="filter" id="mname_div" style="display:none;">
-                                <select style="width: 120px;" id="mname_select" name="mname_select" multiple>
-                                </select>
-                            </div>
-                        </th>
-                        <th style="min-width:150px; text-align:center;">@sortablelink('lname', 'Lastname')<i id="lname_i" class="typcn typcn-filter menu-icon"></i>
-                            <div class="filter" id="lname_div" style="display:none;">
-                                <select style="width: 120px;" id="lname_select" name="lname_select" multiple>
-                                </select>
-                            </div>
-                        </th>
-                        <th style="min-width:150px; text-align:center;">
-                            <a href="{{ route('home', ['sort' => 'facility']) }}">Facility</a><i id="facility_i" class="typcn typcn-filter menu-icon"></i>
-                            <div class="filter" id="facility_div" style="display:none;">
-                                <select style="width: 120px;" id="facility_select" name="facility_select" multiple>
-                                </select>
-                            </div>
-                        </th>
-                        <th style="min-width:150px; text-align:center;">
-                            <a href="{{ route('home', ['sort' => 'proponent']) }}">Proponent</a><i id="proponent_i" class="typcn typcn-filter menu-icon"></i>
-                            <div class="filter" id="proponent_div" style="display:none;">
-                                <select style="width: 120px;" id="proponent_select" name="proponent_select" multiple>
-                                </select>
-                            </div>
-                        </th>
-                        <th>@sortablelink('patient_code', 'Code')
-                        </th>
-                        <th style="min-width:150px;">@sortablelink('region', 'Region') <i id="region_i" class="typcn typcn-filter menu-icon"></i>
-                            <div class="filter" id="region_div" style="display:none;">
-                                <select style="width: 120px;" id="region_select" name="region_select" multiple>
-                                </select>
-                            </div>
-                        </th>
-                        <th style="min-width:150px; text-align:center;">
-                            <a href="{{ route('home', ['sort' => 'province', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">Province</a>
-                            <i id="province_i" class="typcn typcn-filter menu-icon"></i>
-                            <div class="filter" id="province_div" style="display:none;">
-                                <select style="width: 120px;" id="province_select" name="province_select" multiple>
-                                </select>
-                            </div>
-                        </th>
-                        <th style="min-width:150px; text-align:center;">
-                            <a href="{{ route('home', ['sort' => 'municipality', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">Municipality</a>
-                            <i id="muncity_i" class="typcn typcn-filter menu-icon"></i>
-                            <div class="filter" id="muncity_div" style="display:none;">
-                                <select style="width: 120px;" id="muncity_select" name="muncity_select" multiple>
-                                </select>
-                            </div>
-                        </th>
-                        <th style="min-width:150px; text-align:center;">
-                            <a href="{{ route('home', ['sort' => 'barangay', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">Barangay</a>
-                            <i id="barangay_i" class="typcn typcn-filter menu-icon"></i>
-                            <div class="filter" id="barangay_div" style="display:none;">
-                                <select style="width: 120px;" id="barangay_select" name="barangay_select" multiple>
-                                </select>
-                            </div>
-                        </th>
-                        <th style="min-width:150px">@sortablelink('created_at', 'Created On') <i id="on_i" class="typcn typcn-filter menu-icon"></i>
-                            <div class="filter" id="on_div" style="display:none;">
-                                <select style="width: 120px;" id="on_select" name="on_select" multiple>
-                                </select>
-                            </div>
-                        </th>
-                        <th style="min-width:190px">
-                            <a href="{{ route('home', ['sort' => 'encoded_by', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">Created By</a>
-                            <i id="by_i" class="typcn typcn-filter menu-icon"></i>
-                            <div class="filter" id="by_div" style="display:none;">
-                                <select style="width: 120px;" id="by_select" name="by_select" multiple>
-                                </select>
-                            </div>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody id="list_body">
-                    @foreach($patients as $index=> $patient)
+                    <thead>
                         <tr>
-                            <td>
-                                <button type="button" href="#patient_history" data-backdrop="static" style="border-radius:0; width:70px;background-color:#006BC4; color:white; font-size:11px" data-toggle="modal" class="btn btn-xs" onclick="populateHistory({{$patient->id}})"><small>Edit History</small></button>
-                                <button type="button" href="#get_mail" data-backdrop="static" data-toggle="modal" class="btn btn-xs" style="margin-top:1px; border-radius:0; width:70px;background-color:#005C6F; color:white; font-size:11px" onclick="populate({{$patient->id}})"><small>Mail History</small></button>
-                            </td>
-                            <td class="td">
-                                <div style="display: flex; align-items: center; gap: 5px;">
-                                    <div>
-                                        <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}" 
-                                        style="border-radius:0; background-color:teal; color:white; width:50px;" 
-                                        target="_blank" 
-                                        type="button" 
-                                        class="btn btn-xs">Print</a>
-                                        <a href="{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}" 
-                                        type="button" 
-                                        style="margin-top:1px; border-radius:0; width:50px;" 
-                                        class="btn btn-success btn-xs" 
-                                        id="send_btn">Send</a>
-                                    </div>
-                                    <a href="{{ route('patient.accept', ['id' => $patient->id]) }}" style="margin-left:10px; font-size:14px"  title="Send this GL to facility">
-                                        <i class="fa fa-paper-plane"></i>
-                                    </a>
+                            <th></th>
+                            <th></th>
+                            <th><span class="text-info select_all" title="Select/Unselect All"><i class="fa fa-check"></i>All</span></th>
+                            <th style="min-width:90px">@sortablelink('remarks', 'Status')</th>
+                            <th>Remarks</th>
+                            <th style="min-width:10px; text-align:center;">Group</th>
+                            <th style="min-width:140px">Actual Amount</th>
+                            <th style="min-width:100px">Guaranteed </th>
+                            <th style="min-width:120px;">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <select class="form-control filter" style="display:none" id="date_select" name="date_select" multiple></select>
+                                    @sortablelink('date_guarantee_letter', '⇅')
                                 </div>
-                            </td>
-                            <td style="text-align:center;" class="group-email" data-patient-id="{{ $patient->id }}" >
-                                <input class="sent_mails[] " id="mail_ids[]" name="mail_ids[]" type="hidden">
-                                <input type="checkbox" style="width: 60px; height: 20px;" name="mailCheckbox[]" id="mailCheckboxId_{{ $patient->id }}" 
-                                    class="group-mailCheckBox" onclick="itemChecked($(this))">
-                            </td>
-                            <td style="text-align:center">
-                                @if($patient->remarks == 1)
-                                    <i class="typcn typcn-tick menu-icon">
-                                @endif
-                            </td>
-                            <td>
-                                {{$patient->pat_rem}}           
-                            </td>
-                            <td style="text-align:center;" class="group-amount" data-patient-id="{{ $patient->id }}" data-proponent-id="{{ $patient->proponent_id }}" 
-                                data-amount="{{ $patient->actual_amount }}" data-facility-id="{{ $patient->facility_id }}" >
-                                @if($patient->group_id == null)
-                                <input type="checkbox" style="width: 60px; height: 20px;" name="someCheckbox[]" id="someCheckboxId_{{ $patient->id }}" 
-                                    class="group-checkbox" onclick="groupItem($(this))">
-                                @else
-                                    w/group
-                                @endif
-                            </td>
-                            <td class="editable-amount" data-actual-amount="{{ !Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','):0 }}" data-patient-id="{{ $patient->id }}" data-guaranteed-amount="{{str_replace(',', '', $patient->guaranteed_amount)}}">
-                                <a href="#" class="number_editable"  title="Actual Amount" id="{{ $patient->id }}">{{!Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}</a>
-                            </td>
-                            <td class="td">{{ number_format((float) str_replace(',', '', $patient->guaranteed_amount), 2, '.', ',') }}</td>
-                            <td>{{date('F j, Y', strtotime($patient->date_guarantee_letter))}}</td>
-                            <td class="td">
-                                <a href="#update_patient" onclick="editPatient('{{ $patient->id }}')" data-backdrop="static" data-toggle="modal">
-                                    {{ $patient->fname }}
-                                </a>
-                            </td>   
-                            <td class="td">{{ $patient->mname }}</td>
-                            <td class="td">{{ $patient->lname }}</td>
-                            <td class="td">{{ $patient->facility->name }}</td>
-                            <td class="td">{{ $patient->proponentData ? $patient->proponentData->proponent : 'N/A' }}</td>
-                            <td class="td">{{ $patient->patient_code}}</td>
-                            {{-- <td>
-                                @if(isset($patient->facility->description))
-                                    {{ $patient->facility->description }}
-                                @else
-                                    {{ $patient->other_facility }}
-                                @endif
-                            </td> --}}
-                            <td class="td">{{ $patient->region }}</td>
-                            <td class="td">
-                                @if(isset($patient->province->description))
-                                    {{ $patient->province->description }}
-                                @else
-                                    {{ $patient->other_province }}
-                                @endif
-                            </td>
-                            <td class="td">
-                                @if(isset($patient->muncity->description))
-                                    {{ $patient->muncity->description }}
-                                @else
-                                    {{ $patient->other_muncity }}
-                                @endif
-                            </td>
-                            <td class="td">
-                                @if(isset($patient->barangay->description))
-                                    {{ $patient->barangay->description }}
-                                @else
-                                    {{ $patient->other_barangay }}
-                                @endif
-                            </td>
-                            <td style="text-align:center">
-                                {{ date('F j, Y', strtotime($patient->created_at)) }}<br>
-                                ( {{  date('H:i:s', strtotime($patient->created_at)) }} )
-                            </td>
-                            <td class="td">{{ $patient->user_type == null ? $patient->encoded_by->lname .', '. $patient->encoded_by->fname: ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td>
+                            </th>
+                            <th style="min-width:120px; text-align:center;">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <select class="form-control filter" style="display:none;" id="fname_select" name="fname_select" multiple></select>
+                                    @sortablelink('fname', '⇅')
+                                </div>
+                            </th>
+                            <th style="min-width:120px; text-align:center;">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <select class="form-control filter" style="display:none;" id="mname_select" name="mname_select" multiple></select>
+                                    @sortablelink('mname', '⇅')
+                                </div>
+                            </th>
+                            <th style="min-width:120px; text-align:center;">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <select class="form-control filter" style="display:none;" id="lname_select" name="lname_select" multiple></select>
+                                    @sortablelink('lname', '⇅')
+                                </div>
+                            </th>
+                            <th style="min-width:120px; text-align:center;">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <select class="form-control filter" style="display:none;" id="facility_select" name="facility_select" multiple></select>
+                                    <a href="{{ route('expired.patients', ['sort' => 'facility','order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">⇅</a>
+                                </div>
+                            </th>
+                            <th style="min-width:120px; text-align:center;">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <select class="form-control filter" style="display:none;" id="proponent_select" name="proponent_select" multiple></select>
+                                    <a href="{{ route('expired.patients', ['sort' => 'proponent','order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">⇅</a>
+                                </div>
+                            </th>
+                            <th style="text-align:center; vertial-align:middle">@sortablelink('patient_code', 'Code ⇅')</th>
+                            <th style="min-width:120px;">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <select class="form-control filter" style="display:none;" id="region_select" name="region_select" multiple></select>
+                                    @sortablelink('region', '⇅')
+                                </div>
+                            </th>
+                            <th style="min-width:130px; text-align:center;">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <select class="form-control filter" style="display:none;" id="province_select" name="province_select" multiple></select>
+                                    <a href="{{ route('expired.patients', ['sort' => 'province', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">⇅</a>
+                                </div>
+                            </th>
+                            <th style="min-width:150px; text-align:center;">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <select class="form-control filter" style="display:none;" id="muncity_select" name="muncity_select" multiple></select>
+                                    <a href="{{ route('expired.patients', ['sort' => 'municipality', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">⇅</a>
+                                </div>
+                            </th>
+                            <th style="min-width:150px; text-align:center;">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <select class="form-control filter" style="display:none;" id="barangay_select" name="barangay_select" multiple></select>
+                                    <a href="{{ route('expired.patients', ['sort' => 'barangay', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">⇅</a>
+                                </div>
+                            </th>
+                            <th style="min-width:150px">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <select class="form-control filter" style="display:none;" id="on_select" name="on_select" multiple></select>
+                                    @sortablelink('created_at', '⇅')
+                                </div>
+                            </th>
+                            <th style="min-width:150px">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <select class="form-control filter" style="display:none;" id="by_select" name="by_select" multiple></select>
+                                    <a href="{{ route('expired.patients', ['sort' => 'encoded_by', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">⇅</a>
+                                </div>
+                            </th>
                         </tr>
-                    @endforeach
-                </tbody>
+                    </thead>
+                    <tbody id="list_body">
+                        @foreach($patients as $index=> $patient)
+                            <tr>
+                                <td>
+                                    <button type="button" href="#patient_history" data-backdrop="static" style="width:70px;background-color:#006BC4; color:white; font-size:11px" data-toggle="modal" class="btn btn-xs" 
+                                        onclick="populateHistory({{ $patient->id }})"><i class="fa fa-history"></i> Pt. Hx</button>
+                                    <button type="button" href="#get_mail" data-backdrop="static" data-toggle="modal" class="btn btn-xs" style="margin-top:1px; width:70px; background-color:#005C6F; color:white; font-size:11px" 
+                                        onclick="populate({{ $patient->id }})"><i class="fa fa-envelope"></i> Logs</button>
+                                </td>
+                                <td class="td" style="padding:0px">
+                                    <div style="display: flex; align-items: center; gap: 5px; text-align:center; height: 100%">
+                                        <div style="display: flex; flex-direction: column; justify-content: center; text-align: center; height: 70px;">
+                                            <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}"
+                                                style="background-color:teal; color:white; width:70px; font-size:11px"
+                                                target="_blank" type="button" class="btn btn-xs">
+                                                <i class="fa fa-print"></i> Print
+                                            </a>
+                                            @if($patient->facility_id && !in_array($patient->facility_id, $onhold_facs))
+                                                <a href="{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}"
+                                                    type="button" style="margin-top:1px; width:70px; font-size:11px"
+                                                    class="btn btn-success btn-xs" id="send_btn">
+                                                    <i class="fa fa-paper-plane"></i> Send
+                                                </a>
+                                            @endif
+                                        </div>
+                                        <div style="display: flex; flex-direction: column; justify-content: center; height: 70px;">
+                                            @if($patient->sent_type == null || $patient->fc_status == 'returned')
+                                                <button 
+                                                    onclick="forwardPatient({{ !in_array($patient->facility_id, $active_facility) ? 1 : 0 }}, '{{ route('patient.accept', ['id' => $patient->id]) }}')"
+                                                    style="background-color:#0077b6; color:white; width:70px; font-size:11px"
+                                                    class="btn btn-xs" title="Forward to Facility">
+                                                    <i class="fa fa-share-square"></i> F2F
+                                                </button>
+                                            @endif
+                                        </div> 
+                                    </div>
+                                </td>
+                                <td style="text-align:center;" class="group-email" data-patient-id="{{ $patient->id }}">
+                                    <input class="sent_mails[] " id="mail_ids[]" name="mail_ids[]" type="hidden">
+                                    <input type="checkbox" style="width: 60px; height: 20px;" name="mailCheckbox[]" id="mailCheckboxId_{{ $patient->id }}" 
+                                        data-patient-stat="{{ $patient->sent_type == null || $patient->fc_status == 'returned' ? 1 : 0 }}"
+                                        data-patient-stat2="{{ $patient->facility_id && !in_array($patient->facility_id, $onhold_facs) ? 1 : 0 }}"
+                                        class="group-mailCheckBox" onclick="itemChecked($(this))">
+                                </td>
+                                <td style="text-align:center">
+                                    @if($patient->remarks == 1)
+                                        <i style="font-size:15px" class="fa fa-check">
+                                    @endif
+                                </td>
+                                <td>
+                                    {{ $patient->pat_rem }}   
+                                </td>
+                                <td style="text-align:center;" class="group-amount" data-patient-id="{{ $patient->id }}" data-proponent-id="{{ $patient->proponent_id }}" 
+                                    data-amount="{{ $patient->actual_amount }}" data-facility-id="{{ $patient->facility_id }}" >
+                                    @if($patient->group_id == null)
+                                    <input type="checkbox" style="width: 60px; height: 20px;" name="someCheckbox[]" id="someCheckboxId_{{ $patient->id }}" 
+                                        class="group-checkbox" onclick="groupItem($(this))">
+                                    @else
+                                        w/group
+                                    @endif
+                                </td>
+                                <td class="editable-amount" data-actual-amount="{{ !Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','):0 }}" data-patient-id="{{ $patient->id }}" data-guaranteed-amount="{{str_replace(',', '', $patient->guaranteed_amount)}}">
+                                    <a href="#" class="number_editable"  title="Actual Amount" id="{{ $patient->id }}">{{!Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}</a>
+                                </td>
+                                <td class="td">{{ number_format((float) str_replace(',', '', $patient->guaranteed_amount), 2, '.', ',') }}</td>
+                                <td>{{ date('F j, Y', strtotime($patient->date_guarantee_letter)) }}</td>
+                                <td class="td">
+                                    <a href="#update_patient" onclick="editPatient('{{ $patient->id }}', '{{ $patient->facility_id && !in_array($patient->facility_id, $onhold_facs) ? 1 : 0 }}')" data-backdrop="static" data-toggle="modal">
+                                        {{ $patient->fname }}
+                                    </a>
+                                </td>   
+                                <td class="td">{{ $patient->mname }}</td>
+                                <td class="td">{{ $patient->lname }}</td>
+                                <td class="td">{{ $patient->facility->name }}</td>
+                                <td class="td">{{ $patient->proponentData ? $patient->proponentData->proponent : 'N/A' }}</td>
+                                <td class="td">{{ $patient->patient_code}}</td>
+                                <td class="td">{{ $patient->region }}</td>
+                                <td class="td">
+                                    @if(isset($patient->province->description))
+                                        {{ $patient->province->description }}
+                                    @else
+                                        {{ $patient->other_province }}
+                                    @endif
+                                </td>
+                                <td class="td">
+                                    @if(isset($patient->muncity->description))
+                                        {{ $patient->muncity->description }}
+                                    @else
+                                        {{ $patient->other_muncity }}
+                                    @endif
+                                </td>
+                                <td class="td">
+                                    @if(isset($patient->barangay->description))
+                                        {{ $patient->barangay->description }}
+                                    @else
+                                        {{ $patient->other_barangay }}
+                                    @endif
+                                </td>
+                                <td style="text-align:center">
+                                    {{ date('F j, Y', strtotime($patient->created_at)) }}<br>
+                                    ( {{  date('H:i:s', strtotime($patient->created_at)) }} )
+                                </td>
+                                <td class="td">{{ $patient->user_type == null ? $patient->encoded_by->lname .', '. $patient->encoded_by->fname: ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
                 </table>
             </div>
             @else
@@ -565,20 +556,106 @@
 <div class="loading-container">
     <img src="public\images\loading.gif" alt="Loading..." class="loading-spinner">
 </div>
+<div id="loading_indicator" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 1050;">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+        <div class="spinner-border text-success" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <p>Loading patient data...</p>
+    </div>
+</div>
 @endsection
 @section('js')
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 <script src="{{ asset('admin/vendors/x-editable/bootstrap-editable.min.js?v=1') }}"></script>
-<script src="{{ asset('admin/vendors/daterangepicker-master/moment.min.js?v=1') }}"></script>
-<script src="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.js?v=1') }}"></script>
-<!-- <script src="{{ asset('admin/vendors/datatables.net/jquery.dataTables.js') }}"></script>
-<script src="{{ asset('admin/vendors/datatables.net-bs4/dataTables.bootstrap4.js') }}"></script> -->
-
 @include('maif.editable_js')
-
 <script>
+    function forwardPatient(status, forwardUrl) {
+        if (status == 1) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Not Allowed',
+                text: 'No System Account Found!',
+            });
+        } else {
+            window.location.href = forwardUrl;
+        }
+    }
+    
+    $(document).ready(function () {
+        $('.fa-sort').hide();
+
+        function initializeSelect2(selector, route, placeholder) {
+            $(selector).select2({
+                ajax: {
+                    url: route,
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            search: params.term || '',
+                            page: params.page || 1,
+                            _token: '{{ csrf_token() }}'
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 1;
+                        return {
+                            results: data.results,
+                            pagination: {
+                                more: data.has_more
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 0,
+                placeholder: placeholder,
+                allowClear: true,
+                closeOnSelect: false,
+                width: '100%',
+                templateResult: function (option) {
+                    if (option.loading) return option.text;
+                    return $('<span>' + option.text + '</span>');
+                },
+                templateSelection: function (option) {
+                    return option.text;
+                }
+            });
+
+            $(selector).on('select2:select', function (e) {
+                console.log(`Selected from ${selector}:`, e.params.data);
+            });
+
+            $(selector).on('select2:unselect', function (e) {
+                console.log(`Unselected from ${selector}:`, e.params.data);
+            });
+
+            $(selector).on('select2:opening', function () {
+                console.log(`Opening ${selector} dropdown...`);
+            });
+        }
+
+        initializeSelect2("#date_select", '{{ route("get.dates", ["type" => "3"]) }}', "Date");
+        initializeSelect2("#fname_select", '{{ route("get.names", ["type" => "3"]) }}', "First Name");
+        initializeSelect2("#mname_select", '{{ route("get.m_names", ["type" => "3"]) }}', "Middle Name");
+        initializeSelect2("#lname_select", '{{ route("get.l_names", ["type" => "3"]) }}', "Last Name");
+        initializeSelect2("#facility_select", '{{ route("get.facilities") }}', "Facility");
+        initializeSelect2("#proponent_select", '{{ route("get.proponents") }}', "Proponent");
+        initializeSelect2("#region_select", '{{ route("get.region", ["type" => "3"]) }}', "Region");
+        initializeSelect2("#province_select", '{{ route("get.province", ["type" => "3"]) }}', "Province");
+        initializeSelect2("#muncity_select", '{{ route("get.municipalities", ["type" => "3"]) }}', "Municipality");
+        initializeSelect2("#barangay_select", '{{ route("get.barangay", ["type" => "3"]) }}', "Barangay");
+        initializeSelect2("#on_select", '{{ route("get.created_at", ["type" => "3"]) }}', "Created On");
+        initializeSelect2("#by_select", '{{ route("get.created_by", ["type" => "3"]) }}', "Created By");
+    });
+
     $(function() {
         $('#filter_dates').daterangepicker();
+    });
+
+    $('#system_sent').on('click', function(){
+        $('.sent_type').val(1);
     });
 
     $('#crt_pnt').on('click', function(){
@@ -598,7 +675,35 @@
 
     $('.filter').on('click', function(){
         $('#filter_col').css('display', 'block');
-    })
+    });
+
+    var selectFields = [
+        '#date_select',
+        '#fname_select',
+        '#mname_select',
+        '#lname_select',
+        '#facility_select',
+        '#proponent_select',
+        '#region_select',
+        '#province_select',
+        '#muncity_select',
+        '#barangay_select',
+        '#on_select',
+        '#by_select'
+    ];
+
+    $(selectFields.join(',')).on('select2:select select2:unselect', function () {
+        var hasValue = selectFields.some(selector => {
+            return $(selector).val() && $(selector).val().length > 0;
+        });
+
+        if (hasValue) {
+            $('#filter_col').show();
+        } else {
+            $('#filter_col').hide();
+        }
+    });
+
     $('#filter_col').on('click', function(){
         $('#filter_date').val($('#date_select').val());
         $('#filter_fname').val($('#fname_select').val());
@@ -613,294 +718,13 @@
         $('#filter_barangay').val($('#barangay_select').val());
         $('#filter_on').val($('#on_select').val());
         $('#filter_by').val($('#by_select').val());
+    });
 
-    });
-    $('#date_i').on('click', function(){
-        $('#date_select').empty();
-        $('#date_div').css('display', 'block');
-        var date = @json($date);
-        var filter_date = @json($filter_date);
-        var filtered = filter_date.filter(item => item !== '');
-        date.forEach(function(optionData) {
-            var date_obj = moment(optionData);
-            var isSelected = false;
-            if(filtered.length !== 0){
-              isSelected = filter_date.includes(optionData) ? true : false;
-            }
-            $('#date_select').append($('<option>', {
-                value: optionData,
-                text: date_obj.format('MMMM d, YYYY'),
-                selected: isSelected
-            }));
-        });
-    });
-    $('#fname_i').on('click', function(){
-        $('#fname_div').css('display', 'block');
-        var fname = @json($fname);
-        var filter_fname = @json($filter_fname);
-        var filtered = filter_fname.filter(item => item !== '');
-        fname.forEach(function(optionData) {
-            var isSelected = false;
-            if(filtered.length !== 0){
-              isSelected = filter_fname.includes(optionData) ? true : false;
-            }
-            $('#fname_select').append($('<option>', {
-                value: optionData,
-                text: optionData,
-                selected: isSelected
-            }));
-        });
-    });
-    $('#mname_i').on('click', function(){
-        $('#mname_div').css('display', 'block');
-        var mname = @json($mname);
-        var filter_mname = @json($filter_mname);
-        var filtered = filter_mname.filter(item => item !== '');
-        mname.forEach(function(optionData) {
-            var isSelected = false;
-            if(filtered.length !== 0){
-              isSelected = filter_mname.includes(optionData) ? true : false;
-            }
-            $('#mname_select').append($('<option>', {
-                value: optionData,
-                text: optionData,
-                selected: isSelected
-            }));
-        });
-    });
-    $('#lname_i').on('click', function(){
-        $('#lname_div').css('display', 'block');
-        var lname = @json($lname);
-        var filter_lname = @json($filter_lname);
-        var filtered = filter_lname.filter(item => item !== '');
-        lname.forEach(function(optionData) {
-            var isSelected = false;
-            if(filtered.length !== 0){
-              isSelected = filter_lname.includes(optionData) ? true : false;
-            }
-            $('#lname_select').append($('<option>', {
-                value: optionData,
-                text: optionData,
-                selected: isSelected
-            }));
-        });
-    });
-    $('#facility_i').on('click', function(){
-        $('#facility_div').css('display', 'block');
-        var fc_list = @json($fc_list);
-        var filter_facility = @json($filter_facility);
-        filtered = filter_facility.map(Number);
-        fc_list.forEach(function(optionData) {
-            var isSelected = false;
-            var optionId = Number(optionData.id);
-            if(filtered.length !== 0){
-              isSelected = filtered.includes(optionId) ? true : false;
-            }
-            $('#facility_select').append($('<option>', {
-                value: optionData.id,
-                text: optionData.name,
-                selected: isSelected
-            }));
-        });
-    });
-    $('#proponent_i').on('click', function(){
-        $('#proponent_select').empty();
-        $('#proponent_div').css('display', 'block');
-        var pros = @json($pros);
-        var filter_proponent = @json($filter_proponent);
-        filter_proponent = filter_proponent.map(Number);
-        pros.forEach(function(optionData) {
-            var isSelected = false;
-            var optionId = Number(optionData.id);
-            if(filter_proponent.length !== 0){
-              isSelected = filter_proponent.includes(optionId) ? true : false;
-            }
-            $('#proponent_select').append($('<option>', {
-                value: optionData.id,
-                text: optionData.proponent,
-                selected: isSelected
-            }));
-        });
-    });
-    $('#region_i').on('click', function(){
-        $('#region_div').css('display', 'block');
-        $('#region_select').empty();
-        var region = @json($region);
-        var filter_region = @json($filter_region);
-        filter_region = filter_region.filter(item => item !== '');
-        region.forEach(function(optionData) {
-            var isSelected = false;
-            if(filter_region.length !== 0){
-              isSelected = filter_region.includes(optionData) ? true : false;
-            }
-            $('#region_select').append($('<option>', {
-                value: optionData,
-                text: optionData,
-                selected: isSelected
-            }));
-        });
-    });
-    $('#province_i').on('click', function(){
-        $('#province_select').empty();
-        $('#province_div').css('display', 'block');
-        var province = @json($pro1).filter(item => item !== '' && item !== null);
-        var filter_province = @json($filter_province);
-        filter_province = filter_province.filter(item => item !== '');
-        province.forEach(function(optionData) {
-            var isSelected = false;
-            if(filter_province.length !== 0){
-              isSelected = filter_province.includes(optionData) ? true : false;
-            }
-            $('#province_select').append($('<option>', {
-                value: optionData,
-                text: optionData,
-                selected: isSelected
-            }));
-        });
-
-        var province2 = @json($prvnc);
-        var prov = @json($filter_facility);
-        prov = prov.map(Number);
-        province2.forEach(function(optionData) {
-            var isSelected = false;
-            var optionId = Number(optionData.id);
-            if(prov.length !== 0){
-              isSelected = prov.includes(optionId) ? true : false;
-            }
-            $('#province_select').append($('<option>', {
-                value: optionData.id,
-                text: optionData.description,
-                selected: isSelected
-            }));
-        });
-
-    });
-    $('#muncity_i').on('click', function(){
-        $('#muncity_select').empty();
-        $('#muncity_div').css('display', 'block');
-        var muncity = @json($muncity).filter(item => item !== '' && item !== null);
-        var filter_muncity = @json($filter_municipality);
-        filter_muncity = filter_muncity.filter(item => item !== '');
-        muncity.forEach(function(optionData) {
-            var isSelected = false;
-            if(filter_muncity.length !== 0){
-              isSelected = filter_muncity.includes(optionData) ? true : false;
-            }
-            $('#muncity_select').append($('<option>', {
-                value: optionData,
-                text: optionData,
-                selected: isSelected
-            }));
-        });
-
-        var muncity2 = @json($mncty);
-        var f_mun = @json($filter_municipality);
-        f_mun = f_mun.map(Number);
-        muncity2.forEach(function(optionData) {
-            var isSelected = false;
-            var optionId = Number(optionData.id);
-            if(f_mun.length !== 0){
-              isSelected = f_mun.includes(optionId) ? true : false;
-            }
-            $('#muncity_select').append($('<option>', {
-                value: optionData.id,
-                text: optionData.description,
-                selected: isSelected
-            }));
-        });
-    });
-    $('#barangay_i').on('click', function(){
-        $('#barangay_select').empty();
-        $('#barangay_div').css('display', 'block');
-        // <select style="width: 120px;" id="barangay_select" name="barangay_select" multiple>
-        var barangay = @json($barangay).filter(item => item !== '' && item !== null);
-        var filter_barangay = @json($filter_barangay);
-        filter_barangay = filter_barangay.filter(item => item !== '');
-        barangay.forEach(function(optionData) {
-            var isSelected = false;
-            if(filter_barangay.length !== 0){
-              isSelected = filter_barangay.includes(optionData) ? true : false;
-            }
-            $('#barangay_select').append($('<option>', {
-                value: optionData,
-                text: optionData,
-                selected: isSelected
-            }));
-        });
-
-        var barangay2 = @json($brgy);
-        var f_brgy = @json($filter_barangay);
-        f_brgy = f_brgy.map(Number);
-        barangay2.forEach(function(optionData) {
-            var isSelected = false;
-            var optionId = Number(optionData.id);
-            if(f_brgy.length !== 0){
-              isSelected = f_brgy.includes(optionId) ? true : false;
-            }
-            $('#barangay_select').append($('<option>', {
-                value: optionData.id,
-                text: optionData.description,
-                selected: isSelected
-            }));
-        });
-    });
-    $('#on_i').on('click', function(){
-        $('#on_select').empty();
-        $('#on_div').css('display', 'block');
-        var on = @json($on);
-        var filter_on = @json($filter_on);
-        filter_on = filter_on.filter(item => item !== '');
-        on.forEach(function(optionData) {
-            var date_obj = moment(optionData);
-            var isSelected = false;
-            if(filter_on.length !== 0){
-              isSelected = filter_on.includes(optionData) ? true : false;
-            }
-            $('#on_select').append($('<option>', {
-                value: date_obj.format('YYYY-MM-DD'),
-                text: moment(optionData).format('MMMM D, YYYY'),
-                selected: isSelected
-            }));
-        });
-
-    });
-    $('#by_i').on('click', function(){
-        $('#by_select').empty();
-        $('#by_div').css('display', 'block');
-        var by = @json($by);
-        var filter_by = @json($filter_by);
-        filter_by = filter_by.map(Number);
-        by.forEach(function(optionData) {
-            var isSelected = false;
-            var optionId = Number(optionData.userid);
-            if(filter_by.length !== 0){
-              isSelected = filter_by.includes(optionId) ? true : false;
-            }
-            $('#by_select').append($('<option>', {
-                value: optionData.userid,
-                text: optionData.lname + ", "+ optionData.fname,
-                selected: isSelected
-            }));
-        });
-    });
-    $('#date_select').select2();
-    $('#fname_select').select2();
-    $('#mname_select').select2();
-    $('#lname_select').select2();
-    $('#facility_select').select2();
-    $('#proponent_select').select2();
     $('#code_select').select2();
-    $('#region_select').select2();
-    $('#province_select').select2();
-    $('#muncity_select').select2();
-    $('#barangay_select').select2();
-    $('#on_select').select2();
-    $('#by_select').select2();
 
     $('#fname_select').change(function() {
         var selectedValues = $(this).val(); // Get the selected values
     });
-
 
     var proponents,all_patients;
 
@@ -911,13 +735,6 @@
 
     $('#list_body').on('click', function(){
         $('.filter').hide();
-    });
-
-    $('.btn-secondary').on('click', function(e) {
-        $('#contractForm')[0].reset();
-        $('#facility_id').val('').trigger('change');
-        $('#proponent_id').val('').trigger('change');
-
     });
 
     $('.send_mailform').on('click', function(e) {
@@ -947,10 +764,33 @@
     var mail_ids = [];
     var selectedProponentId = 0, selectedFacilityId = 0;
     
+    function getStat(){
+        var all_stat = [];
+        $('.group-mailCheckBox:checked').each(function(){ 
+            var element = $(this);  
+            var data_stat = element.attr('data-patient-stat');
+            all_stat.push(data_stat);
+        });
+
+        return all_stat;
+    }
+
+    function getStat2(){
+        var all_stat = [];
+        $('.group-mailCheckBox:checked').each(function(){ 
+            var element = $(this);  
+            var data_stat = element.attr('data-patient-stat2');
+            all_stat.push(data_stat);
+        });
+
+        return all_stat;
+    }
+
     function itemChecked(element){
         var parentTd = $(element).closest('td');   
         var patientId = parentTd.attr('data-patient-id');
         var checkboxId = element.attr("id");
+
         if(id_list.includes(patientId)){
             id_list = id_list.filter(id => id !== patientId);
             mail_ids = mail_ids.filter(id => id !== checkboxId);
@@ -962,8 +802,17 @@
         if(id_list.length != 0){
             $('.send_mails').val(id_list).show();
         }else{
-            $('.send_mails').val('').hide();
+            $('.send_mails').val(id_list).hide();
         }
+
+        if (getStat().includes('0')) {
+            $('#system_sent').hide();
+        }
+
+        if (getStat2().includes('0')) {
+            $('#email_sent').hide();
+        }
+        
     }
 
     var group_a = [];
@@ -974,6 +823,7 @@
 
         var parentTd = $(element).closest('td');   
         var patientId = parentTd.attr('data-patient-id');
+        // var amount = parentTd.attr('data-amount');
         var row = $(element).closest('tr');   
         var edit = row.find('td.editable-amount');
         var val = edit.attr('data-actual-amount');
@@ -1063,17 +913,27 @@
             loadPaginatedData(url);
           
         });
+
+        var select_val = 0;
         $(document).on('click', '.select_all', function() {
+            if(select_val == 0){
                 $('#patient_table').find('input.group-mailCheckBox').prop('checked', true).trigger('change');
                 $('.send_mails').val('').show();
+                if (getStat().includes('0')) {
+                    $('#system_sent').hide();
+                }
+                if (getStat2().includes('0')) {
+                    $('#email_sent').hide();
+                }
+                select_val = 1;
+            }else{
+                $('#patient_table').find('input.group-mailCheckBox').prop('checked', false).trigger('change');
+                $('.send_mails').val('').hide();
+                id_list = [];
+                mail_ids = [];
+                select_val = 0;
+            }
         });
-        $(document).on('click', '.unselect_all', function() {
-            $('#patient_table').find('input.group-mailCheckBox').prop('checked', false).trigger('change');
-            $('.send_mails').val('').hide();
-            id_list = [];
-            mail_ids = [];
-        });
-
 
         function initializeEditable() {
             $.fn.editable.defaults.mode = 'popup';
@@ -1103,6 +963,7 @@
                         $(editableField).text(actual_amount);
                         $(editableField).value(actual_amount);
                         cell.attr('data-actual-amount', actual_amount);
+                        // location.reload();
                         return;  
                     }
                     var c_amount = newValue.replace(/,/g,'');
@@ -1116,6 +977,7 @@
                         cell.attr('data-actual-amount', actual_amount);
                         $(editableField).text(actual_amount);
                         $(editableField).value(actual_amount);
+                        // location.reload();
                         return;           
                     }
 
@@ -1127,6 +989,7 @@
                             rounded: true
                         });
                         cell.attr('data-actual-amount', newValue);
+                        // location.reload();
                     });
                 }
             });
@@ -1185,6 +1048,9 @@
     function editPatient(id) {
         form_type='update';
         var patient;
+
+        $('#loading_indicator').show();
+
         $.get("{{url('/gl/update').'/'}}" + id, function(result){
             patient = result.patients;
             ids = result.ids;
@@ -1200,6 +1066,8 @@
                     removeRoute = removeRoute.replace(':id', id);
                     $('.btn.btn-danger').attr('data-id', id).css('display', 'inline-block').text('Remove');
                 }
+                // $('.btn.btn-warning').attr('data-id', id).css('display', 'inline-block');
+
                 $('.fname').val(patient.fname);
                 $('.lname').val(patient.lname);
                 $('.mname').val(patient.mname);
@@ -1218,6 +1086,8 @@
                 $('.guaranteed_amount').val(patient.guaranteed_amount);
                 $('.actl_amnt').show();
                 $('.actual_amount').val(patient.actual_amount);
+                // $('.proponent_id1').val(patient.proponent_id).trigger('change');
+
                 var $proponentSelect = $('.proponent_id1'); 
 
                 for (var i = 0; i < ids.length; i++) {
@@ -1234,6 +1104,12 @@
                 $('.pat_rem').val(patient.pat_rem);
             }
             edit_c = 0;
+            $('#loading_indicator').hide();
+
+            $('#update_patient').modal({
+                backdrop: 'static',
+                keyboard: false
+            });
         });
     }
     
@@ -1354,6 +1230,8 @@
     }
 
     function onchangeForPatientCode(data) {
+
+        // var facility_id = $('#facility_id').val();
 
         if(facility_id == 0){
             facility_id = $('#facility_id').val();

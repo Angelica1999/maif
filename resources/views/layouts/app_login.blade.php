@@ -39,16 +39,6 @@
                             </div>
                         </div>
                     </div> -->
-                    <div class="row w-100 mx-0 justify-content-center">
-                        <div style="width:400px">
-                            <div class="auth-form-light text-left py-5 px-4 px-sm-5">
-                                <div class="brand-logo text-center">
-                                    <img src="{{ asset('images/doh-logo.png') }}" alt="logo" style="width: 90px; height: 90px;">
-                                </div>
-                                @yield('content')
-                            </div>
-                        </div>
-                    </div>
                 </div>
             <!-- content-wrapper ends -->
             </div>
