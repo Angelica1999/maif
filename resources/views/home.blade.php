@@ -217,14 +217,14 @@
                     <tbody id="list_body">
                         @foreach($patients as $index=> $patient)
                             <tr>
-                                <td>
+                                <td style="padding-right:5px">
                                     <button type="button" href="#patient_history" data-backdrop="static" style="width:70px;background-color:#006BC4; color:white; font-size:11px" data-toggle="modal" class="btn btn-xs" 
                                         onclick="populateHistory({{ $patient->id }})"><i class="fa fa-history"></i> Pt. Hx</button>
                                     <button type="button" href="#get_mail" data-backdrop="static" data-toggle="modal" class="btn btn-xs" style="margin-top:1px; width:70px; background-color:#005C6F; color:white; font-size:11px" 
                                         onclick="populate({{ $patient->id }})"><i class="fa fa-envelope"></i> Logs</button>
                                 </td>
                                 <td class="td" style="padding:0px">
-                                    <div style="display: flex; align-items: center; gap: 5px; text-align:center; height: 100%">
+                                    <div style="display: flex; align-items: center; gap: 5px; text-align:center; height: 100%;">
                                         <div style="display: flex; flex-direction: column; justify-content: center; text-align: center; height: 70px;">
                                             <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}"
                                                 style="background-color:teal; color:white; width:70px; font-size:11px"
@@ -239,24 +239,24 @@
                                             </button>
                                         </div>
                                         <div style="display: flex; flex-direction: column; justify-content: center; height: 70px;">
-                                            @if($patient->facility_id && in_array($patient->facility_id, $onhold_facs))
-
-                                                @if($patient->sent_type == null || $patient->fc_status == 'returned')
-                                                    <button 
-                                                        onclick="forwardPatient({{ !in_array($patient->facility_id, $active_facility) ? 1 : 0 }}, '{{ route('patient.accept', ['id' => $patient->id]) }}')"
-                                                        style="background-color:#0077b6; color:white; width:70px; font-size:11px"
-                                                        class="btn btn-xs" title="Forward to Facility">
-                                                        <i class="fa fa-share-square"></i> F2F
-                                                    </button>
-                                                @endif
-                                            @endif
-                                            @if($patient->fc_status != 'retrieved' && $patient->fc_status != 'returned' 
-                                                && $patient->transd_id == null && $patient->fc_status == 'referred')
-                                                <button style="background-color:#0b6e4f; color:white; width:70px; font-size:11px; margin-top:1px"
-                                                    title="Retrieve GL" class="btn btn-xs" onclick="retrieveGL({{ $patient->id }})">
-                                                    <i class="fa fa-undo"></i> Rtrv
-                                                </button>
-                                            @endif
+                                            <button 
+                                                onclick="forwardPatient({{ !in_array($patient->facility_id, $active_facility) ? 1 : 0 }},
+                                                '{{ route('patient.accept', ['id' => $patient->id]) }}',
+                                                {{ $patient->facility_id && in_array($patient->facility_id, $onhold_facs) ? 0 : 1 }},
+                                                {{ $patient->sent_type == null || $patient->fc_status == 'returned' ? 0 : 1}}
+                                                )"
+                                                style="background-color:#0077b6; color:white; width:70px; font-size:11px"
+                                                class="btn btn-xs" title="Forward to Facility">
+                                                <i class="fa fa-share-square"></i> F2F
+                                            </button>
+                                            <button style="background-color:#0b6e4f; color:white; width:70px; font-size:11px; margin-top:1px"
+                                                title="Retrieve GL" class="btn btn-xs" onclick="retrieveGL({{ $patient->id }},
+                                                {{ (!in_array($patient->fc_status, ['retrieved', 'returned'])
+                                                    && in_array($patient->fc_status, ['referred', 'accepted']) 
+                                                    && $patient->transd_id == null) ? 0 : 1 }}
+                                                )">
+                                                <i class="fa fa-undo"></i> Rtrv
+                                            </button>
                                         </div> 
                                     </div>
                                 </td>
@@ -762,7 +762,8 @@
             Swal.fire({
                 icon: 'warning',
                 title: 'Not Allowed',
-                text: 'This Guarantee Letter cannot be sent via email due to admin restrictions or status requirements.',    allowOutsideClick: false,
+                text: 'This Guarantee Letter cannot be sent via email due to admin restrictions or status requirements.',
+                allowOutsideClick: false,
                 allowEscapeKey: false,
                 didOpen: () => {
                     Swal.showLoading();
@@ -779,59 +780,109 @@
         }
     }
 
-    function forwardPatient(status, forwardUrl) {
+    function forwardPatient(status, forwardUrl, status2, status3) {
         if (status == 1) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Not Allowed',
                 text: 'No System Account Found!',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                willClose: () => {
+                    $('.loading-container').hide();
+                },
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false
             });
         } else {
-            window.location.href = forwardUrl;
+            if(status2 == 0 && status3 == 0){
+                window.location.href = forwardUrl;
+            }else{
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Not Allowed',
+                    text: 'This Guarantee Letter cannot be sent via system due to admin restrictions or status requirements.',    
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                    willClose: () => {
+                        $('.loading-container').hide();
+                    },
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                });
+            }
         }
     }
 
-    function retrieveGL(id){
-        Swal.fire({
-            title: 'Retrieve GL',
-            input: 'text', 
-            inputLabel: 'Remarks',
-            inputPlaceholder: '...',
-            showCancelButton: true,
-            confirmButtonText: 'Submit',
-            cancelButtonText: 'Cancel',
-            inputValidator: (value) => {
-                if (!value) {
-                    return 'Cannot be retrieved without remarks!';
+    function retrieveGL(id, status){
+        if(status == 0){
+            Swal.fire({
+                title: 'Retrieve GL',
+                input: 'text', 
+                inputLabel: 'Remarks',
+                inputPlaceholder: '...',
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                cancelButtonText: 'Cancel',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'Cannot be retrieved without remarks!';
+                    }
                 }
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                var remarks = encodeURIComponent(result.value); 
-                fetch(`patient/retrieve/${id}/${remarks}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}' 
-                    }
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    Swal.fire('Success!', 'Your data has been submitted.', 'success');
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1000);
-                })
-                .catch(error => {
-                    Swal.fire('Error!', 'There was an error submitting your data.', 'error');
-                });
-            }
-        });
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var remarks = encodeURIComponent(result.value); 
+                    fetch(`patient/retrieve/${id}/${remarks}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}' 
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        Swal.fire('Success!', 'Your data has been submitted.', 'success');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    })
+                    .catch(error => {
+                        Swal.fire('Error!', 'There was an error submitting your data.', 'error');
+                    });
+                }
+            });
+        }else{
+            Swal.fire({
+                icon: 'warning',
+                title: 'Not Allowed',
+                text: 'This Guarantee Letter cannot be retrieved due to admin restrictions or status requirements.',    
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                willClose: () => {
+                    $('.loading-container').hide();
+                },
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+        }
+        
     }
     
     $(document).ready(function () {
