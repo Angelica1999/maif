@@ -298,6 +298,7 @@
     var btn_val = 0;
 
     $('.crt_btn').on('click', function(){
+        btn_val = 1;
         location.reload();
     });
 
@@ -989,6 +990,7 @@
     });
 
     $('.pre_form1, #pre_form').submit( function(e){
+        btn_val = 1;
         e.preventDefault();
         var trans_ids = getTransId();
         var facility_id = f_id;
