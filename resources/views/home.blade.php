@@ -240,16 +240,16 @@
                                             @endif
                                         </div>
                                         <div style="display: flex; flex-direction: column; justify-content: center; height: 70px;">
-                                        @if($patient->facility_id && in_array($patient->facility_id, $onhold_facs))
+                                            @if($patient->facility_id && in_array($patient->facility_id, $onhold_facs))
 
-                                            @if($patient->sent_type == null || $patient->fc_status == 'returned')
-                                                <button 
-                                                    onclick="forwardPatient({{ !in_array($patient->facility_id, $active_facility) ? 1 : 0 }}, '{{ route('patient.accept', ['id' => $patient->id]) }}')"
-                                                    style="background-color:#0077b6; color:white; width:70px; font-size:11px"
-                                                    class="btn btn-xs" title="Forward to Facility">
-                                                    <i class="fa fa-share-square"></i> F2F
-                                                </button>
-                                            @endif
+                                                @if($patient->sent_type == null || $patient->fc_status == 'returned')
+                                                    <button 
+                                                        onclick="forwardPatient({{ !in_array($patient->facility_id, $active_facility) ? 1 : 0 }}, '{{ route('patient.accept', ['id' => $patient->id]) }}')"
+                                                        style="background-color:#0077b6; color:white; width:70px; font-size:11px"
+                                                        class="btn btn-xs" title="Forward to Facility">
+                                                        <i class="fa fa-share-square"></i> F2F
+                                                    </button>
+                                                @endif
                                             @endif
                                             @if($patient->fc_status != 'retrieved' && $patient->fc_status != 'returned' 
                                                 && $patient->transd_id == null && $patient->fc_status == 'referred')
