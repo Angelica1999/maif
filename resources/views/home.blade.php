@@ -231,13 +231,12 @@
                                                 target="_blank" type="button" class="btn btn-xs">
                                                 <i class="fa fa-print"></i> Print
                                             </a>
-                                            @if($patient->facility_id && !in_array($patient->facility_id, $onhold_facs))
-                                                <a href="{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}"
-                                                    type="button" style="margin-top:1px; width:70px; font-size:11px"
-                                                    class="btn btn-success btn-xs" id="send_btn">
-                                                    <i class="fa fa-paper-plane"></i> Send
-                                                </a>
-                                            @endif
+                                            <button onclick="sendGL({{ $patient->facility_id && !in_array($patient->facility_id, $onhold_facs) ? 0 : 1 }},
+                                                '{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}')"
+                                                type="button" style="margin-top:1px; width:70px; font-size:11px"
+                                                class="btn btn-success btn-xs" id="send_btn">
+                                                <i class="fa fa-paper-plane"></i> Send
+                                            </button>
                                         </div>
                                         <div style="display: flex; flex-direction: column; justify-content: center; height: 70px;">
                                         @if($patient->facility_id && in_array($patient->facility_id, $onhold_facs))
@@ -740,7 +739,7 @@
         </div>
     </div>
 </div>
-<div class="loading-container">
+<div class="loading-container" style="display:none">
     <img src="public\images\loading.gif" alt="Loading..." class="loading-spinner">
 </div>
 <div id="loading_indicator" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 1050;">
@@ -757,6 +756,28 @@
 <script src="{{ asset('admin/vendors/x-editable/bootstrap-editable.min.js?v=1') }}"></script>
 @include('maif.editable_js')
 <script>
+
+    function sendGL(status, forwardUrl) {
+        if (status == 1) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Not Allowed',
+                text: 'This Guarantee Letter cannot be sent via email due to admin restrictions or status requirements.',    allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                willClose: () => {
+                    $('.loading-container').hide();
+                },
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+        } else {
+            window.location.href = forwardUrl;
+        }
+    }
 
     function forwardPatient(status, forwardUrl) {
         if (status == 1) {
