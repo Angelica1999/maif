@@ -29,8 +29,8 @@
         <div class="container-scroller">
             <div class="container-fluid page-body-wrapper full-page-wrapper">
                 <div class="content-wrapper d-flex align-items-center auth px-0">
-                    <!-- <div class="row w-100 mx-0">
-                        <div class="col-lg-3 mx-auto">
+                    <div class="row w-100 mx-0 justify-content-center">
+                        <div style="width:400px">
                             <div class="auth-form-light text-left py-5 px-4 px-sm-5">
                                 <div class="brand-logo text-center">
                                     <img src="{{ asset('images/doh-logo.png') }}" alt="logo" style="width: 90px; height: 90px;">
@@ -38,7 +38,7 @@
                                 @yield('content')
                             </div>
                         </div>
-                    </div> -->
+                    </div>
                 </div>
             <!-- content-wrapper ends -->
             </div>

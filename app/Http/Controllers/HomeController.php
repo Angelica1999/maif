@@ -417,7 +417,7 @@ class HomeController extends Controller
                         ->where('fc_status', "returned");
                 })
                 ->whereNotNull('other_province');
-        }else if($type == ){
+        }else if($type == 3){
             $query1 = DB::table('patients')
                 ->select(DB::raw("DISTINCT other_province AS province"))
                 ->where(function ($query) {
