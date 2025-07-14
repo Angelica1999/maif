@@ -44,10 +44,6 @@ class PreDvController extends Controller
 
     public function pre_dv(Request $request)
     {
-        // if(Auth::user()->userid != "0881"){
-        //     return "under development";
-        // }
-
         NewDV::whereNull('dv_no')
             ->orWhere('dv_no', '')
             ->with('dts')

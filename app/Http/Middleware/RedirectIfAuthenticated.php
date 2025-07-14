@@ -44,11 +44,6 @@ class RedirectIfAuthenticated
                         return redirect(RouteServiceProvider::CASHIER);
                     }
                 }
-                // if (auth()->user()->roles == 'maif') {
-                    // return redirect(RouteServiceProvider::MAIF);
-                // } elseif (auth()->user()->roles == 'budget') {
-                //     return redirect(RouteServiceProvider::BUDGET);
-                // }
             }
         }
 
