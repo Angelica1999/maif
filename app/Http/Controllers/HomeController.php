@@ -1553,7 +1553,7 @@ class HomeController extends Controller
 
     public function updateGl($id){
 
-        // if(Auth::user()->userid == 2760){
+        // if(Auth::user()->userid == 0881){
             $patients = Patients::where('id', $id)->with([
                 'facility:id,name','province:id,description',
                 'muncity:id,description',
