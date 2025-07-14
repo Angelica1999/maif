@@ -81,7 +81,7 @@
                                 <td>{{ date('F j, Y', strtotime($row->created_at)) }}</td>
                                 <td>{{ $row->pat_rem }}</td>
                                 <td>
-                                    @if($row->transd_id == null || $row->transd_id == '')
+                                    @if(($row->transd_id == null || $row->transd_id == '') && $row->encoded_by)
                                         @if($row->fc_status != "referred" && $row->fc_status != "accepted")
                                             <a class="text-danger" onclick="deletePatient({{$row->id}})">remove {{ $row->fc_status }}</a>
                                         @endif
