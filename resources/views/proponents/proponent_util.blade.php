@@ -85,7 +85,7 @@
                                         @if($row->fc_status != "referred" && $row->fc_status != "accepted")
                                             <a class="text-danger" onclick="deletePatient({{$row->id}})">remove {{ $row->fc_status }}</a>
                                         @endif
-                                    @endif
+                                    @endif  
                                 </td>
                                 <td style="text-align:center;" class="group-email" data-row-id="{{ $row->id }}" >
                                     @if($row->pro_used == null)
