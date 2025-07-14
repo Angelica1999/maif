@@ -432,10 +432,6 @@ class DvController extends Controller
 
     function createDvSave(Request $request){
 
-        // if(Auth::user()->userid != 0881){
-        //     return 'Please come back later, still fixing the update! Thank you!';
-        // }
-
         $check = $request->input('dv');       
         $facility_used = array_values(array_filter([$request->input('fac_id1'), $request->input('fac_id2'), $request->input('fac_id3')],
                             function($value){return $value !== '0' && $value !==null;}));

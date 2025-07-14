@@ -1271,22 +1271,17 @@ class HomeController extends Controller
 
     public function updateGl($id){
 
-        // if(Auth::user()->userid == 0881){
-            $patients = Patients::where('id', $id)->with([
-                'facility:id,name','province:id,description',
-                'muncity:id,description',
-                'barangay:id,description',
-                'proponentData:id,proponent'
-                ])->first();
-            $pro = Proponent::where('proponent', Proponent::where('id', $patients->proponent_id)->value('proponent'))->pluck('id')->toArray();
-            return $data=[
-                'ids' => $pro,
-                'patients' => $patients
-            ];
-        // }else{
-        //     return Patients::where('id', $id)->with('facility:id,name','province:id,description','muncity:id,description','barangay:id,description', 'proponentData:id,proponent')->first();
-        // }
-
+        $patients = Patients::where('id', $id)->with([
+            'facility:id,name','province:id,description',
+            'muncity:id,description',
+            'barangay:id,description',
+            'proponentData:id,proponent'
+            ])->first();
+        $pro = Proponent::where('proponent', Proponent::where('id', $patients->proponent_id)->value('proponent'))->pluck('id')->toArray();
+        return $data=[
+            'ids' => $pro,
+            'patients' => $patients
+        ];
     }
 
     public function report(Request $request){

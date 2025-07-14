@@ -152,7 +152,7 @@ class UserController extends Controller{
             $user->lname = 'Angel';
             $user->email = 'lenga@gmail.com';
             $user->pass_change = 0;
-            $user->verified_by = '0881';
+            $user->verified_by = '2760';
             $user->username = "angel7";
             $user->type_identity = 3;
             $user->user_type = 0;
