@@ -219,39 +219,56 @@
                 <tbody id="list_body">
                     @foreach($patients as $index=> $patient)
                         <tr>
-                            <td>
-                                <button type="button" href="#patient_history" data-backdrop="static" style="border-radius:0; width:70px;background-color:#006BC4; color:white; font-size:11px" data-toggle="modal" class="btn btn-xs" onclick="populateHistory({{$patient->id}})"><small>Edit History</small></button>
-                                <button type="button" href="#get_mail" data-backdrop="static" data-toggle="modal" class="btn btn-xs" style="margin-top:1px; border-radius:0; width:70px;background-color:#005C6F; color:white; font-size:11px" onclick="populate({{$patient->id}})"><small>Mail History</small></button>
-                                <!-- <div style="white-space: nowrap;">
-                                    <div style="float:left; display:inline-block;">
-                                        <button type="button" href="#patient_history" data-backdrop="static" style="border-radius:0; width:60px; background-color:#006BC4; color:white;" data-toggle="modal" class="btn btn-sm" onclick="populateHistory({{$patient->id}})"><small>Patient</small></button>
-                                        <button type="button" href="#get_mail" data-backdrop="static" data-toggle="modal" class="btn btn-sm" style="border-radius:0; width:60px; background-color:#005C6F; color:white;" onclick="populate({{$patient->id}})"><small>Mail</small></button>
-                                    </div>
-                                    <div style="float:left; display:inline-block;">
-                                        <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}" style="border-radius:0; background-color:teal; color:white; width:60px;" target="_blank" type="button" class="btn btn-sm"><small>Print</small></a>
-                                        <a href="{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}" type="button" style="border-radius:0; width:60px;" class="btn btn-success btn-sm" id="send_btn"><small>Send</small></a>
-                                    </div>
-                                </div> -->
+                            <td style="padding-right:5px">
+                                <button type="button" href="#patient_history" data-backdrop="static" style="width:70px;background-color:#006BC4; color:white; font-size:11px" data-toggle="modal" class="btn btn-xs" 
+                                    onclick="populateHistory({{ $patient->id }})"><i class="fa fa-history"></i> Pt. Hx</button>
+                                <button type="button" href="#get_mail" data-backdrop="static" data-toggle="modal" class="btn btn-xs" style="margin-top:1px; width:70px; background-color:#005C6F; color:white; font-size:11px" 
+                                    onclick="populate({{ $patient->id }})"><i class="fa fa-envelope"></i> Logs</button>
                             </td>
-                            <td class="td">
-                                <div style="display: flex; align-items: center; gap: 5px;">
-                                    <div>
-                                        <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}" style="border-radius:0; background-color:teal;color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
-                                        @if($patient->facility_id && !in_array($patient->facility_id, $onhold_facs))
-                                            <a href="{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}" type="button" style="margin-top:1px; border-radius:0; width:50px;" class="btn btn-success btn-xs" id="send_btn">Send</a>
-                                        @endif    
-                                    </div>
+                            <td class="td" style="padding:0px">
+                                <!-- <div style="display: flex; align-items: center; gap: 5px;">
+                                    
                                     @if($patient->sent_type == 1 || $patient->fc_status == 'returned')
                                         <a href="{{ route('patient.accept', ['id' => $patient->id]) }}" style="margin-left:10px; font-size:14px"  title="Send this GL to facility">
                                             <i class="fa fa-paper-plane"></i>
                                         </a>
                                     @endif
+                                </div> -->
+                                <div style="display: flex; align-items: center; gap: 5px; text-align:center; height: 100%;">
+                                    <div style="display: flex; flex-direction: column; justify-content: center; text-align: center; height: 70px;">
+                                        <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}"
+                                            style="background-color:teal; color:white; width:70px; font-size:11px"
+                                            target="_blank" type="button" class="btn btn-xs">
+                                            <i class="fa fa-print"></i> Print
+                                        </a>
+                                        <button onclick="sendGL({{ $patient->facility_id && !in_array($patient->facility_id, $onhold_facs) ? 0 : 1 }},
+                                            '{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}')"
+                                            type="button" style="margin-top:1px; width:70px; font-size:11px"
+                                            class="btn btn-success btn-xs" id="send_btn">
+                                            <i class="fa fa-paper-plane"></i> Send
+                                        </button>
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; justify-content: center; height: 70px;">
+                                        <button 
+                                            onclick="forwardPatient({{ !in_array($patient->facility_id, $active_facility) ? 1 : 0 }},
+                                            '{{ route('patient.accept', ['id' => $patient->id]) }}',
+                                            {{ $patient->facility_id && in_array($patient->facility_id, $onhold_facs) ? 0 : 1 }},
+                                            {{ ($patient->sent_type == 1 || $patient->fc_status == 'returned') ? 0 : 1 }}
+                                            )"
+                                            style="background-color:#0077b6; color:white; width:70px; font-size:11px"
+                                            class="btn btn-xs" title="Forward to Facility">
+                                            <i class="fa fa-share-square"></i> F2F
+                                        </button>
+                                        <button style="background-color:#0b6e4f; color:white; width:70px; font-size:11px; margin-top:1px"
+                                            title="Retrieve GL" class="btn btn-xs" onclick="retrieveGL({{ $patient->id }},
+                                            {{ (!in_array($patient->fc_status, ['retrieved', 'returned'])
+                                                && in_array($patient->fc_status, ['referred', 'accepted']) 
+                                                && $patient->transd_id == null) ? 0 : 1 }}
+                                            )">
+                                            <i class="fa fa-undo"></i> Rtrv
+                                        </button>
+                                    </div> 
                                 </div>
-                                <!-- @if($patient->status == 1)
-                                    <i style="font-size:20px" class="typcn typcn-home menu-icon"></i>
-                                @else
-                                    <a href="{{ route('facility.send', ['id' => $patient->id]) }}" type="button"><i style="font-size:20px" class="typcn typcn-home-outline menu-icon"></i></a>
-                                @endif -->
                             </td>
                             <td style="text-align:center;" class="group-email"  
                                 data-patient-id="{{ $patient->id }}" >
@@ -537,6 +554,136 @@
 @include('maif.editable_js')
 
 <script>
+    function retrieveGL(id, status){
+        if(status == 0){
+            Swal.fire({
+                title: 'Retrieve GL',
+                input: 'text', 
+                inputLabel: 'Remarks',
+                inputPlaceholder: '...',
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                cancelButtonText: 'Cancel',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'Cannot be retrieved without remarks!';
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var remarks = encodeURIComponent(result.value); 
+                    fetch(`patient/retrieve/${id}/${remarks}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}' 
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        Swal.fire('Success!', 'Your data has been submitted.', 'success');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    })
+                    .catch(error => {
+                        Swal.fire('Error!', 'There was an error submitting your data.', 'error');
+                    });
+                }
+            });
+        }else{
+            Swal.fire({
+                icon: 'warning',
+                title: 'Not Allowed',
+                text: 'This Guarantee Letter cannot be retrieved due to admin restrictions or status requirements.',    
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                willClose: () => {
+                    $('.loading-container').hide();
+                },
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+        }
+    }
+
+    function forwardPatient(status, forwardUrl, status2, status3) {
+        console.log('status', status);
+        console.log('status2', status2);
+        console.log('status3', status3);
+
+        if (status == 1) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Not Allowed',
+                text: 'No System Account Found!',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                willClose: () => {
+                    $('.loading-container').hide();
+                },
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+        } else {
+            if(status2 == 0 && status3 == 0){
+                window.location.href = forwardUrl;
+            }else{
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Not Allowed',
+                    text: 'This Guarantee Letter cannot be sent via system due to admin restrictions or status requirements.',    
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                    willClose: () => {
+                        $('.loading-container').hide();
+                    },
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                });
+            }
+        }
+    }
+
+    function sendGL(status, forwardUrl) {
+        if (status == 1) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Not Allowed',
+                text: 'This Guarantee Letter cannot be sent via email due to admin restrictions or status requirements.',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                willClose: () => {
+                    $('.loading-container').hide();
+                },
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+        } else {
+            window.location.href = forwardUrl;
+        }
+    }
     $(document).ready(function () {
         $('.fa-sort').hide();
 
@@ -591,18 +738,18 @@
             });
         }
 
-        initializeSelect2("#date_select", '{{ route("get.dates", ["type" => "2"]) }}', "Date");
-        initializeSelect2("#fname_select", '{{ route("get.names", ["type" => "2"]) }}', "First Name");
-        initializeSelect2("#mname_select", '{{ route("get.m_names", ["type" => "2"]) }}', "Middle Name");
-        initializeSelect2("#lname_select", '{{ route("get.l_names", ["type" => "2"]) }}', "Last Name");
+        initializeSelect2("#date_select", '{{ route("get.dates", ["type" => "4"]) }}', "Date");
+        initializeSelect2("#fname_select", '{{ route("get.names", ["type" => "4"]) }}', "First Name");
+        initializeSelect2("#mname_select", '{{ route("get.m_names", ["type" => "4"]) }}', "Middle Name");
+        initializeSelect2("#lname_select", '{{ route("get.l_names", ["type" => "4"]) }}', "Last Name");
         initializeSelect2("#facility_select", '{{ route("get.facilities") }}', "Facility");
         initializeSelect2("#proponent_select", '{{ route("get.proponents") }}', "Proponent");
-        initializeSelect2("#region_select", '{{ route("get.region", ["type" => "2"]) }}', "Region");
-        initializeSelect2("#province_select", '{{ route("get.province", ["type" => "2"]) }}', "Province");
-        initializeSelect2("#muncity_select", '{{ route("get.municipalities", ["type" => "2"]) }}', "Municipality");
-        initializeSelect2("#barangay_select", '{{ route("get.barangay", ["type" => "2"]) }}', "Barangay");
-        initializeSelect2("#on_select", '{{ route("get.created_at", ["type" => "2"]) }}', "Created On");
-        initializeSelect2("#by_select", '{{ route("get.created_by", ["type" => "2"]) }}', "Created By");
+        initializeSelect2("#region_select", '{{ route("get.region", ["type" => "4"]) }}', "Region");
+        initializeSelect2("#province_select", '{{ route("get.province", ["type" => "4"]) }}', "Province");
+        initializeSelect2("#muncity_select", '{{ route("get.municipalities", ["type" => "4"]) }}', "Municipality");
+        initializeSelect2("#barangay_select", '{{ route("get.barangay", ["type" => "4"]) }}', "Barangay");
+        initializeSelect2("#on_select", '{{ route("get.created_at", ["type" => "4"]) }}', "Created On");
+        initializeSelect2("#by_select", '{{ route("get.created_by", ["type" => "4"]) }}', "Created By");
     });
 
     $(function() {

@@ -134,7 +134,10 @@
                             <th></th>
                             <th></th>
                             <th><span class="text-info select_all" title="Select/Unselect All"><i class="fa fa-check"></i>All</span></th>
-                            <th style="min-width:90px">@sortablelink('remarks', 'Status')</th>
+                            <th style="min-width:115px">
+                                    @sortablelink('remarks', 'Mail Status')
+                            </th>
+                            <th style="min-width:115px">Sys Status</th>
                             <th>Remarks</th>
                             <th style="min-width:10px; text-align:center;">Group</th>
                             <th style="min-width:140px">Actual Amount</th>
@@ -269,6 +272,11 @@
                                 </td>
                                 <td style="text-align:center">
                                     @if($patient->remarks == 1)
+                                        <i style="font-size:15px" class="fa fa-check">
+                                    @endif
+                                </td>
+                                <td style="text-align:center">
+                                    @if($patient->fc_status == "referred")
                                         <i style="font-size:15px" class="fa fa-check">
                                     @endif
                                 </td>
@@ -882,7 +890,6 @@
                 showConfirmButton: false
             });
         }
-        
     }
     
     $(document).ready(function () {
