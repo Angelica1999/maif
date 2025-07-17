@@ -110,6 +110,7 @@ class FacilityController extends Controller
         $facility->cc = $request->input('cc');
         $facility->vat = $request->input('vat');
         $facility->Ewt = $request->input('Ewt');
+        $facility->ewt_pf = $request->input('ewt_pf');
 
         $facility->save();  
         session()->flash('facility_save', true); 

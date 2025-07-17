@@ -30,8 +30,9 @@
                         <th>Address</th>
                         <th>Official Email</th>
                         <th style="min-width:200px">Additional Email(s)</th>
-                        <th>Vat</th>
-                        <th>Ewt</th>
+                        <th>VAT</th>
+                        <th>EWT</th>
+                        <th>EWT PF</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -50,8 +51,9 @@
                             <td class="td">{{ $facility->address }}</td>
                             <td class="td">{{ $facility->AddFacilityInfo->official_mail ?? '' }}</td>
                             <td class="td">{{ $facility->AddFacilityInfo->cc ?? '' }}</td>
-                            <td class="td">{{ $facility->AddFacilityInfo->vat ?? '' }}</td>
-                            <td class="td">{{ $facility->AddFacilityInfo->Ewt ?? '' }}</td>
+                            <td class="td">{{ floor($facility->AddFacilityInfo?->vat ?? 0) }}</td>
+                            <td class="td">{{ floor($facility->AddFacilityInfo?->Ewt ?? 0) }}</td>
+                            <td class="td">{{ floor($facility->AddFacilityInfo?->ewt_pf ?? 0) }}</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -97,8 +99,7 @@
         $('.modal-title').html('<i style="font-size:30px" class="typcn typcn-home menu-icon"></i> '+name);
         $('.modal_body').html(loading);
 
-        var url = "{{ route('facility.edit', ':main_id') }}"; // Use a placeholder for main_id
-
+        var url = "{{ route('facility.edit', ':main_id') }}"; 
         url = url.replace(':main_id', main_id);
 
         setTimeout(function() {

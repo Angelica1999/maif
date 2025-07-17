@@ -148,25 +148,93 @@
                                         <td style="border-top:1px solid black;text-align: right; width:20%">{{ number_format($amount, 2, '.',',') }}</td>
                                     </tr>
                                 </table> 
-                                <?php
+                                <?php 
                                     if ($pre_dv->prof_fee !== null) {
                                         $data_vat = ($info->vat > 3) ? $pre_dv->prof_fee / 1.12 : $pre_dv->prof_fee;
                                     } else {
                                         $data_vat = ($info->vat > 3) ? $amount / 1.12 : $amount;
                                     } 
+                                    
+                                    $r1d2 = $r1d3 = $r2d2 = $r2d3 = 0;
+                                    if($info->vat == 3){
+                                        $r1d2 = number_format($amount,2,'.',',');
+                                        $r1d3 = number_format($amount * $info->vat / 100,2,'.',',') ;
+                                        $r2d2 = number_format($pre_dv->prof_fee,2,'.',',');
+                                        $r2d3 = number_format(($pre_dv->prof_fee * $info->ewt_pf) / 100,2,'.',',');
+                                    }else if($info->vat == 5){
+                                        $r1d2 = number_format($data_vat,2,'.',',');
+                                        $r1d3 = number_format($data_vat * $info->vat / 100,2,'.',',');
+                                        $r2d2 = number_format(($pre_dv->prof_fee / 1.12 ),2,'.',',');
+                                        $r2d3 = number_format(($pre_dv->prof_fee / 1.12 * $info->ewt_pf) / 100,2,'.',',');
+                                    }
+                                    $r3d2 = number_format($amount - $pre_dv->prof_fee,2,'.',',');
+                                    $r3d3 = number_format((($amount - $pre_dv->prof_fee) * $info->Ewt )/ 100,2,'.',',');
+                                    
+                                    $all_tax = number_format(str_replace(',','',$r1d3) + str_replace(',','',$r2d3) + str_replace(',','',$r3d3), 2,'.',','); 
+
                                     $vat_ewt = number_format((($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100) + $data_vat * $info->vat / 100, 2,'.',',');
+                                    $date_valid = (strtotime($result->updated_at) < strtotime('2025-07-17')) ? 0 : 1;
                                 ?>
-                                <table style="width: 500px; border-collapse: collapse; margin-top:5px;">
-                                    <tr>
-                                        <td style="text-align: left;">{{ floor($info->vat) == 3 ? floor($info->vat) . '%' . ' ' . 'Percentage Tax' : floor($info->vat) . '%' . ' ' . 'VAT' }}</td>
-                                        <td style="text-align: right;">{{ number_format($data_vat,2,'.',',') }}</td>
-                                        <td style="text-align: right;">{{ number_format($data_vat * $info->vat / 100,2,'.',',') }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="text-align: left;">{{ floor($info->Ewt).'%'.' '.'EWT' }}</td>
-                                        <td style="text-align: right;">{{ floor($info->vat) == 3 ? number_format((($info->vat > 3)?$amount / 1.12 : $amount),2,'.',','): number_format((($info->vat > 3)?$amount / 1.12 : $amount),2,'.',',') }}</td>
-                                        <td style="text-align: right;">{{ number_format((($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100),2,'.',',') }}</td>
-                                    </tr>
+                                <table style="width: 100%; border-collapse: collapse; margin-top:5px;">
+                                    @if($date_valid == 0)
+                                        <tr>
+                                            <td style="text-align: left;">{{ floor($info->vat) == 3 ? floor($info->vat) . '%' . ' ' . 'Percentage Tax' : floor($info->vat) . '%' . ' ' . 'VAT' }}</td>
+                                            <td style="text-align: right;">{{ number_format($data_vat,2,'.',',') }}</td>
+                                            <td style="text-align: right;">{{ number_format($data_vat * $info->vat / 100,2,'.',',') }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: left;">{{ floor($info->Ewt).'%'.' '.'EWT' }}</td>
+                                            <td style="text-align: right;">{{ floor($info->vat) == 3 ? number_format((($info->vat > 3)?$amount / 1.12 : $amount),2,'.',','): number_format((($info->vat > 3)?$amount / 1.12 : $amount),2,'.',',') }}</td>
+                                            <td style="text-align: right;">{{ number_format((($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100),2,'.',',') }}</td>
+                                        </tr>
+                                    @else
+                                        <tr>
+                                            <td style="text-align: left; width:60%">
+                                                {{ 
+                                                    floor($info->vat) == 3 
+                                                        ? floor($info->vat) . '%' . ' ' . 'Percentage Tax on Total Hospital Bill' 
+                                                        : floor($info->vat) . '%' . ' ' . 'VAT on Professional Fee' 
+                                                    }}
+                                            </td>
+                                            <td style="text-align: right; width:20%">
+                                                {{ $r1d2 }}
+                                            </td>
+                                            <td style="text-align: right; width:20%">
+                                                {{ $r1d3 }}
+                                            </td> 
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: left;">
+                                                {{ 
+                                                    floor($info->vat) == 3 
+                                                        ? floor($info->ewt_pf) . '%' . ' ' . 'EWT on Professional Fee' 
+                                                        : floor($info->ewt_pf) . '%' . ' ' . 'EWT on Professional Fee'
+                                                    }} 
+                                            </td>
+                                            <td style="text-align: right;">
+                                                {{ $r2d2 }}
+                                            </td>
+                                            <td style="text-align: right;">
+                                                {{ $r2d3 }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: left;">
+                                                {{ 
+                                                    floor($info->vat) == 3 
+                                                        ? floor($info->Ewt) . '%' . ' ' . 'EWT on Hospital Fee' 
+                                                        : floor($info->Ewt) . '%' . ' ' . 'EWT on Hospital Bills'
+                                                    }} 
+                                            </td>
+                                            <td style="text-align: right;">
+                                                {{ $r3d2 }}
+                                            </td>
+                                            <td style="text-align: right;">
+                                                {{ $r3d3 }}
+                                            </td>
+                                        </tr>
+                                       
+                                    @endif
                                 </table>
                                 <table style="width: 100%; border-collapse: collapse; margin-top:5px;">
                                     <tr>
@@ -185,17 +253,24 @@
                                 $one = number_format((($info->vat > 3)? $amount / 1.12 * $info->vat / 100: $amount * $info->vat / 100),2,'.',',') ;
                                 $two = number_format((($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100),2,'.',',');
                                 $overall = number_format((str_replace(',', '', $one) + str_replace(',', '', $two)), 2, '.', ',');
-                                // $rem = number_format((str_replace(',', '', $amount_here) - str_replace(',', '', $overall)), 2, '.', ',');
                                 $rem = number_format((str_replace(',', '', $amount_here) - str_replace(',', '', $vat_ewt)), 2, '.', ',');
                             ?>
                             <td style="border-right:1px solid black"></td>
                             <td style="border-right:1px solid black"></td>
                             <td style="text-align:center; vertical-align:bottom">
                                 <table style="width: 90%; border-collapse: collapse; margin-top:10px;">
-                                    <tr rowspan="5"><td >{{ $amount_here }}</td></tr>
-                                    <tr rowspan="5"><td style="padding:20px">{{ $vat_ewt }}</td></tr>
+                                    <tr rowspan="5">
+                                        <td >{{ $amount_here }}</td>
+                                    </tr>
+                                    <tr rowspan="5">
+                                        <td style="padding:20px">{{ $date_valid == 0 ? $vat_ewt : $all_tax}}</td>
+                                    </tr>
                                     <tr><td style="border-bottom:1px solid black;"></td></tr>
-                                    <tr><td style="padding:2px">{{ $rem }}</td></tr>
+                                    <tr>
+                                        <td style="padding:2px">
+                                            {{ $date_valid == 0 ? $rem : number_format(str_replace(',','',$amount_here) - str_replace(',','',$all_tax), 2, '.', ',') }}
+                                        </td>
+                                    </tr>
                                 </table>
                             </td>
                         </tr>
@@ -245,8 +320,8 @@
                                 <span>{{ number_format(($result?$result->accumulated:0),2,'.',',') }}</span>
                             </td>
                             <td style=" border-left: 0 ; text-align:right; vertical-align:top" >
-                                <br><br><span>{{ $vat_ewt }}</span><br>
-                                <span>{{ $rem }}</span>
+                                <br><br><span>{{ $date_valid == 0 ? $vat_ewt : $all_tax }}</span><br>
+                                <span>{{ $date_valid == 0 ? $rem : number_format(str_replace(',','',$amount_here) - str_replace(',','',$all_tax), 2, '.', ',') }}</span>
                             </td>
                         </tr>
                     </table>
