@@ -134,7 +134,10 @@
                             <th></th>
                             <th></th>
                             <th><span class="text-info select_all" title="Select/Unselect All"><i class="fa fa-check"></i>All</span></th>
-                            <th style="min-width:90px">@sortablelink('remarks', 'Status')</th>
+                            <th style="min-width:115px">
+                                    @sortablelink('remarks', 'Mail Status')
+                            </th>
+                            <th style="min-width:115px">Sys Status</th>
                             <th>Remarks</th>
                             <th style="min-width:10px; text-align:center;">Group</th>
                             <th style="min-width:140px">Actual Amount</th>
@@ -243,7 +246,7 @@
                                                 onclick="forwardPatient({{ !in_array($patient->facility_id, $active_facility) ? 1 : 0 }},
                                                 '{{ route('patient.accept', ['id' => $patient->id]) }}',
                                                 {{ $patient->facility_id && in_array($patient->facility_id, $onhold_facs) ? 0 : 1 }},
-                                                {{ $patient->sent_type == null || $patient->fc_status == 'returned' ? 0 : 1}}
+                                                {{ ($patient->sent_type == null || $patient->fc_status == 'returned') ? 0 : 1}}
                                                 )"
                                                 style="background-color:#0077b6; color:white; width:70px; font-size:11px"
                                                 class="btn btn-xs" title="Forward to Facility">
@@ -272,8 +275,17 @@
                                         <i style="font-size:15px" class="fa fa-check">
                                     @endif
                                 </td>
+                                <td style="text-align:center">
+                                    @if($patient->fc_status == "referred")
+                                        <i style="font-size:15px" class="fa fa-check">
+                                    @endif
+                                </td>
                                 <td>
-                                    {{ $patient->pat_rem }}   
+                                    @if($patient->fc_status == "retrieved")
+                                        Retrieved (pending confirmation) - {{ $patient->rtrv_remarks }}
+                                    @else
+                                        {{ $patient->pat_rem }}   
+                                    @endif
                                 </td>
                                 <td style="text-align:center;" class="group-amount" data-patient-id="{{ $patient->id }}" data-proponent-id="{{ $patient->proponent_id }}" 
                                     data-amount="{{ $patient->actual_amount }}" data-facility-id="{{ $patient->facility_id }}" >
@@ -756,7 +768,9 @@
 <script src="{{ asset('admin/vendors/x-editable/bootstrap-editable.min.js?v=1') }}"></script>
 @include('maif.editable_js')
 <script>
-
+    $('form').on('submit', function () {
+        $(this).find('button[type="submit"]').prop('disabled', true).text('Submitting...');
+    });
     function sendGL(status, forwardUrl) {
         if (status == 1) {
             Swal.fire({
@@ -781,6 +795,10 @@
     }
 
     function forwardPatient(status, forwardUrl, status2, status3) {
+        console.log('sample', status);
+        console.log('status2', status2);
+        console.log('status3', status3);
+
         if (status == 1) {
             Swal.fire({
                 icon: 'warning',
@@ -882,7 +900,6 @@
                 showConfirmButton: false
             });
         }
-        
     }
     
     $(document).ready(function () {
@@ -1407,12 +1424,15 @@
                 $('.pat_rem').val(patient.pat_rem);
 
                 if (patient.sent_type == null || patient.fc_status == "returned") {
-                    $('#update_pat_btn').css('display', 'block');
-                    $('#remove_pat_btn').css('display', 'block');
-                    if (stat != 0) {
-                        $('#update_send').css('display', 'block');
-                    } else {
-                        $('#update_send').css('display', 'none');
+                    console.log('sample',patient);
+                    if(patient.fc_status != "retrieved"){
+                        $('#update_pat_btn').css('display', 'block');
+                        $('#remove_pat_btn').css('display', 'block');
+                        if (stat != 0) {
+                            $('#update_send').css('display', 'block');
+                        } else {
+                            $('#update_send').css('display', 'none');
+                        }
                     }
                 } else {
                     $('#update_pat_btn').css('display', 'none');

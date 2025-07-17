@@ -75,7 +75,7 @@ class PrintController extends Controller
             'title' => 'Welcome to MAIF',
             'date' => date('m/d/Y'),
             'patient' => $patient,
-            'age' => $this->calculateAge($patient->dob)
+            'age' => $patient->dob ? $this->calculateAge($patient->dob) : 0
         ];
 
         $html = view('maif.print_patient', $data)->render();

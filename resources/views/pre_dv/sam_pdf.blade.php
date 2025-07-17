@@ -182,8 +182,8 @@
                         <tr style="border: 1px solid black; border-top:0px;">
                             <td style="text-align:center">
                                 <table style="width: 40%; border-collapse: collapse; margin-top:10px">
-                                    <tr><td style="border-bottom:1px solid black">SOPHIA M. MANCAO, MD, DPSP, RN-MAN</td></tr>
-                                    <tr><td style="">Director III</td></tr>
+                                    <tr><td style="border-bottom:1px solid black">JONATHAN NEIL V. ERASMO, MD, MPH, FPSM</td></tr>
+                                    <tr><td style="">OIC - Director III</td></tr>
                                 </table>
                             </td>
                         </tr>
