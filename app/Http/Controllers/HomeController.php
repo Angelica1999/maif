@@ -2379,17 +2379,21 @@ class HomeController extends Controller
     }
 
     public function acceptPat($id){
-        Patients::where('id', $id)->update([
-            'fc_status' => 'referred',
-            'sent_type' => 3
-        ]);
-        return redirect()->back()->with('process_gl', true);
+        $pat = Patients::where('id', $id)->first();
+        if($pat){
+            $pat->pat_rem = $pat->pat_rem == "Retrieved" ? null : $pat->pat_rem;
+            $pat->fc_status = 'referred';
+            $pat->sent_type = 3;
+            $pat->save();
+            return redirect()->back()->with('process_gl', true);
+        }
     }
     
     public function retrievePat($id, $remarks){
         Patients::where('id', $id)->update([
             'fc_status' => 'retrieved',
-            'rtrv_remarks' => $remarks
+            'rtrv_remarks' => $remarks,
+            'pat_rem' => "Retrieved"
         ]);
         return response()->json(['status' => 'success']);
     }
