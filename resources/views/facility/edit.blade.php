@@ -41,15 +41,21 @@
             </div>
             <div class="col-md-6">
                 <div class="form-group">
-                    <label for="vat">Vat</label>
+                    <label for="vat">VAT</label>
                     <input type="number" class="form-control" id="vat" name="vat" value="{{ floor($facility->vat) }}" placeholder="Vat" required step="any">
 
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group">
-                    <label for="Ewt">Ewt</label>
+                    <label for="Ewt">EWT</label>
                     <input type="number" class="form-control" id="Ewt" name="Ewt" value="{{ floor($facility->Ewt) }}" placeholder="Ewt" required step="any">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="Ewt_PF">EWT PF</label>
+                    <input type="number" class="form-control" id="ewt_pf" name="ewt_pf" value="{{ floor($facility->ewt_pf) }}" placeholder="Ewt" required step="any">
                 </div>
             </div>
             <div class="col-md-12" style="border:1px solid green; width:90%">
