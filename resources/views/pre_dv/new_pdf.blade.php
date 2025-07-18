@@ -169,9 +169,7 @@
                                     }
                                     $r3d2 = number_format($amount - $pre_dv->prof_fee,2,'.',',');
                                     $r3d3 = number_format((($amount - $pre_dv->prof_fee) * $info->Ewt )/ 100,2,'.',',');
-                                    
                                     $all_tax = number_format(str_replace(',','',$r1d3) + str_replace(',','',$r2d3) + str_replace(',','',$r3d3), 2,'.',','); 
-
                                     $vat_ewt = number_format((($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100) + $data_vat * $info->vat / 100, 2,'.',',');
                                     $date_valid = (strtotime($result->updated_at) < strtotime('2025-07-17')) ? 0 : 1;
                                 ?>

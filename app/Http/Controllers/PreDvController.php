@@ -507,7 +507,8 @@ class PreDvController extends Controller
                 'control' => $control,
                 'new_dv' => $new_dv,
                 'type' => $type,
-                'ors' =>  $ors
+                'ors' =>  $ors,
+                'amount' => $grouped->sum('amount')
             ]);
         }
     }
@@ -573,7 +574,8 @@ class PreDvController extends Controller
                 'fundsources' => $grouped,
                 'info' => $info,
                 'control' => $control,
-                'new_dv' => $new_dv
+                'new_dv' => $new_dv,
+                'amount' => $grouped->sum('amount'),
             ]);
         }
     }
@@ -1199,7 +1201,6 @@ class PreDvController extends Controller
             $existing->save();
 
         } else {
-
             $new_dv = new NewDV();
             $new_dv->route_no = date('Y-') . Auth::user()->userid . date('mdHis');
             $new_dv->predv_id = $pre->id;
