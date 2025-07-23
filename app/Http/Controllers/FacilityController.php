@@ -226,8 +226,15 @@ class FacilityController extends Controller
     }
 
     public function incoming(Request $req){
-        
-        $transmittal = Transmittal::where('status', 1)->with('user')->orderBy('id', 'desc')->paginate(50);
+        $transmittal = Transmittal::where('status', 1)
+            ->with([
+                'user.facility' => function ($query) {
+                    $query->select('id', 'name');
+                }
+            ])
+            ->orderBy('id', 'desc')
+            ->paginate(50);
+         
         $trans = Transmittal::pluck('control_no')->toArray();
 
         return view('facility.incoming',[
@@ -356,7 +363,13 @@ class FacilityController extends Controller
     }
 
     public function returned(Request $req){
-        $transmittal = Transmittal::where('status', 3)->with('user')->orderBy('id', 'desc')->paginate(50);
+        $transmittal = Transmittal::where('status', 3)
+            ->with([
+                'user.facility' => function ($query) {
+                    $query->select('id', 'name');
+                }
+            ])
+            ->orderBy('id', 'desc')->paginate(50);
         return view('facility.returned',[
             'transmittal' => $transmittal
         ]);
@@ -391,7 +404,13 @@ class FacilityController extends Controller
     }
 
     public function accepted(Request $req){
-        $transmittal = Transmittal::where('status', 5)->with('user')->orderBy('id', 'desc')->paginate(50);
+        $transmittal = Transmittal::where('status', 5)
+            ->with([
+                'user.facility' => function ($query) {
+                    $query->select('id', 'name');
+                }
+            ])
+            ->orderBy('id', 'desc')->paginate(50);
         return view('facility.accepted',[
             'transmittal' => $transmittal
         ]);

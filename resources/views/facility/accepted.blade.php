@@ -36,6 +36,7 @@
                             <tr>
                                 <th></th>
                                 <th>Control No</th>
+                                <th>Facility</th>
                                 <th>Prepared Date</th>
                                 <th>Total Amount</th>
                                 <th>Created On</th>
@@ -49,6 +50,7 @@
                                         <button onclick="disRem({{ $item->id }})" class="btn btn-sm btn-success" style="border-radius:0px" data-toggle="modal" href="#trans_remarks">Remarks</button>
                                     </td>
                                     <td><a onclick="displaySum({{ $item->id }})" href="#summary_display" data-toggle="modal" data-backdrop="static">{{ $item->control_no }}</a></td>
+                                    <td>{{ $item->user->facility->name }}</td>
                                     <td>{{ date('F j, Y', strtotime($item->prepared_date)) }}</td>
                                     <td>{{ number_format($item->total, 2, '.', ',') }}</td>
                                     <td>{{ date('F j, Y', strtotime($item->created_at)) }}</td>
