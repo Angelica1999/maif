@@ -387,7 +387,7 @@ class PrintController extends Controller
         $pdf->setPaper('Folio');
         return $pdf->stream('dv3.pdf');
     }
-
+    
     private function route_image($route_no){
         $text_width = strlen($route_no);
         $width = 11.5 * $text_width;
