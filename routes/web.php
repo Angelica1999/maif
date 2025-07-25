@@ -250,6 +250,7 @@ Route::get('/users/reset/{id}', [App\Http\Controllers\UserController::class, 're
 Route::get('/users/deactivate/{id}', [App\Http\Controllers\UserController::class, 'deactivate'])->name('deactivate.user');
 Route::get('/users/activate/{id}', [App\Http\Controllers\UserController::class, 'activate'])->name('activate.user');
 Route::get('/users/save', [App\Http\Controllers\UserController::class, 'save'])->name('save');
+Route::get('/users/view-account/{id}', [App\Http\Controllers\UserController::class, 'viewAccount'])->name('view.account');
 Route::match(['get', 'post'],'/users/cancel/{id}', [App\Http\Controllers\UserController::class, 'cancel'])->name('cancel.user');
 Route::get('/bills', [App\Http\Controllers\FacilityController::class, 'bills'])->name('bills');
 Route::get('/bills/tracking/{id}', [App\Http\Controllers\FacilityController::class, 'tracking'])->name('tracking');

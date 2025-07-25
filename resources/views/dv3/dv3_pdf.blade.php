@@ -33,7 +33,7 @@
 				margin-left: 5px;
 			}
 			@page {
-				margin-bottom: 0in; 
+				margin-bottom: 0.05in; 
 				margin-top: 0.5in; 
 			}
 		</style>
@@ -289,10 +289,10 @@
                 	</div>
             	</table>
                 <div style="position:absolute; bottom: 0; left: 50%; transform: translateX(-50%); margin-top:15px;" class="modal_footer">
-                    {!! DNS1D::getBarcodeHTML($dv3->route_no, 'C39E', 1, 28) !!}
-                    <div style="text-align: center;">
+					<div style="text-align: center;">
                         <font class="route_no">{{ $dv3->route_no }}</font>
                     </div>
+                    {!! DNS1D::getBarcodeHTML($dv3->route_no, 'C39E', 1, 25) !!}
                 </div>  
                 @if($d == 1)
                   <div style="page-break-before: always;"></div>

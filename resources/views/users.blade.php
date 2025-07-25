@@ -24,15 +24,15 @@
                 MAIF-IPP
             </p>
             <div class="table-responsive">
-                <table class="table table-striped" style="text-align:center">
-                    <thead>
+                <table class="table table-striped">
+                    <thead style="text-align:center">
                         <tr>
                             <th>Status</th>
                             <th>@sortablelink('fname', 'First Name')
                             <th>@sortablelink('lname', 'Last Name')
                             <th>@sortablelink('birthdate', 'Birthdate')
                             <th>@sortablelink('user_type', 'Type')
-                            <th>
+                            <th style="max-width:100px;">
                                 <form method="GET" action="">
                                     <select id="account" class="form-control account" name="account_type" style="text-align:center" onchange="this.form.submit()">
                                         <option></option>
@@ -53,7 +53,7 @@
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody style="text-align:left">
                         @if(isset($users) && $users->count() > 0)
                             @foreach($users as $row)
                                 <tr>
@@ -64,29 +64,30 @@
                                             <i class="typcn typcn-media-record menu-icon text-success"></i>
                                         @endif
                                     </td>
-                                    <td class="td">{{ $row->fname }}</td>
-                                    <td class="td">{{ $row->lname }}</td>
+                                    <td>{{ $row->fname }}</td>
+                                    <td>{{ $row->lname }}</td>
                                     <td>{{ date('F j, Y', strtotime($row->birthdate)) }} </td>
-                                    <td class="td">
+                                    <td style="max-width:100px; text-align:left">
                                         {{ 
                                             $row->user_type == 1 ? 'Proponent' : 
                                             ($row->user_type == 2 ? 'Facility' : 'MPU') 
                                         }}
                                     </td>
-                                    <td class="td">
+                                    <td>
                                         {{ 
                                             $row->user_type == 1 ? $row->proponent->proponent : 
                                             ($row->user_type == 2 ? $row->facility->name : 'MPU') 
                                         }}
                                     </td>
-                                    <td class="td">{{$row->email}}</td>
-                                    <td>{{ $row->contact_no }}</td>
-                                    <td class="td">
-                                        <a href="{{ route('reset.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-info" style="border-radius:0px">Reset</a>
+                                    <td style="max-width:120px;">{{$row->email}}</td>
+                                    <td style="width:150px">{{ $row->contact_no }}</td>
+                                    <td >
+                                        <a href="{{ route('view.account', ['id' => $row->id]) }}" target="_blank" type="button" class="btn btn-xs btn-info" style="border-radius:0px">View Account</a>
+                                        <a href="{{ route('reset.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-warning" style="border-radius:0px">Reset</a>
                                         @if($row->status == 1)
                                             <a href="{{ route('activate.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-success" style="border-radius:0px">Activate</a>
                                         @else
-                                            <a href="{{ route('deactivate.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-warning" style="border-radius:0px; color:white">Deactivate</a>
+                                            <a href="{{ route('deactivate.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-danger" style="border-radius:0px; color:white">Deactivate</a>
                                         @endif
                                     </td>
                                 </tr>
