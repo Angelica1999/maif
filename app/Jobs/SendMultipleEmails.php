@@ -87,8 +87,8 @@ class SendMultipleEmails implements ShouldQueue
     private function sendMail($recipientEmail, $pdfFilePath, $cc_mails, $name_file)
     {
         try {
-            $email_doh = 'maipp@ro7.doh.gov.ph';
-            $email_password = 'wyqesyrevhsvazqt';
+            $email_doh = config('mail.username');
+            $email_password = config('mail.password');
             $mail = new PHPMailer(true);
             $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
             $mail->isSMTP();                                            //Send using SMTP
