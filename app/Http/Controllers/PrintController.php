@@ -124,15 +124,23 @@ class PrintController extends Controller
         }elseif($request->sent_type == 1){
             foreach($ids as $id){
                 $pat = Patients::where('id', $id)->first();
-                if(in_array($pat->facility_id, $active_facility) && in_array($pat->facility_id, $onhold_facs)){
-                    Patients::where('id', $id)->update([
-                        'fc_status' => 'referred',
-                        'sent_type' => 3
-                    ]); 
+                if($pat != null){
+                    if(in_array($pat->sent_type, [null, 1])){
+                        if(in_array($pat->facility_id, $active_facility) && in_array($pat->facility_id, $onhold_facs)){
+                            if(Auth::user()->userid == "2760"){
+                            }else{
+                                Patients::where('id', $id)->update([
+                                    'fc_status' => 'referred',
+                                    'sent_type' => 3    
+                                ]); 
+                            }
+                        }
+                    }
                 }
             }
             return redirect()->back()->with('process_gl', true);
         }
+        return redirect()->back();
     }
 
     public function dvPDF(Request $request, $dvId) {

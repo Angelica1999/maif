@@ -43,7 +43,7 @@ class AccountCancellation implements ShouldQueue
 
             $recipientEmail = $registration->email;
             $email_doh = 'maipp@ro7.doh.gov.ph';
-            $email_password = 'ngpxbtkftobporiw';
+            $email_password = 'wyqesyrevhsvazqt';
             $mail = new PHPMailer(true);
             $mail->isSMTP();
             $mail->Host       = 'smtp.gmail.com';

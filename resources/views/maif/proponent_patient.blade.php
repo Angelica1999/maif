@@ -64,7 +64,7 @@
                     <form method="GET" action="">
                         <div class="input-group">
                             <input type="hidden" class="form-control" name="key">
-                            <input type="text" class="form-control" name="keyword" id="search_patient" placeholder="Search..." value="{{$keyword}}" style="width:350px;">
+                            <input type="text" class="form-control" name="keyword" id="search_patient" placeholder="Search..." value="{{ $keyword }}" style="width:350px;">
                             <div class="input-group-append">
                                 <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
                                 <button style="width:90px;" class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
@@ -72,23 +72,24 @@
                             </div>  
                         </div>
                         <div class="input-group">
-                            <input type="text" style="text-align:center" class="form-control" id="filter_dates" value="{{($generate_dates)?$generate_dates:''}}" name="filter_dates" />
+                            <input type="text" style="text-align:center" class="form-control" id="filter_dates" value="{{ ($generate_dates)?$generate_dates:'' }}" name="filter_dates" />
                             <button type="submit" id="gen_btn" style="background-color:teal; color:white; width:90px; height:40px; border-radius:0; " class="btn"><i class="typcn typcn-calendar-outline menu-icon"></i>Filter</button>
                         </div>
-                        <input type="hidden" name="filter_date" id="filter_date" value="{{implode(',', $filter_date)}}"></input>
-                        <input type="hidden" name="filter_fname" id="filter_fname" value="{{implode(',', $filter_fname)}}"></input>
-                        <input type="hidden" name="filter_mname" id="filter_mname" value="{{implode(',', $filter_mname)}}"></input>
-                        <input type="hidden" name="filter_lname" id="filter_lname" value="{{implode(',', $filter_lname)}}"></input>
-                        <input type="hidden" name="filter_facility" id="filter_facility" value="{{implode(',', $filter_facility)}}"></input>
-                        <input type="hidden" name="filter_proponent" id="filter_proponent" value="{{implode(',', $filter_proponent)}}"></input>
-                        <input type="hidden" name="filter_code" id="filter_code" value="{{implode(',', $filter_code)}}"></input>
-                        <input type="hidden" name="filter_region" id="filter_region" value="{{implode(',', $filter_region)}}"></input>
-                        <input type="hidden" name="filter_province" id="filter_province" value="{{implode(',', $filter_province)}}"></input>
-                        <input type="hidden" name="filter_municipality" id="filter_municipality" value="{{implode(',', $filter_municipality)}}"></input>
-                        <input type="hidden" name="filter_barangay" id="filter_barangay" value="{{implode(',', $filter_barangay)}}"></input>
-                        <input type="hidden" name="filter_on" id="filter_on" value="{{implode(',', $filter_on)}}"></input>
-                        <input type="hidden" name="filter_by" id="filter_by" value="{{implode(',', $filter_by)}}"></input>
-                        <input type="hidden" name="gen" id="gen" value="{{$gen}}"></input>
+                        <input type="hidden" name="filter_date" id="filter_date" value="{{ implode(',', $filter_date) }}"></input>
+                        <input type="hidden" name="filter_fname" id="filter_fname" value="{{ implode(',', $filter_fname) }}"></input>
+                        <input type="hidden" name="filter_mname" id="filter_mname" value="{{ implode(',', $filter_mname) }}"></input>
+                        <input type="hidden" name="filter_lname" id="filter_lname" value="{{ implode(',', $filter_lname) }}"></input>
+                        <input type="hidden" name="filter_facility" id="filter_facility" value="{{ implode(',', $filter_facility) }}"></input>
+                        <input type="hidden" name="filter_proponent" id="filter_proponent" value="{{ implode(',', $filter_proponent) }}"></input>
+                        <input type="hidden" name="filter_code" id="filter_code" value="{{ implode(',', $filter_code) }}"></input>
+                        <input type="hidden" name="filter_region" id="filter_region" value="{{ implode(',', $filter_region) }}"></input>
+                        <input type="hidden" name="filter_province" id="filter_province" value="{{ implode(',', $filter_province) }}"></input>
+                        <input type="hidden" name="filter_municipality" id="filter_municipality" value="{{ implode(',', $filter_municipality) }}"></input>
+                        <input type="hidden" name="filter_barangay" id="filter_barangay" value="{{ implode(',', $filter_barangay) }}"></input>
+                        <input type="hidden" name="filter_on" id="filter_on" value="{{ implode(',', $filter_on) }}"></input>
+                        <input type="hidden" name="filter_by" id="filter_by" value="{{ implode(',', $filter_by) }}"></input>
+                        <input type="hidden" name="filter_stat" id="filter_stat" value="{{ implode(',', $filter_stat) }}"></input>
+                        <input type="hidden" name="gen" id="gen" value="{{ $gen }}"></input>
                     </form>
                     <form method="POST" action="{{ route('sent.mails') }}" class="send_mailform">
                         @csrf
@@ -136,7 +137,17 @@
                                 </button>
                             </div>
                         </th>
-                        <th>@sortablelink('remarks', 'Status')</th>
+                        <th>
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <select class="form-control filter" style="display:none" id="stat_select" name="stat_select" multiple>
+                                    <option value=''></option>
+                                    <option value='1'>Sent from Proponent</option>
+                                    <option value='2'>Returned to Proponent</option>
+                                    <option value='3'>Credentials checked by MPU</option>
+                                </select>
+                                @sortablelink('sent_type', '⇅')
+                            </div>
+                        </th>
                         <th>Remarks</th>
                         <th style="min-width:10px; text-align:center;">Group</th>
                         <th style="min-width:140px">Actual Amount</th>
@@ -226,14 +237,6 @@
                                     onclick="populate({{ $patient->id }})"><i class="fa fa-envelope"></i> Logs</button>
                             </td>
                             <td class="td" style="padding:0px">
-                                <!-- <div style="display: flex; align-items: center; gap: 5px;">
-                                    
-                                    @if($patient->sent_type == 1 || $patient->fc_status == 'returned')
-                                        <a href="{{ route('patient.accept', ['id' => $patient->id]) }}" style="margin-left:10px; font-size:14px"  title="Send this GL to facility">
-                                            <i class="fa fa-paper-plane"></i>
-                                        </a>
-                                    @endif
-                                </div> -->
                                 <div style="display: flex; align-items: center; gap: 5px; text-align:center; height: 100%;">
                                     <div style="display: flex; flex-direction: column; justify-content: center; text-align: center; height: 70px;">
                                         <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}"
@@ -554,6 +557,10 @@
 @include('maif.editable_js')
 
 <script>
+    $('#stat_select').select2({
+        placeholder: "Status"
+    });
+
     function retrieveGL(id, status){
         if(status == 0){
             Swal.fire({
@@ -777,6 +784,7 @@
 
     $('.filter').on('click', function(){
         $('#filter_col').css('display', 'block');
+        console.log('sample');
     });
 
     var selectFields = [
@@ -791,7 +799,8 @@
         '#muncity_select',
         '#barangay_select',
         '#on_select',
-        '#by_select'
+        '#by_select',
+        '#stat_select'
     ];
 
     $(selectFields.join(',')).on('select2:select select2:unselect', function () {
@@ -834,6 +843,7 @@
         $('#filter_barangay').val($('#barangay_select').val());
         $('#filter_on').val($('#on_select').val());
         $('#filter_by').val($('#by_select').val());
+        $('#filter_stat').val($('#stat_select').val());
     });
 
     $('#code_select').select2();
@@ -1030,15 +1040,19 @@
             loadPaginatedData(url);
           
         });
+
+        var patients = @json($patients);
+        var newIds = patients.data.map(p => p.id); 
+        var new_mailIds = newIds.map(id => `mailCheckboxId_${id}`);
+
         $(document).on('click', '.select_all', function() {
             if(all_patients){
-                $('#patient_table').find('input.group-mailCheckBox').prop('checked', true).trigger('change');
-                $('.send_mails').val('').show();
-                all_patients.forEach(function(p){
-                    id_list.push(String(p.id));
-                    mail_ids.push('mailCheckboxId_'+p.id);
-                });
+                $('#patient_table').find('input.group-mailCheckBox').prop('checked', true).trigger('change');                    
+                id_list = [...new Set([...id_list, ...newIds])];
+                mail_ids = [...new Set([...mail_ids, ...new_mailIds])];
 
+                $('.send_mails').val(id_list).show();
+                console.log('all', id_list);
                 if (getStat().includes('0')) {
                     $('#system_sent').hide();
                 }
@@ -1052,6 +1066,7 @@
             $('#patient_table').find('input.group-mailCheckBox').prop('checked', false).trigger('change');
             $('.send_mails').val('').hide();
             id_list = [];
+            console.log('all', id_list);
             mail_ids = [];
         });
 

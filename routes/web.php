@@ -205,6 +205,7 @@ Route::get('clone/saa/{id}', [App\Http\Controllers\Dv3Controller::class, 'cloneS
 Route::get('dv3/pdf/{route_no}', [App\Http\Controllers\PrintController::class, 'dv3Pdf'])->name('dv3.pdf');
 Route::get('dv3/remove/{route_no}', [App\Http\Controllers\Dv3Controller::class, 'dv3Remove'])->name('dv3.remove');
 Route::match(['get', 'post'],'/dv3/update/{route_no}', [App\Http\Controllers\Dv3Controller::class, 'dv3Update'])->name('dv3.update');
+Route::get('/dv3/update-extend/{route_no}', [App\Http\Controllers\Dv3Controller::class, 'dv3Extensions'])->name('dv3.update-extend');
 Route::match(['get', 'post'],'/dv3/save/{route_no}', [App\Http\Controllers\Dv3Controller::class, 'saveUpdate'])->name('dv3.update.save');
 Route::get('disbursement3/lists/{type}', [App\Http\Controllers\Dv3Controller::class, 'pendingDv3'])->name('budget.dv3');
 Route::match(['get','post'],'disbursement3/process/{type}', [App\Http\Controllers\Dv3Controller::class, 'processDv3'])->name('process.dv3');
@@ -250,6 +251,7 @@ Route::get('/users/reset/{id}', [App\Http\Controllers\UserController::class, 're
 Route::get('/users/deactivate/{id}', [App\Http\Controllers\UserController::class, 'deactivate'])->name('deactivate.user');
 Route::get('/users/activate/{id}', [App\Http\Controllers\UserController::class, 'activate'])->name('activate.user');
 Route::get('/users/save', [App\Http\Controllers\UserController::class, 'save'])->name('save');
+Route::get('/users/view-account/{id}', [App\Http\Controllers\UserController::class, 'viewAccount'])->name('view.account');
 Route::match(['get', 'post'],'/users/cancel/{id}', [App\Http\Controllers\UserController::class, 'cancel'])->name('cancel.user');
 Route::get('/bills', [App\Http\Controllers\FacilityController::class, 'bills'])->name('bills');
 Route::get('/bills/tracking/{id}', [App\Http\Controllers\FacilityController::class, 'tracking'])->name('tracking');

@@ -18,22 +18,21 @@
 			}
 			.box {
 				width: 20px;
-				height: 10px;
+				height: 8px;
 				border: 1px solid black;
 				margin-left: 7px;
 				display: inline-block;
 				vertical-align: middle;
-				margin-top: 6px;
-				margin-bottom: 2px;
+				margin-top: 2px;
 			}
 			.label {
-				font-size: 12px;
+				font-size: 11px;
 				display: inline-block;
 				margin-right: 8px;
 				margin-left: 5px;
 			}
 			@page {
-				margin-bottom: 0in; 
+				margin-bottom: 0.05in; 
 				margin-top: 0.5in; 
 			}
 		</style>
@@ -74,7 +73,7 @@
 						</table>
 						<table width=100%>
 							<tr>
-							<td height=3% width =10% style="line-height:10px"><b> Mode of Payment</td>
+							<td height=2% width =10% style="line-height:10px"><b> Mode of Payment</td>
 							<td style="width:85%; border-left: 0 " >
 							
 							<div class="box-container">
@@ -94,8 +93,8 @@
 							</tr>
 						</table>
 						<table width=100%>
-							<tr>
-								<td width=10.4% height=2%><b> Payee</td>
+							<tr height=2%>
+								<td width=10.4%><b> Payee</td>
 								<td style="width:39.6%; border-left: 0 "><b> {{$dv3->facility->name}}</td>
 								<td style="width:30%; border-left: 0; vertical-align:top; " >
 									<span style="vertical-align:top; " >Tin/Employee No. :</span>
@@ -113,7 +112,7 @@
 						</table>
 						<table width=100%>
 							<tr class="header">
-								<td height=2.3% width =50%> Particulars</td>
+								<td height=1.5% width =50%> Particulars</td>
 								<td style="width:20%; border-left: 0 " >Responsibility Center</td>
 								<td style="width:10%; border-left: 0 " >MFO/PAP</td>
 								<td style="width:20%; border-left: 0 " >Amount</td>
@@ -124,7 +123,7 @@
 									<p style="text-align:justify;vertical-align:top; line-height:10px">To transfer medical assistance program funds for 
 										{{$dv3->facility->name}} in the amount of:</p>
 									@foreach($dv3->extension as $row)
-										<div style="width: 100%; line-height:10px; font-size:11px">
+										<div style="width: 100%; line-height:10px; font-size:10.5px">
 											<span class="saa" style="float: left;">{{$row->proponentInfo->fundsource->saa}}</span>
 											<span class="amount" style="float: right;">{{ number_format(floatval(str_replace(',','',$row->amount)), 2, '.', ',') }}</span>
 											<div style="clear: both;"></div>
@@ -144,11 +143,11 @@
 						</table>
 						<table width=100%>
 							<tr>
-								<td height=3% width =15%>
+								<td width =15%>
 									<dv>  
 										<span>A. Certified: Expenses/Cash Advance necessary, lawful and incurred under my direct supervision.</span>
-										<br><br>
-										<div style="display:inline-block;">
+								
+										<div style="display:inline-block; margin-top:5px">
 										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -176,7 +175,7 @@
 						</table>
 						<table width=100%>
 							<tr class="header">
-								<td height=2% width =50%>Account Title</td>
+								<td height=1.5% width =52%>Account Title</td>
 								<td style="width:20%; border-left: 0 " >Uacs Code</td>
 								<td style="width:15%; border-left: 0 " >Debit</td>
 								<td style="width:15%; border-left: 0 " >Credit</td>
@@ -197,20 +196,20 @@
 						</table>
 						<table width=100%>
 							<tr>
-								<td height=1.5% width =50%><strong>C. Certified:</strong></td>
+								<td height=1.5% width =52%><strong>C. Certified:</strong></td>
 								<td width =50%><strong>D. Approved for Payment:</strong></td>
 							</tr>
 							<tr>
-								<td>
-									<div style="display: inline-flex; align-items: center; line-height:2px; padding:0px">
+								<td height=3%>
+									<div style="display: inline-flex; align-items: center; line-height:1px; padding:0px">
 										<span class="box" style="display: inline-block;"></span>
 										<p style="margin-left: 5px; display: inline;">Cash Available</p>
 									</div>
-									<div style="display: inline-flex; align-items: center; line-height:2px; padding:0px">
+									<div style="display: inline-flex; align-items: center; line-height:1px; padding:0px">
 										<span class="box" style="display: inline-block;"></span>
 										<p style="margin-left: 5px; display: inline;">Subject to Authority to Debit Account (when applicable)</p>
 									</div>
-									<div style="display: inline-flex; align-items: center; line-height:2px; padding:0px">
+									<div style="display: inline-flex; align-items: center; line-height:1px; padding:0px">
 										<span class="box" style="display: inline-block;"></span>
 										<p style="margin-left: 5px; display: inline;">Supporting documents complete and amount claimed proper</p>
 									</div>
@@ -220,9 +219,9 @@
 						</table>
 						<table width=100%>
 							<tr class="header">
-								<td height=2.5% width =10%>Signature</td>
+								<td height=2% width =12%>Signature</td>
 								<td width =40%></td>
-								<td height=2.5% width =15%>Signature</td>
+								<td height=2% width =15%>Signature</td>
 								<td width =35%></td> 
 							</tr>
 							<tr class="header">
@@ -268,14 +267,14 @@
 								<td width =19% style="vertical-align:top; border-bottom:none">JEV No.</td>
 							</tr>
 							<tr>
-								<td height=2.5% width =10%>Check/ADA No.:</td>
+								<td height=2% width =12%>Check/ADA No.:</td>
 								<td width =25%></td>
 								<td width =15% style="vertical-align:top">Date:</td>
 								<td width =31% style="vertical-align:top">Bank Name & Account Number:</td>
 								<td width =19% style="vertical-align:top; border-top:none"></td>
 							</tr>
 							<tr>
-								<td height=2.5%>Signature:</td>
+								<td height=2%>Signature:</td>
 								<td></td>
 								<td style="vertical-align:top">Date:</td>
 								<td style="vertical-align:top">Printed Name:</td>
@@ -289,10 +288,10 @@
                 	</div>
             	</table>
                 <div style="position:absolute; bottom: 0; left: 50%; transform: translateX(-50%); margin-top:15px;" class="modal_footer">
-                    {!! DNS1D::getBarcodeHTML($dv3->route_no, 'C39E', 1, 28) !!}
-                    <div style="text-align: center;">
+					<div style="text-align: center;">
                         <font class="route_no">{{ $dv3->route_no }}</font>
                     </div>
+                    {!! DNS1D::getBarcodeHTML($dv3->route_no, 'C39E', 1, 25) !!}
                 </div>  
                 @if($d == 1)
                   <div style="page-break-before: always;"></div>

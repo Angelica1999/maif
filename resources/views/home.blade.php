@@ -137,7 +137,9 @@
                             <th style="min-width:115px">
                                     @sortablelink('remarks', 'Mail Status')
                             </th>
-                            <th style="min-width:115px">Sys Status</th>
+                            <th style="min-width:115px">
+                                <a href="{{ route('home', ['sort' => 'syst_stat','order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">Sys Status ⇅</a>
+                            </th>
                             <th>Remarks</th>
                             <th style="min-width:10px; text-align:center;">Group</th>
                             <th style="min-width:140px">Actual Amount</th>
@@ -1046,13 +1048,6 @@
         var selectedValues = $(this).val(); 
     });
 
-    var proponents,all_patients;
-
-    $.get("{{ url('patient') }}", function(result) {
-        proponents = result.proponents;
-        all_patients = result.all_pat;
-    });
-
     $('#list_body').on('click', function(){
         $('.filter').hide();
     });
@@ -1203,7 +1198,7 @@
                 success: function(response) {
                     $('#patient_table_container').html($(response).find('#patient_table_container').html());
                     $('#pagination_links').html($(response).find('#pagination_links').html());
-
+                    console.log('response', response);
                     $.each(mail_ids, function(index, id) {
                         $('#' + id).prop('checked', true);
                     });
@@ -1239,17 +1234,25 @@
         });
 
         var select_val = 0;
+        var patients = @json($patients);
+        var newIds = patients.data.map(p => p.id); 
+        var new_mailIds = newIds.map(id => `mailCheckboxId_${id}`);
+
         $(document).on('click', '.select_all', function() {
             if(select_val == 0){
                 $('#patient_table').find('input.group-mailCheckBox').prop('checked', true).trigger('change');
-                $('.send_mails').val('').show();
+                select_val = 1;
+                id_list = [...id_list, ...newIds];
+                mail_ids = [...mail_ids, ...new_mailIds];
+                console.log('mailf-ids', mail_ids);
+                $('.send_mails').val(id_list).show();
+
                 if (getStat().includes('0')) {
                     $('#system_sent').hide();
                 }
                 if (getStat2().includes('0')) {
                     $('#email_sent').hide();
                 }
-                select_val = 1;
             }else{
                 $('#patient_table').find('input.group-mailCheckBox').prop('checked', false).trigger('change');
                 $('.send_mails').val('').hide();

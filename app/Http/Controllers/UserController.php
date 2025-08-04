@@ -25,6 +25,27 @@ class UserController extends Controller{
         $this->middleware('auth');
     }
     
+    public function viewAccount($id){
+        if(Auth::user()->userid == "2760" || "2680"){
+            $user = OnlineUser::find($id);
+            $data = [
+                'type_identity' => $user->type_identity,
+                'user_type' => $user->user_type,
+                'expires_at' => now()->addMinutes(5)->timestamp,
+            ];
+            
+            $secret = 'tJ,KU(Ef913kX@Jd.Wx+[9KW8#Mc\6o3kEYt#Zo]Gl/3\]Ch=A).9w@mEr*JsE?9';
+            
+            $payload = json_encode($data);
+            $token = base64_encode($payload);
+            
+            $signature = hash_hmac('sha256', $payload, $secret);
+
+            $url = "https://gletter.cvchd7.com/guaranteeletter/impersonate?token=$token&sig=$signature";
+            return redirect()->away($url);
+        }
+    }
+
     public function users(Request $req){
         $users = OnlineUser::with('facility:id,name','proponent:id,proponent')->sortable();
         if($req->viewAll){
