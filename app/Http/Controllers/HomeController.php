@@ -960,7 +960,8 @@ class HomeController extends Controller
             'filter_proponent' => 'proponent_id',
             'filter_code' => 'patient_code',
             'filter_region' => 'region',
-            'filter_by' => 'created_by'
+            'filter_by' => 'created_by',
+            'filter_stat' => 'sent_type'
         ];
 
         foreach ($filters as $requestKey => $column) {
@@ -995,6 +996,10 @@ class HomeController extends Controller
 
         if ($request->filter_on) {
             $query->whereIn(DB::raw('DATE(created_at)'), explode(',', $request->filter_on));
+        }
+
+        if ($request->filter_stat) {
+            $query->whereIn('sent_type', explode(',', $request->filter_stat));
         }
     }
 
@@ -1040,6 +1045,17 @@ class HomeController extends Controller
                         ->whereColumn('users.userid', 'patients.created_by'),
                     $order
                 );
+                break;
+            case 'syst_stat':
+                $query->when($order == 'asc', function ($query) {
+                    return $query->orderByRaw("CASE WHEN fc_status = 'referred' THEN 0 ELSE 1 END")
+                                 ->orderBy('id', 'asc');
+                })
+                ->when($order == 'desc', function ($query) {
+                    return $query->orderByRaw("CASE WHEN fc_status = 'referred' THEN 1 ELSE 0 END")
+                                 ->orderBy('id', 'desc');
+                });
+            
                 break;
             default:
                 $query->sortable(['id' => 'desc']);
@@ -1097,12 +1113,14 @@ class HomeController extends Controller
             'filter_barangay' => explode(',', $request->filter_barangay ?? ''),
             'filter_on' => explode(',', $request->filter_on ?? ''),
             'filter_by' => explode(',', $request->filter_by ?? ''),
-            'onhold_facs' => AddFacilityInfo::where('sent_status', 1)->pluck('facility_id')->toArray()
+            'onhold_facs' => AddFacilityInfo::where('sent_status', 1)->pluck('facility_id')->toArray(),
+            'filter_stat' => explode(',', $request->filter_stat ?? '')
         ];
     }
 
     public function patients(Request $request)
     {
+
         $filter_date = $request->input('filter_dates');
         $order = $request->input('order');
 
@@ -1398,10 +1416,10 @@ class HomeController extends Controller
     }
 
     public function fetchAdditionalData(){
-        return [
-            'all_pat' => Patients::get(),
-            'proponents' => Proponent::get()
-        ];
+        // return [
+        //     'all_pat' => Patients::get(),
+        //     'proponents' => Proponent::get()
+        // ];
     }
 
     public function proponentPatient(){

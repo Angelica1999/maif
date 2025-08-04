@@ -290,37 +290,22 @@ class DV3Controller extends Controller
     }
 
     public function dv3Update($route_no){
+    
         if($route_no){
-            $dv3 = Dv3::              
-                with([
-                    'extension' => function ($query) {
-                        $query->with([
-                            'proponentInfo' => function ($query) {
-                                $query->with('proponent', 'fundsource');
-                            }
-                        ]);
-                    },
-                    'facility' => function ($query) {
-                        $query->select(
-                            'id',
-                            'name',
-                            'address'
-                        );
-                    }
-                ])->where('route_no', $route_no)->first();
-            
-            $facility_id = (string) $dv3->facility_id;
-            $add = $dv3->facility_id == 42? '852' : ($dv3->facility_id == 852?'42':0);
-            // $info = ProponentInfo::with('facility:id,name,address', 'fundsource:id,saa,alocated_funds:remaining_balance', 'proponent')
-            //     ->where(function ($query) use ($facility_id, $add) {
-            //         $query->whereJsonContains('proponent_info.facility_id', '702')
-            //             ->orWhereJsonContains('proponent_info.facility_id', [$facility_id])
-            //             ->orWhereJsonContains('proponent_info.facility_id', [$add]);
-            //     })
-            //     ->orWhereIn('proponent_info.facility_id', [$facility_id, $add, '702'])
-            //     ->get();
+            $dv3 = Dv3::with([
+                'extension' => function ($query) {
+                    $query->with([
+                        'proponentInfo' => function ($query) {
+                            $query->with(['proponent:id,proponent,pro_group', 'fundsource:id,saa']);
+                        }
+                    ])->select('id', 'route_no', 'info_id', 'amount'); 
+                },
+                'facility:id,name,address' 
+            ])->where('route_no', $route_no)->first();
 
-            $info = ProponentInfo::with('facility:id,name,address', 'fundsource:id,saa,alocated_funds:remaining_balance', 'proponent')->get();
+            $facility_id = (string) $dv3->facility_id;
+            $add = $dv3->facility_id == 42 ? '852' : ($dv3->facility_id == 852 ? '42' : 0);
+
             $f_info = AddFacilityInfo::where('id', $facility_id)->select('vat', 'ewt')->first();
             $ors = Utilization::where('div_id', $route_no)->where('status', 0)->pluck('ors_no')->implode(', ');
             
@@ -329,15 +314,90 @@ class DV3Controller extends Controller
                 ->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
                 ->where('users.userid', '=', Auth::user()->userid)
                 ->value('users.section');
-
+            
             return view('dv3.update_dv3', [
-                'facilities' => Facility::get(),
-                'info' => $info,
+                'facilities' => Facility::select('id', 'name')->get(),
                 'dv3' => $dv3,
                 'f_info' => $f_info,
                 'section' => $section,
                 'ors' => $ors
             ]);
+        }
+    }
+
+    public function dv3Extensions($route_no){
+        if($route_no){
+            $dv3 = Dv3::with([
+                'extension' => function ($query) {
+                    $query->with([
+                        'proponentInfo' => function ($query) {
+                            $query->with(['proponent:id,proponent,pro_group', 'fundsource:id,saa']);
+                        }
+                    ])->select('id', 'route_no', 'info_id', 'amount'); 
+                },
+                'facility:id,name,address' 
+            ])->where('route_no', $route_no)->first();
+            
+            $facility_id = (string) $dv3->facility_id;
+            $add = $dv3->facility_id == 42 ? '852' : ($dv3->facility_id == 852 ? '42' : 0);
+            
+            $info = ProponentInfo::with([
+                'facility:id,name,address', 
+                'fundsource:id,saa', 
+                'proponent:id,proponent,pro_group'
+            ])->select('id','proponent_id', 'fundsource_id', 'facility_id', 'remaining_balance')
+                ->orderByRaw('CAST(REPLACE(remaining_balance, ",", "") AS DECIMAL(15,2)) DESC') 
+              ->get();
+            
+            $allFacilities = Facility::pluck('name', 'id')->toArray();
+        
+            $processedInfo = $info->map(function($item) use ($dv3, $allFacilities) {
+                $rem_balance = number_format(str_replace(',', '', $item->remaining_balance), 2, '.', ',');
+                
+                if ($item->facility !== null) {
+                    if ($item->facility->id == $dv3->facility_id) {
+                        $text_display = $item->fundsource->saa . ' - ' . $item->proponent->proponent . ' - SF - ' . $rem_balance;
+                    } else {
+                        $text_display = $item->fundsource->saa . ' - ' . $item->proponent->proponent . ' - ' . $item->facility->name . ' - ' . $rem_balance;
+                    }
+                } else {
+                    $facilityIds = json_decode($item->facility_id);
+                    $f_names = [];
+                    
+                    if (is_array($facilityIds)) {
+                        foreach ($facilityIds as $f_id) {
+                            if (isset($allFacilities[$f_id])) {
+                                $f_names[] = $allFacilities[$f_id];
+                            }
+                        }
+                    }
+                    
+                    $f_name_string = implode(' - ', $f_names);
+                    $text_display = $item->fundsource->saa . ' - ' . $item->proponent->proponent . ' - ' . $f_name_string . ' - ' . $rem_balance;
+                }
+                
+                return (object)[
+                    'id' => $item->id,
+                    'fundsource_id' => $item->fundsource_id,
+                    'proponent_id' => $item->proponent->id,
+                    'pro_group' => $item->proponent->pro_group,
+                    'text_display' => $text_display,
+                    'rem_balance' => $rem_balance,
+                    'is_zero_balance' => $rem_balance == '0.00'
+                ];
+            });      
+            $section = DB::connection('dohdtr')
+                ->table('users')
+                ->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
+                ->where('users.userid', '=', Auth::user()->userid)
+                ->value('users.section');
+
+            return [
+                'processedInfo' => $processedInfo, 
+                'dv3' => $dv3,
+                'section' => $section,
+
+            ];
         }
     }
 
