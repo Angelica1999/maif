@@ -1096,9 +1096,9 @@ class HomeController extends Controller
 
         return [
             'provinces' => Province::select('id', 'description')->get(),
-            'municipalities' => Muncity::select('id', 'description')->get(),
+            'municipalities' => Muncity::select('id', 'description', 'province_id')->get(),
             'proponents' => $proponentsCode,
-            'barangays' => Barangay::select('id', 'description')->get(),
+            'barangays' => Barangay::select('id', 'description', 'muncity_id')->get(),
             'facilities' => Facility::whereIn('id', $includedIds)->get(),
             'filter_date' => explode(',', $request->filter_date ?? ''),
             'filter_fname' => explode(',', $request->filter_fname ?? ''),
@@ -2280,7 +2280,8 @@ class HomeController extends Controller
     }
  
     public function updatePatient($id, Request $request){
-        $val = $request->input('update_send');
+        $val = $request->input('update_type');
+
         $patient_id = $id;
         $patient = Patients::where('id', $patient_id)->first();
 
@@ -2324,11 +2325,10 @@ class HomeController extends Controller
         $patient->sent_type = $request->input('sent_type');
         $patient->save();
         DB::commit();
-        if($val == "upsend"){
+
+        if($val == 1){
             // return Patients::where('id', $patient->id)->first();
             return redirect()->route('patient.sendpdf', ['patientid' => $patient->id]);
-        }else{
-            return redirect()->back();
         }
 
         return redirect()->back()->with('patient_update', true);
