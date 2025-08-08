@@ -6,7 +6,7 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        z-index: 1000;
+        z-index: 1060; 
         display: none; 
     }
     .loading-spinner {
@@ -244,6 +244,7 @@
                                             </button>
                                         </div>
                                         <div style="display: flex; flex-direction: column; justify-content: center; height: 70px;">
+                                        
                                             <button 
                                                 onclick="forwardPatient({{ !in_array($patient->facility_id, $active_facility) ? 1 : 0 }},
                                                 '{{ route('patient.accept', ['id' => $patient->id]) }}',
@@ -278,7 +279,7 @@
                                     @endif
                                 </td>
                                 <td style="text-align:center">
-                                    @if($patient->fc_status == "referred")
+                                    @if(in_array($patient->fc_status, ["referred", "accepted", "retrieved"]))
                                         <i style="font-size:15px" class="fa fa-check">
                                     @endif
                                 </td>
@@ -709,6 +710,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
+                        <input type="hidden" value="" name="update_type" id="update_type">
                         <button type="button" class="btn btn-secondary" id="close_modal" data-dismiss="modal">Close</button>
                         <button type="submit" id="update_pat_btn" class="btn btn-primary" style="display:block;" >Update</button>
                         <button type="submit" id="update_send" name="update_send" value="upsend" class="btn btn-success" style="display:block; color:white" >Update & Send</button>
@@ -1399,7 +1401,8 @@
 }
 
     $('#update_send').on('click', function(){
-        $('.loading-container').show();
+        $('.loading-container').css('display', 'block');
+        $('#update_type').val(1);
     });
 
     var edit_c = 0;
@@ -1460,7 +1463,6 @@
                 $('.pat_rem').val(patient.pat_rem);
 
                 if (patient.sent_type == null || patient.fc_status == "returned") {
-                    console.log('sample',patient);
                     if(patient.fc_status != "retrieved"){
                         $('#update_pat_btn').css('display', 'block');
                         $('#remove_pat_btn').css('display', 'block');
