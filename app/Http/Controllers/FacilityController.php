@@ -403,16 +403,56 @@ class FacilityController extends Controller
         return 'success';
     }
 
-    public function accepted(Request $req){
-        $transmittal = Transmittal::where('status', 5)
+    public function accepted(Request $req)
+    {
+        $keyword = $req->has('viewAll') ? '' : $req->keyword;
+        $viewAll = $req->has('viewAll');
+
+        $transmittalQuery = Transmittal::where('status', 5)
             ->with([
                 'user.facility' => function ($query) {
                     $query->select('id', 'name');
                 }
-            ])
-            ->orderBy('id', 'desc')->paginate(50);
-        return view('facility.accepted',[
-            'transmittal' => $transmittal
+            ]);
+            
+        $facilityIds = (clone $transmittalQuery)
+            ->select('facility_id')
+            ->distinct()
+            ->pluck('facility_id');
+
+        if (!$viewAll && !empty($keyword)) {
+            $transmittalQuery->where('control_no', 'LIKE', "%{$keyword}%");
+        }
+
+        if ($req->facility_data) {
+            $transmittalQuery->where('facility_id', $req->facility_data);
+        }
+
+        $facilities = Facility::whereIn('id', $facilityIds)->select('id', 'name')->get();
+
+        $stats = (clone $transmittalQuery)
+            ->selectRaw('COUNT(*) as total_count, SUM(total) as total_amount')
+            ->first();
+
+        $total = $stats->total_count ?? 0;
+        $amount = $stats->total_amount ?? 0;
+
+        $transmittal = (clone $transmittalQuery)
+            ->orderBy('id', 'desc')
+            ->paginate(50);
+
+        $patients = DB::table('transmittal_patients as tp')
+            ->join('transmittal_details as td', 'tp.transmittal_details', '=', 'td.id')
+            ->whereIn('td.transmittal_id', $transmittal->pluck('id'))
+            ->count();
+
+        return view('facility.accepted', [
+            'transmittal' => $transmittal,
+            'facilities' => $facilities,
+            'patients' => $patients,
+            'keyword' => $keyword,
+            'total' => $total,
+            'amount' => $amount
         ]);
     }
 

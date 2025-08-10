@@ -63,7 +63,7 @@
 							<tr>
 							<td style="text-align:center;font-size:14px; width:80%"> <strong>DISBURSEMENT VOUCHER</strong></td>
 							<td style="width:19%;" >
-								<div style="line-height:1.2; font-weight:bold">
+								<div style="line-height:1; font-weight:bold">
 									<div>Fund Cluster :</div>
 									<div>Date: {{ date('F j, Y', strtotime($dv3->date)) }}</div>
 									<div>DV No. : {{$dv3->dv_no}}</div>
@@ -105,14 +105,14 @@
 							</tr>
 						</table>
 						<table width=100%>
-							<tr>
-								<td width=10.5% height=2%><b>Address</td>
-								<td style="width: 89.5%; border-left: 0 ;vertical-align:top; "><b>{{$dv3->facility->address}}</td>
+							<tr height=2%>
+								<td width=10.5%><b>Address</td>
+								<td style="width: 89.5%; border-left: 0 ;vertical-align:top;"><b>{{$dv3->facility->address}}</td>
 							</tr>
 						</table>
 						<table width=100%>
 							<tr class="header">
-								<td height=1.5% width =50%> Particulars</td>
+								<td height=1.4% width =50%> Particulars</td>
 								<td style="width:20%; border-left: 0 " >Responsibility Center</td>
 								<td style="width:10%; border-left: 0 " >MFO/PAP</td>
 								<td style="width:20%; border-left: 0 " >Amount</td>
@@ -132,8 +132,9 @@
 									@if($all < 3)
 										<br><br>
 									@endif
-									<span style="margin-left:150px; font-weight:bold">Amount Due</span>
-								</td>
+									<p style="text-align: justify; line-height: 10px; margin-top:5px; margin-bottom:0px">Facility: {{ implode(', ', $facilities) }}</p>
+									<span style="margin-left:150px; font-weight:boldl margin-top:0px; line-heiight:2px">Amount Due</span>
+								</td> 
 								<td style="width:14%; border-left: 0 " ></td>
 								<td style="width:14%; border-left: 0 " ></td>
 								<td style="width:14%; border-left: 0; vertical-align: bottom; text-align:center; ">
@@ -170,19 +171,19 @@
 						</table>
 						<table width=100%>
 							<tr >
-								<td height=1.5% width =15%><strong>B. Accounting Entry:</strong></td>
+								<td height=1.4% width =15%><strong>B. Accounting Entry:</strong></td>
 							</tr>
 						</table>
 						<table width=100%>
 							<tr class="header">
-								<td height=1.5% width =52%>Account Title</td>
+								<td height=1.4% width =52%>Account Title</td>
 								<td style="width:20%; border-left: 0 " >Uacs Code</td>
 								<td style="width:15%; border-left: 0 " >Debit</td>
 								<td style="width:15%; border-left: 0 " >Credit</td>
 							</tr>
 							<tr class="header">
 								<td style="text-align : left;">
-									<div style="line-height:1.2;">
+									<div style="line-height:1;">
 										<div>&nbsp;&nbsp;Subsidy / Others</div>
 										<div>&nbsp;&nbsp;Accumulated Surplus</div>
 										<div>&nbsp;&nbsp;&nbsp;&nbsp;Due to BIR</div>
@@ -196,7 +197,7 @@
 						</table>
 						<table width=100%>
 							<tr>
-								<td height=1.5% width =52%><strong>C. Certified:</strong></td>
+								<td height=1.4% width =52%><strong>C. Certified:</strong></td>
 								<td width =50%><strong>D. Approved for Payment:</strong></td>
 							</tr>
 							<tr>
@@ -219,9 +220,9 @@
 						</table>
 						<table width=100%>
 							<tr class="header">
-								<td height=2% width =12%>Signature</td>
+								<td height=1.4% width =12%>Signature</td>
 								<td width =40%></td>
-								<td height=2% width =15%>Signature</td>
+								<td height=1.4% width =15%>Signature</td>
 								<td width =35%></td> 
 							</tr>
 							<tr class="header">
@@ -267,14 +268,14 @@
 								<td width =19% style="vertical-align:top; border-bottom:none">JEV No.</td>
 							</tr>
 							<tr>
-								<td height=2% width =12%>Check/ADA No.:</td>
+								<td height=1.4% width =12%>Check/ADA No.:</td>
 								<td width =25%></td>
 								<td width =15% style="vertical-align:top">Date:</td>
 								<td width =31% style="vertical-align:top">Bank Name & Account Number:</td>
 								<td width =19% style="vertical-align:top; border-top:none"></td>
 							</tr>
 							<tr>
-								<td height=2%>Signature:</td>
+								<td height=1.4%>Signature:</td>
 								<td></td>
 								<td style="vertical-align:top">Date:</td>
 								<td style="vertical-align:top">Printed Name:</td>
