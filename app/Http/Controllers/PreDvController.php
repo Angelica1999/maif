@@ -684,9 +684,9 @@ class PreDvController extends Controller
     public function savePreDV(Request $request)
     {
         // return 1;
-
-        if($request->transmittal_id){
-            Transmittal::whereIn('id', $request->transmittal_id)->update(['used'=>1]);
+        $trans = Transmittal::whereIn('id', $request->all_transmittal)->get();
+        if($request->all_transmittal){
+            Transmittal::whereIn('id', $request->all_transmittal)->update(['used'=>1]);
         }
 
         $decodedData = urldecode($request->data);
@@ -700,7 +700,7 @@ class PreDvController extends Controller
         $pre_dv->grand_total = (float) str_replace(',', '', $grand_total);
         $pre_dv->prof_fee = (float) str_replace(',', '', $grand_fee);
         $pre_dv->created_by = Auth::user()->userid;
-        $pre_dv->trans_id =  $request->transmittal_id ? implode(',', $request->transmittal_id) : null;
+        $pre_dv->trans_id =  $request->all_transmittal ? implode(',', $request->all_transmittal) : null;
         $pre_dv->save();
 
         foreach ($all_data as $value) {

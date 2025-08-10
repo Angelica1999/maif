@@ -14,6 +14,8 @@ use App\Models\Fundsource_Files;
 use App\Models\Fundsource;
 use App\Models\Proponent;
 use App\Models\Dv3;
+use App\Models\ProponentInfo;
+use App\Models\Dv3Fundsource;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PdfEmail;
 use Illuminate\Support\Facades\DB;
@@ -387,9 +389,23 @@ class PrintController extends Controller
                         );
                     }
                 ])->first();
+        $list = Dv3Fundsource::where('route_no', $route_no)->pluck('info_id')->toArray();
+        $id_list = ProponentInfo::whereIn('id', $list)->pluck('facility_id');
+        $unique_ids = array_values(array_unique(
+            array_merge(
+                ...array_map(
+                    fn($i) => json_decode($i, true),
+                    $id_list->toArray() // convert Collection → array
+                )
+            )
+        ));
+
+        $facilities = Facility::whereIn('id', $unique_ids)->pluck('name')->toArray();
+
         $data = [
             'dv3'=> $dv3,
-            'total' => $dv3->total
+            'total' => $dv3->total,
+            'facilities'=> $facilities,
         ];
         $pdf = PDF::loadView('dv3.dv3_pdf', $data);
         $pdf->setPaper('Folio');
