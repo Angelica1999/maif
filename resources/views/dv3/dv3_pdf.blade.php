@@ -32,8 +32,8 @@
 				margin-left: 5px;
 			}
 			@page {
-				margin-bottom: 0.05in; 
-				margin-top: 0.5in; 
+				margin-bottom: 0.02in; 
+				margin-top: 0.4in; 
 			}
 		</style>
     </head>
@@ -120,10 +120,10 @@
 							<tr>
 								<?php $all = floor(count($dv3->extension)/2) ?>
 								<td height="" width="58%" style="vertical-align: top;">
-									<p style="text-align:justify;vertical-align:top; line-height:10px">To transfer medical assistance program funds for 
+									<p style="text-align:justify;vertical-align:top; line-height:10px; margin-bottom:7px">To transfer medical assistance program funds for 
 										{{$dv3->facility->name}} in the amount of:</p>
 									@foreach($dv3->extension as $row)
-										<div style="width: 100%; line-height:10px; font-size:10.5px">
+										<div style="width: 100%; line-height:9.5px; font-size:10.5px">
 											<span class="saa" style="float: left;">{{$row->proponentInfo->fundsource->saa}}</span>
 											<span class="amount" style="float: right;">{{ number_format(floatval(str_replace(',','',$row->amount)), 2, '.', ',') }}</span>
 											<div style="clear: both;"></div>
@@ -202,16 +202,16 @@
 							</tr>
 							<tr>
 								<td height=3%>
-									<div style="display: inline-flex; align-items: center; line-height:1px; padding:0px">
-										<span class="box" style="display: inline-block;"></span>
+									<div style="display: inline-flex; align-items: center; line-height:1px; padding:0px; margin-bottom:0px">
+										<span class="box" style="display: inline-block; margin-bottom:0px"></span>
 										<p style="margin-left: 5px; display: inline;">Cash Available</p>
 									</div>
-									<div style="display: inline-flex; align-items: center; line-height:1px; padding:0px">
-										<span class="box" style="display: inline-block;"></span>
+									<div style="display: inline-flex; align-items: center; line-height:1px; padding:0px; margin-bottom:0px">
+										<span class="box" style="display: inline-block; margin-bottom:0px"></span>
 										<p style="margin-left: 5px; display: inline;">Subject to Authority to Debit Account (when applicable)</p>
 									</div>
-									<div style="display: inline-flex; align-items: center; line-height:1px; padding:0px">
-										<span class="box" style="display: inline-block;"></span>
+									<div style="display: inline-flex; align-items: center; line-height:1px; padding:0px; margin-bottom:0px">
+										<span class="box" style="display: inline-block; margin-bottom:0px"></span>
 										<p style="margin-left: 5px; display: inline;">Supporting documents complete and amount claimed proper</p>
 									</div>
 								</td>
@@ -288,8 +288,8 @@
 						</table>     
                 	</div>
             	</table>
-                <div style="position:absolute; bottom: 0; left: 50%; transform: translateX(-50%); margin-top:15px;" class="modal_footer">
-					<div style="text-align: center;">
+                <div style="position:absolute; bottom: 0; left: 50%; transform: translateX(-50%); margin-top:10px;" class="modal_footer">
+					<div style="text-align: center; margin-bottom:0px">
                         <font class="route_no">{{ $dv3->route_no }}</font>
                     </div>
                     {!! DNS1D::getBarcodeHTML($dv3->route_no, 'C39E', 1, 25) !!}

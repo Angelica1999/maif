@@ -1325,6 +1325,15 @@ class PreDvController extends Controller
             $new_dv->delete();
             TrackingDetails::where('route_no', $route_no)->delete();
             TrackingMaster::where('route_no', $route_no)->delete();
+            $transmittal = Transmittal::where('route_no', $route_no)->get();
+            if($transmittal){
+                foreach($transmittal as $row){
+                    $row->route_no = null;
+                    $row->remarks = 5;
+                    $row->status = 5;
+                    $row->save();
+                }
+            }
         }
 
         return redirect()->back()->with('pre_dv_remove', true);

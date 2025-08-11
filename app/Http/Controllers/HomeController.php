@@ -1167,6 +1167,7 @@ class HomeController extends Controller
                 'filter_barangay' => '',
                 'filter_on' => '',
                 'filter_by' => '',
+                'filter_stat' => '',
                 'gen' => ''
             ]);
             $filter_date = '';
@@ -1202,7 +1203,7 @@ class HomeController extends Controller
         $this->applyColumnFilters($baseQuery, $request);
 
         $this->applySorting($baseQuery, $request);
-
+        $all_pats = (clone $baseQuery)->pluck('id')->all();
         $patients = $baseQuery->orderBy('updated_at', 'desc')->paginate(50);
         $filter_type = 2;
         $filterData = $this->getFilterData($request, $filter_type);
@@ -1215,7 +1216,8 @@ class HomeController extends Controller
             'gen' => $request->gen,
             'order' => $order,
             'id_pat' => '',
-            'active_facility' => OnlineUser::where('user_type', 2)->pluck('type_identity')->toArray()
+            'active_facility' => OnlineUser::where('user_type', 2)->pluck('type_identity')->toArray(),
+            'all_pats' => $all_pats,
         ], $filterData));
     }
 
