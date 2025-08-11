@@ -407,8 +407,13 @@ class FacilityController extends Controller
     {
         $keyword = $req->has('viewAll') ? '' : $req->keyword;
         $viewAll = $req->has('viewAll');
-        $facs = $req->has('viewAll') ? [0] : array_map('intval', json_decode($req->facility_data[0] ?? '[]', true) ?: $req->facility_data);
-
+        $facs = $req->has('viewAll') ? [0] 
+            : (
+                $req->facility_data 
+                ? array_map('intval', json_decode($req->facility_data[0] ?? '[]', true) ?: $req->facility_data) 
+                : [0]
+            );
+    
         $transmittalQuery = Transmittal::where('status', 5)
             ->with([
                 'user.facility' => function ($query) {
