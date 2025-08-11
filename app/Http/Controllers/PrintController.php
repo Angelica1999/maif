@@ -129,13 +129,10 @@ class PrintController extends Controller
                 if($pat != null){
                     if(in_array($pat->sent_type, [null, 1])){
                         if(in_array($pat->facility_id, $active_facility) && in_array($pat->facility_id, $onhold_facs)){
-                            if(Auth::user()->userid == "2760"){
-                            }else{
-                                Patients::where('id', $id)->update([
-                                    'fc_status' => 'referred',
-                                    'sent_type' => 3    
-                                ]); 
-                            }
+                            Patients::where('id', $id)->update([
+                                'fc_status' => 'referred',
+                                'sent_type' => 3    
+                            ]); 
                         }
                     }
                 }

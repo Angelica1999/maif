@@ -958,6 +958,13 @@
             $(selector).on('select2:opening', function () {
                 console.log(`Opening ${selector} dropdown...`);
             });
+            $(selector).next('.select2').find('.select2-selection').css({
+                'border': 'none',
+                'background': 'transparent',
+                'height': 'auto',
+                'min-height': '0',
+                'padding': '0px'
+            });
         }
 
         initializeSelect2("#date_select", '{{ route("get.dates", ["type" => "1"]) }}', "Date");

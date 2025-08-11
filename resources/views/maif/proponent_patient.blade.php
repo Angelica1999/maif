@@ -560,7 +560,13 @@
     $('#stat_select').select2({
         placeholder: "Status"
     });
-
+    $('#stat_select').next('.select2').find('.select2-selection').css({
+        'border': 'none',
+        'background': 'transparent',
+        'height': 'auto',
+        'min-height': '0',
+        'padding': '0px'
+    });
     function retrieveGL(id, status){
         if(status == 0){
             Swal.fire({
@@ -743,6 +749,13 @@
             $(selector).on('select2:opening', function () {
                 console.log(`Opening ${selector} dropdown...`);
             });
+            $(selector).next('.select2').find('.select2-selection').css({
+                'border': 'none',
+                'background': 'transparent',
+                'height': 'auto',
+                'min-height': '0',
+                'padding': '0px'
+            });
         }
 
         initializeSelect2("#date_select", '{{ route("get.dates", ["type" => "4"]) }}', "Date");
@@ -852,13 +865,7 @@
         var selectedValues = $(this).val();
     });
 
-
-    var proponents,all_patients;
-
-    $.get("{{ url('patient-proponent') }}", function(result) {
-        proponents = result.proponents;
-        all_patients = result.all_pat;
-    });
+    var all_patients = @json($all_pats);
 
     $('#list_body').on('click', function(){
         $('.filter').hide();
