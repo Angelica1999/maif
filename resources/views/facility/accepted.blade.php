@@ -39,7 +39,7 @@
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
                     </div>
                 </div>
-                <button id="filter_btn" name="facility_data" class="btn btn-sm btn-info" type="submit" style="display:none;"></button>
+                <button id="filter_btn" name="facility_data[]" class="btn btn-sm btn-info" type="submit" style="display:none;"></button>
             </form>
             <h1 class="card-title">TRANSMITTAL : ACCEPTED</h1>
             <p class="card-description">
@@ -54,10 +54,10 @@
                                 <th>Control No</th>
                                 <th>Status</th>
                                 <th>
-                                    <select id="facility_filter" class="select2" style="width: 200px; border: none; background: transparent;">
+                                    <select id="facility_filter" class="select2" style="width: 200px; border: none; background: transparent;" multiple>
                                         <option value="">Facility</option>
                                         @foreach($facilities as $facility)
-                                            <option value="{{ $facility->id }}">{{ $facility->name }}</option>
+                                            <option value="{{ $facility->id }}" {{ in_array((int) $facility->id, array_map('intval', $facs)) ? 'selected' : '' }}>{{ $facility->name }}</option>
                                         @endforeach
                                     </select>
                                 </th>
@@ -207,7 +207,7 @@
             'padding': '1.5px'
         });
         $('#facility_filter').on('change', function() {
-            $('#filter_btn').val($(this).val());
+            $('#filter_btn').val(JSON.stringify($(this).val()));
             $('#filter_btn').click();
         });
     });

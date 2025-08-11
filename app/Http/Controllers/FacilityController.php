@@ -407,6 +407,7 @@ class FacilityController extends Controller
     {
         $keyword = $req->has('viewAll') ? '' : $req->keyword;
         $viewAll = $req->has('viewAll');
+        $facs = $req->has('viewAll') ? [0] : array_map('intval', json_decode($req->facility_data[0] ?? '[]', true) ?: $req->facility_data);
 
         $transmittalQuery = Transmittal::where('status', 5)
             ->with([
@@ -425,7 +426,7 @@ class FacilityController extends Controller
         }
 
         if ($req->facility_data) {
-            $transmittalQuery->where('facility_id', $req->facility_data);
+            $transmittalQuery->whereIn('facility_id', $facs);
         }
 
         $facilities = Facility::whereIn('id', $facilityIds)->select('id', 'name')->get();
@@ -445,14 +446,14 @@ class FacilityController extends Controller
             ->join('transmittal_details as td', 'tp.transmittal_details', '=', 'td.id')
             ->whereIn('td.transmittal_id', $transmittal->pluck('id'))
             ->count();
-
         return view('facility.accepted', [
             'transmittal' => $transmittal,
             'facilities' => $facilities,
             'patients' => $patients,
             'keyword' => $keyword,
             'total' => $total,
-            'amount' => $amount
+            'amount' => $amount,
+            'facs' => $facs ?? '',
         ]);
     }
 
