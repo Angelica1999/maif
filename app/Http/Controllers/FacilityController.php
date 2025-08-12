@@ -443,14 +443,26 @@ class FacilityController extends Controller
         $total = $stats->total_count ?? 0;
         $amount = $stats->total_amount ?? 0;
 
-        $transmittal = (clone $transmittalQuery)
+        if ($req->sort == "name" && $req->direction){
+            $f_order = Facility::orderBy('name', $req->direction)->pluck('id')->toArray();    
+            $transmittal = (clone $transmittalQuery)
+                ->orderByRaw('FIELD(facility_id, ' . implode(',', $f_order) . ')')
+                ->paginate(50);
+        }elseif($req->sort == "remarks" && $req->direction){
+            $transmittal = (clone $transmittalQuery)
+            ->orderBy('remarks', $req->direction)
+            ->paginate(50);
+        }else{
+            $transmittal = (clone $transmittalQuery)
             ->orderBy('id', 'desc')
             ->paginate(50);
+        }
 
         $patients = DB::table('transmittal_patients as tp')
             ->join('transmittal_details as td', 'tp.transmittal_details', '=', 'td.id')
             ->whereIn('td.transmittal_id', $transmittal->pluck('id'))
             ->count();
+
         return view('facility.accepted', [
             'transmittal' => $transmittal,
             'facilities' => $facilities,

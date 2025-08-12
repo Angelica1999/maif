@@ -52,7 +52,7 @@
                             <tr>
                                 <th></th>
                                 <th>Control No</th>
-                                <th>Status</th>
+                                <th>Status @sortablelink('remarks', '⇅')</th>
                                 <th>
                                     <select id="facility_filter" class="select2" style="width: 200px; border: none; background: transparent;" multiple>
                                         <option value="">Facility</option>
@@ -60,6 +60,7 @@
                                             <option value="{{ $facility->id }}" {{ in_array((int) $facility->id, array_map('intval', $facs)) ? 'selected' : '' }}>{{ $facility->name }}</option>
                                         @endforeach
                                     </select>
+                                    @sortablelink('name', '⇅')
                                 </th>
                                 <th>Prepared Date</th>
                                 <th>Total Amount</th>
@@ -192,6 +193,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
    $(document).ready(function() {
+        $('.fa-sort').hide();
         $('#facility_filter').select2({
             placeholder: 'Facility',
             allowClear: true,
@@ -204,7 +206,7 @@
             'background': 'transparent',
             'height': 'auto',
             'min-height': '0',
-            'padding': '1.5px'
+            'padding': '0px'
         });
         $('#facility_filter').on('change', function() {
             $('#filter_btn').val(JSON.stringify($(this).val()));
