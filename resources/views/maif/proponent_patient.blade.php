@@ -536,6 +536,7 @@
 
 @include('maif.editable_js')
 
+<script src="{{ asset('admin/js/modal_error.js') }}"></script>
 <script>
     $(document).ready(function () {
         $('.fa-sort').hide();

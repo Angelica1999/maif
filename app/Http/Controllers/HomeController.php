@@ -27,6 +27,7 @@ use App\Models\MailHistory;
 use App\Models\ReturnedPatients;
 use App\Models\ProponentUtilizationV1;
 use App\Models\IncludedFacility;
+use App\Models\Logbook;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Arr;
@@ -2252,6 +2253,116 @@ class HomeController extends Controller
         return response()->json(['status' => 'success']);
     }
 
+    public function exportToExcel(Request $request){
+      
+        $keyword = $request->input('keyword'); 
+        $filter = $request->input('filter'); 
+        $received = $request->input('received'); 
+        
+        $query = Logbook::with('r_by');
+
+
+    if (!empty($keyword)) {
+        $query->where('control_no', 'LIKE', '%' . $keyword . '%');
+
+    } elseif (!empty($received)) {
+        $query->whereHas('r_by', function ($q) use ($received) {
+            $names = is_array($received)
+                ? $received
+                : array_filter(array_map('trim', explode(',', $received)));
+
+            foreach ($names as $index => $name) {
+                $method = $index === 0 ? 'whereRaw' : 'orWhereRaw';
+                $q->$method("CONCAT(fname, ' ', lname) LIKE ?", ["%{$name}%"]);
+            }
+        });
+
+    } elseif (!empty($filter)) {
+        $query->where('received_by', $filter);
+    }
+
+
+
+        $logbook = $query->orderBy('received_on', 'desc')->get();
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->getColumnDimension('A')->setWidth(20);
+        $sheet->getColumnDimension('B')->setWidth(30);
+        $sheet->getColumnDimension('C')->setWidth(30);
+        $sheet->getColumnDimension('D')->setWidth(25);
+
+        $sheet->getStyle('A1:D1')
+            ->getAlignment()
+            ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+            ->setVertical(Alignment::VERTICAL_CENTER);
+
+        $headers = [
+            'A1' => 'CONTROL NO',
+            'B1' => 'DELIVERED BY',
+            'C1' => 'RECEIVED BY',
+            'D1' => 'RECEIVED ON'
+        ];
+
+        foreach ($headers as $cell => $headerText) {
+            $richText = new RichText();
+            $normalText = $richText->createTextRun($headerText);
+            $normalText->getFont()->setBold(true);
+            $sheet->setCellValue($cell, $richText);
+            $sheet->getStyle($cell)->getAlignment()->setWrapText(true);
+        }
+   
+        $data = [];
+        foreach ($logbook as $entry) {
+            $receiverName = $entry->r_by ? 
+                trim($entry->r_by->fname . ' ' . $entry->r_by->lname) : 'N/A';
+            
+            $data[] = [
+                $entry->control_no ?? '',
+                $entry->delivered_by ?? '',
+                $receiverName,
+                $entry->received_on ? date('F j, Y', strtotime($entry->received_on)) : ''
+            ];
+        }
+
+        $sheet->fromArray($data, null, 'A2');
+
+        $styleArray = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                ],
+            ],
+            'alignment' => [
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+        ];
+
+        $lastRow = count($data) + 1;
+        $sheet->getStyle("A1:D{$lastRow}")->applyFromArray($styleArray);
+        $sheet->getStyle("A2:D{$lastRow}")->getAlignment()->setWrapText(true);
+
+        $sheet->getStyle("A2:A{$lastRow}")
+            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle("B2:C{$lastRow}")
+            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $sheet->getStyle("D2:D{$lastRow}")
+            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        $filename = "Logbook Summary" . date('Ymd') . ".xlsx";
+
+        header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        header("Content-Disposition: attachment; filename=\"$filename\"");
+        header("Cache-Control: max-age=0");
+        header("Pragma: no-cache");
+        header("Expires: 0");
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        exit;
+    }
+    
     public function patientsSAmple(Request $request){
 
         $filter_date = $request->input('filter_dates');

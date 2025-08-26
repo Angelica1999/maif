@@ -4,6 +4,35 @@
         border:1px solid black;
         border-bottom:1px solid black
     }
+    #budget_track2 .modal-content,
+    #budget_funds .modal-content,
+    #cost_tracking .modal-content {
+        position: relative;
+        padding-bottom: 60px;
+        overflow-x: auto;
+    }
+
+    #budget_track2 .modal-footer,
+    #budget_funds .modal-footer,
+    #cost_tracking .modal-footer {
+        display: flex !important;
+        justify-content: right !important; 
+        position: sticky;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: white;
+        padding: 10px 0;
+        border-top: 1px solid #ddd;
+        z-index: 10;
+    }
+
+    #budget_track2 .modal-footer button,
+    #budget_funds .modal-footer button,
+    #cost_tracking .modal-footer button {
+        margin: 0 5px; 
+    }
+
 </style>
 
 <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true" >
@@ -61,7 +90,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="budget_track2" role="dialog" aria-hidden="true">
+<div class="modal fade" id="budget_track2" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content" style="border-radius:0px;">
             <div class="modal-header" style="text-align:center">
@@ -80,7 +109,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="cost_tracking" role="dialog" aria-hidden="true">
+<div class="modal fade" id="cost_tracking" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content" style="border-radius:0px;">
             <div class="modal-header" style="text-align:center">
@@ -98,7 +127,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="budget_funds" role="dialog" aria-hidden="true">
+<div class="modal fade" id="budget_funds" role="dialog" tabindex="-1">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content" style="border-radius:0px;">
             <div class="modal-header" style="text-align:center">

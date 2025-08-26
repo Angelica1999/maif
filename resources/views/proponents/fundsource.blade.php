@@ -1,5 +1,4 @@
     <style>
-
     .input-group {
         justify-content: flex-end;
         gap: 1px;
@@ -13,8 +12,6 @@
         justify-content: flex-end; 
         
     }
-
-
     .input-group-append select,
     .input-group-append .btn {
         flex: none;
@@ -67,7 +64,6 @@
     .select2-container .select2-selection--multiple .select2-selection__rendered {
         line-height: 40px !important;
     }
-    /* Keep select boxes responsive but compact */
     #gl_tracking select,
     #gl_tracking .select2-container {
         width: 100% !important;
@@ -76,7 +72,12 @@
         font-size: 13px;
     }
 
-    /* For select fields inside table cells */
+    #gl_tracking .modal-content {
+        position: relative;
+        padding-bottom: 30px;
+        overflow-x: auto;
+    }
+
     #gl_tracking td select {
         display: block;
         min-width: 100px;
@@ -88,7 +89,6 @@
         padding: 2px 4px;
     }
 
-    /* Prevent long Select2 selected values from stretching */
     #gl_tracking .select2-selection__rendered {
         white-space: nowrap;
         overflow: hidden;
@@ -135,8 +135,8 @@
                                             <option value="6" {{ $filter_keyword == 6 ? 'selected' : ''}}>Negative Amount</option>
                                             <option value="7" {{ $filter_keyword == 7 ? 'selected' : ''}}>Remaining Funds</option>
                                         </select>
-                                        <button  class="btn btn-sm btn-success text-white" value="{{ $sort }}" type="submit" name="sorting_btn"><i class="typcn typcn-filter menu-icon"></i>Sort</button>
-                                        <button  class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View</button>
+                                        <button style="width:75px; border-radius:0; height:40px"  class="btn btn-sm btn-success text-white" value="{{ $sort }}" type="submit" name="sorting_btn"><i class="typcn typcn-filter menu-icon"></i>Sort</button>
+                                        <button style="width:75px; border-radius:0; height:40px" class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View</button>
                                         <a href="{{ route('excel.proponent_summary') }}" style= "color: white;" type="button" class="btn btn-sum">
                                             <img src="\maif\public\images\excel-file.png" style="width: 15px; height: auto;">Summary</a>    
                                     </div>
@@ -229,7 +229,9 @@
                     </h4>
                 </div>
                 <div class="table-container budget_container" style="padding:10px">
+                  
                     <div id="gl_body"></div>
+                    
                 </div>
                 <div class="modal-footer budget_track_footer">
                     <button style="background-color:lightgray; border-radius:0px" class="btn btn-default" data-dismiss="modal">CLOSE</button>
@@ -240,6 +242,7 @@
             </div>
         </div>
     </div>
+    
     <div class="modal fade" id="supp_tracking" role="dialog">
         <div class="modal-dialog modal-md" role="document">
             <div class="modal-content" style="border-radius:0px;">
@@ -409,25 +412,15 @@
             
         }
 
-        // Run on page load
         $(document).ready(function () {
             cleanAndInitSelect2();
         });
 
-        // Also run after any modal closes (like #gl_tracking, #modified_funds)
         $('body').on('hidden.bs.modal', function () {
             setTimeout(() => {
                 cleanAndInitSelect2();
             },);
         });
-
-        // Optional debug tool: check if ghosts still exist
-        setTimeout(() => {
-            const ghostCount = $('.select2-container').length;
-            if (ghostCount > $('.data_filtering, .data_sorting, .facility_2').length) {
-                console.warn("⚠️ Ghost Select2 elements detected:", ghostCount);
-            }
-        },);
 
         function subtracts(){
             $('.funds_type').val(2);

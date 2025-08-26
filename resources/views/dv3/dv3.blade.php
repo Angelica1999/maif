@@ -375,7 +375,7 @@
             $('#currentID').val(form.data('id'));
             $('#multiple').val('single');
         }
-
+        
         function openModal() {
             var routeNoo = event.target.getAttribute('data-routeId'); 
             var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNoo;
@@ -401,6 +401,24 @@
             $('.dv3_body').html(loading);
             $.get("{{url('dv3/update').'/'}}"+route_no, function(result){
                 $('.dv3_body').html(result);
+            });
+        }
+        
+        function getHistory(route_no) {
+            const loadingHtml = '<p>Loading history...</p>';
+            $('#dv_history .modal-body').html(loadingHtml);
+
+            const url = "{{ url('/dv/history') }}/" + encodeURIComponent(route_no);
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (result) {
+                    $('#dv_history .modal-body').html(result);
+                },
+                error: function () {
+                    $('#dv_history .modal-body').html('<p style="color:red;">Failed to load history.</p>');
+                }
             });
         }
 
@@ -445,6 +463,8 @@
                 });
             });
         });
+        
+         
     </script>
 @endsection
 

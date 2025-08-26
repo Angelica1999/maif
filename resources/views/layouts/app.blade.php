@@ -64,6 +64,7 @@
    <script src="{{ asset('admin/js/template.js') }}"></script>
    <script src="{{ asset('admin/js/settings.js') }}"></script>
    <script src="{{ asset('admin/js/todolist.js') }}"></script>
+   <script src="{{ asset('admin/js/modal_error.js') }}"></script> 
    <script src="{{ asset('admin/vendors/select2/select2.min.js') }}"></script>
    <script src="{{ asset('Lobibox/lobibox.js?v=').date('His') }}"></script>
    <script src="{{ asset('admin/vendors/sweetalert2/sweetalert2.js?v=1') }}"></script>
@@ -100,6 +101,10 @@
    </script> -->
 
    <script>
+      $(document).ready(function () {
+        initializeModalAccessibility('#update_fundsource');
+      });
+       appModal();
       var path_gif = "{{ asset('images/loading.gif') }}";
       var loading = '<center><img src="'+path_gif+'" alt=""></center>';
    
