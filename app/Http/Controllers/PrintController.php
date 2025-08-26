@@ -14,6 +14,8 @@ use App\Models\Fundsource_Files;
 use App\Models\Fundsource;
 use App\Models\Proponent;
 use App\Models\Dv3;
+use App\Models\ProponentInfo;
+use App\Models\Dv3Fundsource;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PdfEmail;
 use Illuminate\Support\Facades\DB;
@@ -75,7 +77,7 @@ class PrintController extends Controller
             'title' => 'Welcome to MAIF',
             'date' => date('m/d/Y'),
             'patient' => $patient,
-            'age' => $this->calculateAge($patient->dob)
+            'age' => $patient->dob ? $this->calculateAge($patient->dob) : 0
         ];
 
         $html = view('maif.print_patient', $data)->render();
@@ -124,15 +126,20 @@ class PrintController extends Controller
         }elseif($request->sent_type == 1){
             foreach($ids as $id){
                 $pat = Patients::where('id', $id)->first();
-                if(in_array($pat->facility_id, $active_facility) && in_array($pat->facility_id, $onhold_facs)){
-                    Patients::where('id', $id)->update([
-                        'fc_status' => 'referred',
-                        'sent_type' => 3
-                    ]); 
+                if($pat != null){
+                    if(in_array($pat->sent_type, [null, 1])){
+                        if(in_array($pat->facility_id, $active_facility) && in_array($pat->facility_id, $onhold_facs)){
+                            Patients::where('id', $id)->update([
+                                'fc_status' => 'referred',
+                                'sent_type' => 3    
+                            ]); 
+                        }
+                    }
                 }
             }
             return redirect()->back()->with('process_gl', true);
         }
+        return redirect()->back();
     }
 
     public function dvPDF(Request $request, $dvId) {
@@ -379,15 +386,29 @@ class PrintController extends Controller
                         );
                     }
                 ])->first();
+        $list = Dv3Fundsource::where('route_no', $route_no)->pluck('info_id')->toArray();
+        $id_list = ProponentInfo::whereIn('id', $list)->pluck('facility_id');
+        $unique_ids = array_values(array_unique(
+            array_merge(
+                ...array_map(
+                    fn($i) => json_decode($i, true),
+                    $id_list->toArray() // convert Collection → array
+                )
+            )
+        ));
+
+        $facilities = Facility::whereIn('id', $unique_ids)->pluck('name')->toArray();
+
         $data = [
             'dv3'=> $dv3,
-            'total' => $dv3->total
+            'total' => $dv3->total,
+            'facilities'=> $facilities,
         ];
         $pdf = PDF::loadView('dv3.dv3_pdf', $data);
         $pdf->setPaper('Folio');
         return $pdf->stream('dv3.pdf');
     }
-
+    
     private function route_image($route_no){
         $text_width = strlen($route_no);
         $width = 11.5 * $text_width;

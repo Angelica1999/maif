@@ -519,7 +519,8 @@ class PreDvController extends Controller
                 'control' => $control,
                 'new_dv' => $new_dv,
                 'type' => $type,
-                'ors' =>  $ors
+                'ors' =>  $ors,
+                'amount' => $grouped->sum('amount')
             ]);
         }
     }
@@ -585,7 +586,8 @@ class PreDvController extends Controller
                 'fundsources' => $grouped,
                 'info' => $info,
                 'control' => $control,
-                'new_dv' => $new_dv
+                'new_dv' => $new_dv,
+                'amount' => $grouped->sum('amount'),
             ]);
         }
     }
@@ -694,9 +696,9 @@ class PreDvController extends Controller
     public function savePreDV(Request $request)
     {
         // return 1;
-
-        if($request->transmittal_id){
-            Transmittal::whereIn('id', $request->transmittal_id)->update(['used'=>1]);
+        $trans = Transmittal::whereIn('id', $request->all_transmittal)->get();
+        if($request->all_transmittal){
+            Transmittal::whereIn('id', $request->all_transmittal)->update(['used'=>1]);
         }
 
         $decodedData = urldecode($request->data);
@@ -710,7 +712,7 @@ class PreDvController extends Controller
         $pre_dv->grand_total = (float) str_replace(',', '', $grand_total);
         $pre_dv->prof_fee = (float) str_replace(',', '', $grand_fee);
         $pre_dv->created_by = Auth::user()->userid;
-        $pre_dv->trans_id =  $request->transmittal_id ? implode(',', $request->transmittal_id) : null;
+        $pre_dv->trans_id =  $request->all_transmittal ? implode(',', $request->all_transmittal) : null;
         $pre_dv->save();
 
         foreach ($all_data as $value) {
@@ -1211,7 +1213,6 @@ class PreDvController extends Controller
             $existing->save();
 
         } else {
-
             $new_dv = new NewDV();
             $new_dv->route_no = date('Y-') . Auth::user()->userid . date('mdHis');
             $new_dv->predv_id = $pre->id;
@@ -1336,6 +1337,15 @@ class PreDvController extends Controller
             $new_dv->delete();
             TrackingDetails::where('route_no', $route_no)->delete();
             TrackingMaster::where('route_no', $route_no)->delete();
+            $transmittal = Transmittal::where('route_no', $route_no)->get();
+            if($transmittal){
+                foreach($transmittal as $row){
+                    $row->route_no = null;
+                    $row->remarks = 5;
+                    $row->status = 5;
+                    $row->save();
+                }
+            }
         }
 
         return redirect()->back()->with('pre_dv_remove', true);

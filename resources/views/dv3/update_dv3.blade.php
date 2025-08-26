@@ -187,53 +187,7 @@
                                 <span id="hospitalAddress" class="hospitalname" style="color:red;">{{$dv3->facility->name}}</span>
                                  in the amount of:</p><br>
                                 <div class="container">
-                                    
-                                    @foreach($dv3->extension as $row)
-                                        <div style="display: flex; align-items: center;" class="clone_saa">
-                                            &nbsp;&nbsp;&nbsp;&nbsp;
-                                            <select name="fundsource_id[]" id="dv3_saa1{{$row->id}}" style="width:200px;" class="dv3_saa" onchange="saaValue($(this))" disabled required>
-                                                <option value="" data-facilities="" style="background-color:green">- Select SAA -</option>
-                                                @foreach($info as $item)
-                                                    <?php
-                                                        $rem_balance = number_format(str_replace(',','',$item->remaining_balance),2,'.',',');
-
-                                                        if($item->facility !== null){
-                                                            if($item->facility->id == $dv3->facility_id){
-                                                                $text_display = $item->fundsource->saa . ' - ' . $item->proponent->proponent . ' - SF - ' . $rem_balance;
-                                                            }else{
-                                                                $text_display = $item->fundsource->saa . ' - ' . $item->proponent->proponent . ' - ' . $item->facility->name . ' - ' . $rem_balance;
-                                                            } 
-                                                        }else{
-
-                                                            $facilityIds = json_decode($item->facility_id);
-
-                                                            $f_name = '';
-
-                                                            foreach($facilityIds as $f_id){
-                                                                $facility = Facility::where('id', $f_id)->first();  
-                                                                $f_name = $f_name .' - '.$facility->name.' - ';
-                                                            }
-                                                            
-                                                            $text_display = $item->fundsource->saa . ' - ' . $item->proponent->proponent . ' - '.$f_name . $rem_balance;
-                                                        }
-                                                    ?>
-                                                    <option value="{{$item->fundsource_id}}" dataproponentInfo_id="{{$item->id}}" dataprogroup="{{$item->proponent->pro_group}}" data-facilities=""
-                                                        dataproponent="{{$item->proponent->id}}" d_color="{{($rem_balance == 0)?'red':'normal'}}" style="background-color:green"
-                                                        {{($row->info_id == $item->id)?'selected':''}}>{{$text_display}}</option>
-                                                @endforeach
-                                            </select> 
-                                            <input type="hidden" name="info_id[]" id="info_id" class="info_id" value="{{$row->info_id}}">
-                                            <input type="hidden" name="existing_info_id[]" id="existing_info_id" class="existing_info_id" value="{{$row->info_id}}">
-                                            <input type="hidden" name="existing[]" id="existing" class="existing" value="{{$row->amount}}">
-                                            <div class="custom-dropdown" style="margin-left: 8px;">
-                                                <input type="text" name="amount[]" id="amount[]" value="{{$row->amount}}" style="width:150px; height: 42px;" onkeyup="validateAmount(this)" oninput="checkedAmount($(this))" class="amount" required autocomplete="off" disabled>
-                                            </div>
-                                            <button type="button" id="add_more" class="add_more" class="fa fa-plus" style="border: none; width: 20px; height: 42px; font-size: 11px; cursor: pointer; width: 30px;" disabled>+</button>
-                                        </div>
-                                        <script>
-                                            $('#dv3_saa1{{$row->id}}').select2();
-                                        </script>
-                                    @endforeach
+                                   
                                 </div>
                                 @if($all < 3)
                                   <br><br>
@@ -261,10 +215,10 @@
                               <span>A. Certified: Expenses/Cash Advance necessary, lawful and incurred under my direct supervision.</span>
                               <br><br><br>
                               <div style="display:inline-block;">
-                                <span style="margin-left:350px"><strong>SOPHIA M. MANCAO, MD, DPSP, RN-MAN<strong></span>
+                                <span style="margin-left:350px"><strong>JONATHAN NEIL V. ERASMO, MD, MPH, FPSM<strong></span>
                               </div>
                               <br>
-                              <span style="margin-left:420px">Director III</span>
+                              <span style="margin-left:420px">OIC - Director III</span>
                             </dv>
                             </td>
                         </tr>
@@ -384,7 +338,7 @@
                     <button type="submit" id="submitBtn" class="btn btn-sm btn-success" style="border-radius:0px"><i class="typcn typcn-tick menu-icon"></i>Pay</button>
                 @else
                     <button type="submit" id="submitBtn" class="btn btn-sm btn-success" style="border-radius:0px"><i class="typcn typcn-tick menu-icon"></i>Update</button>
-                    @if($row->remarks != 1)
+                    @if($dv3->remarks != 1)
                         <button type="button" class="btn btn-sm btn-danger" style="border-radius:0px" onclick="removeDv3('{{$dv3->route_no}}')">Remove</button>
                     @endif
                 @endif
@@ -399,38 +353,57 @@
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 <script>
 
+$(document).ready(function() {
+    // Initialize all select2 elements at once after DOM is ready
+    $('.dv3_facility').select2({
+        width: '260px'
+    });
+    
+    $('.dv3_saa').select2({
+        width: '200px',
+        minimumResultsForSearch: 10, // Only show search if more than 10 items
+        templateResult: function (data) {
+            if ($(data.element).attr('d_color') === 'red') {
+                return $('<span style="color: red;">' + data.text + '</span>');
+            }
+            return data.text;
+        }
+    });
+});
+
     $('.dv3_facility').select2();
     $('.dv3_saa').select2();
     
     var check = 0;
     var vat = 0, ewt = 0;
     $(document).ready(function() {
-        var type = $('.identifier').val();
-        if(type == "processed" || type == "done"){
-            $('.ors_no').css('display', 'none');
-            $('.btn-success').css('display', 'none');
-        }
+        // var type = $('.identifier').val();
+        // if(type == "processed" || type == "done"){
+        //     $('.ors_no').css('display', 'none');
+        //     $('.btn-success').css('display', 'none');
+        // }
 
-        var section = {{$section}};
-        if(section == 6 || section == 7){
-            $('.dv3_facility').prop('disabled', true);
-            $('.dv3_saa').prop('disabled', true);
-            $('#dv3_date').prop('disabled', true);
-        }else if(type == undefined){
-            $('.ors_no').css('display', 'none');
-            $('.btn-success').css('display', 'none');
-            $('.dv3_facility').prop('disabled', true);
-            $('.dv3_saa').prop('disabled', true);
-            $('#dv3_date').prop('disabled', true);
-        }else{
-            $('.add_more').removeAttr('disabled');
-            $('.dv3_saa').removeAttr('disabled');
-            $('.amount').removeAttr('disabled');
-
-        }
-
+        // var section = {{ $section }};
+        // console.log('section', section);
+        // if(section == 6 || section == 7){
+        //     $('.dv3_facility').prop('disabled', true);
+        //     $('.dv3_saa').prop('disabled', true);
+        //     $('#dv3_date').prop('disabled', true);
+        // }else if(type == undefined){
+        //     $('.ors_no').css('display', 'none');
+        //     $('.btn-success').css('display', 'none');
+        //     $('.dv3_facility').prop('disabled', true);
+        //     $('.dv3_saa').prop('disabled', true);
+        //     $('#dv3_date').prop('disabled', true);
+        // }else{
+        //     console.log('dsad');
+        //     $('.add_more').prop('disabled', false);
+        //     $('.dv3_saa').removeAttr('disabled');
+        //     $('.amount').removeAttr('disabled');
+        // }
         
         $(document).off('click', '.container .clone_saa .add_more').on('click', '.container .clone_saa .add_more', function () {
+            console.log('clicked');
             check = check + 1;
             $('.loading-container').show();
             var $this = $(this);

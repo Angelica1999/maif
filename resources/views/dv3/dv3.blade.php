@@ -97,7 +97,7 @@
                                     </select>
                                 </div>
                             </th>
-                            <th style="min-width:150px;"><a href="{{ route('dv3', ['sort' => 'saa', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">SAA</a>
+                            <th style="min-width:250px;"><a href="{{ route('dv3', ['sort' => 'saa', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">SAA</a>
                                 <i id="saa3_i" class="typcn typcn-filter menu-icon"><i>
                                 <div class="filter3" id="saa3_div" style="display:none;">
                                     <select style="width: 120px;" id="saa3_select" name="saa3_select" multiple>
@@ -203,12 +203,29 @@
                                                 class="group-releaseDv" >
                                         </td>
                                         <td style="padding: 4px; text-align:center; word-wrap: break-word; min-width: 200px; ">
-                                            @if($row->text_remarks != null)
-                                                {{$row->text_remarks}}
-                                                <a href="#update_remarks" onclick="updateRemarks('{{$row->route_no}}', '{{($row->text_remarks ==null)?0:$row->text_remarks}}')" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs"><i class="typcn typcn-edit menu-icon" style="border-radius:0; color:green; font-size: 24px; width:200px;"></i></a>
-                                            @else
-                                                <a href="#update_remarks" onclick="updateRemarks('{{$row->route_no}}', '{{($row->text_remarks ==null)?0:$row->text_remarks}}')" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs"><i class="typcn typcn-edit menu-icon" style="border-radius:0; color:green; font-size: 24px; width:200px;"></i></a>
+                                            @if($row->text_remarks)
+                                                @php
+                                                    $words = explode(' ', $row->text_remarks);
+                                                    $firstFive = implode(' ', array_slice($words, 0, 5));
+                                                @endphp
+
+                                                <div class="remarks-container">
+                                                    <span class="text-preview">{{ $firstFive }}{{ count($words) > 5 ? '...' : '' }}</span>
+
+                                                    @if(count($words) > 5)
+                                                        <a href="javascript:void(0);" class="see-more-toggle" onclick="toggleRemarks(this)">See more</a>
+                                                        <span class="full-text" style="display:none;">{{ $row->text_remarks }}</span>
+                                                    @endif
+                                                </div>
                                             @endif
+                                            <a href="#update_remarks"
+                                                onclick='updateRemarks({!! json_encode($row->route_no) !!}, {!! json_encode($row->text_remarks ?? '') !!})'
+                                                data-backdrop="static"
+                                                data-toggle="modal"
+                                                type="button"
+                                                class="btn btn-xs">
+                                                <i class="typcn typcn-edit menu-icon" style="border-radius:0; color:green; font-size: 24px; width:200px;"></i>
+                                            </a>
                                         </td>
                                         <td>
                                             @if($row->status == 1)
@@ -292,180 +309,347 @@
 @include('modal')
 @endsection
 @section('js')
-    <script src="{{ asset('admin/vendors/daterangepicker-master/moment.min.js?v=1') }}"></script>
-    <script src="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.js?v=1') }}"></script>                                        
-    <script>
+<script src="{{ asset('admin/vendors/daterangepicker-master/moment.min.js?v=1') }}"></script>
+<script src="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.js?v=1') }}"></script>                                        
+<script>
 
-        $(function() {
-            $('#filter_dates').daterangepicker();
-        });
-        $('#gen3_btn').on('click', function(){
-            $('#gen_key').val(1);
-        });
-        $('.filter-division').select2();
-        $('.filter-section').select2();
-        $('#rem3_select').select2();
-        $('#fac3_select').select2();
-        $('#saa3_select').select2();
-        $('#pro3_select').select2();
-        $('#date3_select').select2();
-        $('#on3_select').select2();
-        $('#by3_select').select2();
+function toggleRemarks(link) {
+    const container = link.closest('.remarks-container');
+    const preview = container.querySelector('.text-preview');
+    const full = container.querySelector('.full-text');
 
-        $('#rem3_i').on('click', function(){
-            $('#rem3_div').css('display', 'block');
-        });
-        $('#fac3_i').on('click', function(){
-            $('#fac3_div').css('display', 'block');
-        });
-        $('#saa3_i').on('click', function(){
-            $('#saa3_div').css('display', 'block');
-        });
-        $('#pro3_i').on('click', function(){
-            $('#pro3_div').css('display', 'block');
-        });
-        $('#date3_i').on('click', function(){
-            $('#date3_div').css('display', 'block');
-        });
-        $('#on3_i').on('click', function(){
-            $('#on3_div').css('display', 'block');
-        });
-        $('#by3_i').on('click', function(){
-            $('#by3_div').css('display', 'block');
-        });
-        $('.filter3').on('click', function(){
-            $('#filt3_dv').css('display', 'block');
-        });
-        $('#filt3_dv').on('click', function(){
-            $('#filter_rem3').val($('#rem3_select').val());
-            $('#filter_fac3').val($('#fac3_select').val());
-            $('#filter_saa3').val($('#saa3_select').val());
-            $('#filter_pro3').val($('#pro3_select').val());
-            $('#filter_date3').val($('#date3_select').val());
-            $('#filter_on3').val($('#on3_select').val());
+    if (full.style.display === 'none') {
+        preview.style.display = 'none';
+        full.style.display = 'inline';
+        link.textContent = 'See less';
+    } else {
+        preview.style.display = 'inline';
+        full.style.display = 'none';
+        link.textContent = 'See more';
+    }
+}
 
-        });
 
-        $('#dv3_facility').select2();
+    $(function() {
+        $('#filter_dates').daterangepicker();
+    });
+    $('#gen3_btn').on('click', function(){
+        $('#gen_key').val(1);
+    });
+    $('.filter-division').select2();
+    $('.filter-section').select2();
+    $('#rem3_select').select2();
+    $('#fac3_select').select2();
+    $('#saa3_select').select2();
+    $('#pro3_select').select2();
+    $('#date3_select').select2();
+    $('#on3_select').select2();
+    $('#by3_select').select2();
 
-        function createDv3() {
-            $('.dv3_body').html(loading);
-            
-            $('.modal-title').html("Create Disbursement (v3)");
-            var url = "{{ route('dv3.create') }}";
-            $.ajax({
-                url: url,
-                type: 'GET',
-                success: function(result) {
-                    $('.dv3_body').html(result);
-                }
-            });
-        }
-        function putRoutes(form){
-            $('#route_no').val($('#all_route').val());
-            $('#currentID').val($('#release_btn').val());
-            $('#multiple').val('multiple');
-            $('#op').val(0);
-        }
+    $('#rem3_i').on('click', function(){
+        $('#rem3_div').css('display', 'block');
+    });
+    $('#fac3_i').on('click', function(){
+        $('#fac3_div').css('display', 'block');
+    });
+    $('#saa3_i').on('click', function(){
+        $('#saa3_div').css('display', 'block');
+    });
+    $('#pro3_i').on('click', function(){
+        $('#pro3_div').css('display', 'block');
+    });
+    $('#date3_i').on('click', function(){
+        $('#date3_div').css('display', 'block');
+    });
+    $('#on3_i').on('click', function(){
+        $('#on3_div').css('display', 'block');
+    });
+    $('#by3_i').on('click', function(){
+        $('#by3_div').css('display', 'block');
+    });
+    $('.filter3').on('click', function(){
+        $('#filt3_dv').css('display', 'block');
+    });
+    $('#filt3_dv').on('click', function(){
+        $('#filter_rem3').val($('#rem3_select').val());
+        $('#filter_fac3').val($('#fac3_select').val());
+        $('#filter_saa3').val($('#saa3_select').val());
+        $('#filter_pro3').val($('#pro3_select').val());
+        $('#filter_date3').val($('#date3_select').val());
+        $('#filter_on3').val($('#on3_select').val());
+
+    });
+
+    $('#dv3_facility').select2();
+
+    function createDv3() {
+        $('.dv3_body').html(loading);
         
-        function putRoute(form){
-            var route_no = form.data('route_no');
-            $('#route_no').val(route_no);
-            $('#op').val(0);
-            $('#currentID').val(form.data('id'));
-            $('#multiple').val('single');
-        }
-        
-        function openModal() {
-            var routeNoo = event.target.getAttribute('data-routeId'); 
-            var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNoo;
-
-            var base_url = "{{ url('/') }}";
-            $('.modal-body').append('<img class="loadingGif" src="' + base_url + '/public/images/loading.gif" alt="Loading..." style="display:block; margin:auto;">');
-
-            var iframe = $('#trackIframe');
-
-            iframe.hide();
-
-            iframe.attr('src', src);
-        
-            iframe.on('load', function() {
-                iframe.show(); 
-                $('.loadingGif').css('display', 'none');
-            });
-
-            $('#myModal').modal('show');
-        }
-
-        function updateDv3(route_no){
-            $('.dv3_body').html(loading);
-            $.get("{{url('dv3/update').'/'}}"+route_no, function(result){
+        $('.modal-title').html("Create Disbursement (v3)");
+        var url = "{{ route('dv3.create') }}";
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(result) {
                 $('.dv3_body').html(result);
-            });
-        }
-        
-        function getHistory(route_no) {
-            const loadingHtml = '<p>Loading history...</p>';
-            $('#dv_history .modal-body').html(loadingHtml);
+            }
+        });
+    }
+    function putRoutes(form){
+        $('#route_no').val($('#all_route').val());
+        $('#currentID').val($('#release_btn').val());
+        $('#multiple').val('multiple');
+        $('#op').val(0);
+    }
+    
+    function putRoute(form){
+        var route_no = form.data('route_no');
+        $('#route_no').val(route_no);
+        $('#op').val(0);
+        $('#currentID').val(form.data('id'));
+        $('#multiple').val('single');
+    }
 
-            const url = "{{ url('/dv/history') }}/" + encodeURIComponent(route_no);
+    function openModal() {
+        var routeNoo = event.target.getAttribute('data-routeId'); 
+        var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNoo;
 
-            $.ajax({
-                url: url,
-                type: 'GET',
-                success: function (result) {
-                    $('#dv_history .modal-body').html(result);
-                },
-                error: function () {
-                    $('#dv_history .modal-body').html('<p style="color:red;">Failed to load history.</p>');
+        var base_url = "{{ url('/') }}";
+        $('.modal-body').append('<img class="loadingGif" src="' + base_url + '/public/images/loading.gif" alt="Loading..." style="display:block; margin:auto;">');
+
+        var iframe = $('#trackIframe');
+
+        iframe.hide();
+
+        iframe.attr('src', src);
+    
+        iframe.on('load', function() {
+            iframe.show(); 
+            $('.loadingGif').css('display', 'none');
+        });
+
+        $('#myModal').modal('show');
+    }
+
+    function updateDv3(route_no){
+        $('.dv3_body').html(loading);
+        $.get("{{url('dv3/update').'/'}}"+route_no, function(result){
+            $('.dv3_body').html(result);
+            Swal.fire({
+                title: 'Loading...',
+                html: 'Please wait while we render the data.',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
                 }
             });
-        }
+            $.get("{{url('dv3/update-extend').'/'}}"+route_no, function(result){
+                $('.container').empty();
+                if (result.dv3 && result.dv3.extension && result.dv3.extension.length > 0) {
+                    result.dv3.extension.forEach(function(row, index) {
+                        setTimeout(function() {
+                            var containerDiv = $('<div>').attr({
+                                'style': 'display: flex; align-items: center;',
+                                'class': 'clone_saa'
+                            });
+                            
+                            containerDiv.append('&nbsp;&nbsp;&nbsp;&nbsp;');
+                            
+                            var selectElement = $('<select>').attr({
+                                'name': 'fundsource_id[]',
+                                'id': 'dv3_saa1' + row.id,
+                                'style': 'width:200px;',
+                                'class': 'form-control dv3_saa',
+                                'required': true
+                            }).on('change', function() {
+                                saaValue($(this));
+                            });
+                            
+                            selectElement.append(
+                                $('<option>').attr({
+                                    'value': '',
+                                    'data-facilities': '',
+                                    'style': 'background-color:green'
+                                }).text('- Select SAA -')
+                            );
+                            
+                            if (result.processedInfo && result.processedInfo.length > 0) {
+                                result.processedInfo.forEach(function(item) {
+                                    var option = $('<option>').attr({
+                                        'value': item.fundsource_id,
+                                        'dataproponentInfo_id': item.id,
+                                        'dataprogroup': item.pro_group,
+                                        'data-facilities': '',
+                                        'dataproponent': item.proponent_id,
+                                        'd_color': item.is_zero_balance ? 'red' : 'normal',
+                                        'style': 'background-color:green'
+                                    }).text(item.text_display);
+                                    
+                                    if (row.info_id == item.id) {
+                                        option.attr('selected', true);
+                                    }
+                                    
+                                    selectElement.append(option);
+                                });
+                            }
+                            
+                            containerDiv.append(selectElement);
+                            
+                            containerDiv.append(
+                                $('<input>').attr({
+                                    'type': 'hidden',
+                                    'name': 'info_id[]',
+                                    'class': 'info_id',
+                                    'value': row.info_id
+                                })
+                            );
+                            
+                            containerDiv.append(
+                                $('<input>').attr({
+                                    'type': 'hidden',
+                                    'name': 'existing_info_id[]',
+                                    'class': 'existing_info_id',
+                                    'value': row.info_id
+                                })
+                            );
+                            
+                            containerDiv.append(
+                                $('<input>').attr({
+                                    'type': 'hidden',
+                                    'name': 'existing[]',
+                                    'class': 'existing',
+                                    'value': row.amount
+                                })
+                            );
+                            
+                            var dropdownDiv = $('<div>').attr({
+                                'class': 'custom-dropdown',
+                                'style': 'margin-left: 8px;'
+                            });
+                            
+                            var amountInput = $('<input>').attr({
+                                'type': 'text',
+                                'name': 'amount[]',
+                                'value': row.amount,
+                                'style': 'width:150px; height: 42px;',
+                                'class': 'amount',
+                                'required': true,
+                                'autocompvare': 'off',
+                                'disabled': true
+                            }).on('keyup', function() {
+                                validateAmount(this);
+                            }).on('input', function() {
+                                checkedAmount($(this));
+                            });
+                            
+                            dropdownDiv.append(amountInput);
+                            containerDiv.append(dropdownDiv);
+                            
+                            var addButton = $('<button>').attr({
+                                'id': 'add_more',
+                                'type': 'button',
+                                'class': 'add_more fa fa-plus',
+                                'style': 'border: none; width: 20px; height: 42px; font-size: 11px; cursor: pointer; width: 30px;',
+                                'disabled': true
+                            });
+                            
+                            containerDiv.append(addButton);
+                            
+                            $('.container').append(containerDiv.hide().fadeIn(200));
+                            
+                        }, index * 100); 
+                    });
+                    
+                    var totalDelay = (result.dv3.extension.length - 1) * 150 + 200;
+                    setTimeout(function() {
+                        var type = $('.identifier').val();
+                        if(type == "processed" || type == "done"){
+                            $('.ors_no').css('display', 'none');
+                            $('.btn-success').css('display', 'none');
+                        }
 
-        function updateRemarks(route_no, remarks){
-            if(remarks != 0){
-                $('.text_remarks').val(remarks);
-            }
-            $('.remarks_id').val(route_no);
-        }
-
-        $('.group-releaseDv').change(function () {
-            document.getElementById('release_btn').style.display = 'inline-block';
-            
-            var checkedMailBoxes = $('.group-releaseDv:checked');
-            var ids = [];
-            var routes = [];
-
-            checkedMailBoxes.each(function () {
-                var doc_id = $(this).closest('.group-release').data('id');
-                var route = $(this).closest('.group-release').data('route_no');
-                ids.push(doc_id);
-                routes.push(route);
+                        var section = result.section;
+                        console.log('section', section);
+                        if(section == 6 || section == 7){
+                            $('.dv3_facility').prop('disabled', true);
+                            $('.dv3_saa').prop('disabled', true);
+                            $('#dv3_date').prop('disabled', true);
+                        }else if(type == undefined){
+                            $('.ors_no').css('display', 'none');
+                            $('.btn-success').css('display', 'none');
+                            $('.dv3_facility').prop('disabled', true);
+                            $('.dv3_saa').prop('disabled', true);
+                            $('#dv3_date').prop('disabled', true);
+                        }else{
+                            console.log('dsad');
+                            $('.add_more').prop('disabled', false);
+                            $('.dv3_saa').removeAttr('disabled');
+                            $('.amount').removeAttr('disabled');
+                        }
+    
+                        $('.container .dv3_saa').select2({
+                            width: '200px',
+                            minimumResultsForSearch: 10,
+                            templateResult: function (data) {
+                                if ($(data.element).attr('d_color') === 'red') {
+                                    return $('<span style="color: red;">' + data.text + '</span>');
+                                }
+                                return data.text;
+                            }
+                        });
+                    }, totalDelay);
+                    setTimeout(function() {
+                        Swal.close(); 
+                    }, totalDelay);
+                }
             });
-            if(ids.length ==  0){
-                document.getElementById('release_btn').style.display = 'none';
-            }
-            $('#release_btn').val(ids);
-            $('#all_route').val(routes);
-
         });
+    }
 
-        $('.filter-division').on('change',function(){
-            // checkDestinationForm();
-            var id = $(this).val();
-            $('.filter-section').html('<option value="">Select section...</option>')
-            $.get("{{ url('getsections').'/' }}"+id, function(result) {
-                $.each(result, function(index, optionData) {
-                    $('.filter-section').append($('<option>', {
-                        value: optionData.id,
-                        text: optionData.description
-                    }));  
-                });
-            });
-        });
+    function updateRemarks(route_no, remarks){
+        console.log(remarks);
+        if(remarks != 0){
+            $('.text_remarks').val(remarks);
+        }
+        $('.remarks_id').val(route_no);
+    }
+
+    $('.group-releaseDv').change(function () {
+        document.getElementById('release_btn').style.display = 'inline-block';
         
-         
-    </script>
+        var checkedMailBoxes = $('.group-releaseDv:checked');
+        var ids = [];
+        var routes = [];
+
+        checkedMailBoxes.each(function () {
+            var doc_id = $(this).closest('.group-release').data('id');
+            var route = $(this).closest('.group-release').data('route_no');
+            ids.push(doc_id);
+            routes.push(route);
+        });
+        if(ids.length ==  0){
+            document.getElementById('release_btn').style.display = 'none';
+        }
+        $('#release_btn').val(ids);
+        $('#all_route').val(routes);
+
+    });
+
+    $('.filter-division').on('change',function(){
+        // checkDestinationForm();
+        var id = $(this).val();
+        $('.filter-section').html('<option value="">Select section...</option>')
+        $.get("{{ url('getsections').'/' }}"+id, function(result) {
+            $.each(result, function(index, optionData) {
+                $('.filter-section').append($('<option>', {
+                    value: optionData.id,
+                    text: optionData.description
+                }));  
+            });
+        });
+    });
+</script>
 @endsection
 
 

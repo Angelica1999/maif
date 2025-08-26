@@ -6,7 +6,7 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        z-index: 1000;
+        z-index: 1060; 
         display: none; 
     }
     .loading-spinner {
@@ -134,7 +134,12 @@
                             <th></th>
                             <th></th>
                             <th><span class="text-info select_all" title="Select/Unselect All"><i class="fa fa-check"></i>All</span></th>
-                            <th style="min-width:90px">@sortablelink('remarks', 'Status')</th>
+                            <th style="min-width:115px">
+                                    @sortablelink('remarks', 'Mail Status')
+                            </th>
+                            <th style="min-width:115px">
+                                <a href="{{ route('home', ['sort' => 'syst_stat','order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">Sys Status ⇅</a>
+                            </th>
                             <th>Remarks</th>
                             <th style="min-width:10px; text-align:center;">Group</th>
                             <th style="min-width:140px">Actual Amount</th>
@@ -217,47 +222,47 @@
                     <tbody id="list_body">
                         @foreach($patients as $index=> $patient)
                             <tr>
-                                <td>
+                                <td style="padding-right:5px">
                                     <button type="button" href="#patient_history" data-backdrop="static" style="width:70px;background-color:#006BC4; color:white; font-size:11px" data-toggle="modal" class="btn btn-xs" 
                                         onclick="populateHistory({{ $patient->id }})"><i class="fa fa-history"></i> Pt. Hx</button>
                                     <button type="button" href="#get_mail" data-backdrop="static" data-toggle="modal" class="btn btn-xs" style="margin-top:1px; width:70px; background-color:#005C6F; color:white; font-size:11px" 
                                         onclick="populate({{ $patient->id }})"><i class="fa fa-envelope"></i> Logs</button>
                                 </td>
                                 <td class="td" style="padding:0px">
-                                    <div style="display: flex; align-items: center; gap: 5px; text-align:center; height: 100%">
+                                    <div style="display: flex; align-items: center; gap: 5px; text-align:center; height: 100%;">
                                         <div style="display: flex; flex-direction: column; justify-content: center; text-align: center; height: 70px;">
                                             <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}"
                                                 style="background-color:teal; color:white; width:70px; font-size:11px"
                                                 target="_blank" type="button" class="btn btn-xs">
                                                 <i class="fa fa-print"></i> Print
                                             </a>
-                                            @if($patient->facility_id && !in_array($patient->facility_id, $onhold_facs))
-                                                <a href="{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}"
-                                                    type="button" style="margin-top:1px; width:70px; font-size:11px"
-                                                    class="btn btn-success btn-xs" id="send_btn">
-                                                    <i class="fa fa-paper-plane"></i> Send
-                                                </a>
-                                            @endif
+                                            <button onclick="sendGL({{ $patient->facility_id && !in_array($patient->facility_id, $onhold_facs) ? 0 : 1 }},
+                                                '{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}')"
+                                                type="button" style="margin-top:1px; width:70px; font-size:11px"
+                                                class="btn btn-success btn-xs" id="send_btn">
+                                                <i class="fa fa-paper-plane"></i> Send
+                                            </button>
                                         </div>
                                         <div style="display: flex; flex-direction: column; justify-content: center; height: 70px;">
-                                            @if($patient->facility_id && in_array($patient->facility_id, $onhold_facs))
-
-                                                @if($patient->sent_type == null || $patient->fc_status == 'returned')
-                                                    <button 
-                                                        onclick="forwardPatient({{ !in_array($patient->facility_id, $active_facility) ? 1 : 0 }}, '{{ route('patient.accept', ['id' => $patient->id]) }}')"
-                                                        style="background-color:#0077b6; color:white; width:70px; font-size:11px"
-                                                        class="btn btn-xs" title="Forward to Facility">
-                                                        <i class="fa fa-share-square"></i> F2F
-                                                    </button>
-                                                @endif
-                                            @endif
-                                            @if($patient->fc_status != 'retrieved' && $patient->fc_status != 'returned' 
-                                                && $patient->transd_id == null && $patient->fc_status == 'referred')
-                                                <button style="background-color:#0b6e4f; color:white; width:70px; font-size:11px; margin-top:1px"
-                                                    title="Retrieve GL" class="btn btn-xs" onclick="retrieveGL({{ $patient->id }})">
-                                                    <i class="fa fa-undo"></i> Rtrv
-                                                </button>
-                                            @endif
+                                        
+                                            <button 
+                                                onclick="forwardPatient({{ !in_array($patient->facility_id, $active_facility) ? 1 : 0 }},
+                                                '{{ route('patient.accept', ['id' => $patient->id]) }}',
+                                                {{ $patient->facility_id && in_array($patient->facility_id, $onhold_facs) ? 0 : 1 }},
+                                                {{ ($patient->sent_type == null || $patient->fc_status == 'returned') ? 0 : 1}}
+                                                )"
+                                                style="background-color:#0077b6; color:white; width:70px; font-size:11px"
+                                                class="btn btn-xs" title="Forward to Facility">
+                                                <i class="fa fa-share-square"></i> F2F
+                                            </button>
+                                            <button style="background-color:#0b6e4f; color:white; width:70px; font-size:11px; margin-top:1px"
+                                                title="Retrieve GL" class="btn btn-xs" onclick="retrieveGL({{ $patient->id }},
+                                                {{ (!in_array($patient->fc_status, ['retrieved', 'returned'])
+                                                    && in_array($patient->fc_status, ['referred', 'accepted']) 
+                                                    && $patient->transd_id == null) ? 0 : 1 }}
+                                                )">
+                                                <i class="fa fa-undo"></i> Rtrv
+                                            </button>
                                         </div> 
                                     </div>
                                 </td>
@@ -273,8 +278,17 @@
                                         <i style="font-size:15px" class="fa fa-check">
                                     @endif
                                 </td>
+                                <td style="text-align:center">
+                                    @if(in_array($patient->fc_status, ["referred", "accepted", "retrieved"]))
+                                        <i style="font-size:15px" class="fa fa-check">
+                                    @endif
+                                </td>
                                 <td>
-                                    {{ $patient->pat_rem }}   
+                                    @if($patient->fc_status == "retrieved")
+                                        Retrieved (pending confirmation) - {{ $patient->rtrv_remarks }}
+                                    @else
+                                        {{ $patient->pat_rem }}   
+                                    @endif
                                 </td>
                                 <td style="text-align:center;" class="group-amount" data-patient-id="{{ $patient->id }}" data-proponent-id="{{ $patient->proponent_id }}" 
                                     data-amount="{{ $patient->actual_amount }}" data-facility-id="{{ $patient->facility_id }}" >
@@ -696,6 +710,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
+                        <input type="hidden" value="" name="update_type" id="update_type">
                         <button type="button" class="btn btn-secondary" id="close_modal" data-dismiss="modal">Close</button>
                         <button type="submit" id="update_pat_btn" class="btn btn-primary" style="display:block;" >Update</button>
                         <button type="submit" id="update_send" name="update_send" value="upsend" class="btn btn-success" style="display:block; color:white" >Update & Send</button>
@@ -740,7 +755,7 @@
         </div>
     </div>
 </div>
-<div class="loading-container">
+<div class="loading-container" style="display:none">
     <img src="public\images\loading.gif" alt="Loading..." class="loading-spinner">
 </div>
 <div id="loading_indicator" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 1050;">
@@ -757,60 +772,138 @@
 <script src="{{ asset('admin/vendors/x-editable/bootstrap-editable.min.js?v=1') }}"></script>
 @include('maif.editable_js')
 <script>
-
-    function forwardPatient(status, forwardUrl) {
+    $('form').on('submit', function () {
+        $(this).find('button[type="submit"]').prop('disabled', true).text('Submitting...');
+    });
+    function sendGL(status, forwardUrl) {
         if (status == 1) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Not Allowed',
-                text: 'No System Account Found!',
+                text: 'This Guarantee Letter cannot be sent via email due to admin restrictions or status requirements.',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                willClose: () => {
+                    $('.loading-container').hide();
+                },
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false
             });
         } else {
             window.location.href = forwardUrl;
         }
     }
 
-    function retrieveGL(id){
-        Swal.fire({
-            title: 'Retrieve GL',
-            input: 'text', 
-            inputLabel: 'Remarks',
-            inputPlaceholder: '...',
-            showCancelButton: true,
-            confirmButtonText: 'Submit',
-            cancelButtonText: 'Cancel',
-            inputValidator: (value) => {
-                if (!value) {
-                    return 'Cannot be retrieved without remarks!';
-                }
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                var remarks = encodeURIComponent(result.value); 
-                fetch(`patient/retrieve/${id}/${remarks}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}' 
-                    }
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    Swal.fire('Success!', 'Your data has been submitted.', 'success');
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1000);
-                })
-                .catch(error => {
-                    Swal.fire('Error!', 'There was an error submitting your data.', 'error');
+    function forwardPatient(status, forwardUrl, status2, status3) {
+        console.log('sample', status);
+        console.log('status2', status2);
+        console.log('status3', status3);
+
+        if (status == 1) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Not Allowed',
+                text: 'No System Account Found!',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                willClose: () => {
+                    $('.loading-container').hide();
+                },
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+        } else {
+            if(status2 == 0 && status3 == 0){
+                window.location.href = forwardUrl;
+            }else{
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Not Allowed',
+                    text: 'This Guarantee Letter cannot be sent via system due to admin restrictions or status requirements.',    
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                    willClose: () => {
+                        $('.loading-container').hide();
+                    },
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
                 });
             }
-        });
+        }
+    }
+
+    function retrieveGL(id, status){
+        if(status == 0){
+            Swal.fire({
+                title: 'Retrieve GL',
+                input: 'text', 
+                inputLabel: 'Remarks',
+                inputPlaceholder: '...',
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                cancelButtonText: 'Cancel',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'Cannot be retrieved without remarks!';
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var remarks = encodeURIComponent(result.value); 
+                    fetch(`patient/retrieve/${id}/${remarks}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}' 
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        Swal.fire('Success!', 'Your data has been submitted.', 'success');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    })
+                    .catch(error => {
+                        Swal.fire('Error!', 'There was an error submitting your data.', 'error');
+                    });
+                }
+            });
+        }else{
+            Swal.fire({
+                icon: 'warning',
+                title: 'Not Allowed',
+                text: 'This Guarantee Letter cannot be retrieved due to admin restrictions or status requirements.',    
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                willClose: () => {
+                    $('.loading-container').hide();
+                },
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+        }
     }
     
     $(document).ready(function () {
@@ -864,6 +957,13 @@
 
             $(selector).on('select2:opening', function () {
                 console.log(`Opening ${selector} dropdown...`);
+            });
+            $(selector).next('.select2').find('.select2-selection').css({
+                'border': 'none',
+                'background': 'transparent',
+                'height': 'auto',
+                'min-height': '0',
+                'padding': '0px'
             });
         }
 
@@ -955,13 +1055,6 @@
 
     $('#fname_select').change(function() {
         var selectedValues = $(this).val(); 
-    });
-
-    var proponents,all_patients;
-
-    $.get("{{ url('patient') }}", function(result) {
-        proponents = result.proponents;
-        all_patients = result.all_pat;
     });
 
     $('#list_body').on('click', function(){
@@ -1114,7 +1207,7 @@
                 success: function(response) {
                     $('#patient_table_container').html($(response).find('#patient_table_container').html());
                     $('#pagination_links').html($(response).find('#pagination_links').html());
-
+                    console.log('response', response);
                     $.each(mail_ids, function(index, id) {
                         $('#' + id).prop('checked', true);
                     });
@@ -1150,17 +1243,25 @@
         });
 
         var select_val = 0;
+        var patients = @json($patients);
+        var newIds = patients.data.map(p => p.id); 
+        var new_mailIds = newIds.map(id => `mailCheckboxId_${id}`);
+
         $(document).on('click', '.select_all', function() {
             if(select_val == 0){
                 $('#patient_table').find('input.group-mailCheckBox').prop('checked', true).trigger('change');
-                $('.send_mails').val('').show();
+                select_val = 1;
+                id_list = [...id_list, ...newIds];
+                mail_ids = [...mail_ids, ...new_mailIds];
+                console.log('mailf-ids', mail_ids);
+                $('.send_mails').val(id_list).show();
+
                 if (getStat().includes('0')) {
                     $('#system_sent').hide();
                 }
                 if (getStat2().includes('0')) {
                     $('#email_sent').hide();
                 }
-                select_val = 1;
             }else{
                 $('#patient_table').find('input.group-mailCheckBox').prop('checked', false).trigger('change');
                 $('.send_mails').val('').hide();
@@ -1258,23 +1359,57 @@
 
     });
 
-    function validateAmount(element) {
-        if (event.keyCode === 32) {
-            event.preventDefault();
-        }
-        var cleanedValue = element.value.replace(/[^\d.]/g, '');
-        var numericValue = parseFloat(cleanedValue);
+    // function validateAmount(element) {
+    //     if (event.keyCode === 32) {
+    //         event.preventDefault();
+    //     }
+    //     var cleanedValue = element.value.replace(/[^\d.]/g, '');
+    //     var numericValue = parseFloat(cleanedValue);
 
-        if ((!isNaN(numericValue) || cleanedValue === '' || cleanedValue === '.') &&
-            !(cleanedValue.length === 1 && cleanedValue[0] === '0')) {
-                element.value = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-        }else{
-            element.value = '';
-        }
+    //     if ((!isNaN(numericValue) || cleanedValue === '' || cleanedValue === '.') &&
+    //         !(cleanedValue.length === 1 && cleanedValue[0] === '0')) {
+    //             element.value = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    //     }else{
+    //         element.value = '';
+    //     }
+    // }
+    function validateAmount(element) {
+    if (event.keyCode === 32) {
+        event.preventDefault();
     }
+    
+    // Remove everything except digits and dots
+    var cleanedValue = element.value.replace(/[^\d.]/g, '');
+    
+    // Split by decimal point to check for multiple decimals
+    var parts = cleanedValue.split('.');
+    
+    // If more than one decimal point, keep only the first part and first decimal
+    if (parts.length > 2) {
+        cleanedValue = parts[0] + '.' + parts.slice(1).join('');
+    }
+    
+    var numericValue = parseFloat(cleanedValue);
+
+    if ((!isNaN(numericValue) || cleanedValue === '' || cleanedValue === '.') &&
+        !(cleanedValue.length === 1 && cleanedValue[0] === '0')) {
+        // Add thousand separators, but preserve decimal part
+        if (cleanedValue.includes('.')) {
+            var wholePart = cleanedValue.split('.')[0];
+            var decimalPart = cleanedValue.split('.')[1];
+            var formattedWhole = wholePart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            element.value = formattedWhole + '.' + decimalPart;
+        } else {
+            element.value = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+    } else {
+        element.value = '';
+    }
+}
 
     $('#update_send').on('click', function(){
-        $('.loading-container').show();
+        $('.loading-container').css('display', 'block');
+        $('#update_type').val(1);
     });
 
     var edit_c = 0;
@@ -1335,12 +1470,14 @@
                 $('.pat_rem').val(patient.pat_rem);
 
                 if (patient.sent_type == null || patient.fc_status == "returned") {
-                    $('#update_pat_btn').css('display', 'block');
-                    $('#remove_pat_btn').css('display', 'block');
-                    if (stat != 0) {
-                        $('#update_send').css('display', 'block');
-                    } else {
-                        $('#update_send').css('display', 'none');
+                    if(patient.fc_status != "retrieved"){
+                        $('#update_pat_btn').css('display', 'block');
+                        $('#remove_pat_btn').css('display', 'block');
+                        if (stat != 0) {
+                            $('#update_send').css('display', 'block');
+                        } else {
+                            $('#update_send').css('display', 'none');
+                        }
                     }
                 } else {
                     $('#update_pat_btn').css('display', 'none');

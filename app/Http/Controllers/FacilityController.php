@@ -110,6 +110,7 @@ class FacilityController extends Controller
         $facility->cc = $request->input('cc');
         $facility->vat = $request->input('vat');
         $facility->Ewt = $request->input('Ewt');
+        $facility->ewt_pf = $request->input('ewt_pf');
 
         $facility->save();  
         session()->flash('facility_save', true); 
@@ -225,8 +226,15 @@ class FacilityController extends Controller
     }
 
     public function incoming(Request $req){
-        
-        $transmittal = Transmittal::where('status', 1)->with('user')->orderBy('id', 'desc')->paginate(50);
+        $transmittal = Transmittal::where('status', 1)
+            ->with([
+                'user.facility' => function ($query) {
+                    $query->select('id', 'name');
+                }
+            ])
+            ->orderBy('id', 'desc')
+            ->paginate(50);
+         
         $trans = Transmittal::pluck('control_no')->toArray();
 
         return view('facility.incoming',[
@@ -355,7 +363,13 @@ class FacilityController extends Controller
     }
 
     public function returned(Request $req){
-        $transmittal = Transmittal::where('status', 3)->with('user')->orderBy('id', 'desc')->paginate(50);
+        $transmittal = Transmittal::where('status', 3)
+            ->with([
+                'user.facility' => function ($query) {
+                    $query->select('id', 'name');
+                }
+            ])
+            ->orderBy('id', 'desc')->paginate(50);
         return view('facility.returned',[
             'transmittal' => $transmittal
         ]);
@@ -389,10 +403,74 @@ class FacilityController extends Controller
         return 'success';
     }
 
-    public function accepted(Request $req){
-        $transmittal = Transmittal::where('status', 5)->with('user')->orderBy('id', 'desc')->paginate(50);
-        return view('facility.accepted',[
-            'transmittal' => $transmittal
+    public function accepted(Request $req)
+    {
+        $keyword = $req->has('viewAll') ? '' : $req->keyword;
+        $viewAll = $req->has('viewAll');
+        $facs = $req->has('viewAll') ? [0] 
+            : (
+                $req->facility_data 
+                ? array_map('intval', json_decode($req->facility_data[0] ?? '[]', true) ?: $req->facility_data) 
+                : [0]
+            );
+    
+        $transmittalQuery = Transmittal::where('status', 5)
+            ->with([
+                'user.facility' => function ($query) {
+                    $query->select('id', 'name');
+                }
+            ]);
+            
+        $facilityIds = (clone $transmittalQuery)
+            ->select('facility_id')
+            ->distinct()
+            ->pluck('facility_id');
+
+        if (!$viewAll && !empty($keyword)) {
+            $transmittalQuery->where('control_no', 'LIKE', "%{$keyword}%");
+        }
+
+        if ($req->facility_data) {
+            $transmittalQuery->whereIn('facility_id', $facs);
+        }
+
+        $facilities = Facility::whereIn('id', $facilityIds)->select('id', 'name')->get();
+
+        $stats = (clone $transmittalQuery)
+            ->selectRaw('COUNT(*) as total_count, SUM(total) as total_amount')
+            ->first();
+
+        $total = $stats->total_count ?? 0;
+        $amount = $stats->total_amount ?? 0;
+
+        if ($req->sort == "name" && $req->direction){
+            $f_order = Facility::orderBy('name', $req->direction)->pluck('id')->toArray();    
+            $transmittal = (clone $transmittalQuery)
+                ->orderByRaw('FIELD(facility_id, ' . implode(',', $f_order) . ')')
+                ->paginate(50);
+        }elseif($req->sort == "remarks" && $req->direction){
+            $transmittal = (clone $transmittalQuery)
+            ->orderBy('remarks', $req->direction)
+            ->paginate(50);
+        }else{
+            $transmittal = (clone $transmittalQuery)
+            ->orderBy('id', 'desc')
+            ->paginate(50);
+        }
+
+        $patients = DB::table('transmittal_patients as tp')
+            ->join('transmittal_details as td', 'tp.transmittal_details', '=', 'td.id')
+            ->whereIn('td.transmittal_id', $transmittal->pluck('id'))
+            ->count();
+
+        return view('facility.accepted', [
+            'transmittal' => $transmittal,
+            'facilities' => $facilities,
+            'patients' => $patients,
+            'keyword' => $keyword,
+            'total' => $total,
+            'amount' => $amount,
+            'facs' => $facs ?? '',
         ]);
     }
 

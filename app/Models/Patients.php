@@ -29,8 +29,8 @@ class Patients extends Model
         'date_guarantee_letter',
         'guaranteed_amount',
         'actual_amount',
-        'remarks'
-
+        'remarks',
+        'sent_type'
     ];
     
     public function group() {

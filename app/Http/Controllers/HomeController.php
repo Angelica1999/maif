@@ -89,6 +89,20 @@ class HomeController extends Controller
                 })
                 ->distinct()
                 ->orderBy('fname');
+        }else if($type == 4){
+            $query = Patients::select('fname')
+                ->whereRaw("
+                NOT EXISTS (
+                    SELECT 1 FROM dohdtr.users 
+                    WHERE dohdtr.users.userid = patients.created_by
+                )
+            ")->whereNotNull('sent_type')
+            ->where(function ($query) {
+                $query->where('fc_status', '!=', 'returned')
+                      ->orWhereNull('fc_status');
+            })
+            ->distinct()
+            ->orderBy('fname');
         }else{
             $query = Patients::select('fname')
                 ->whereRaw("
@@ -145,6 +159,20 @@ class HomeController extends Controller
                 })
                 ->distinct()
                 ->orderBy('date_guarantee_letter');
+        }else if($type == 4){
+            $query = Patients::select('date_guarantee_letter')
+                ->whereRaw("
+                NOT EXISTS (
+                    SELECT 1 FROM dohdtr.users 
+                    WHERE dohdtr.users.userid = patients.created_by
+                )
+            ")->whereNotNull('sent_type')
+            ->where(function ($query) {
+                $query->where('fc_status', '!=', 'returned')
+                      ->orWhereNull('fc_status');
+            })
+            ->distinct()
+            ->orderBy('date_guarantee_letter');
         }else{
             $query = Patients::select('date_guarantee_letter')
                 ->whereRaw("
@@ -201,6 +229,20 @@ class HomeController extends Controller
                 })
                 ->distinct()
                 ->orderBy('mname');
+        }else if($type == 4){
+            $query = Patients::select('mname')
+                ->whereRaw("
+                NOT EXISTS (
+                    SELECT 1 FROM dohdtr.users 
+                    WHERE dohdtr.users.userid = patients.created_by
+                )
+            ")->whereNotNull('sent_type')
+            ->where(function ($query) {
+                $query->where('fc_status', '!=', 'returned')
+                      ->orWhereNull('fc_status');
+            })
+            ->distinct()
+            ->orderBy('mname');
         }else{
             $query = Patients::select('mname')
                 ->whereRaw("
@@ -257,6 +299,20 @@ class HomeController extends Controller
                 })
                 ->distinct()
                 ->orderBy('lname');
+        }else if($type == 4){
+            $query = Patients::select('lname')
+                ->whereRaw("
+                NOT EXISTS (
+                    SELECT 1 FROM dohdtr.users 
+                    WHERE dohdtr.users.userid = patients.created_by
+                )
+            ")->whereNotNull('sent_type')
+            ->where(function ($query) {
+                $query->where('fc_status', '!=', 'returned')
+                      ->orWhereNull('fc_status');
+            })
+            ->distinct()
+            ->orderBy('lname');
         }else{
             $query = Patients::select('lname')
                 ->whereRaw("
@@ -368,8 +424,22 @@ class HomeController extends Controller
                     $query->whereNull('pro_used')
                         ->where('expired', 1);
                 })
+                ->where(function ($query) {
+                    $query->where('fc_status', '!=', 'returned')
+                          ->orWhereNull('fc_status');
+                })
                 ->distinct()
                 ->orderBy('region');
+        }else if($type == 4){
+            $query = Patients::select('region')
+                ->whereRaw("
+                NOT EXISTS (
+                    SELECT 1 FROM dohdtr.users 
+                    WHERE dohdtr.users.userid = patients.created_by
+                )
+            ")->whereNotNull('sent_type')
+            ->distinct()
+            ->orderBy('region');
         }else{
             $query = Patients::select('region')
                 ->whereRaw("
@@ -426,6 +496,20 @@ class HomeController extends Controller
                         ->where('expired', 1);
                 })
                 ->whereNotNull('other_province');
+        }else if($type == 4){
+            $query1 = DB::table('patients')
+                ->select(DB::raw("DISTINCT other_province AS province"))
+                ->whereRaw("
+                NOT EXISTS (
+                    SELECT 1 FROM dohdtr.users 
+                    WHERE dohdtr.users.userid = patients.created_by
+                )
+            ")->whereNotNull('sent_type')
+            ->where(function ($query) {
+                $query->where('fc_status', '!=', 'returned')
+                      ->orWhereNull('fc_status');
+            })
+            ->whereNotNull('other_province');
         }else{
             $query1 = DB::table('patients')
                 ->select(DB::raw("DISTINCT other_province AS province"))
@@ -494,6 +578,20 @@ class HomeController extends Controller
                         ->where('expired', 1);
                 })
                 ->whereNotNull('other_muncity');
+        }else if($type == 4){
+            $query1 = DB::table('patients')
+            ->select(DB::raw("DISTINCT other_muncity AS municipality"))
+                ->whereRaw("
+                NOT EXISTS (
+                    SELECT 1 FROM dohdtr.users 
+                    WHERE dohdtr.users.userid = patients.created_by
+                )
+            ")->whereNotNull('sent_type')
+            ->where(function ($query) {
+                $query->where('fc_status', '!=', 'returned')
+                      ->orWhereNull('fc_status');
+            })
+            ->whereNotNull('other_muncity');
         }else{
             $query1 = DB::table('patients')->select(DB::raw("DISTINCT other_muncity AS municipality"))
                 ->whereNotNull('other_muncity')
@@ -561,6 +659,20 @@ class HomeController extends Controller
                         ->where('expired', 1);
                 })
             ->whereNotNull('other_barangay');
+        }else if($type == 4){
+            $query1 = DB::table('patients')
+            ->select(DB::raw("DISTINCT other_barangay AS barangay"))
+                ->whereRaw("
+                NOT EXISTS (
+                    SELECT 1 FROM dohdtr.users 
+                    WHERE dohdtr.users.userid = patients.created_by
+                )
+            ")->whereNotNull('sent_type')
+            ->where(function ($query) {
+                $query->where('fc_status', '!=', 'returned')
+                      ->orWhereNull('fc_status');
+            })
+            ->whereNotNull('other_barangay');
         }else{
             $query1 = DB::table('patients')
                 ->select(DB::raw("DISTINCT other_barangay AS barangay"))
@@ -626,6 +738,19 @@ class HomeController extends Controller
                         ->where('expired', 1);
                 })
                 ->distinct()->orderBy('created_date');
+        }else if($type == 4){
+            $query = Patients::select(DB::raw('DATE(created_at) as created_date'))
+                ->whereRaw("
+                NOT EXISTS (
+                    SELECT 1 FROM dohdtr.users 
+                    WHERE dohdtr.users.userid = patients.created_by
+                )
+            ")->whereNotNull('sent_type')
+            ->where(function ($query) {
+                $query->where('fc_status', '!=', 'returned')
+                      ->orWhereNull('fc_status');
+            })
+            ->distinct()->orderBy('created_date');
         }else{
             $query = Patients::select(DB::raw('DATE(created_at) as created_date'))
             ->whereRaw("
@@ -677,6 +802,19 @@ class HomeController extends Controller
                         ->where('expired', 1);
                 })
                 ->distinct()->pluck('created_by')->toArray();
+        }else if($type == 4){
+            $query = Patients::select('created_by')
+                ->whereRaw("
+                NOT EXISTS (
+                    SELECT 1 FROM dohdtr.users 
+                    WHERE dohdtr.users.userid = patients.created_by
+                )
+            ")->whereNotNull('sent_type')
+            ->where(function ($query) {
+                $query->where('fc_status', '!=', 'returned')
+                      ->orWhereNull('fc_status');
+            })
+            ->distinct()->pluck('created_by')->toArray();
         }else{
             $query = Patients::select('created_by')
             ->whereRaw("
@@ -823,7 +961,8 @@ class HomeController extends Controller
             'filter_proponent' => 'proponent_id',
             'filter_code' => 'patient_code',
             'filter_region' => 'region',
-            'filter_by' => 'created_by'
+            'filter_by' => 'created_by',
+            'filter_stat' => 'sent_type'
         ];
 
         foreach ($filters as $requestKey => $column) {
@@ -858,6 +997,10 @@ class HomeController extends Controller
 
         if ($request->filter_on) {
             $query->whereIn(DB::raw('DATE(created_at)'), explode(',', $request->filter_on));
+        }
+
+        if ($request->filter_stat) {
+            $query->whereIn('sent_type', explode(',', $request->filter_stat));
         }
     }
 
@@ -904,6 +1047,17 @@ class HomeController extends Controller
                     $order
                 );
                 break;
+            case 'syst_stat':
+                $query->when($order == 'asc', function ($query) {
+                    return $query->orderByRaw("CASE WHEN fc_status = 'referred' THEN 0 ELSE 1 END")
+                                 ->orderBy('id', 'asc');
+                })
+                ->when($order == 'desc', function ($query) {
+                    return $query->orderByRaw("CASE WHEN fc_status = 'referred' THEN 1 ELSE 0 END")
+                                 ->orderBy('id', 'desc');
+                });
+            
+                break;
             default:
                 $query->sortable(['id' => 'desc']);
         }
@@ -943,9 +1097,9 @@ class HomeController extends Controller
 
         return [
             'provinces' => Province::select('id', 'description')->get(),
-            'municipalities' => Muncity::select('id', 'description')->get(),
+            'municipalities' => Muncity::select('id', 'description', 'province_id')->get(),
             'proponents' => $proponentsCode,
-            'barangays' => Barangay::select('id', 'description')->get(),
+            'barangays' => Barangay::select('id', 'description', 'muncity_id')->get(),
             'facilities' => Facility::whereIn('id', $includedIds)->get(),
             'filter_date' => explode(',', $request->filter_date ?? ''),
             'filter_fname' => explode(',', $request->filter_fname ?? ''),
@@ -960,13 +1114,14 @@ class HomeController extends Controller
             'filter_barangay' => explode(',', $request->filter_barangay ?? ''),
             'filter_on' => explode(',', $request->filter_on ?? ''),
             'filter_by' => explode(',', $request->filter_by ?? ''),
-            
-            'onhold_facs' => AddFacilityInfo::where('sent_status', 1)->pluck('facility_id')->toArray()
+            'onhold_facs' => AddFacilityInfo::where('sent_status', 1)->pluck('facility_id')->toArray(),
+            'filter_stat' => explode(',', $request->filter_stat ?? '')
         ];
     }
 
     public function patients(Request $request)
     {
+
         $filter_date = $request->input('filter_dates');
         $order = $request->input('order');
 
@@ -984,7 +1139,11 @@ class HomeController extends Controller
                 SELECT 1 FROM dohdtr.users 
                 WHERE dohdtr.users.userid = patients.created_by
             )
-        ")->whereNotNull('sent_type');
+        ")->whereNotNull('sent_type')
+        ->where(function ($query) {
+            $query->where('fc_status', '!=', 'returned')
+                  ->orWhereNull('fc_status');
+        });
 
         if ($request->gen && $filter_date) {
             $dateRange = explode(' - ', $filter_date);
@@ -1009,6 +1168,7 @@ class HomeController extends Controller
                 'filter_barangay' => '',
                 'filter_on' => '',
                 'filter_by' => '',
+                'filter_stat' => '',
                 'gen' => ''
             ]);
             $filter_date = '';
@@ -1044,7 +1204,7 @@ class HomeController extends Controller
         $this->applyColumnFilters($baseQuery, $request);
 
         $this->applySorting($baseQuery, $request);
-
+        $all_pats = (clone $baseQuery)->pluck('id')->all();
         $patients = $baseQuery->orderBy('updated_at', 'desc')->paginate(50);
         $filter_type = 2;
         $filterData = $this->getFilterData($request, $filter_type);
@@ -1057,6 +1217,8 @@ class HomeController extends Controller
             'gen' => $request->gen,
             'order' => $order,
             'id_pat' => '',
+            'active_facility' => OnlineUser::where('user_type', 2)->pluck('type_identity')->toArray(),
+            'all_pats' => $all_pats,
         ], $filterData));
     }
 
@@ -1257,10 +1419,10 @@ class HomeController extends Controller
     }
 
     public function fetchAdditionalData(){
-        return [
-            'all_pat' => Patients::get(),
-            'proponents' => Proponent::get()
-        ];
+        // return [
+        //     'all_pat' => Patients::get(),
+        //     'proponents' => Proponent::get()
+        // ];
     }
 
     public function proponentPatient(){
@@ -2121,7 +2283,8 @@ class HomeController extends Controller
     }
  
     public function updatePatient($id, Request $request){
-        $val = $request->input('update_send');
+        $val = $request->input('update_type');
+
         $patient_id = $id;
         $patient = Patients::where('id', $patient_id)->first();
 
@@ -2165,11 +2328,10 @@ class HomeController extends Controller
         $patient->sent_type = $request->input('sent_type');
         $patient->save();
         DB::commit();
-        if($val == "upsend"){
+
+        if($val == 1){
             // return Patients::where('id', $patient->id)->first();
             return redirect()->route('patient.sendpdf', ['patientid' => $patient->id]);
-        }else{
-            return redirect()->back();
         }
 
         return redirect()->back()->with('patient_update', true);
@@ -2238,17 +2400,21 @@ class HomeController extends Controller
     }
 
     public function acceptPat($id){
-        Patients::where('id', $id)->update([
-            'fc_status' => 'referred',
-            'sent_type' => 3
-        ]);
-        return redirect()->back()->with('process_gl', true);
+        $pat = Patients::where('id', $id)->first();
+        if($pat){
+            $pat->pat_rem = $pat->pat_rem == "Retrieved" ? null : $pat->pat_rem;
+            $pat->fc_status = 'referred';
+            $pat->sent_type = 3;
+            $pat->save();
+            return redirect()->back()->with('process_gl', true);
+        }
     }
     
     public function retrievePat($id, $remarks){
         Patients::where('id', $id)->update([
             'fc_status' => 'retrieved',
-            'rtrv_remarks' => $remarks
+            'rtrv_remarks' => $remarks,
+            'pat_rem' => "Retrieved"
         ]);
         return response()->json(['status' => 'success']);
     }

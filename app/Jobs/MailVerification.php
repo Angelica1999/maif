@@ -95,8 +95,8 @@ class MailVerification implements ShouldQueue
         try {
            
             $recipientEmail = $registration->email;
-            $email_doh = 'maipp@ro7.doh.gov.ph';
-            $email_password = 'ngpxbtkftobporiw';
+            $email_doh = config('mail.username');
+            $email_password = config('mail.password');
             $mail = new PHPMailer(true);
             $mail->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
             $mail->isSMTP();                                            //Send using SMTP

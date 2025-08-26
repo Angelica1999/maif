@@ -161,12 +161,190 @@
         $('#myModal').modal('show');
     }
 
+    // function updateDv3(route_no){
+    //     $('#confirm_dv').modal('hide');
+    //     $('#create_dv3').modal('show');
+    //     $('.dv3_body').html(loading);
+    //     $.get("{{url('dv3/update').'/'}}"+route_no, function(result){
+    //         $('.dv3_body').html(result);
+    //     });
+    // }
+    
     function updateDv3(route_no){
         $('#confirm_dv').modal('hide');
         $('#create_dv3').modal('show');
         $('.dv3_body').html(loading);
         $.get("{{url('dv3/update').'/'}}"+route_no, function(result){
             $('.dv3_body').html(result);
+            Swal.fire({
+                title: 'Loading...',
+                html: 'Please wait while we render the data.',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            $.get("{{url('dv3/update-extend').'/'}}"+route_no, function(result){
+                $('.container').empty();
+                if (result.dv3 && result.dv3.extension && result.dv3.extension.length > 0) {
+                    result.dv3.extension.forEach(function(row, index) {
+                        setTimeout(function() {
+                            var containerDiv = $('<div>').attr({
+                                'style': 'display: flex; align-items: center;',
+                                'class': 'clone_saa'
+                            });
+                            
+                            containerDiv.append('&nbsp;&nbsp;&nbsp;&nbsp;');
+                            
+                            var selectElement = $('<select>').attr({
+                                'name': 'fundsource_id[]',
+                                'id': 'dv3_saa1' + row.id,
+                                'style': 'width:200px;',
+                                'class': 'form-control dv3_saa',
+                                'required': true
+                            }).on('change', function() {
+                                saaValue($(this));
+                            });
+                            
+                            selectElement.append(
+                                $('<option>').attr({
+                                    'value': '',
+                                    'data-facilities': '',
+                                    'style': 'background-color:green'
+                                }).text('- Select SAA -')
+                            );
+                            
+                            if (result.processedInfo && result.processedInfo.length > 0) {
+                                result.processedInfo.forEach(function(item) {
+                                    var option = $('<option>').attr({
+                                        'value': item.fundsource_id,
+                                        'dataproponentInfo_id': item.id,
+                                        'dataprogroup': item.pro_group,
+                                        'data-facilities': '',
+                                        'dataproponent': item.proponent_id,
+                                        'd_color': item.is_zero_balance ? 'red' : 'normal',
+                                        'style': 'background-color:green'
+                                    }).text(item.text_display);
+                                    
+                                    if (row.info_id == item.id) {
+                                        option.attr('selected', true);
+                                    }
+                                    
+                                    selectElement.append(option);
+                                });
+                            }
+                            
+                            containerDiv.append(selectElement);
+                            
+                            containerDiv.append(
+                                $('<input>').attr({
+                                    'type': 'hidden',
+                                    'name': 'info_id[]',
+                                    'class': 'info_id',
+                                    'value': row.info_id
+                                })
+                            );
+                            
+                            containerDiv.append(
+                                $('<input>').attr({
+                                    'type': 'hidden',
+                                    'name': 'existing_info_id[]',
+                                    'class': 'existing_info_id',
+                                    'value': row.info_id
+                                })
+                            );
+                            
+                            containerDiv.append(
+                                $('<input>').attr({
+                                    'type': 'hidden',
+                                    'name': 'existing[]',
+                                    'class': 'existing',
+                                    'value': row.amount
+                                })
+                            );
+                            
+                            var dropdownDiv = $('<div>').attr({
+                                'class': 'custom-dropdown',
+                                'style': 'margin-left: 8px;'
+                            });
+                            
+                            var amountInput = $('<input>').attr({
+                                'type': 'text',
+                                'name': 'amount[]',
+                                'value': row.amount,
+                                'style': 'width:150px; height: 42px;',
+                                'class': 'amount',
+                                'required': true,
+                                'autocompvare': 'off',
+                                'disabled': true
+                            }).on('keyup', function() {
+                                validateAmount(this);
+                            }).on('input', function() {
+                                checkedAmount($(this));
+                            });
+                            
+                            dropdownDiv.append(amountInput);
+                            containerDiv.append(dropdownDiv);
+                            
+                            var addButton = $('<button>').attr({
+                                'id': 'add_more',
+                                'type': 'button',
+                                'class': 'add_more fa fa-plus',
+                                'style': 'border: none; width: 20px; height: 42px; font-size: 11px; cursor: pointer; width: 30px;',
+                                'disabled': true
+                            });
+                            
+                            containerDiv.append(addButton);
+                            
+                            $('.container').append(containerDiv.hide().fadeIn(200));
+                            
+                        }, index * 100); 
+                    });
+                    
+                    var totalDelay = (result.dv3.extension.length - 1) * 150 + 200;
+                    setTimeout(function() {
+                        var type = $('.identifier').val();
+                        if(type == "processed" || type == "done"){
+                            $('.ors_no').css('display', 'none');
+                            $('.btn-success').css('display', 'none');
+                        }
+
+                        var section = result.section;
+                        console.log('section', section);
+                        if(section == 6 || section == 7){
+                            $('.dv3_facility').prop('disabled', true);
+                            $('.dv3_saa').prop('disabled', true);
+                            $('#dv3_date').prop('disabled', true);
+                        }else if(type == undefined){
+                            $('.ors_no').css('display', 'none');
+                            $('.btn-success').css('display', 'none');
+                            $('.dv3_facility').prop('disabled', true);
+                            $('.dv3_saa').prop('disabled', true);
+                            $('#dv3_date').prop('disabled', true);
+                        }else{
+                            console.log('dsad');
+                            $('.add_more').prop('disabled', false);
+                            $('.dv3_saa').removeAttr('disabled');
+                            $('.amount').removeAttr('disabled');
+                        }
+    
+                        $('.container .dv3_saa').select2({
+                            width: '200px',
+                            minimumResultsForSearch: 10,
+                            templateResult: function (data) {
+                                if ($(data.element).attr('d_color') === 'red') {
+                                    return $('<span style="color: red;">' + data.text + '</span>');
+                                }
+                                return data.text;
+                            }
+                        });
+                    }, totalDelay);
+                    setTimeout(function() {
+                        Swal.close(); 
+                    }, totalDelay);
+                }
+            });
         });
     }
 

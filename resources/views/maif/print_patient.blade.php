@@ -71,14 +71,13 @@
             <div style="margin-left:20px; margin-right:20px">
                 @if($patient->barangay == null)
                     @if($patient->region == null)
-                        <p>This is to certify that patient <strong>{{ $patient->fname . ' ' . $patient->mname . ' ' . $patient->lname}}</strong>, {{ $age }}, was extended by this office, a total of {{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }} medical assistance stated below based on the existing guidelines of Administrative Order No. 2023 - 0016, dated August 11, 2023:</p>
+                        <p>This is to certify that patient <strong>{{ $patient->fname . ' ' . $patient->mname . ' ' . $patient->lname}}</strong>,{{ ($age == 0) ? '' : ' ' . $age . ',' }} was extended by this office, a total of {{ number_format((float)str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }} medical assistance stated below based on the existing guidelines of Administrative Order No. 2025 - 0011, dated May 15, 2025:</p>
                     @else
-                        <p>This is to certify that patient <strong>{{ $patient->fname . ' ' . $patient->mname . ' ' . $patient->lname}}</strong>, {{ $age }}, of {{$patient->other_barangay . ', '. $patient->other_muncity . ', '. $patient->other_province}}, was extended by this office, a total of {{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }} medical assistance stated below based on the existing guidelines of Administrative Order No. 2023 - 0016, dated August 11, 2023:</p>
+                        <p>This is to certify that patient <strong>{{ $patient->fname . ' ' . $patient->mname . ' ' . $patient->lname}}</strong>,{{ ($age == 0) ? '' : ' ' . $age . ',' }} of {{$patient->other_barangay . ', '. $patient->other_muncity . ', '. $patient->other_province}}, was extended by this office, a total of {{ number_format((float)str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }} medical assistance stated below based on the existing guidelines of Administrative Order No. 2025 - 0011, dated May 15, 2025:</p>
                     @endif
                 @else
-                    <p>This is to certify that patient <strong>{{ $patient->fname . ' ' . $patient->mname . ' ' . $patient->lname}}</strong>, {{ $age }}, of {{$patient->barangay->description . ', '. $patient->muncity->description . ', '. $patient->province->description}}, was extended by this office, a total of {{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }} medical assistance stated below based on the existing guidelines of Administrative Order No. 2023 - 0016, dated August 11, 2023:</p>
+                    <p>This is to certify that patient <strong>{{ $patient->fname . ' ' . $patient->mname . ' ' . $patient->lname}}</strong>,{{ ($age == 0) ? '' : ' ' . $age . ',' }} of {{$patient->barangay->description . ', '. $patient->muncity->description . ', '. $patient->province->description}}, was extended by this office, a total of {{ number_format((float)str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }} medical assistance stated below based on the existing guidelines of Administrative Order No. 2025 - 0011, dated May 15, 2025:</p>
                 @endif
-
                 <table class="table table-white" style="border-collapse: collapse; width: 100%;">
                     <thead>
                         <tr>
@@ -90,14 +89,13 @@
                     <tbody>
                         <tr style="border: 1px solid lightgray;">
                             <td style="border: 1px solid lightgray; padding:14px">Hospital Bills / laboratory / Procedures / Medicine</td>
-                            <td class="text-center" style="border: 1px solid lightgray;">{{ number_format(str_replace(',', '', $patient->guaranteed_amount), 2, '.', ',') }}</td>
+                            <td class="text-center" style="border: 1px solid lightgray;">{{ number_format((float)str_replace(',', '', $patient->guaranteed_amount), 2, '.', ',') }}</td>
                             <td style="border: 1px solid lightgray;">{{ $patient->created_at }}</td>
                         </tr>
                     </tbody>
                 </table>
-
                 <p class="ml-3" ><strong>Total Amount:</strong>
-                    <span class="static-data"><strong>P {{ number_format(str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }}</strong></span>
+                    <span class="static-data"><strong>P {{ number_format((float)str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }}</strong></span>
                 </p>
                 <div class="row align-items-start ml-1"> 
                     <p class="ml-1">{{ $patient->patient_code }}<br><br>

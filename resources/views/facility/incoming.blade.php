@@ -37,6 +37,7 @@
                             <tr>
                                 <th style="width:150px"></th>
                                 <th>Control No</th>
+                                <th>Facility</th>
                                 <th>Status</th>
                                 <th>Prepared Date</th>
                                 <th>Total Amount</th>
@@ -57,7 +58,16 @@
                                         @endif
                                     </td>
                                     <td><a onclick="displaySum({{ $item->id }}, {{ $item->remarks }})" href="#summary_display" data-toggle="modal" data-backdrop="static">{{ $item->control_no }}</a></td>
-                                    <td></td>
+                                    <td>{{ $item->user->facility->name }}</td>
+                                    <td>
+                                         {!!  $item->remarks == 1 ? 'In transit to MPU': ($item->remarks == 2 ? 'Received by MPU' : 
+                                            ($item->remarks == 3 ? 'Returned by MPU' :
+                                            ($item->remarks == 5 ? 'Accepted' : 
+                                            ($item->remarks == 6 ? 'DV created' : 
+                                            ($item->remarks == 7 ? 'Obligated' : 
+                                            ($item->remarks == 8 ? 'Paid' : '')))) ))
+                                        !!}
+                                    </td>
                                     <td>{{ date('F j, Y', strtotime($item->prepared_date)) }}</td>
                                     <td>{{ number_format($item->total, 2, '.', ',') }}</td>
                                     <td>{{ date('F j, Y', strtotime($item->created_at)) }}</td>

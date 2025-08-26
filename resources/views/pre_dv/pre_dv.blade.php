@@ -19,8 +19,8 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        /* z-index: 1000;
-        display: none;  */
+        z-index: 1060; 
+        display: none; 
     }
     .loading-spinner {
         width: 100%; 
@@ -38,7 +38,7 @@
                             <div class="input-group-append">
                                 <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
                                 <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
-                                <button type="button" class="btn btn-success" data-toggle="modal" href="#create_predv" style="width:95px; display: inline-flex; align-items: center; border-radius: 0;"><img src="\maif\public\images\icons8_create_16.png" style="margin-right: 5px;"><span style="vertical-align: middle;">Create</span></button>      
+                                <button type="button" class="btn btn-success" data-toggle="modal" data-backdrop="static" href="#create_predv" style="width:95px; display: inline-flex; align-items: center; border-radius: 0;"><img src="\maif\public\images\icons8_create_16.png" style="margin-right: 5px;"><span style="vertical-align: middle;">Create</span></button>      
                                 <button type="submit" value="filt" style="display:none; background-color:green; color:white; width:95px;" name="filt_dv" id="filt_dv" class="btn btn-xs"><i class="typcn typcn-filter menu-icon"></i>&nbsp;&nbsp;&nbsp;Filter</button>
                             </div>
                         </div>
@@ -154,7 +154,6 @@
                 <strong style="margin-left: 20px;">Total Professional Fee:  {{  number_format($grand_fee, 2,'.',',') }}</strong>
                 <strong style="margin-left: 20px;">|</strong>
                 <strong style="margin-left: 20px;">Total amount:  {{ number_format($grand_amount, 2,'.',',') }}</strong>
-
             </div>
             <div class="pl-5 pr-5 mt-5">
                 {!! $results->appends(request()->query())->links('pagination::bootstrap-5') !!}
@@ -185,10 +184,14 @@
                         <u onclick="displayControl()" class="text-info">Check Available Control No</u>
                     </div>
                     <div class="control_option" style="width: 100%; display:none; justify-content: center;text-align:center; margin-top:10px">
-                        <select class="select2 control_id" style="width: 50%;" name="control_id" onchange="getTransmittal($(this).val())">
+                        <select class="select2 control_id" style="width: 50%;" name="control_id" onchange="getTransmittal($(this))">
                             <option value=''>SELECT AVAILABLE CONTROL</option>
                         </select>
                     </div>
+                    <div class="selected_control" style="width: 100%; display:none; justify-content: center;text-align:center; margin-top:10px">
+                        <input style="width:50%; text-align: center;" name="selected_no" id="selected_no" class="form-control selected_no">
+                    </div>
+                    <input type="hidden" name="trans_control_no">
                     <div class="facility_div">
                         <div class="fac_control"></div>
                         <div class="proponent_clone" style="text-align: center; border: 1px solid black; width: 100%; padding: 3%;  margin-top: 10px; ">
@@ -289,7 +292,9 @@
         </div>
     </div>
 </div>
-<div class="loading-container"></div>
+<div class="loading-container" style="display:none">
+    <img src="\maif\public\images\loading.gif" alt="Loading..." class="loading-spinner">
+</div>
 @include('modal')
 @endsection
 @section('js')
@@ -300,6 +305,7 @@
     var btn_val = 0;
 
     $('.crt_btn').on('click', function(){
+        btn_val = 1;
         location.reload();
     });
 
@@ -321,11 +327,75 @@
     function displayControl(){
         $('.control_option').css('display', 'block');
     }
-    function getTransmittal(trans_id){   
-        $.get("{{ url('transmittal/details').'/' }}" +trans_id+'/'+f_id, function(result){
-            $('.fac_control').html(result);
+    var all_control = [];
+    var all_trans = [];
+
+    function getTransmittal(data) {  
+        var trans_id = data.val();
+        var trans_control = data.find('option:selected').text();
+        $('.loading-container').modal('show');
+        $('.selected_control').css('display', 'flex'); 
+        
+        if (!all_control.includes(trans_control)) {
+            all_control.push(trans_control);
+        }
+
+        if (!all_trans.includes(trans_id)) {
+            all_trans.push(trans_id);
+        }
+
+        $('#selected_no').val("Selected Control No: " + all_control);
+        $('#trans_control_no').val(all_trans.join(','));
+
+        $.get("{{ url('transmittal/details').'/' }}" + trans_id + '/' + f_id, function(result) {
+            var $html = $('<div>').html(result);
+            var result_proponent = $html.find('.proponent').first().val();
+            var $controlClones = $html.find('.control_div .control_clone');
+            var check = 0;
+
+            $('.proponent').each(function () {
+                var $proponentInput = $(this);
+                var proponentVal = $proponentInput.val();
+
+                if (proponentVal == result_proponent) {
+                    var $proponentClone = $proponentInput.closest('.proponent_clone');
+                    var $controlDiv = $proponentClone.find('.control_div');
+
+                    $controlDiv.append($controlClones);
+
+                    var total_amount = 0;
+                    $controlDiv.find('.control_clone .amount').each(function () {
+                        var val = parseFloat($(this).val().replace(/,/g, '')) || 0;
+                        total_amount += val;
+                    });
+
+                    var $totalAmountInput = $proponentClone.find('.total_amount');
+                    if ($totalAmountInput.length) {
+                        $totalAmountInput.val(total_amount.toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        }));
+                    }
+
+                    check = 1;
+                }
+            });
+
+            if (check == 0) {
+                $('.fac_control').append(result);
+            }
+
             getGrand();
             getGrandFee();
+
+            $('.loading-container').modal('hide');
+        });
+        all_trans.forEach(function(value) {
+            $('.control_id option').each(function() {
+                if ($(this).val() == value) {
+                    $(this).remove();
+                }
+            });
         });
     }
 
@@ -991,6 +1061,7 @@
     });
 
     $('.pre_form1, #pre_form').submit( function(e){
+        btn_val = 1;
         e.preventDefault();
         var trans_ids = getTransId();
         var facility_id = f_id;
@@ -1082,10 +1153,11 @@
                         transmittal_id: trans_ids,
                         facility_id: $('.facility_id').val(),
                         grand_total: $('.grand_total').val(),
-                        grand_fee: $('.grand_fee').val() || 0
+                        grand_fee: $('.grand_fee').val() || 0,
+                        all_transmittal : all_trans
                     },
                     success: function (response) {
-
+                        console.log('response', response);
                         Lobibox.notify('success', {
                             msg: "Successfully created pre_dv!",
                         });

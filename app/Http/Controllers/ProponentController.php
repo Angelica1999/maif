@@ -659,6 +659,7 @@ class ProponentController extends Controller
         $ids = Proponent::where('proponent', $code)->pluck('id')->toArray();
 
         $filter_patients = Patients::whereIn('proponent_id', $ids)
+            ->orderBy('id', 'desc')
             ->get()
             ->groupBy(function ($patient) {
                 return $patient->fname . '|' . $patient->lname . '|' . $patient->mname;
@@ -666,8 +667,7 @@ class ProponentController extends Controller
             ->map(function ($group) {
                 return $group->first(); // Select only the first record in each group
             });
-                
-    $keyword = request('keyword');
+             $keyword = request('keyword');
 
     $trackingQuery = Patients::whereIn('proponent_id', $ids);
 
@@ -678,8 +678,9 @@ class ProponentController extends Controller
                 ->orWhere('lname', 'LIKE', '%' . $keyword . '%');
         });
     }
+    
 
-        $tracking = $trackingQuery->with('facility:id,name','encoded_by:userid,fname,lname,mname', 'gl_user:username,fname,lname')->paginate(20);
+        $tracking = $trackingQuery->with('facility:id,name','encoded_by:userid,fname,lname,mname', 'gl_user:username,fname,lname')->orderBy('id', 'asc')->paginate(20);
         $facilities = Facility::whereIn('id', Patients::whereIn('proponent_id', $ids)->pluck('facility_id')->toArray())->select('id', 'name')->get(); 
         $info = ProponentInfo::whereIn('proponent_id', $ids)->pluck('id')->toArray();
         
@@ -714,6 +715,7 @@ class ProponentController extends Controller
             $proponents = Proponent::selectRaw('MIN(id) as id, proponent')
                 ->groupBy('proponent')
                 ->get();
+
         if(count($tracking) > 0){
             return view('proponents.proponent_util',[
                 'data' => $tracking,
@@ -741,6 +743,7 @@ class ProponentController extends Controller
         $ids = Proponent::where('proponent', $pro_code)->pluck('id')->toArray();
         $info = ProponentInfo::whereIn('proponent_id', $ids)->pluck('id')->toArray();
         $filter_patients = Patients::whereIn('proponent_id', $ids)
+            ->orderBy('id', 'desc')
             ->get()
             ->groupBy(function ($patient) {
                 return $patient->fname . '|' . $patient->lname . '|' . $patient->mname;
@@ -776,27 +779,27 @@ class ProponentController extends Controller
                 'fundsource:id,saa'
             ]);
 
-            $f_ids = is_array($f_ids) ? $f_ids : explode(',', $f_ids); 
+        $f_ids = is_array($f_ids) ? $f_ids : explode(',', $f_ids); 
 
-            if (in_array("all", $f_ids)) {
-                $query = Patients::whereIn('proponent_id', $ids);
-                $ret_id = 0;
-            } else {
-                $query = Patients::whereIn('proponent_id', $ids)->whereIn('facility_id', $f_ids);
-                $ret_id = $f_ids;
+        if (in_array("all", $f_ids)) {
+            $query = Patients::whereIn('proponent_id', $ids);
+            $ret_id = 0;
+        } else {
+            $query = Patients::whereIn('proponent_id', $ids)->whereIn('facility_id', $f_ids);
+            $ret_id = $f_ids;
+        }
+
+        $query->with('facility:id,name', 'encoded_by:userid,fname,lname,mname', 'gl_user:username,fname,lname');
+
+        if ($patient_id !== null) {
+            if ($patient_id !== "all" && isset($pat1)) {
+                $query->where('fname', $pat1->fname)
+                    ->where('mname', $pat1->mname)
+                    ->where('lname', $pat1->lname);
             }
+        }
 
-            $query->with('facility:id,name', 'encoded_by:userid,fname,lname,mname', 'gl_user:username,fname,lname');
-
-            if ($patient_id !== null) {
-                if ($patient_id !== "all" && isset($pat1)) {
-                    $query->where('fname', $pat1->fname)
-                        ->where('mname', $pat1->mname)
-                        ->where('lname', $pat1->lname);
-                }
-            }
-
-            $tracking = $query->paginate(20);
+        $tracking = $query->orderBy('id', 'asc')->paginate(20);
 
         
         $facilities = Facility::whereIn('id', Patients::whereIn('proponent_id', $ids)->pluck('facility_id')->toArray())->select('id', 'name')->get(); 
@@ -828,6 +831,7 @@ class ProponentController extends Controller
         $info = ProponentInfo::whereIn('proponent_id', $ids)->pluck('id')->toArray();
 
         $filter_patients = Patients::whereIn('proponent_id', $ids)
+            ->orderBy('id', 'desc')
             ->get()
             ->groupBy(function ($patient) {
                 return $patient->fname . '|' . $patient->lname . '|' . $patient->mname;
@@ -1029,7 +1033,7 @@ class ProponentController extends Controller
             }
         }
 
-        $patients = $query->get();
+        $patients = $query->orderBy('id', 'asc')->get();
         $title = $pro[0]->proponent;
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();

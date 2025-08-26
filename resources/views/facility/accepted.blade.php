@@ -12,18 +12,34 @@
         max-height: 500px; 
         overflow-y: auto; 
     }
+    .select2-container--default .select2-selection--single {
+        border: none !important;
+        box-shadow: none !important;
+        background-color: transparent;
+    }
+
+    .select2-container--default .select2-selection--single:focus {
+        outline: none !important;
+    }
+
+    .select2-dropdown {
+        border: none !important;
+        box-shadow: none !important;
+    }
+
 </style>
 <div class="container-fluid col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
             <form method="GET" action="">
                 <div class="input-group float-right w-50" style="min-width: 600px;">
-                    <input type="text" class="form-control" name="keyword" placeholder="" value="">
+                    <input type="text" class="form-control" name="keyword" placeholder="Enter control no ..." value="{{ $keyword }}">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
                     </div>
                 </div>
+                <button id="filter_btn" name="facility_data[]" class="btn btn-sm btn-info" type="submit" style="display:none;"></button>
             </form>
             <h1 class="card-title">TRANSMITTAL : ACCEPTED</h1>
             <p class="card-description">
@@ -36,6 +52,16 @@
                             <tr>
                                 <th></th>
                                 <th>Control No</th>
+                                <th>Status @sortablelink('remarks', '⇅')</th>
+                                <th>
+                                    <select id="facility_filter" class="select2" style="width: 200px; border: none; background: transparent;" multiple>
+                                        <option value="">Facility</option>
+                                        @foreach($facilities as $facility)
+                                            <option value="{{ $facility->id }}" {{ in_array((int) $facility->id, array_map('intval', $facs)) ? 'selected' : '' }}>{{ $facility->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @sortablelink('name', '⇅')
+                                </th>
                                 <th>Prepared Date</th>
                                 <th>Total Amount</th>
                                 <th>Created On</th>
@@ -49,6 +75,16 @@
                                         <button onclick="disRem({{ $item->id }})" class="btn btn-sm btn-success" style="border-radius:0px" data-toggle="modal" href="#trans_remarks">Remarks</button>
                                     </td>
                                     <td><a onclick="displaySum({{ $item->id }})" href="#summary_display" data-toggle="modal" data-backdrop="static">{{ $item->control_no }}</a></td>
+                                    <td>
+                                         {!!  $item->remarks == 1 ? 'In transit to MPU': ($item->remarks == 2 ? 'Received by MPU' : 
+                                            ($item->remarks == 3 ? 'Returned by MPU' :
+                                            ($item->remarks == 5 ? 'Accepted' : 
+                                            ($item->remarks == 6 ? 'DV created' : 
+                                            ($item->remarks == 7 ? 'Obligated' : 
+                                            ($item->remarks == 8 ? 'Paid' : '')))) ))
+                                        !!}
+                                    </td>
+                                    <td>{{ $item->user->facility->name }}</td>
                                     <td>{{ date('F j, Y', strtotime($item->prepared_date)) }}</td>
                                     <td>{{ number_format($item->total, 2, '.', ',') }}</td>
                                     <td>{{ date('F j, Y', strtotime($item->created_at)) }}</td>
@@ -67,6 +103,13 @@
             @error('trans_files.*')
                 <div class="alert alert-danger">{{ $message }}</div>
             @enderror
+            <div class="pl-5 pr-5 mt-5 alert alert-info" role="alert" style="width: 100%; margin-top:5px;">
+                <strong>Total # of Patients: {{  number_format($patients, 2,'.',',') }}</strong>
+                <strong style="margin-left: 20px;">|</strong>
+                <strong style="margin-left: 20px;">Total No. of transmittals: {{  number_format($total, 2,'.',',') }}</strong>
+                <strong style="margin-left: 20px;">|</strong>
+                <strong style="margin-left: 20px;">Total Amount: {{  number_format($amount, 2,'.',',') }}</strong>
+            </div>
             <div class="pl-5 pr-5 mt-5" id ="pagination_links">
                 {!! $transmittal->appends(request()->query())->links('pagination::bootstrap-5') !!}
             </div>
@@ -149,6 +192,27 @@
 @section('js')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+   $(document).ready(function() {
+        $('.fa-sort').hide();
+        $('#facility_filter').select2({
+            placeholder: 'Facility',
+            allowClear: true,
+            width: 'resolve',
+            dropdownAutoWidth: true
+        });
+
+        $('#facility_filter').next('.select2').find('.select2-selection').css({
+            'border': 'none',
+            'background': 'transparent',
+            'height': 'auto',
+            'min-height': '0',
+            'padding': '0px'
+        });
+        $('#facility_filter').on('change', function() {
+            $('#filter_btn').val(JSON.stringify($(this).val()));
+            $('#filter_btn').click();
+        });
+    });
 
     var trans_id = 0;
     

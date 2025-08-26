@@ -64,7 +64,7 @@
                     <form method="GET" action="">
                         <div class="input-group">
                             <input type="hidden" class="form-control" name="key">
-                            <input type="text" class="form-control" name="keyword" id="search_patient" placeholder="Search..." value="{{$keyword}}" style="width:350px;">
+                            <input type="text" class="form-control" name="keyword" id="search_patient" placeholder="Search..." value="{{ $keyword }}" style="width:350px;">
                             <div class="input-group-append">
                                 <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
                                 <button style="width:90px;" class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
@@ -72,23 +72,24 @@
                             </div>  
                         </div>
                         <div class="input-group">
-                            <input type="text" style="text-align:center" class="form-control" id="filter_dates" value="{{($generate_dates)?$generate_dates:''}}" name="filter_dates" />
+                            <input type="text" style="text-align:center" class="form-control" id="filter_dates" value="{{ ($generate_dates)?$generate_dates:'' }}" name="filter_dates" />
                             <button type="submit" id="gen_btn" style="background-color:teal; color:white; width:90px; height:40px; border-radius:0; " class="btn"><i class="typcn typcn-calendar-outline menu-icon"></i>Filter</button>
                         </div>
-                        <input type="hidden" name="filter_date" id="filter_date" value="{{implode(',', $filter_date)}}"></input>
-                        <input type="hidden" name="filter_fname" id="filter_fname" value="{{implode(',', $filter_fname)}}"></input>
-                        <input type="hidden" name="filter_mname" id="filter_mname" value="{{implode(',', $filter_mname)}}"></input>
-                        <input type="hidden" name="filter_lname" id="filter_lname" value="{{implode(',', $filter_lname)}}"></input>
-                        <input type="hidden" name="filter_facility" id="filter_facility" value="{{implode(',', $filter_facility)}}"></input>
-                        <input type="hidden" name="filter_proponent" id="filter_proponent" value="{{implode(',', $filter_proponent)}}"></input>
-                        <input type="hidden" name="filter_code" id="filter_code" value="{{implode(',', $filter_code)}}"></input>
-                        <input type="hidden" name="filter_region" id="filter_region" value="{{implode(',', $filter_region)}}"></input>
-                        <input type="hidden" name="filter_province" id="filter_province" value="{{implode(',', $filter_province)}}"></input>
-                        <input type="hidden" name="filter_municipality" id="filter_municipality" value="{{implode(',', $filter_municipality)}}"></input>
-                        <input type="hidden" name="filter_barangay" id="filter_barangay" value="{{implode(',', $filter_barangay)}}"></input>
-                        <input type="hidden" name="filter_on" id="filter_on" value="{{implode(',', $filter_on)}}"></input>
-                        <input type="hidden" name="filter_by" id="filter_by" value="{{implode(',', $filter_by)}}"></input>
-                        <input type="hidden" name="gen" id="gen" value="{{$gen}}"></input>
+                        <input type="hidden" name="filter_date" id="filter_date" value="{{ implode(',', $filter_date) }}"></input>
+                        <input type="hidden" name="filter_fname" id="filter_fname" value="{{ implode(',', $filter_fname) }}"></input>
+                        <input type="hidden" name="filter_mname" id="filter_mname" value="{{ implode(',', $filter_mname) }}"></input>
+                        <input type="hidden" name="filter_lname" id="filter_lname" value="{{ implode(',', $filter_lname) }}"></input>
+                        <input type="hidden" name="filter_facility" id="filter_facility" value="{{ implode(',', $filter_facility) }}"></input>
+                        <input type="hidden" name="filter_proponent" id="filter_proponent" value="{{ implode(',', $filter_proponent) }}"></input>
+                        <input type="hidden" name="filter_code" id="filter_code" value="{{ implode(',', $filter_code) }}"></input>
+                        <input type="hidden" name="filter_region" id="filter_region" value="{{ implode(',', $filter_region) }}"></input>
+                        <input type="hidden" name="filter_province" id="filter_province" value="{{ implode(',', $filter_province) }}"></input>
+                        <input type="hidden" name="filter_municipality" id="filter_municipality" value="{{ implode(',', $filter_municipality) }}"></input>
+                        <input type="hidden" name="filter_barangay" id="filter_barangay" value="{{ implode(',', $filter_barangay) }}"></input>
+                        <input type="hidden" name="filter_on" id="filter_on" value="{{ implode(',', $filter_on) }}"></input>
+                        <input type="hidden" name="filter_by" id="filter_by" value="{{ implode(',', $filter_by) }}"></input>
+                        <input type="hidden" name="filter_stat" id="filter_stat" value="{{ implode(',', $filter_stat) }}"></input>
+                        <input type="hidden" name="gen" id="gen" value="{{ $gen }}"></input>
                     </form>
                     <form method="POST" action="{{ route('sent.mails') }}" class="send_mailform">
                         @csrf
@@ -136,7 +137,17 @@
                                 </button>
                             </div>
                         </th>
-                        <th>@sortablelink('remarks', 'Status')</th>
+                        <th>
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <select class="form-control filter" style="display:none" id="stat_select" name="stat_select" multiple>
+                                    <option value=''></option>
+                                    <option value='1'>Sent from Proponent</option>
+                                    <option value='2'>Returned to Proponent</option>
+                                    <option value='3'>Credentials checked by MPU</option>
+                                </select>
+                                @sortablelink('sent_type', '⇅')
+                            </div>
+                        </th>
                         <th>Remarks</th>
                         <th style="min-width:10px; text-align:center;">Group</th>
                         <th style="min-width:140px">Actual Amount</th>
@@ -219,39 +230,48 @@
                 <tbody id="list_body">
                     @foreach($patients as $index=> $patient)
                         <tr>
-                            <td>
-                                <button type="button" href="#patient_history" data-backdrop="static" style="border-radius:0; width:70px;background-color:#006BC4; color:white; font-size:11px" data-toggle="modal" class="btn btn-xs" onclick="populateHistory({{$patient->id}})"><small>Edit History</small></button>
-                                <button type="button" href="#get_mail" data-backdrop="static" data-toggle="modal" class="btn btn-xs" style="margin-top:1px; border-radius:0; width:70px;background-color:#005C6F; color:white; font-size:11px" onclick="populate({{$patient->id}})"><small>Mail History</small></button>
-                                <!-- <div style="white-space: nowrap;">
-                                    <div style="float:left; display:inline-block;">
-                                        <button type="button" href="#patient_history" data-backdrop="static" style="border-radius:0; width:60px; background-color:#006BC4; color:white;" data-toggle="modal" class="btn btn-sm" onclick="populateHistory({{$patient->id}})"><small>Patient</small></button>
-                                        <button type="button" href="#get_mail" data-backdrop="static" data-toggle="modal" class="btn btn-sm" style="border-radius:0; width:60px; background-color:#005C6F; color:white;" onclick="populate({{$patient->id}})"><small>Mail</small></button>
-                                    </div>
-                                    <div style="float:left; display:inline-block;">
-                                        <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}" style="border-radius:0; background-color:teal; color:white; width:60px;" target="_blank" type="button" class="btn btn-sm"><small>Print</small></a>
-                                        <a href="{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}" type="button" style="border-radius:0; width:60px;" class="btn btn-success btn-sm" id="send_btn"><small>Send</small></a>
-                                    </div>
-                                </div> -->
+                            <td style="padding-right:5px">
+                                <button type="button" href="#patient_history" data-backdrop="static" style="width:70px;background-color:#006BC4; color:white; font-size:11px" data-toggle="modal" class="btn btn-xs" 
+                                    onclick="populateHistory({{ $patient->id }})"><i class="fa fa-history"></i> Pt. Hx</button>
+                                <button type="button" href="#get_mail" data-backdrop="static" data-toggle="modal" class="btn btn-xs" style="margin-top:1px; width:70px; background-color:#005C6F; color:white; font-size:11px" 
+                                    onclick="populate({{ $patient->id }})"><i class="fa fa-envelope"></i> Logs</button>
                             </td>
-                            <td class="td">
-                                <div style="display: flex; align-items: center; gap: 5px;">
-                                    <div>
-                                        <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}" style="border-radius:0; background-color:teal;color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
-                                        @if($patient->facility_id && !in_array($patient->facility_id, $onhold_facs))
-                                            <a href="{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}" type="button" style="margin-top:1px; border-radius:0; width:50px;" class="btn btn-success btn-xs" id="send_btn">Send</a>
-                                        @endif    
-                                    </div>
-                                    @if($patient->sent_type == 1 || $patient->fc_status == 'returned')
-                                        <a href="{{ route('patient.accept', ['id' => $patient->id]) }}" style="margin-left:10px; font-size:14px"  title="Send this GL to facility">
-                                            <i class="fa fa-paper-plane"></i>
+                            <td class="td" style="padding:0px">
+                                <div style="display: flex; align-items: center; gap: 5px; text-align:center; height: 100%;">
+                                    <div style="display: flex; flex-direction: column; justify-content: center; text-align: center; height: 70px;">
+                                        <a href="{{ route('patient.pdf', ['patientid' => $patient->id]) }}"
+                                            style="background-color:teal; color:white; width:70px; font-size:11px"
+                                            target="_blank" type="button" class="btn btn-xs">
+                                            <i class="fa fa-print"></i> Print
                                         </a>
-                                    @endif
+                                        <button onclick="sendGL({{ $patient->facility_id && !in_array($patient->facility_id, $onhold_facs) ? 0 : 1 }},
+                                            '{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}')"
+                                            type="button" style="margin-top:1px; width:70px; font-size:11px"
+                                            class="btn btn-success btn-xs" id="send_btn">
+                                            <i class="fa fa-paper-plane"></i> Send
+                                        </button>
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; justify-content: center; height: 70px;">
+                                        <button 
+                                            onclick="forwardPatient({{ !in_array($patient->facility_id, $active_facility) ? 1 : 0 }},
+                                            '{{ route('patient.accept', ['id' => $patient->id]) }}',
+                                            {{ $patient->facility_id && in_array($patient->facility_id, $onhold_facs) ? 0 : 1 }},
+                                            {{ ($patient->sent_type == 1 || $patient->fc_status == 'returned') ? 0 : 1 }}
+                                            )"
+                                            style="background-color:#0077b6; color:white; width:70px; font-size:11px"
+                                            class="btn btn-xs" title="Forward to Facility">
+                                            <i class="fa fa-share-square"></i> F2F
+                                        </button>
+                                        <button style="background-color:#0b6e4f; color:white; width:70px; font-size:11px; margin-top:1px"
+                                            title="Retrieve GL" class="btn btn-xs" onclick="retrieveGL({{ $patient->id }},
+                                            {{ (!in_array($patient->fc_status, ['retrieved', 'returned'])
+                                                && in_array($patient->fc_status, ['referred', 'accepted']) 
+                                                && $patient->transd_id == null) ? 0 : 1 }}
+                                            )">
+                                            <i class="fa fa-undo"></i> Rtrv
+                                        </button>
+                                    </div> 
                                 </div>
-                                <!-- @if($patient->status == 1)
-                                    <i style="font-size:20px" class="typcn typcn-home menu-icon"></i>
-                                @else
-                                    <a href="{{ route('facility.send', ['id' => $patient->id]) }}" type="button"><i style="font-size:20px" class="typcn typcn-home-outline menu-icon"></i></a>
-                                @endif -->
                             </td>
                             <td style="text-align:center;" class="group-email"  
                                 data-patient-id="{{ $patient->id }}" >
@@ -538,6 +558,146 @@
 
 <script src="{{ asset('admin/js/modal_error.js') }}"></script>
 <script>
+    $('#stat_select').select2({
+        placeholder: "Status"
+    });
+    $('#stat_select').next('.select2').find('.select2-selection').css({
+        'border': 'none',
+        'background': 'transparent',
+        'height': 'auto',
+        'min-height': '0',
+        'padding': '0px'
+    });
+    function retrieveGL(id, status){
+        if(status == 0){
+            Swal.fire({
+                title: 'Retrieve GL',
+                input: 'text', 
+                inputLabel: 'Remarks',
+                inputPlaceholder: '...',
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                cancelButtonText: 'Cancel',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'Cannot be retrieved without remarks!';
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var remarks = encodeURIComponent(result.value); 
+                    fetch(`patient/retrieve/${id}/${remarks}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}' 
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        Swal.fire('Success!', 'Your data has been submitted.', 'success');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    })
+                    .catch(error => {
+                        Swal.fire('Error!', 'There was an error submitting your data.', 'error');
+                    });
+                }
+            });
+        }else{
+            Swal.fire({
+                icon: 'warning',
+                title: 'Not Allowed',
+                text: 'This Guarantee Letter cannot be retrieved due to admin restrictions or status requirements.',    
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                willClose: () => {
+                    $('.loading-container').hide();
+                },
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+        }
+    }
+
+    function forwardPatient(status, forwardUrl, status2, status3) {
+        console.log('status', status);
+        console.log('status2', status2);
+        console.log('status3', status3);
+
+        if (status == 1) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Not Allowed',
+                text: 'No System Account Found!',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                willClose: () => {
+                    $('.loading-container').hide();
+                },
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+        } else {
+            if(status2 == 0 && status3 == 0){
+                window.location.href = forwardUrl;
+            }else{
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Not Allowed',
+                    text: 'This Guarantee Letter cannot be sent via system due to admin restrictions or status requirements.',    
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
+                    willClose: () => {
+                        $('.loading-container').hide();
+                    },
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                });
+            }
+        }
+    }
+
+    function sendGL(status, forwardUrl) {
+        if (status == 1) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Not Allowed',
+                text: 'This Guarantee Letter cannot be sent via email due to admin restrictions or status requirements.',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                willClose: () => {
+                    $('.loading-container').hide();
+                },
+                timer: 3000,
+                timerProgressBar: true,
+                showConfirmButton: false
+            });
+        } else {
+            window.location.href = forwardUrl;
+        }
+    }
     $(document).ready(function () {
         $('.fa-sort').hide();
 
@@ -590,20 +750,27 @@
             $(selector).on('select2:opening', function () {
                 console.log(`Opening ${selector} dropdown...`);
             });
+            $(selector).next('.select2').find('.select2-selection').css({
+                'border': 'none',
+                'background': 'transparent',
+                'height': 'auto',
+                'min-height': '0',
+                'padding': '0px'
+            });
         }
 
-        initializeSelect2("#date_select", '{{ route("get.dates", ["type" => "2"]) }}', "Date");
-        initializeSelect2("#fname_select", '{{ route("get.names", ["type" => "2"]) }}', "First Name");
-        initializeSelect2("#mname_select", '{{ route("get.m_names", ["type" => "2"]) }}', "Middle Name");
-        initializeSelect2("#lname_select", '{{ route("get.l_names", ["type" => "2"]) }}', "Last Name");
+        initializeSelect2("#date_select", '{{ route("get.dates", ["type" => "4"]) }}', "Date");
+        initializeSelect2("#fname_select", '{{ route("get.names", ["type" => "4"]) }}', "First Name");
+        initializeSelect2("#mname_select", '{{ route("get.m_names", ["type" => "4"]) }}', "Middle Name");
+        initializeSelect2("#lname_select", '{{ route("get.l_names", ["type" => "4"]) }}', "Last Name");
         initializeSelect2("#facility_select", '{{ route("get.facilities") }}', "Facility");
         initializeSelect2("#proponent_select", '{{ route("get.proponents") }}', "Proponent");
-        initializeSelect2("#region_select", '{{ route("get.region", ["type" => "2"]) }}', "Region");
-        initializeSelect2("#province_select", '{{ route("get.province", ["type" => "2"]) }}', "Province");
-        initializeSelect2("#muncity_select", '{{ route("get.municipalities", ["type" => "2"]) }}', "Municipality");
-        initializeSelect2("#barangay_select", '{{ route("get.barangay", ["type" => "2"]) }}', "Barangay");
-        initializeSelect2("#on_select", '{{ route("get.created_at", ["type" => "2"]) }}', "Created On");
-        initializeSelect2("#by_select", '{{ route("get.created_by", ["type" => "2"]) }}', "Created By");
+        initializeSelect2("#region_select", '{{ route("get.region", ["type" => "4"]) }}', "Region");
+        initializeSelect2("#province_select", '{{ route("get.province", ["type" => "4"]) }}', "Province");
+        initializeSelect2("#muncity_select", '{{ route("get.municipalities", ["type" => "4"]) }}', "Municipality");
+        initializeSelect2("#barangay_select", '{{ route("get.barangay", ["type" => "4"]) }}', "Barangay");
+        initializeSelect2("#on_select", '{{ route("get.created_at", ["type" => "4"]) }}', "Created On");
+        initializeSelect2("#by_select", '{{ route("get.created_by", ["type" => "4"]) }}', "Created By");
     });
 
     $(function() {
@@ -631,6 +798,7 @@
 
     $('.filter').on('click', function(){
         $('#filter_col').css('display', 'block');
+        console.log('sample');
     });
 
     var selectFields = [
@@ -645,7 +813,8 @@
         '#muncity_select',
         '#barangay_select',
         '#on_select',
-        '#by_select'
+        '#by_select',
+        '#stat_select'
     ];
 
     $(selectFields.join(',')).on('select2:select select2:unselect', function () {
@@ -688,6 +857,7 @@
         $('#filter_barangay').val($('#barangay_select').val());
         $('#filter_on').val($('#on_select').val());
         $('#filter_by').val($('#by_select').val());
+        $('#filter_stat').val($('#stat_select').val());
     });
 
     $('#code_select').select2();
@@ -696,13 +866,7 @@
         var selectedValues = $(this).val();
     });
 
-
-    var proponents,all_patients;
-
-    $.get("{{ url('patient-proponent') }}", function(result) {
-        proponents = result.proponents;
-        all_patients = result.all_pat;
-    });
+    var all_patients = @json($all_pats);
 
     $('#list_body').on('click', function(){
         $('.filter').hide();
@@ -884,15 +1048,19 @@
             loadPaginatedData(url);
           
         });
+
+        var patients = @json($patients);
+        var newIds = patients.data.map(p => p.id); 
+        var new_mailIds = newIds.map(id => `mailCheckboxId_${id}`);
+
         $(document).on('click', '.select_all', function() {
             if(all_patients){
-                $('#patient_table').find('input.group-mailCheckBox').prop('checked', true).trigger('change');
-                $('.send_mails').val('').show();
-                all_patients.forEach(function(p){
-                    id_list.push(String(p.id));
-                    mail_ids.push('mailCheckboxId_'+p.id);
-                });
+                $('#patient_table').find('input.group-mailCheckBox').prop('checked', true).trigger('change');                    
+                id_list = [...new Set([...id_list, ...newIds])];
+                mail_ids = [...new Set([...mail_ids, ...new_mailIds])];
 
+                $('.send_mails').val(id_list).show();
+                console.log('all', id_list);
                 if (getStat().includes('0')) {
                     $('#system_sent').hide();
                 }
@@ -906,6 +1074,7 @@
             $('#patient_table').find('input.group-mailCheckBox').prop('checked', false).trigger('change');
             $('.send_mails').val('').hide();
             id_list = [];
+            console.log('all', id_list);
             mail_ids = [];
         });
 
