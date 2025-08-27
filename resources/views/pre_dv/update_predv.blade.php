@@ -112,7 +112,8 @@
             },
             templateSelection: function (data) {
                 return data.text;
-            }
+            },
+            placeholder: "Select SAA"
         });
     });
 </script>
