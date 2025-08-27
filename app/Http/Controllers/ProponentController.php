@@ -656,6 +656,8 @@ class ProponentController extends Controller
     }
 
     public function tracking($code){
+        $code = urldecode($code);
+        $code = str_replace('$', '/', $code);        
         $ids = Proponent::where('proponent', $code)->pluck('id')->toArray();
 
         $filter_patients = Patients::whereIn('proponent_id', $ids)

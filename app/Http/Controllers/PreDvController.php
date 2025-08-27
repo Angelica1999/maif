@@ -684,7 +684,6 @@ class PreDvController extends Controller
     public function savePreDV(Request $request)
     {
         // return 1;
-        $trans = Transmittal::whereIn('id', $request->all_transmittal)->get();
         if($request->all_transmittal){
             Transmittal::whereIn('id', $request->all_transmittal)->update(['used'=>1]);
         }
@@ -1297,15 +1296,13 @@ class PreDvController extends Controller
     }
 
     public function getToken(){
-        $user = Auth::user();
         $loginResponse = Http::post('http://192.168.110.7/guaranteeletter/api/login', [
-            'userid' => $user->userid
+            'userid' => 2760
         ]);
         if (isset($loginResponse['token'])) {
             $token = $loginResponse['token'];
         } else {
-            return 1;
-            // "Authentication failed. Error: " . ($loginResponse['message'] ?? 'Unknown error');
+            "Authentication failed. Error: " . ($loginResponse['message'] ?? 'Unknown error');
         }
         return $token;
     }
@@ -1396,6 +1393,7 @@ class PreDvController extends Controller
                 Transmittal::whereIn('id', $trans_ids)->update([
                     'remarks' => 7
                 ]);
+
                 // Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/obligate');
                 // Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/obligate');
 

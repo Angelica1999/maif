@@ -518,21 +518,20 @@ class FacilityController extends Controller
     }
 
     public function received($control_no, $name){
+        $trans = Transmittal::where('id', $control_no)->first();
 
         $log = new Logbook();
         $log->received_on = date('Y-m-d',strtotime(now()));
         $log->received_by = Auth::user()->userid;
         $log->delivered_by = $name;
-        $log->control_no = $control_no;
+        $log->control_no = $trans->control_no;
         $log->save();
         
-        $trans = Transmittal::where('control_no', $control_no)->first();
         $trans->remarks = 2;
         $trans->save();
 
         // Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$trans->id.'/'.Auth::user()->userid.'/received');
         // Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$trans->id.'/'.Auth::user()->userid.'/received');
-
         $token = $this->getToken();
         if ($token != 1) {
             $response = Http::withHeaders([
@@ -566,13 +565,12 @@ class FacilityController extends Controller
     public function getToken(){
         $user = Auth::user();
         $loginResponse = Http::post('http://192.168.110.7/guaranteeletter/api/login', [
-            'userid' => $user->userid
+            'userid' => 2760
         ]);
         if (isset($loginResponse['token'])) {
             $token = $loginResponse['token'];
         } else {
-            return 1;
-            // "Authentication failed. Error: " . ($loginResponse['message'] ?? 'Unknown error');
+            "Authentication failed. Error: " . ($loginResponse['message'] ?? 'Unknown error');
         }
         return $token;
     }
