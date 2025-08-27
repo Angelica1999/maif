@@ -1374,38 +1374,38 @@
     //     }
     // }
     function validateAmount(element) {
-    if (event.keyCode === 32) {
-        event.preventDefault();
-    }
-    
-    // Remove everything except digits and dots
-    var cleanedValue = element.value.replace(/[^\d.]/g, '');
-    
-    // Split by decimal point to check for multiple decimals
-    var parts = cleanedValue.split('.');
-    
-    // If more than one decimal point, keep only the first part and first decimal
-    if (parts.length > 2) {
-        cleanedValue = parts[0] + '.' + parts.slice(1).join('');
-    }
-    
-    var numericValue = parseFloat(cleanedValue);
-
-    if ((!isNaN(numericValue) || cleanedValue === '' || cleanedValue === '.') &&
-        !(cleanedValue.length === 1 && cleanedValue[0] === '0')) {
-        // Add thousand separators, but preserve decimal part
-        if (cleanedValue.includes('.')) {
-            var wholePart = cleanedValue.split('.')[0];
-            var decimalPart = cleanedValue.split('.')[1];
-            var formattedWhole = wholePart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-            element.value = formattedWhole + '.' + decimalPart;
-        } else {
-            element.value = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        if (event.keyCode === 32) {
+            event.preventDefault();
         }
-    } else {
-        element.value = '';
+        
+        // Remove everything except digits and dots
+        var cleanedValue = element.value.replace(/[^\d.]/g, '');
+        
+        // Split by decimal point to check for multiple decimals
+        var parts = cleanedValue.split('.');
+        
+        // If more than one decimal point, keep only the first part and first decimal
+        if (parts.length > 2) {
+            cleanedValue = parts[0] + '.' + parts.slice(1).join('');
+        }
+        
+        var numericValue = parseFloat(cleanedValue);
+
+        if ((!isNaN(numericValue) || cleanedValue === '' || cleanedValue === '.') &&
+            !(cleanedValue.length === 1 && cleanedValue[0] === '0')) {
+            // Add thousand separators, but preserve decimal part
+            if (cleanedValue.includes('.')) {
+                var wholePart = cleanedValue.split('.')[0];
+                var decimalPart = cleanedValue.split('.')[1];
+                var formattedWhole = wholePart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                element.value = formattedWhole + '.' + decimalPart;
+            } else {
+                element.value = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            }
+        } else {
+            element.value = '';
+        }
     }
-}
 
     $('#update_send').on('click', function(){
         $('.loading-container').css('display', 'block');

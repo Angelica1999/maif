@@ -25,14 +25,14 @@
             </p>
             <div class="table-responsive">
                 <table class="table table-striped">
-                    <thead style="text-align:center">
+                    <thead>
                         <tr>
                             <th>Status</th>
-                            <th>@sortablelink('fname', 'First Name')
-                            <th>@sortablelink('lname', 'Last Name')
-                            <th>@sortablelink('birthdate', 'Birthdate')
+                            <th style="min-width:100px;">@sortablelink('fname', 'First Name')
+                            <th style="min-width:120px;">@sortablelink('lname', 'Last Name')
+                            <th style="min-width:110px;">@sortablelink('birthdate', 'Birthdate')
                             <th>@sortablelink('user_type', 'Type')
-                            <th style="max-width:100px;">
+                            <th style="width:200px;">
                                 <form method="GET" action="">
                                     <select id="account" class="form-control account" name="account_type" style="text-align:center" onchange="this.form.submit()">
                                         <option></option>
@@ -50,7 +50,7 @@
                             </th>
                             <th>@sortablelink('email', 'Email')
                             <th>@sortablelink('contact_no', 'Contact No')
-                            <th></th>
+                            <th style="min-width:200px;"></th>
                         </tr>
                     </thead>
                     <tbody style="text-align:left">
@@ -201,7 +201,6 @@
     <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
     <script>
         $('#account').select2({
-            tags:true,
             placeholder:'Account'
         });
         function cancel(id){

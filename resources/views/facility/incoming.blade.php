@@ -54,7 +54,7 @@
                                             <button onclick="accept({{ $item->id }})" style="border-radius:0; color:white" type="button" class="btn btn-success btn-xs">Accept</button>
                                         @else
                                             <!-- <i class="text-danger">this transmittal is not yet received</i> -->
-                                            <a onclick="receive('{{ $item->control_no }}')" style="border-radius:0; color:white" type="button" class="btn btn-success btn-xs">Receive</a>
+                                            <a onclick="receive('{{ $item->id }}')" style="border-radius:0; color:white" type="button" class="btn btn-success btn-xs">Receive</a>
                                         @endif
                                     </td>
                                     <td><a onclick="displaySum({{ $item->id }}, {{ $item->remarks }})" href="#summary_display" data-toggle="modal" data-backdrop="static">{{ $item->control_no }}</a></td>
