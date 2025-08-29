@@ -465,6 +465,49 @@
 				msg: 'User activated!'
 			});
 		@endif
+
+		// function notify() {
+		// 	fetch('/maif/notify')
+		// 		.then(response => {
+		// 			if (!response.ok) {
+		// 				throw new Error(`HTTP error! status: ${response.status}`);
+		// 			}
+		// 			const contentType = response.headers.get('content-type');
+		// 			if (!contentType || !contentType.includes('application/json')) {
+		// 				throw new Error('Response is not JSON');
+		// 			}
+		// 			return response.json();
+		// 		})
+		// 		.then(data => {
+		// 			if (Array.isArray(data.notify) && data.notify.length > 0) {
+		// 				data.notify.forEach(function(item) {
+		// 					var notifType = [1,2,4,8].includes(item.message_type) ? 'success' 
+		// 								: [3,5].includes(item.message_type)     ? 'error' 
+		// 								: [6,7].includes(item.message_type)     ? 'warning' 
+		// 								: 'info';
+
+		// 					Lobibox.notify(notifType, {
+		// 						title: item.message,
+		// 						size: 'normal',
+		// 						delay: 15000,
+		// 						closeOnClick: false,
+		// 						img: "{{ asset('images/doh-logo.png') }}",
+		// 						sound: "/sound2"
+		// 					});
+		// 				});
+
+		// 				return fetch('/maif/notify-delete')
+		// 					.then(res => res.text())
+		// 					.then(() => console.log("Notifications deleted"))
+		// 					.catch(err => console.error("Delete error:", err));
+		// 			}
+		// 		})
+		// 		.catch(error => {
+		// 			console.error('Error fetching counts:', error);
+		// 		});
+		// }
+		// setInterval(notify, 5000);
+		// notify();
 	</script>
    	@yield('js')
 </body>
