@@ -31,7 +31,7 @@
         </div>
         <div class="saa_clone" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 2%;">
             <select style="width: 50%;" class="select2 saa_id" onchange="autoDeduct($(this))" required>
-                <option value=''>SELECT SAA</option>
+                <option value=''></option>
                 @foreach($info as $row)
                     <?php
                         $rem_balance = number_format((float)str_replace(',', '', $row->remaining_balance), 2, '.', ',');
@@ -72,6 +72,7 @@
                 return $('<span style="color: red;">' + data.text + '</span>');
             }
             return data.text;
-        }
+        },
+        placeholder: "Select SAA"
     });
 </script>

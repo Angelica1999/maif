@@ -15,6 +15,7 @@ use App\Models\ProponentInfo;
 use App\Models\User;
 use App\Models\Transfer;
 use App\Models\Dv;
+use App\Models\Notif;
 use App\Models\Dv2;
 use App\Models\OnlineUser;
 use App\Models\Dv3;
@@ -2394,17 +2395,44 @@ class HomeController extends Controller
             'status' => $request->sent_type,
             'remarks_by' => Auth::user()->userid
         ]);
+
+        $notif = new Notif();
+        $notif->type = "gl";
+        $notif->message_type = 3;
+        $notif->account_type = 1;
+        $notif->user_type = $patient->proponent_id;
+        $notif->message = "Patient ".$patient->fname.', '.$patient->lname." was returned by". Auth::user()->fname.' '. Auth::user()->lname. "(MPU)";
+        $notif->save();
         
         return redirect()->back()->with($request->sent_type == 2? 'return_gl' : 'process_gl', true);
     }
 
     public function acceptPat($id){
-        $pat = Patients::where('id', $id)->first();
+        $pat = Patients::with('proponentData:id,proponent')->where('id', $id)->first();
         if($pat){
             $pat->pat_rem = $pat->pat_rem == "Retrieved" ? null : $pat->pat_rem;
             $pat->fc_status = 'referred';
             $pat->sent_type = 3;
             $pat->save();
+            
+            if(!ctype_digit($pat->created_by)){
+                $notif = new Notif();
+                $notif->type = "gl";
+                $notif->message_type = 2;
+                $notif->account_type = 1;
+                $notif->user_type = $pat->proponent_id;
+                $notif->message = "Patient ".$pat->fname.', '.$pat->lname." was processed by". Auth::user()->fname.' '. Auth::user()->lname. "(MPU)";
+                $notif->save();
+            }
+            
+            $notif1 = new Notif();
+            $notif1->type = "gl";
+            $notif1->message_type = 2;
+            $notif1->account_type = 2;
+            $notif1->user_type = $pat->facility_id;
+            $notif1->message = "Incoming Patient ".$pat->fname.', '.$pat->lname." from ". $pat->proponentData->proponent;
+            $notif1->save();
+
             return redirect()->back()->with('process_gl', true);
         }
     }
@@ -2415,6 +2443,16 @@ class HomeController extends Controller
             'rtrv_remarks' => $remarks,
             'pat_rem' => "Retrieved"
         ]);
+
+        $pat = Patients::where('id', $id)->first();
+        $notif = new Notif();
+        $notif->type = "gl";
+        $notif->message_type = 7;
+        $notif->account_type = 2;
+        $notif->user_type = $pat->facility_id;
+        $notif->message = Auth::user()->fname.' '. Auth::user()->lname. "(MPU) wants to retrieve patient". $pat->fname.', '.$pat->lname." Please check Retrieved GL";
+        $notif->save();
+        
         return response()->json(['status' => 'success']);
     }
 
