@@ -709,7 +709,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer update_footer">
                         <input type="hidden" value="" name="update_type" id="update_type">
                         <button type="button" class="btn btn-secondary" id="close_modal" data-dismiss="modal">Close</button>
                         <button type="submit" id="update_pat_btn" class="btn btn-primary" style="display:block;" >Update</button>
@@ -772,6 +772,15 @@
 <script src="{{ asset('admin/vendors/x-editable/bootstrap-editable.min.js?v=1') }}"></script>
 @include('maif.editable_js')
 <script>
+
+    $('#update_form').on('keypress', function(e) {
+        console.log('sample', $('#update_pat_btn').css('display') );
+        if (e.key === 'Enter' && $('#update_pat_btn').css('display') === 'none') {
+            e.preventDefault();
+            return false;
+        }
+    });
+
     $('form').on('submit', function () {
         $(this).find('button[type="submit"]').prop('disabled', true).text('Submitting...');
     });
@@ -1468,9 +1477,14 @@
                 $('.patient_code').val(patient.patient_code);
                 $('.remaining_balance').val(patient.remaining_balance);
                 $('.pat_rem').val(patient.pat_rem);
+                console.log('patient.sent_type', patient.sent_type);
+                console.log('patient.fc_status', patient.fc_status);
 
                 if (patient.sent_type == null || patient.fc_status == "returned") {
-                    if(patient.fc_status != "retrieved"){
+
+                    if(!["referred", "retrieved"].includes(patient.fc_status)){
+                        console.log('sample11');
+
                         $('#update_pat_btn').css('display', 'block');
                         $('#remove_pat_btn').css('display', 'block');
                         if (stat != 0) {
@@ -1478,8 +1492,15 @@
                         } else {
                             $('#update_send').css('display', 'none');
                         }
+                    }else{
+                        console.log('sample111');
+                        $('#update_send').css('display', 'none');
+                        $('#update_pat_btn').css('display', 'none');
+                        $('#remove_pat_btn').css('display', 'none');
                     }
                 } else {
+                    console.log('sample2');
+
                     $('#update_pat_btn').css('display', 'none');
                     $('#update_send').css('display', 'none');
                     $('#remove_pat_btn').css('display', 'none');

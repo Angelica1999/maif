@@ -298,7 +298,7 @@ Route::get('/notify', function() {
 });
 
 Route::get('/notify-delete', function() {
-    Notif::where('account_type', 3)->delete();
+    // Notif::where('account_type', 3)->delete();
     return response()->json('success');
 });
 
