@@ -1006,6 +1006,7 @@
         $('#barangay_id').select2();
         $('#facility_id').select2();
         $('#proponent_id').select2();
+        enabledInput();
         form_type = 'create';
     });
 
@@ -1483,27 +1484,29 @@
                 if (patient.sent_type == null || patient.fc_status == "returned") {
 
                     if(!["referred", "retrieved"].includes(patient.fc_status)){
-                        console.log('sample11');
-
-                        $('#update_pat_btn').css('display', 'block');
                         $('#remove_pat_btn').css('display', 'block');
+                        enabledInput();
                         if (stat != 0) {
                             $('#update_send').css('display', 'block');
                         } else {
                             $('#update_send').css('display', 'none');
+                            disabledInput();
                         }
                     }else{
-                        console.log('sample111');
                         $('#update_send').css('display', 'none');
-                        $('#update_pat_btn').css('display', 'none');
                         $('#remove_pat_btn').css('display', 'none');
+                        disabledInput();
                     }
                 } else {
-                    console.log('sample2');
-
-                    $('#update_pat_btn').css('display', 'none');
+                    disabledInput();
                     $('#update_send').css('display', 'none');
                     $('#remove_pat_btn').css('display', 'none');
+                }
+
+                if(patient.transd_id != null){
+                    $('#update_pat_btn').css('display', 'none');
+                }else{
+                    $('#update_pat_btn').css('display', 'block');
                 }
             }
             edit_c = 0;
@@ -1516,6 +1519,24 @@
             });
             
         });
+    }
+
+    function disabledInput(){
+        $('.date_guarantee_letter').prop('readonly', true);
+        $('.facility_id1').prop('disabled', true);
+        $('.proponent_id1 ').prop('disabled', true);
+        $('.guaranteed_amount').prop('readonly', true);
+        $('.actual_amount').prop('readonly', true);
+        $('.pat_rem').prop('readonly', true);
+    }
+
+    function enabledInput(){
+        $('.date_guarantee_letter').prop('readonly', false);
+        $('.facility_id1').prop('disabled', false);
+        $('.proponent_id1 ').prop('disabled', false);
+        $('.guaranteed_amount').prop('disabled', false);
+        $('.actual_amount').prop('disabled', false);
+        $('.pat_rem').prop('readonly', false);
     }
     
     var form_type = 'create';
