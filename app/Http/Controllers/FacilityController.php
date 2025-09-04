@@ -435,6 +435,19 @@ class FacilityController extends Controller
             $transmittalQuery->whereIn('facility_id', $facs);
         }
 
+        $status = $req->has('viewAll') ? [0] 
+        : (
+            $req->status_data 
+            ? array_map('intval', json_decode($req->status_data[0] ?? '[]', true) ?: $req->status_data) 
+            : [0]
+        );
+
+        if ($req->status_data) {
+            if($status != 0){
+                $transmittalQuery->whereIn('remarks', $status);
+            }
+        }
+
         $facilities = Facility::whereIn('id', $facilityIds)->select('id', 'name')->get();
 
         $stats = (clone $transmittalQuery)
@@ -472,6 +485,7 @@ class FacilityController extends Controller
             'total' => $total,
             'amount' => $amount,
             'facs' => $facs ?? '',
+            'status' => $status ?? '',
         ]);
     }
 

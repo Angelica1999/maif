@@ -781,6 +781,12 @@
         }
     });
 
+    $(document).on('click', '#update_pat_btn', function(e){
+        e.preventDefault(); 
+        enabledInput(); 
+        $(this).closest('form')[0].submit();
+    });
+
     $('form').on('submit', function () {
         $(this).find('button[type="submit"]').prop('disabled', true).text('Submitting...');
     });
@@ -1490,7 +1496,6 @@
                             $('#update_send').css('display', 'block');
                         } else {
                             $('#update_send').css('display', 'none');
-                            disabledInput();
                         }
                     }else{
                         $('#update_send').css('display', 'none');
@@ -1501,6 +1506,7 @@
                     disabledInput();
                     $('#update_send').css('display', 'none');
                     $('#remove_pat_btn').css('display', 'none');
+
                 }
 
                 if(patient.transd_id != null){
@@ -1534,8 +1540,8 @@
         $('.date_guarantee_letter').prop('readonly', false);
         $('.facility_id1').prop('disabled', false);
         $('.proponent_id1 ').prop('disabled', false);
-        $('.guaranteed_amount').prop('disabled', false);
-        $('.actual_amount').prop('disabled', false);
+        $('.guaranteed_amount').prop('readonly', false);
+        $('.actual_amount').prop('readonly', false);
         $('.pat_rem').prop('readonly', false);
     }
     

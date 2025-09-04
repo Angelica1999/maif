@@ -2283,6 +2283,7 @@ class HomeController extends Controller
     }
  
     public function updatePatient($id, Request $request){
+        
         $val = $request->input('update_type');
 
         $patient_id = $id;

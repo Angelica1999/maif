@@ -40,6 +40,7 @@
                     </div>
                 </div>
                 <button id="filter_btn" name="facility_data[]" class="btn btn-sm btn-info" type="submit" style="display:none;"></button>
+                <button id="status_btn" name="status_data[]" class="btn btn-sm btn-info" type="submit" style="display:none;"></button>
             </form>
             <h1 class="card-title">TRANSMITTAL : ACCEPTED</h1>
             <p class="card-description">
@@ -52,9 +53,20 @@
                             <tr>
                                 <th></th>
                                 <th>Control No</th>
-                                <th>Status @sortablelink('remarks', '⇅')</th>
                                 <th>
-                                    <select id="facility_filter" class="select2" style="width: 200px; border: none; background: transparent;" multiple>
+                                    <select id="status_filter" class="select2" style="width: 200px; border: none; background: transparent; display:none" multiple>
+                                        <option value="">Status</option>
+                                        <!-- <option value="1" {{ in_array(1, array_map('intval', $status)) ? 'selected' : '' }}>In Transit to MPU</option>
+                                        <option value="2" {{ in_array(2, array_map('intval', $status)) ? 'selected' : '' }}>Received by MPU</option>
+                                        <option value="3" {{ in_array(3, array_map('intval', $status)) ? 'selected' : '' }}>Returned by MPU</option> -->
+                                        <option value="5" {{ in_array(5, array_map('intval', $status)) ? 'selected' : '' }}>ACCEPTED</option>
+                                        <option value="6" {{ in_array(6, array_map('intval', $status)) ? 'selected' : '' }}>DV CREATED</option>
+                                        <option value="7" {{ in_array(7, array_map('intval', $status)) ? 'selected' : '' }}>OBLIGATED</option>
+                                        <option value="8" {{ in_array(8, array_map('intval', $status)) ? 'selected' : '' }}>PAID</option>
+                                    </select> 
+                                    @sortablelink('remarks', '⇅')</th>
+                                <th>
+                                    <select id="facility_filter" class="select2" style="width: 200px; border: none; background: transparent; display:none" multiple>
                                         <option value="">Facility</option>
                                         @foreach($facilities as $facility)
                                             <option value="{{ $facility->id }}" {{ in_array((int) $facility->id, array_map('intval', $facs)) ? 'selected' : '' }}>{{ $facility->name }}</option>
@@ -211,6 +223,26 @@
         $('#facility_filter').on('change', function() {
             $('#filter_btn').val(JSON.stringify($(this).val()));
             $('#filter_btn').click();
+        });
+
+        //
+        $('#status_filter').select2({
+            placeholder: 'Status',
+            allowClear: true,
+            width: 'resolve',
+            dropdownAutoWidth: true
+        });
+
+        $('#status_filter').next('.select2').find('.select2-selection').css({
+            'border': 'none',
+            'background': 'transparent',
+            'height': 'auto',
+            'min-height': '0',
+            'padding': '0px'
+        });
+        $('#status_filter').on('change', function() {
+            $('#status_btn').val(JSON.stringify($(this).val()));
+            $('#status_btn').click();
         });
     });
 
