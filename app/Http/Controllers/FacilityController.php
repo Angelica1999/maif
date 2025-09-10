@@ -148,7 +148,7 @@ class FacilityController extends Controller
         Facility::where('id', 678)->update(['name' => 'Allied Care Experts (ACE) Medical Center-Cebu, Inc.']);
         Facility::where('id', 776)->update(['name' => 'Allied Care Experts(ACE) Medical Center - Bayawan Inc.']);
         Facility::where('id', 746)->update(['address' => '2049-D Tagbilaran East Road, Tagbilaran City']);
-
+        Facility::where('id', 849)->update(['name' => 'Tan Chay Duan Renal Center']);
         Facility::where('id', 864)->update(['address' => 'Barili, Cebu']);
 
         return redirect()->back()->with('update_fac', true);
