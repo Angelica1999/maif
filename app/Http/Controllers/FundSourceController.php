@@ -34,6 +34,8 @@ use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use PhpOffice\PhpSpreadsheet\Style\Font;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use Illuminate\Support\Str;
+
 
 class FundSourceController extends Controller
 {
@@ -136,13 +138,45 @@ class FundSourceController extends Controller
                 $fundsources = $fundsources->where('saa', 'LIKE', "%$request->keyword%");
             }
         }  
-        $currentYear = date("Y");
-
-        $fundsources = $fundsources
-            ->orderByRaw("CASE WHEN YEAR(created_at) = ? THEN 0 ELSE 1 END", [$currentYear]) 
-            ->orderBy('remaining_balance', 'desc') 
-            ->paginate(15);
-
+        $fundsources = $fundsources->get();  
+        $fundsources = $fundsources->map(function ($fund) {
+            $totalRemaining = $fund->proponents->sum(function ($proponent) {
+                return $proponent->proponentInfo->sum(function ($info) {
+                    return (float) str_replace(',', '', $info->remaining_balance);
+                });
+            });
+            $fund->total_remaining = $totalRemaining;
+            return $fund;
+        });
+        
+        $fundsources = $fundsources->sortBy(function ($fund) {
+            $isConap = Str::contains($fund->saa, 'CONAP');
+            $hasPositive = $fund->total_remaining > 0;
+        
+            if ($isConap && $hasPositive) {
+                $group = 0; // CONAP positive
+            } elseif (!$isConap && $hasPositive) {
+                $group = 1; // Non-CONAP positive
+            } elseif ($isConap && !$hasPositive) {
+                $group = 2; // CONAP 0 or less
+            } else {
+                $group = 3; // Non-CONAP 0 or less
+            }
+        
+            return [$group, -$fund->total_remaining];
+        })->values();
+        $page = request()->get('page', 1);
+        $perPage = 15;
+        $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
+            $fundsources->forPage($page, $perPage),
+            $fundsources->count(),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+        
+        $fundsources = $paginated;
+        
         $user = DB::connection('dohdtr')->table('users')->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
                 ->where('users.userid', '=', Auth::user()->userid)
                 ->select('users.section')

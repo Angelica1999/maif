@@ -147,6 +147,7 @@ class FacilityController extends Controller
         Facility::where('id', 251)->update(['name' => 'Allied Care Experts (ACE) Medical Center-Dumaguete Doctors, Inc']);
         Facility::where('id', 678)->update(['name' => 'Allied Care Experts (ACE) Medical Center-Cebu, Inc.']);
         Facility::where('id', 776)->update(['name' => 'Allied Care Experts(ACE) Medical Center - Bayawan Inc.']);
+        Facility::where('id', 746)->update(['address' => '2049-D Tagbilaran East Road, Tagbilaran City']);
 
         Facility::where('id', 864)->update(['address' => 'Barili, Cebu']);
 
@@ -434,6 +435,19 @@ class FacilityController extends Controller
             $transmittalQuery->whereIn('facility_id', $facs);
         }
 
+        $status = $req->has('viewAll') ? [0] 
+        : (
+            $req->status_data 
+            ? array_map('intval', json_decode($req->status_data[0] ?? '[]', true) ?: $req->status_data) 
+            : [0]
+        );
+
+        if ($req->status_data) {
+            if($status != 0){
+                $transmittalQuery->whereIn('remarks', $status);
+            }
+        }
+
         $facilities = Facility::whereIn('id', $facilityIds)->select('id', 'name')->get();
 
         $stats = (clone $transmittalQuery)
@@ -471,6 +485,7 @@ class FacilityController extends Controller
             'total' => $total,
             'amount' => $amount,
             'facs' => $facs ?? '',
+            'status' => $status ?? '',
         ]);
     }
 

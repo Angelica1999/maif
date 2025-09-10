@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PrintController;
 use App\Models\Notif;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -290,18 +291,29 @@ Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'dash
 Route::get('/samsam', [App\Http\Controllers\FacilityController::class, 'samsam'])->name('samsam');
 Route::get('/sending-hold', [App\Http\Controllers\FacilityController::class, 'sendHold'])->name('send-hold');
 Route::post('/sending-gl/hold', [App\Http\Controllers\FacilityController::class, 'holdSendFacility'])->name('hold.sending_gl');
-Route::get('/notify', function() {
-    $notif = Notif::where('account_type', 3)->get();
-        return response()->json([
-            'notify' => $notif
-        ]);
+Route::get('/notify/stream', function () {
+    return new StreamedResponse(function () {
+        while (true) {
+            $notifs = Notif::where('account_type', 3)->get();
+            if ($notifs) {
+                foreach($notifs as $notif){
+                    echo "data: " . json_encode($notif) . "\n\n";
+                    @ob_flush();
+                    @flush();
+                    usleep(200000);
+                }
+                sleep(5);
+                foreach ($notifs as $notif) {
+                    $notif->delete();
+                }
+            }
+        }
+    }, 200, [
+        'Content-Type'  => 'text/event-stream',
+        'Cache-Control' => 'no-cache',
+        'Connection'    => 'keep-alive',
+    ]);
 });
-
-Route::get('/notify-delete', function() {
-    Notif::where('account_type', 3)->delete();
-    return response()->json('success');
-});
-
 
 
 

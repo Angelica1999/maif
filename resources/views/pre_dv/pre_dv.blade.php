@@ -648,7 +648,8 @@
                                 return $('<span style="color: red;">' + data.text + '</span>');
                             }
                             return data.text;
-                        }
+                        },
+                        placeholder: "Select SAA"
                     });
                 });
 
@@ -1188,7 +1189,6 @@
                         Lobibox.notify('success', {
                             msg: "Successfully created pre_dv!",
                         });
-                        
                         location.reload();
                     },
                     error: function (error) {

@@ -63,7 +63,7 @@
                             <div class="card">
                                 <div class="card-body">
                                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-                                        <h4 class="card-title" style="text-align: left; margin: 0; color: {{ $fund->remaining_balance <= 0 ? 'red' : 'inherit' }};">
+                                        <h4 class="card-title" style="text-align: left; margin: 0; color: {{ $fund->total_remaining <= 0 ? 'red' : 'inherit' }};">
                                             {{ $fund->saa }} 
                                             @if($fund->budget_cost != null | $fund->budget_cost != 0)
                                                 <br><small class="text-info">Fundsource Budget(admin cost) : {{ number_format($fund->budget_cost,2,'.',',') }}</small>
@@ -133,7 +133,7 @@
                     <strong>No fundsource found!</strong>
                 </div>
             @endif
-            <div class="pl-5 pr-5 mt-5">
+            <div class="pl-6 pr-6 mt-6" style="margin-top:20px">
                 {!! $fundsources->appends(request()->query())->links('pagination::bootstrap-5') !!}
             </div>
         </div>

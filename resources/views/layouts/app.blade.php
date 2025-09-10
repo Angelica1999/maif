@@ -466,48 +466,30 @@
 			});
 		@endif
 
-		// function notify() {
-		// 	fetch('/maif/notify')
-		// 		.then(response => {
-		// 			if (!response.ok) {
-		// 				throw new Error(`HTTP error! status: ${response.status}`);
-		// 			}
-		// 			const contentType = response.headers.get('content-type');
-		// 			if (!contentType || !contentType.includes('application/json')) {
-		// 				throw new Error('Response is not JSON');
-		// 			}
-		// 			return response.json();
-		// 		})
-		// 		.then(data => {
-		// 			if (Array.isArray(data.notify) && data.notify.length > 0) {
-		// 				data.notify.forEach(function(item) {
-		// 					var notifType = [1,2,4,8].includes(item.message_type) ? 'success' 
-		// 								: [3,5].includes(item.message_type)     ? 'error' 
-		// 								: [6,7].includes(item.message_type)     ? 'warning' 
-		// 								: 'info';
-
-		// 					Lobibox.notify(notifType, {
-		// 						title: item.message,
-		// 						size: 'normal',
-		// 						delay: 15000,
-		// 						closeOnClick: false,
-		// 						img: "{{ asset('images/doh-logo.png') }}",
-		// 						sound: "/sound2"
-		// 					});
+		// function connectSSE() {
+		// 	var evtSource = new EventSource("/maif/notify/stream");
+		// 			evtSource.onmessage = function(e) {
+		// 				var data = JSON.parse(e.data);
+		// 				var notifType = [1,2,4,8].includes(data.message_type) ? 'success' 
+		// 							: [3,5].includes(data.message_type)     ? 'error' 
+		// 							: [6,7].includes(data.message_type)     ? 'warning' 
+		// 							: 'info';
+		// 				Lobibox.notify(notifType, {
+		// 					title: data.message,
+		// 					size: 'normal',
+		// 					delay: 15000,
+		// 					closeOnClick: false,
+		// 					img: "{{ asset('images/doh-logo.png') }}",
+		// 					sound: "sound2"
 		// 				});
+		// 			};
 
-		// 				return fetch('/maif/notify-delete')
-		// 					.then(res => res.text())
-		// 					.then(() => console.log("Notifications deleted"))
-		// 					.catch(err => console.error("Delete error:", err));
-		// 			}
-		// 		})
-		// 		.catch(error => {
-		// 			console.error('Error fetching counts:', error);
-		// 		});
+		// 	evtSource.onerror = function() {
+		// 		evtSource.close();
+		// 		setTimeout(connectSSE, 5000); // reconnect in 2s
+		// 	};
 		// }
-		// setInterval(notify, 5000);
-		// notify();
+		// connectSSE();
 	</script>
    	@yield('js')
 </body>
