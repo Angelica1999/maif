@@ -839,48 +839,54 @@
 			});
 		@endif
 
-		// function notify() {
-		// 	fetch('/maif/notify')
-		// 		.then(response => {
-		// 			if (!response.ok) {
-		// 				throw new Error(`HTTP error! status: ${response.status}`);
-		// 			}
-		// 			const contentType = response.headers.get('content-type');
-		// 			if (!contentType || !contentType.includes('application/json')) {
-		// 				throw new Error('Response is not JSON');
-		// 			}
-		// 			return response.json();
-		// 		})
-		// 		.then(data => {
-		// 			if (Array.isArray(data.notify) && data.notify.length > 0) {
-		// 				data.notify.forEach(function(item) {
-		// 					var notifType = [1,2,4,8].includes(item.message_type) ? 'success' 
-		// 								: [3,5].includes(item.message_type)     ? 'error' 
-		// 								: [6,7].includes(item.message_type)     ? 'warning' 
-		// 								: 'info';
-
-		// 					Lobibox.notify(notifType, {
-		// 						title: item.message,
-		// 						size: 'normal',
-		// 						delay: 15000,
-		// 						closeOnClick: false,
-		// 						img: "{{ asset('images/doh-logo.png') }}",
-		// 						sound: "/sound2"
-		// 					});
-		// 				});
-
-		// 				return fetch('/maif/notify-delete')
-		// 					.then(res => res.text())
-		// 					.then(() => console.log("Notifications deleted"))
-		// 					.catch(err => console.error("Delete error:", err));
-		// 			}
-		// 		})
-		// 		.catch(error => {
-		// 			console.error('Error fetching counts:', error);
-		// 		});
+		// if (!sessionStorage.getItem('client_id')) {
+		// 	sessionStorage.setItem('client_id', Math.random().toString(36).substring(2, 15));
 		// }
-		// setInterval(notify, 5000);
-		// notify();
+		// const CLIENT_ID = sessionStorage.getItem('client_id');
+
+
+		// // Register tab every time page loads
+		// fetch('/maif/notifications/register-tab', {
+		// 		method: 'POST',
+		// 		headers: {
+		// 				'Content-Type': 'application/json',
+		// 				'X-CSRF-TOKEN': '{{ csrf_token() }}'
+		// 		},
+		// 		body: JSON.stringify({ client_id: CLIENT_ID })
+		// });
+
+		// function connectSSE() {
+		// 	const evtSource = new EventSource(`/maif/notifications/stream/${CLIENT_ID}`);
+
+		// 	evtSource.onmessage = function(event) {
+		// 		if (event.data && event.data !== "{}") {
+		// 			const payload = JSON.parse(event.data);
+		// 			console.log("New notification:", payload.message);
+
+		// 			const notifList = document.getElementById('notifications');
+		// 			if (notifList) {
+		// 				const item = document.createElement('li');
+		// 				item.textContent = payload.message;
+		// 				notifList.appendChild(item);
+		// 			}
+		// 		}
+		// 	};
+
+		// 	evtSource.onerror = function() {
+		// 		console.warn("SSE disconnected. Reconnecting in 3s...");
+		// 		evtSource.close();
+		// 		setTimeout(connectSSE, 3000);
+		// 	};
+		// }
+
+		// connectSSE();
+
+
+		// // Unregister on close
+		// window.addEventListener('beforeunload', () => {
+		// 	navigator.sendBeacon(`/maif/notifications/unregister-tab?client_id=${CLIENT_ID}`);
+		// });
+
 	</script>
    	@yield('js')
 </body>

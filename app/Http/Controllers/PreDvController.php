@@ -1014,8 +1014,10 @@ class PreDvController extends Controller
             }
 
             $check_latest = PreDVExtension::where('pre_dv_id', $pre_dv->id)->get();
+
+            $fees = PreDVControl::whereIn('predv_extension_id', $check_latest->pluck('id')->toArray())->get();
             $pre_dv->grand_total = $check_latest ? $check_latest->sum('total_amount') : $pre_dv->grand_total;
-            $pre_dv->prof_fee = $check_latest ? $check_latest->sum('prof_fee') : $pre_dv->prof_fee;
+            $pre_dv->prof_fee = $fees ? $fees->sum('prof_fee') : $pre_dv->prof_fee;
             $pre_dv->save();
 
             return redirect()->back()->with('pre_dv', true);
@@ -1127,10 +1129,12 @@ class PreDvController extends Controller
                         }
                     }
                 }
-
+                
                 $check_latest = PreDVExtension::where('pre_dv_id', $pre_dv->id)->get();
+
+                $fees = PreDVControl::whereIn('predv_extension_id', $check_latest->pluck('id')->toArray())->get();
                 $pre_dv->grand_total = $check_latest ? $check_latest->sum('total_amount') : $pre_dv->grand_total;
-                $pre_dv->prof_fee = $check_latest ? $check_latest->sum('prof_fee') : $pre_dv->prof_fee;
+                $pre_dv->prof_fee = $fees ? $fees->sum('prof_fee') : $pre_dv->prof_fee;
                 $pre_dv->save();
 
                 NewDV::where('predv_id', $id)->update(
