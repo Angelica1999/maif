@@ -466,30 +466,54 @@
 			});
 		@endif
 
+		// if (!sessionStorage.getItem('client_id')) {
+		// 	sessionStorage.setItem('client_id', Math.random().toString(36).substring(2, 15));
+		// }
+		// const CLIENT_ID = sessionStorage.getItem('client_id');
+
+
+		// // Register tab every time page loads
+		// fetch('/maif/notifications/register-tab', {
+		// 		method: 'POST',
+		// 		headers: {
+		// 				'Content-Type': 'application/json',
+		// 				'X-CSRF-TOKEN': '{{ csrf_token() }}'
+		// 		},
+		// 		body: JSON.stringify({ client_id: CLIENT_ID })
+		// });
+
 		// function connectSSE() {
-		// 	var evtSource = new EventSource("/maif/notify/stream");
-		// 			evtSource.onmessage = function(e) {
-		// 				var data = JSON.parse(e.data);
-		// 				var notifType = [1,2,4,8].includes(data.message_type) ? 'success' 
-		// 							: [3,5].includes(data.message_type)     ? 'error' 
-		// 							: [6,7].includes(data.message_type)     ? 'warning' 
-		// 							: 'info';
-		// 				Lobibox.notify(notifType, {
-		// 					title: data.message,
-		// 					size: 'normal',
-		// 					delay: 15000,
-		// 					closeOnClick: false,
-		// 					img: "{{ asset('images/doh-logo.png') }}",
-		// 					sound: "sound2"
-		// 				});
-		// 			};
+		// 	const evtSource = new EventSource(`/maif/notifications/stream/${CLIENT_ID}`);
+
+		// 	evtSource.onmessage = function(event) {
+		// 		if (event.data && event.data !== "{}") {
+		// 			const payload = JSON.parse(event.data);
+		// 			console.log("New notification:", payload.message);
+
+		// 			const notifList = document.getElementById('notifications');
+		// 			if (notifList) {
+		// 				const item = document.createElement('li');
+		// 				item.textContent = payload.message;
+		// 				notifList.appendChild(item);
+		// 			}
+		// 		}
+		// 	};
 
 		// 	evtSource.onerror = function() {
+		// 		console.warn("SSE disconnected. Reconnecting in 3s...");
 		// 		evtSource.close();
-		// 		setTimeout(connectSSE, 5000); // reconnect in 2s
+		// 		setTimeout(connectSSE, 3000);
 		// 	};
 		// }
+
 		// connectSSE();
+
+
+		// // Unregister on close
+		// window.addEventListener('beforeunload', () => {
+		// 	navigator.sendBeacon(`/maif/notifications/unregister-tab?client_id=${CLIENT_ID}`);
+		// });
+
 	</script>
    	@yield('js')
 </body>

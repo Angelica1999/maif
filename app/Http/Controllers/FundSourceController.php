@@ -611,6 +611,7 @@ class FundSourceController extends Controller
         }
 
         $transfer = new Transfer();
+        $transfer->owed = $request->input('owed') == "ON" ? 1 : 0;
         $transfer->from_proponent = $from->proponent_id;
         $transfer->from_saa = $from->fundsource_id;
         $transfer->from_facility = $from->facility_id;
@@ -741,9 +742,15 @@ class FundSourceController extends Controller
 
     public function forPatientCode($proponent_id, $facility_id) {
         $included_ids = IncludedFacility::pluck('facility_id')->toArray();
+       
+
         $user = Auth::user();
         $proponent= Proponent::where('id', $proponent_id)->first();
         $proponent_ids= Proponent::where('proponent', $proponent->proponent)->pluck('id')->toArray();
+        $sl = ProponentInfo::whereIn('proponent_id', $proponent_ids)->where('facility_id', 'LIKE', "%851%")->get();
+        if(count($sl) != 0) {
+            $included_ids[] = 775; // add 775 if 851 exists
+        }
         // $info_sum = ProponentInfo::whereIn('proponent_id', $proponent_ids)
         //     ->selectRaw('SUM(CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(10,2)) - CAST(REPLACE(admin_cost, ",", "") AS DECIMAL(10,2))) as total_amount')
         //     ->value('total_amount');
@@ -782,17 +789,45 @@ class FundSourceController extends Controller
                 CAST(REPLACE(IFNULL(amount, '0'), ',', '') AS DECIMAL(20, 2))
             "));   
         $info = ProponentInfo::whereIn('proponent_id', $proponent_ids)->pluck('id')->toArray();
+
+        $info = ProponentInfo::whereIn('proponent_id', $proponent_ids)
+            ->where(function ($query) use ($included_ids) {
+                $query->whereIn('facility_id', $included_ids);
+                foreach ($included_ids as $id) {
+                    $query->orWhereJsonContains('facility_id', (string) $id);
+                }
+            })
+            ->where(function ($query) {
+                $query->where('facility_id', '!=', 702);
+                $query->whereNot(function ($sub) {
+                    $sub->whereJsonContains('facility_id', '702');
+                });
+            })
+            ->pluck('id')
+            ->toArray();
+
         $dv3_sum = Dv3Fundsource::whereIn('info_id', $info)
-            ->with([
-                'dv3' => function ($query){
-                    $query->with([
-                        'facility:id,name',
-                        'user:userid,fname,lname'
-                    ]);
-                },
-                'fundsource:id,saa'
-            ])->sum('amount');
-        
+        ->with([
+            'dv3' => function ($query){
+                $query->with([
+                    'facility:id,name',
+                    'user:userid,fname,lname'
+                ]);
+            },
+            'fundsource:id,saa'
+        ])->sum('amount');
+
+        // $dv3_sum = Dv3Fundsource::whereIn('info_id', $info)
+        //     ->with([
+        //         'dv3' => function ($query){
+        //             $query->with([
+        //                 'facility:id,name',
+        //                 'user:userid,fname,lname'
+        //             ]);
+        //         },
+        //         'fundsource:id,saa'
+        //     ])->sum('amount');
+
         $dv1 = Utilization::whereIn('proponent_id', $proponent_ids)
             ->where('status', 0)
             ->where('facility_id', 837)
@@ -814,9 +849,18 @@ class FundSourceController extends Controller
             return floatval(str_replace(',', '', $item->utilize_amount));
         });
         
-        // $balance = ($info_sum + $supplemental) - ($subtracted + $dv3_sum + $dv_sum + $pat_sum) ;
+        if (count($sl) != 0) {
+            $balance = ($info_sum + $supplemental) - ($subtracted + $dv3_sum + $dv_sum + $pat_sum) ;
+            $sampp = $dv3_sum;
+        }else{
+            $balance = ($info_sum + $supplemental) - ($subtracted + $pat_sum + $dv_sum) ;
+            $sampp = 2;
+        }
+
+        if(Auth::user()->username == "2760"){
+            return $info;
+        }
         // $balance = ($info_sum + $supplemental) - ($subtracted + $pat_sum) ;
-        $balance = ($info_sum + $supplemental) - ($subtracted + $pat_sum + $dv_sum) ;
 
         $facility = Facility::find($facility_id);
         $patient_code = $proponent->proponent_code.'-'.$this->getAcronym($facility->name).date('YmdHis').$user->id;
@@ -829,8 +873,8 @@ class FundSourceController extends Controller
             'total_funds' => $info_sum,
             'supplemental' => $supplemental,
             'subtracted' => $subtracted,
-            // 'disbursement' => $dv3_sum + $dv_sum,
-            'disbursement' => $dv_sum,
+            'disbursement' => count($sl) != 0 ? $dv3_sum + $dv_sum : $dv_sum ,
+            // 'disbursement' => $dv_sum,
             'gl_sum' => round($pat_sum, 2),
             // 'list'=> $saaa ,
             'dsad' => count($saaa)
