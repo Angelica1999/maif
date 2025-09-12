@@ -1,5 +1,4 @@
-<style>
-
+    <style>
     .input-group {
         justify-content: flex-end;
         gap: 1px;
@@ -13,8 +12,6 @@
         justify-content: flex-end; 
         
     }
-
-
     .input-group-append select,
     .input-group-append .btn {
         flex: none;
@@ -67,7 +64,6 @@
     .select2-container .select2-selection--multiple .select2-selection__rendered {
         line-height: 40px !important;
     }
-    /* Keep select boxes responsive but compact */
     #gl_tracking select,
     #gl_tracking .select2-container {
         width: 100% !important;
@@ -76,7 +72,12 @@
         font-size: 13px;
     }
 
-    /* For select fields inside table cells */
+    #gl_tracking .modal-content {
+        position: relative;
+        padding-bottom: 30px;
+        overflow-x: auto;
+    }
+
     #gl_tracking td select {
         display: block;
         min-width: 100px;
@@ -88,14 +89,13 @@
         padding: 2px 4px;
     }
 
-    /* Prevent long Select2 selected values from stretching */
     #gl_tracking .select2-selection__rendered {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
 
-</style>
+    </style>
 @extends('layouts.app')
 @section('content')
 <?php 
@@ -135,8 +135,8 @@
                                         <option value="6" {{ $filter_keyword == 6 ? 'selected' : ''}}>Negative Amount</option>
                                         <option value="7" {{ $filter_keyword == 7 ? 'selected' : ''}}>Remaining Funds</option>
                                     </select>
-                                    <button  class="btn btn-sm btn-success text-white" style="height:40px" value="{{ $sort }}" type="submit" name="sorting_btn"><i class="typcn typcn-filter menu-icon"></i>Sort</button>
-                                    <button  class="btn btn-sm btn-warning text-white" style="height:40px" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View</button>
+                                   <button style="width:75px; border-radius:0; height:40px"  class="btn btn-sm btn-success text-white" value="{{ $sort }}" type="submit" name="sorting_btn"><i class="typcn typcn-filter menu-icon"></i>Sort</button>
+                                        <button style="width:75px; border-radius:0; height:40px" class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View</button>
                                     <a href="{{ route('excel.proponent_summary') }}" style= "color: white; height:40px" type="button" class="btn btn-sum">
                                         <img src="\maif\public\images\excel-file.png" style="width: 15px; height: auto;">Summary</a>    
                                 </div>
@@ -385,32 +385,22 @@
             width: '200px'
         });
 
-        $('.facility_2').select2({
-            placeholder: 'Select Facility',
-            width: '100%'
-        });
-        
-    }
-
-    // Run on page load
-    $(window).on('load', function() {
-        cleanAndInitSelect2();
-    });
-
-    // Also run after any modal closes (like #gl_tracking, #modified_funds)
-    $('body').on('hidden.bs.modal', function () {
-        setTimeout(() => {
-            cleanAndInitSelect2();
-        },);
-    });
-
-    // Optional debug tool: check if ghosts still exist
-    setTimeout(() => {
-        const ghostCount = $('.select2-container').length;
-        if (ghostCount > $('.data_filtering, .data_sorting, .facility_2').length) {
-            console.warn("⚠️ Ghost Select2 elements detected:", ghostCount);
+            $('.facility_2').select2({
+                placeholder: 'Select Facility',
+                width: '100%'
+            });
+            
         }
-    },);
+
+        $(document).ready(function () {
+            cleanAndInitSelect2();
+        });
+
+        $('body').on('hidden.bs.modal', function () {
+            setTimeout(() => {
+                cleanAndInitSelect2();
+            },);
+        });
 
     function subtracts(){
         $('.funds_type').val(2);

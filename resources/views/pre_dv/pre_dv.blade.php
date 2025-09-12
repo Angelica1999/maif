@@ -79,7 +79,15 @@
                                         </select>
                                     </div>  
                                 </th>
-                                <th>No. of Transmittals</th>
+                                @php
+                                    $sortOrder = request('sort_order', 'desc'); // default
+                                    $nextOrder = $sortOrder === 'asc' ? 'desc' : 'asc';
+                                    $icon = $sortOrder === 'asc' ? '▲' : '▼';
+                                @endphp
+                                <th>
+                                    No. of Transmittals 
+                                    <a href="{{ request()->fullUrlWithQuery(['sort_order' => $nextOrder]) }}">{!! $icon !!}</a>
+                                </th>
                                 <th>Professional Fee</th>
                                 <th style="min-width:100px">Grand Total</th>
                                 <th class="user">Created By
@@ -121,13 +129,7 @@
                                     </td>
                                     <td><a data-toggle="modal" data-backdrop="static" href="#update_predv" onclick="updatePre( {{ $row->id }}, {{ $row->new_dv?1:2 }}, {{ $row->new_dv && $row->new_dv->edit_status == 1 ? 1: 0 }} )">{{ $row->facility->name }}</a></td>
                                     <td>
-                                        <?php
-                                            $total = 0;
-                                            foreach($row->extension as $item){
-                                                $total = $total + count($item->controls);
-                                            }
-                                            echo $total;
-                                        ?>
+                                       {{ $row->controls_count }}
                                     </td>
                                     <td>{{ $row->prof_fee != null ? number_format(str_replace(',','',$row->prof_fee), 2, '.',',') : '0.00' }}</td>
                                     <td>{{ number_format(str_replace(',','',$row->grand_total), 2, '.',',') }}</td>

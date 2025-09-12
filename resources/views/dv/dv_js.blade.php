@@ -4,6 +4,7 @@
 <script src="{{ asset('admin/vendors/datatables.net-bs4/dataTables.bootstrap4.js') }}"></script>
 <script src="{{ asset('admin/vendors/daterangepicker-master/moment.min.js?v=1') }}"></script>
 <script src="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.js?v=1') }}"></script>
+<script src="{{ asset('admin/js/modal_error.js') }}"></script>
 <script>
     
     $('.table_body').on('click', function(){
@@ -1195,7 +1196,7 @@
             }
         )
     }
-        
+ 
 </script>
 
 @endsection

@@ -556,6 +556,7 @@
 
 @include('maif.editable_js')
 
+<script src="{{ asset('admin/js/modal_error.js') }}"></script>
 <script>
     $('#stat_select').select2({
         placeholder: "Status"

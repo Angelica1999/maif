@@ -290,6 +290,8 @@ Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'dash
 Route::get('/samsam', [App\Http\Controllers\FacilityController::class, 'samsam'])->name('samsam');
 Route::get('/sending-hold', [App\Http\Controllers\FacilityController::class, 'sendHold'])->name('send-hold');
 Route::post('/sending-gl/hold', [App\Http\Controllers\FacilityController::class, 'holdSendFacility'])->name('hold.sending_gl');
+//Route::match(['get','post'],'/logbook/export', [App\Http\Controllers\HomeController::class, 'exportToExcel'])->name('logbook_export');
+Route::get('/export/logbook', [App\Http\Controllers\HomeController::class, 'exportToExcel'])->name('logbook.export');
 Route::get('/notify', function() {
     $notif = Notif::where('account_type', 3)->get();
         return response()->json([

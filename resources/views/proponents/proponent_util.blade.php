@@ -1,5 +1,6 @@
 <style>
     <link rel="stylesheet" href="{{ asset('admin/vendors/select2/select2.min.css') }}">
+    
 </style>
 <div class="">
     <!-- Tabs Navigation -->
@@ -18,8 +19,14 @@
     <!-- Tabs Content -->
     <div class="tab-content" id="customTabContent" style="">
         <!-- GL LISTS Tab Content -->
-        <div class="tab-pane fade show active" style="border:1px solid gray;" id="custom-gl-lists" role="tabpanel" aria-labelledby="custom-gl-lists-tab">
+        <div class="tab-pane fade show active" id="custom-gl-lists" role="tabpanel" aria-labelledby="custom-gl-lists-tab">
             <div class="" style="">
+                <div class="d-flex justify-content-end mb-3">
+                    <div class="input-group" style="width:40%; border: 1px solid #ccc;">
+                        <input type="text" name="keyword" class="form-control"  placeholder="Search by First Name, Middle Name, & Last Name..." value="{{ request('keyword') }}">
+                        <button class="btn btn-info search-btn" type="button" onclick="doSearch()">Search</button>
+                    </div>
+                </div>
                 <table class="table table-list table-hover table-striped" id="track_details" style="border:1px solid black">
                     <thead style="position: sticky; top: 0; background-color: white; z-index: 1; border:1px solid black">
                         <tr style="font-weight:bold">
@@ -245,5 +252,111 @@
             target.classList.add('show', 'active');
         });
     });
-</script>
+
+   function doSearch() {
+    const inputField = $('input[name="keyword"]');
+    if (!inputField.length) return;
+    const keyword = inputField.val()?.trim() || '';
+    // Save keyword to localStorage
+    localStorage.setItem('search_keyword', keyword);
+    $('#gl_body').html(loading);
+    $.get("{{ url('proponent/util') }}/" + encodeURIComponent(pro_code), { keyword: keyword }, function(result) {
+        if (result == 0) {
+            $('#pro_util').modal('hide');
+             Swal.fire({
+            title: "No Data Found",
+            text: "There is no utilization details to display.",
+            iconHtml: '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"></svg>',
+            timer: 1000,
+            timerProgressBar: true,
+            showConfirmButton: true,
+            didClose: () => {
+                $.get("{{ url('proponent/util') }}/" + encodeURIComponent(pro_code), function(fullResult) {
+                    $('#gl_body').html(fullResult);
+                    $('.select2-container').remove();
+                    setTimeout(() => {
+                        $('.data_filtering').select2({
+                            placeholder: "Select Proponent to filter",
+                            allowClear: true,
+                            closeOnSelect: false,
+                            width: '200px'
+                        });
+                        $('.data_sorting').select2({
+                            placeholder: "Select data to sort",
+                            allowClear: true,
+                            closeOnSelect: false,
+                            width: '200px'
+                        });
+                    }, 100);
+                    $('#gl_tracking').modal('show');
+                });
+            }
+        });
+        } else {
+            $('#gl_body').html(result);
+          
+            $('.select2-container').remove();
+            setTimeout(() => {
+                $('.data_filtering').select2({
+                    placeholder: "Select Proponent to filter",
+                    allowClear: true,
+                    closeOnSelect: false,
+                    width: '200px'
+                });
+                $('.data_sorting').select2({
+                    placeholder: "Select data to sort",
+                    allowClear: true,
+                    closeOnSelect: false,
+                    width: '200px'
+                });
+            }, 100);
+            $('#gl_tracking').modal('show');
+        }
+    });
+}
+$(document).ready(function () {
+    let searchTimeout;
     
+    const savedKeyword = localStorage.getItem('search_keyword');
+    const keywordInput = $('input[name="keyword"]');
+    
+    if (savedKeyword) {
+        keywordInput.val(savedKeyword);
+    }
+    
+    setTimeout(() => {
+        keywordInput.focus();
+
+        const inputElement = keywordInput[0];
+        if (inputElement) {
+            const textLength = keywordInput.val().length;
+            inputElement.setSelectionRange(textLength, textLength);
+        }
+    }, 100);
+    
+    $(document).on('keyup', 'input[name="keyword"]', function () {
+        const keyword = $(this).val()?.trim() || '';
+        
+        clearTimeout(searchTimeout);
+        
+    
+        if (!keyword) {
+            doSearch();
+        } else {
+            searchTimeout = setTimeout(doSearch, 800);
+        }
+    });
+    
+    $('#pro_util .btn-info.search-btn').on('click', function () {
+        doSearch();
+    });
+    
+    $(document).on('input', 'input[name="keyword"]', function () {
+        const keyword = $(this).val()?.trim() || '';
+        if (!keyword) {
+            localStorage.removeItem('search_keyword');
+        }
+    });
+});
+    
+</script>

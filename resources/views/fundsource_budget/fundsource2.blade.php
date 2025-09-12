@@ -656,12 +656,12 @@
     }
 
     function openModal(link) {
-        var routeNoo = $(link).data('routeid');
-        var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNoo;
+        var routeNo = $(link).data('routeid');
+        var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNo;
+        var base_url = "{{ url('/') }}";
+        $('.modal-body').append('<img class="loadingGif" src="' + base_url + '/public/images/loading.gif" alt="Loading..." style="display:block; margin:auto;">');
 
-        $('.modal-body').append('<img class="loadingGif" src="public/images/loading.gif" alt="Loading..." style="display:block; margin:auto;">');
-
-        var iframe = $('#trackIframe');
+        var iframe = $('#track_iframe');
 
         iframe.hide();
 
@@ -672,7 +672,7 @@
             $('.loadingGif').css('display', 'none');
         });
 
-        $('#myModal').modal('show');
+        $('#i_frame').modal('show');
     }
 
     function getDv( link) {

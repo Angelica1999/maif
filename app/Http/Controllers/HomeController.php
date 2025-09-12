@@ -28,6 +28,7 @@ use App\Models\MailHistory;
 use App\Models\ReturnedPatients;
 use App\Models\ProponentUtilizationV1;
 use App\Models\IncludedFacility;
+use App\Models\Logbook;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Arr;
@@ -2454,6 +2455,363 @@ class HomeController extends Controller
         $notif->save();
         
         return response()->json(['status' => 'success']);
+    }
+
+    public function exportToExcel(Request $request){
+      
+        $keyword = $request->input('keyword'); 
+        $filter = $request->input('filter'); 
+        $received = $request->input('received'); 
+        
+        $query = Logbook::with('r_by');
+
+
+    if (!empty($keyword)) {
+        $query->where('control_no', 'LIKE', '%' . $keyword . '%');
+
+    } elseif (!empty($received)) {
+        $query->whereHas('r_by', function ($q) use ($received) {
+            $names = is_array($received)
+                ? $received
+                : array_filter(array_map('trim', explode(',', $received)));
+
+            foreach ($names as $index => $name) {
+                $method = $index === 0 ? 'whereRaw' : 'orWhereRaw';
+                $q->$method("CONCAT(fname, ' ', lname) LIKE ?", ["%{$name}%"]);
+            }
+        });
+
+    } elseif (!empty($filter)) {
+        $query->where('received_by', $filter);
+    }
+
+
+
+        $logbook = $query->orderBy('received_on', 'desc')->get();
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->getColumnDimension('A')->setWidth(20);
+        $sheet->getColumnDimension('B')->setWidth(30);
+        $sheet->getColumnDimension('C')->setWidth(30);
+        $sheet->getColumnDimension('D')->setWidth(25);
+
+        $sheet->getStyle('A1:D1')
+            ->getAlignment()
+            ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+            ->setVertical(Alignment::VERTICAL_CENTER);
+
+        $headers = [
+            'A1' => 'CONTROL NO',
+            'B1' => 'DELIVERED BY',
+            'C1' => 'RECEIVED BY',
+            'D1' => 'RECEIVED ON'
+        ];
+
+        foreach ($headers as $cell => $headerText) {
+            $richText = new RichText();
+            $normalText = $richText->createTextRun($headerText);
+            $normalText->getFont()->setBold(true);
+            $sheet->setCellValue($cell, $richText);
+            $sheet->getStyle($cell)->getAlignment()->setWrapText(true);
+        }
+   
+        $data = [];
+        foreach ($logbook as $entry) {
+            $receiverName = $entry->r_by ? 
+                trim($entry->r_by->fname . ' ' . $entry->r_by->lname) : 'N/A';
+            
+            $data[] = [
+                $entry->control_no ?? '',
+                $entry->delivered_by ?? '',
+                $receiverName,
+                $entry->received_on ? date('F j, Y', strtotime($entry->received_on)) : ''
+            ];
+        }
+
+        $sheet->fromArray($data, null, 'A2');
+
+        $styleArray = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                ],
+            ],
+            'alignment' => [
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+        ];
+
+        $lastRow = count($data) + 1;
+        $sheet->getStyle("A1:D{$lastRow}")->applyFromArray($styleArray);
+        $sheet->getStyle("A2:D{$lastRow}")->getAlignment()->setWrapText(true);
+
+        $sheet->getStyle("A2:A{$lastRow}")
+            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle("B2:C{$lastRow}")
+            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $sheet->getStyle("D2:D{$lastRow}")
+            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        $filename = "Logbook Summary" . date('Ymd') . ".xlsx";
+
+        header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        header("Content-Disposition: attachment; filename=\"$filename\"");
+        header("Cache-Control: max-age=0");
+        header("Pragma: no-cache");
+        header("Expires: 0");
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
+        exit;
+    }
+    
+    public function patientsSAmple(Request $request){
+
+        $filter_date = $request->input('filter_dates');
+        $order = $request->input('order', 'asc');
+
+
+        $patients = Patients::with([
+            'province:id,description',
+            'muncity:id,description',
+            'barangay:id,description',
+            'encoded_by:userid,fname,lname,mname',
+            'gl_user:username,fname,lname',
+            'facility:id,name',
+            'proponentData:id,proponent',
+            'pat_remarks:patient_id,remarks'
+        ])->whereNotNull('sent_type');
+       
+        //  -- for date range
+        if($request->gen){
+            $dateRange = explode(' - ', $filter_date);
+            $start_date = date('Y-m-d', strtotime($dateRange[0]));
+            $end_date = date('Y-m-d', strtotime($dateRange[1]));
+            $patients = $patients ->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59'])->whereNotNull('sent_type');
+        }
+
+        // -- for search
+
+        if($request->viewAll){
+
+            $request->keyword = '';
+            $request->filter_date = '';
+            $request->filter_fname = '';
+            $request->filter_mname = '';
+            $request->filter_lname = '';
+            $request->filter_facility = '';
+            $request->filter_proponent = '';
+            $request->filter_code = '';
+            $request->filter_region = '';
+            $request->filter_province = '';
+            $request->filter_muncity = '';
+            $request->filter_barangay = '';
+            $request->filter_on = '';
+            $request->filter_by = '';
+            $filter_date = '';
+            $request->gen = '';
+
+
+        }else if($request->keyword){
+            // return $patients->where('pro_used', null)->orderBy('id', 'desc')->paginate(50);
+
+            $keyword = $request->keyword;
+            $patients = $patients->where(function ($query) use ($keyword) {
+                $query->whereNotNull('pro_used')
+                    ->where(function ($query) use ($keyword) {
+                        $query->where('fname', 'LIKE', "%$keyword%")
+                            ->orWhere('lname', 'LIKE', "%$keyword%")
+                            ->orWhere('mname', 'LIKE', "%$keyword%")
+                            ->orWhere('region', 'LIKE', "%$keyword%")
+                            ->orWhere('other_province', 'LIKE', "%$keyword%")
+                            ->orWhere('other_muncity', 'LIKE', "%$keyword%")
+                            ->orWhere('other_barangay', 'LIKE', "%$keyword%")
+                            ->orWhere('patient_code', 'LIKE', "%$keyword%");
+                    })
+                    ->orWhereHas('facility', function ($query) use ($keyword) {
+                        $query->where('name', 'LIKE', "%$keyword%");
+                    })
+                    ->orWhereHas('proponentData', function ($query) use ($keyword) {
+                        $query->where('proponent', 'LIKE', "%$keyword%");
+                    })
+                    ->orWhereHas('barangay', function ($query) use ($keyword) {
+                        $query->where('description', 'LIKE', "%$keyword%");
+                    })
+                    ->orWhereHas('muncity', function ($query) use ($keyword) {
+                        $query->where('description', 'LIKE', "%$keyword%");
+                    })
+                    ->orWhereHas('province', function ($query) use ($keyword) {
+                        $query->where('description', 'LIKE', "%$keyword%");
+                    });
+            });
+        }
+
+        // -- for table header sorting
+
+        if ($request->sort && $request->input('sort') == 'facility') {
+            $patients = $patients->sortable(['facility.name' => 'asc'])->whereNotNull('sent_type');
+        }else if ($request->sort && $request->input('sort') == 'proponent') {
+            $patients = $patients->sortable(['proponentData.proponent' => 'asc'])->whereNotNull('sent_type');
+        }else if ($request->sort && $request->input('sort') == 'province') {
+            
+            $patients = $patients->leftJoin('province', 'province.id', '=', 'patients.province_id')
+                            ->whereNotNull('sent_type')
+                            ->orderBy('patients.other_province', $request->input('order'))
+                            ->orderBy('province.description', $request->input('order')) 
+                            ->select('patients.*');
+
+        }else if ($request->sort && $request->input('sort') == 'municipality') {
+            
+            $patients = $patients->leftJoin('muncity', 'muncity.id', '=', 'patients.muncity_id')
+                            ->whereNotNull('pro_used')
+                            ->orderBy('patients.other_muncity', $request->input('order'))
+                            ->orderBy('muncity.description', $request->input('order')) 
+                            ->select('patients.*');
+
+        }else if ($request->sort && $request->input('sort') == 'barangay') {
+            
+            $patients = $patients->leftJoin('barangay', 'barangay.id', '=', 'patients.barangay_id')
+                            ->whereNotNull('pro_used')
+                            ->orderBy('patients.other_barangay', $request->input('order'))
+                            ->orderBy('barangay.description', $request->input('order')) 
+                            ->select('patients.*');
+
+        }else if ($request->sort && $request->input('sort') == 'encoded_by') {
+        
+            $patients = $patients
+                        ->whereNotNull('pro_used')
+                        ->orderBy(
+                            \DB::connection('dohdtr')
+                                ->table('users')
+                                ->select('lname')
+                                ->whereColumn('users.userid', 'patients.created_by'),
+                                $request->input('order')
+                        );
+        }else{
+            $patients->sortable(['id' => 'desc']);
+        }
+        // for filtering column
+
+        // if($request->filter_col){
+            if($request->filter_date){
+                $patients = $patients->whereIn('date_guarantee_letter', explode(',',$request->filter_date))->whereNotNull('sent_type');
+            }
+            if($request->filter_fname){
+                $patients = $patients->whereIn('fname', explode(',',$request->filter_fname))->whereNotNull('sent_type');
+            }
+            if($request->filter_mname){
+                $patients = $patients->whereIn('mname', explode(',',$request->filter_date))->whereNotNull('sent_type');
+            }
+            if($request->filter_lname){
+                $patients = $patients->whereIn('lname', explode(',',$request->filter_lname))->whereNotNull('sent_type');
+            }
+            if($request->filter_facility){
+                $patients = $patients->whereIn('facility_id', explode(',',$request->filter_facility))->whereNotNull('sent_type');
+            }
+            if($request->filter_proponent){
+                $patients = $patients->whereIn('proponent_id', explode(',',$request->filter_proponent))->whereNotNull('sent_type');
+            }
+            if($request->filter_code){
+                $patients = $patients->whereIn('patient_code', explode(',',$request->filter_code))->whereNotNull('sent_type');
+            }
+            if($request->filter_region){
+                $patients = $patients->whereIn('region', explode(',',$request->filter_region))->whereNotNull('sent_type');
+            }
+            if($request->filter_province){
+                $patients = $patients->whereIn('province_id', explode(',',$request->filter_province))
+                            ->orWhereIn('other_province', explode(',',$request->filter_province))
+                            ->whereNotNull('sent_type');
+            }
+            if($request->filter_municipality){
+                $patients = $patients->whereIn('muncity_id', explode(',',$request->filter_municipality))
+                            ->orWhereIn('other_muncity', explode(',',$request->filter_municipality))
+                            ->whereNotNull('sent_type');
+            }
+            if($request->filter_barangay){
+                $patients = $patients->whereIn('barangay_id', explode(',',$request->filter_barangay))
+                            ->orWhereIn('other_barangay', explode(',',$request->filter_barangay))
+                            ->whereNotNull('sent_type');
+            }
+            if($request->filter_on){
+                $patients = $patients->whereIn(DB::raw('DATE(created_at)'), explode(',',$request->filter_on))->whereNotNull('sent_type');
+                // return  $request->filter_on;
+            }
+            if($request->filter_by){
+                // return explode(',',$request->filter_by);
+                $patients = $patients->whereIn('created_by', explode(',',$request->filter_by))->whereNotNull('sent_type');
+            }
+        // }
+
+        $date = clone ($patients);
+        $fname = clone ($patients);
+        $mname = clone ($patients);
+        $lname = clone ($patients);
+        $facs = clone ($patients);
+        $code = clone ($patients);
+        $proponent = clone ($patients);
+        $region = clone ($patients);
+        $province = clone ($patients);
+        $muncity = clone ($patients);
+        $barangay = clone ($patients);
+        $on = clone ($patients);
+        $by = clone ($patients);
+
+        $fc_list = Facility::whereIn('id', $facs->groupBy('facility_id')->pluck('facility_id'))->select('id','name')->get();
+        $pros = Proponent::whereIn('id', $proponent->groupBy('proponent_id')->pluck('proponent_id'))->select('id','proponent')->get();
+        $users = User::whereIn('userid', $by->groupBy('created_by')->pluck('created_by'))->select('userid','lname', 'fname')->get();
+        $brgy = Barangay::whereIn('id', $barangay->groupBy('barangay_id')->pluck('barangay_id'))->select('id','description')->get();
+        $mncty = Muncity::whereIn('id', $muncity->groupBy('muncity_id')->pluck('muncity_id'))->select('id','description')->get();
+        $prvnc = Province::whereIn('id', $province->groupBy('province_id')->pluck('province_id'))->select('id','description')->get();
+        $on = $on->groupBy(DB::raw('DATE(created_at)'))->pluck(DB::raw('MAX(DATE(created_at))'));
+        $all_pat = clone ($patients);
+        $proponents_code = Proponent::groupBy('proponent')->select(DB::raw('MAX(proponent) as proponent'), DB::raw('MAX(proponent_code) as proponent_code'),DB::raw('MAX(id) as id') )->get();
+        // return $patients->paginate(10);
+        return view('maif.proponent_patient', [
+            'patients' => $patients->whereNotNull('sent_type')->paginate(50),
+            'keyword' => $request->keyword,
+            'provinces' => Province::get(),
+            'municipalities' => Muncity::get(),
+            'proponents' => $proponents_code,
+            'barangays' => Barangay::get(),
+            'facilities' => Facility::get(),
+            'user' => Auth::user(),
+            'date' =>  $date->groupBy('date_guarantee_letter')->pluck('date_guarantee_letter'),
+            'fname' => $fname->groupBy('fname')->pluck('fname'),
+            'mname' => $mname->groupBy('mname')->pluck('mname'),
+            'lname' => $lname->groupBy('lname')->pluck('lname'),
+            'fc_list' => $fc_list,
+            'pros' => $pros,
+            'code' => $code->groupBy('patient_code')->pluck('patient_code'),
+            'region' => $region->groupBy('region')->pluck('region'),
+            'pro1' => $province->groupBy('other_province')->pluck('other_province'),
+            'prvnc' => $prvnc,
+            'muncity' => $province->groupBy('other_muncity')->pluck('other_muncity'),
+            'mncty' => $mncty,
+            'barangay' => $barangay->groupBy('other_barangay')->pluck('other_barangay'),
+            'brgy' => $brgy,
+            'on' => $on,
+            'by' => $users,
+            'filter_date' => explode(',',$request->filter_date),
+            'filter_fname' => explode(',',$request->filter_fname),
+            'filter_mname' => explode(',',$request->filter_mname),
+            'filter_lname' => explode(',',$request->filter_lname),
+            'filter_facility' => explode(',',$request->filter_facility),
+            'filter_proponent' => explode(',',$request->filter_proponent),
+            'filter_code' => explode(',',$request->filter_code),
+            'filter_region' => explode(',',$request->filter_region),
+            'filter_province' => explode(',',$request->filter_province),
+            'filter_municipality' => explode(',',$request->filter_municipality),
+            'filter_barangay' => explode(',',$request->filter_barangay),
+            'filter_on' => explode(',',$request->filter_on),
+            'filter_by' => explode(',',$request->filter_by),
+            'generate_dates' => $filter_date,
+            'gen' => $request->gen,
+            'order' => $order,
+            'id_pat' => '',
+            'onhold_facs' => AddFacilityInfo::where('sent_status', 1)->pluck('facility_id')->toArray()
+        ]);
     }
 
     public function getAcronym($str) {
