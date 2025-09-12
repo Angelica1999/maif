@@ -98,6 +98,7 @@ class ReportController extends Controller
                 $row->proponent->proponent,
                 $facilityName,
                 str_replace(',','',$allocatedFunds),
+                0,
                 str_replace(',','',$totalWithAdmin),
                 str_replace(',','',$remainingBalance),
                 $utilizationRate . "%",
@@ -108,7 +109,8 @@ class ReportController extends Controller
 
         $columnWidths = [
             'A' => 2, 'B' => 30, 'C' => 40, 'D' => 55,
-            'E' => 20, 'F' => 30, 'G' => 20, 'H' => 20
+            'E' => 20, 'F' => 20, 'G' => 30, 'H' => 20,
+            'I' => 20
         ];
 
         foreach($columnWidths as $col => $width) {
@@ -121,9 +123,10 @@ class ReportController extends Controller
             'C3' => ['text' => 'PROPONENT'],
             'D3' => ['text' => 'FACILITY'],
             'E3' => ['text' => 'ALLOCATED FUNDS'],
-            'F3' => ['text' => 'UTILIZATION (DV + Admin Cost)'],
-            'G3' => ['text' => 'BALANCE'],
-            'H3' => ['text' => 'UTILIZATION RATE'],
+            'F3' => ['text' => 'PAYABLES TO DOH'],
+            'G3' => ['text' => 'UTILIZATION (DV + Admin Cost)'],
+            'H3' => ['text' => 'BALANCE'],
+            'I3' => ['text' => 'UTILIZATION RATE'],
         ];
 
         foreach($headers as $cell => $config) {
@@ -144,13 +147,13 @@ class ReportController extends Controller
         }
 
         $sheet->getRowDimension(3)->setRowHeight(50);
-        $sheet->getStyle('B3:H3')->getAlignment()
+        $sheet->getStyle('B3:I3')->getAlignment()
             ->setHorizontal(Alignment::HORIZONTAL_CENTER)
             ->setVertical(Alignment::VERTICAL_CENTER);
 
         $sheet->fromArray($data, null, 'B4');
 
-        $dataRange = 'B3:H' . (count($data) + 3);
+        $dataRange = 'B3:I' . (count($data) + 3);
         $numberRange = 'E4:G' . (count($data) + 3);
 
         $sheet->getStyle($numberRange)->getNumberFormat()->setFormatCode('#,##0.00');
@@ -170,7 +173,7 @@ class ReportController extends Controller
 
         $sheet->getStyle('B4:D' . (count($data) + 3))
             ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
-        $sheet->getStyle('E4:H' . (count($data) + 3))
+        $sheet->getStyle('E4:I' . (count($data) + 3))
             ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
         $filename = 'SAA_Report_' . date('Ymd') . '.xlsx';

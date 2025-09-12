@@ -1668,6 +1668,9 @@
         }
         if(edit_c == 0){
             if(data.val()) {
+                console.log(data.val());
+                console.log(facility_id);
+
                 $.get("{{ url('patient/code').'/' }}"+data.val()+"/"+facility_id, function(result) {
                     $(".patient_code").val(result.patient_code);
                     const formattedBalance = new Intl.NumberFormat('en-US', {
