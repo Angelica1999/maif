@@ -10,9 +10,6 @@ $host = "localhost";
 $username="root";
 $password = "";
 
-$host = "localhost";
-$username="root";
-$password = "";
 return [
 
     /*
