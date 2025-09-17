@@ -67,8 +67,16 @@ class ReportController extends Controller
             ->get();
         $data = [];
         $facilityCache = []; 
+        $transfers = Utilization::where('status', 3)->whereHas('transfer', function ($q) {
+            $q->where('owed', 1);
+        })->get();
 
-        foreach($fundsources as $row) {
+        foreach ($fundsources as $row) {
+            $transfer = $transfers
+                ->where('proponentinfo_id', $row->id)
+                ->sum(function ($item) {
+                    return (float) str_replace(',', '', $item->utilize_amount);
+                });
             $allocatedFunds = (float) str_replace(',', '', $row->alocated_funds);
             $remainingBalance = (float) str_replace(',', '', $row->remaining_balance);
             $adminCost = (float) str_replace(',', '', $row->admin_cost);
@@ -98,7 +106,7 @@ class ReportController extends Controller
                 $row->proponent->proponent,
                 $facilityName,
                 str_replace(',','',$allocatedFunds),
-                0,
+                $transfer,
                 str_replace(',','',$totalWithAdmin),
                 str_replace(',','',$remainingBalance),
                 $utilizationRate . "%",
