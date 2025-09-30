@@ -14,6 +14,7 @@ class DashboardController extends Controller{
     public function __construct()
     {
         $this->middleware('auth');
+        $this->middleware('block.secure.nonadmin');
     }
     
     public function dashboard(Request $req){

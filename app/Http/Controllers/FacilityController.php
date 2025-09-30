@@ -23,6 +23,12 @@ use App\Models\IncludedFacility;
 
 class FacilityController extends Controller
 {
+    public function __construct()
+    {
+       $this->middleware('auth');
+       $this->middleware('block.secure.nonadmin');
+    }
+    
     public function index(Request $request) {
 
         $brgy = Barangay::pluck('muncity_id')->toArray();

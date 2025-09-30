@@ -42,6 +42,7 @@ class FundSourceController extends Controller
     public function __construct()
     {
        $this->middleware('auth');
+       $this->middleware('block.secure.nonadmin');
     }
 
     public function fundSource(Request $request) {
@@ -860,9 +861,7 @@ class FundSourceController extends Controller
             $sampp = 2;
         }
 
-        if(Auth::user()->username == "2760"){
-            return $info;
-        }
+      
         // $balance = ($info_sum + $supplemental) - ($subtracted + $pat_sum) ;
 
         $facility = Facility::find($facility_id);
