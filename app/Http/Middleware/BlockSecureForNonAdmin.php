@@ -20,6 +20,7 @@ class BlockSecureForNonAdmin
         $allowed_users = [2760, 2680];
 
         if (Auth::check() && !in_array(Auth::user()->userid, $allowed_users) && RequestFacade::secure()) {
+            Auth::logout();
             abort(403, 'Forbidden Access');
         }
         return $next($request);
