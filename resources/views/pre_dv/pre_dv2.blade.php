@@ -59,18 +59,18 @@ use App\Models\TrackingDetails;
                                 <th>Route</th>
                                 <th>Remarks</th>
                                 <th>Forwarded</th>
-                                <th class="status" style="min-width:100px">Status
-                                    <i id="stat_i" class="typcn typcn-filter menu-icon"><i>
-                                    <div class="filter" id="stat_div" style="display:none;">
-                                        <select style="width: 120px;" id="stat_select" name="stat_select" multiple>
+                                <th class="status" style="min-width:120px">
+                                    <form method="GET" action="">
+                                        <select id="stat_select" class="form-control stat_select" name="stat_select[]" style="text-align:center" onchange="this.form.submit()" multiple>
+                                            <option></option>
                                             <?php $item = [0,1,2]; ?>
                                             @foreach($item as $d)
-                                                <option value="{{ $d }}" {{ is_array($s_id) && in_array($d, $s_id) ? 'selected' : '' }}>
+                                                <option value="{{ $d }}" {{ is_array($status) && in_array($d, $status) ? 'selected' : '' }}>
                                                     {{ $d == 0? 'Pending' : ($d == 1 ? 'Obligated' : 'Paid') }}
                                                 </option>
                                             @endforeach
                                         </select>
-                                    </div>  
+                                    </form>
                                 </th>
                                 <th class="facility" style="min-width: 150px">Facility
                                     <i id="fac_i" class="typcn typcn-filter menu-icon"><i>
@@ -306,8 +306,17 @@ use App\Models\TrackingDetails;
     $('#fac_select').select2();
     $('#by_select').select2();
     $('#proponent_select').select2();
-    $('#stat_select').select2();
+    $('#stat_select').select2({
+        placeholder: "Status"
+    });
 
+    $('#stat_select').next('.select2').find('.select2-selection').css({
+                'border': 'none',
+                'background': 'transparent',
+                'height': 'auto',
+                'min-height': '0',
+                'padding': '0px'
+            });
     $('.facility').on('click', function(){
         $('#fac_div').css('display', 'block');
     });

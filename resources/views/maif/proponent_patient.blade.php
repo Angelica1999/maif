@@ -306,7 +306,7 @@
                             </td>   
                             <td class="td">{{ $patient->mname }}</td>
                             <td class="td">{{ $patient->lname }}</td>
-                            <td class="td">{{ $patient->facility->name }}</td>
+                            <td class="td">{{ $patient->facility ? $patient->facility->name : '' }}</td>
                             <td class="td">{{ $patient->proponentData ? $patient->proponentData->proponent : 'N/A' }}</td>
                             <td class="td">{{ $patient->patient_code}}</td>
                             {{-- <td>

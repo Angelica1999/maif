@@ -367,6 +367,12 @@ class PreDvController extends Controller
             });
         }
 
+        if($request->stat_select){
+            $pre_dv->whereHas('new_dv', function ($query) use ($request) {
+                $query->whereIn('status', $request->stat_select);
+            });
+        }
+
         $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(50);
 
         $pre_ids = PreDv::pluck('facility_id')->unique()->values()->toArray();
@@ -385,7 +391,8 @@ class PreDvController extends Controller
             'p_id' => explode(',', $request->p_id),
             'b_id' => explode(',', $request->b_id),
             's_id' => explode(',', $request->s_id),
-            'pros' => Proponent::whereIn('id', PreDVExtension::pluck('proponent_id')->toArray())->get()
+            'pros' => Proponent::whereIn('id', PreDVExtension::pluck('proponent_id')->toArray())->get(),
+            'status' => $request->stat_select
         ]);
     }
 

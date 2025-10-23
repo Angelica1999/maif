@@ -455,7 +455,7 @@ class PrintController extends Controller
     }    
 
     public function newDVPDF($id) {
-        $this->genPreImage($id);
+        // $this->genPreImage($id);
         set_time_limit(0); 
        
         $new = NewDV::where('predv_id', $id)->first();

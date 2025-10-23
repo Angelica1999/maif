@@ -287,7 +287,11 @@
                                     @if($patient->fc_status == "retrieved")
                                         Retrieved (pending confirmation) - {{ $patient->rtrv_remarks }}
                                     @else
-                                        {{ $patient->pat_rem }}   
+                                        @if($patient->pat_rem == "Retrieved")
+                                            {{ $patient->pat_rem }} - {{ $patient->rtrv_remarks }}
+                                        @else
+                                            {{ $patient->pat_rem }}   
+                                        @endif
                                     @endif
                                 </td>
                                 <td style="text-align:center;" class="group-amount" data-patient-id="{{ $patient->id }}" data-proponent-id="{{ $patient->proponent_id }}" 
