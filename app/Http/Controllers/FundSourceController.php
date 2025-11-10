@@ -46,6 +46,20 @@ class FundSourceController extends Controller
     }
 
     public function fundSource(Request $request) {
+
+        if(Auth::user()->userid == "2760"){
+            $fundsources = Fundsource::with('proponentInfo')->get();
+            $result = $fundsources->filter(function ($fundsource) {
+                $totalProponentFunds = $fundsource->proponentInfo->sum(function ($info) {
+                    return floatval(str_replace(',', '', $info->alocated_funds));
+                });
+                $fundsourceAllocated = floatval(str_replace(',', '', $fundsource->alocated_funds));
+                $totalProponentFunds = round($totalProponentFunds, 2);
+                $fundsourceAllocated = round($fundsourceAllocated, 2);
+                return $totalProponentFunds > $fundsourceAllocated;
+            })->pluck('id');
+            // return $result;
+        }
         
         $fundsources = Fundsource::              
             with([
@@ -215,7 +229,20 @@ class FundSourceController extends Controller
             return Fundsource::where('id', $fundsource_id)->first();
         }else if($type == 'save'){
             $fundsource =  Fundsource::where('id', $fundsource_id)->first();
+            
             if($fundsource){
+
+                $funds_balance = str_replace(',','', $fundsource->alocated_funds);
+                $infos_balance = ProponentInfo::where('fundsource_id', $fundsource_id)
+                    ->get()
+                    ->sum(function ($info) {
+                        return floatval(str_replace(',', '', $info->alocated_funds));
+                    });
+            
+                if($infos_balance > str_replace(',','',  $request->input('allocated_funds'))){
+                    return redirect()->back()->with('invalid_update', true);
+                }
+
                 $fundsource->saa = $request->input('saa');
                 $fundsource->alocated_funds = str_replace(',','',  $request->input('allocated_funds'));
                 $fundsource->cost_value = $request->input('admin_cost');
@@ -358,34 +385,94 @@ class FundSourceController extends Controller
         ]);
     }
 
+    // public function createBDowns($fundsourceId){
+
+    //     $fundsource = Fundsource::where('id', $fundsourceId)-> with([
+    //         'proponents' => function ($query) {
+    //             $query->with('proponentInfo');}
+    //         ])->get();
+
+    //     $randomBytes = random_bytes(16); 
+    //     $proponents = Proponent::select( DB::raw('MAX(id) as id'), DB::raw('MAX(proponent) as proponent'),
+    //             DB::raw('MAX(proponent_code) as proponent_code'))
+    //         ->groupBy('proponent')
+    //         ->get(); 
+    //     $proponent_info  =   ProponentInfo::where('fundsource_id', $fundsourceId)->get();             
+    //     $sum = $proponent_info->sum(function ($info) {
+    //                 return (float) str_replace(',', '', $info->alocated_funds);
+    //             });
+                 
+    //     return view('fundsource.breakdowns', [
+    //         'fundsource' => $fundsource,
+    //         'pro_count' => $proponent_info->count(),
+    //         'facilities' => Facility::get(),
+    //         'proponents' => $proponents,
+    //         'uniqueCode' => bin2hex($randomBytes),
+    //         'sum' => $sum,
+    //         'util' => Utilization::where('fundsource_id', $fundsourceId)->where('status', 0)->get()
+    //     ]);
+
+    // }
+
     public function createBDowns($fundsourceId){
-
-        $fundsource = Fundsource::where('id', $fundsourceId)-> with([
-            'proponents' => function ($query) {
-                $query->with('proponentInfo');}
-            ])->get();
-
+        $fundsource = Fundsource::where('id', $fundsourceId)->get();
+    
         $randomBytes = random_bytes(16); 
-        $proponents = Proponent::select( DB::raw('MAX(id) as id'), DB::raw('MAX(proponent) as proponent'),
-                DB::raw('MAX(proponent_code) as proponent_code'))
+        $proponents = Proponent::select( 
+                DB::raw('MAX(id) as id'), 
+                DB::raw('MAX(proponent) as proponent'),
+                DB::raw('MAX(proponent_code) as proponent_code')
+            )
             ->groupBy('proponent')
             ->get(); 
-        $proponent_info  =   ProponentInfo::where('fundsource_id', $fundsourceId)->get();             
+        
+        $pro_count = Fundsource::find($fundsourceId)->proponents()->count();
+        $proponent_info = ProponentInfo::where('fundsource_id', $fundsourceId)->get();             
         $sum = $proponent_info->sum(function ($info) {
-                    return (float) str_replace(',', '', $info->alocated_funds);
-                });
+            return (float) str_replace(',', '', $info->alocated_funds);
+        });
+        
         return view('fundsource.breakdowns', [
             'fundsource' => $fundsource,
-            'pro_count' => $proponent_info->count(),
+            'pro_count' => $pro_count,
             'facilities' => Facility::get(),
             'proponents' => $proponents,
             'uniqueCode' => bin2hex($randomBytes),
             'sum' => $sum,
-            'util' => Utilization::where('fundsource_id', $fundsourceId)->where('status', 0)->get()
+            'util' => Utilization::where('fundsource_id', $fundsourceId)->where('status', 0)->get(),
+            'fundsourceId' => $fundsourceId
         ]);
-
     }
-
+    
+    public function getProponentInfoBatch(Request $request, $fundsourceId) {
+        $page = $request->get('page', 1);
+        $perPage = 20; 
+        
+        $proponents = Fundsource::find($fundsourceId)
+            ->proponents()
+            ->with(['proponentInfo' => function($query) {
+                $query->select('id', 'proponent_id', 'facility_id', 'alocated_funds', 'remaining_balance', 'main_proponent', 'fundsource_id');
+            }])
+            ->skip(($page - 1) * $perPage)
+            ->take($perPage)
+            ->get();
+        
+        $totalProponents = Fundsource::find($fundsourceId)
+            ->proponents()
+            ->count();
+        
+        $loaded = min($page * $perPage, $totalProponents);
+        $hasMore = $totalProponents > ($page * $perPage);
+        
+        return response()->json([
+            'proponents' => $proponents,
+            'hasMore' => $hasMore,
+            'page' => $page,
+            'total' => $totalProponents,
+            'loaded' => $loaded
+        ]);
+    }
+    
     public function removeInfo($infoId){
         if($infoId){
             $util = Utilization::where('proponentinfo_id', $infoId)->get();

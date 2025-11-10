@@ -36,7 +36,6 @@
                     <h4 class="card-title">MANAGE FUNDSOURCE: DV</h4>
                     <p class="card-description">MAIF-IPP</p>
                 </div>
-
                 <form method="GET" action="{{ route('fundsource') }}" class="w-50">
                     <div class="input-group">
                         <input type="text" class="form-control" name="keyword" placeholder="SAA, PROPONENT, FACILITY" value="{{ $keyword }}">
@@ -745,6 +744,7 @@
         $('.modal_body').html(loading);
         $('.modal-title').html("Create Breakdowns");
         var url = "{{ url('fundsource/breakdowns').'/' }}"+ fundsourceId;
+        console.log(fundsourceId);
         setTimeout(function() {
             $.ajax({
                 url: url,
