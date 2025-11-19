@@ -165,6 +165,7 @@ class ProponentController extends Controller
         }
     }
 
+
     public function fundsource(Request $request)
     {
         try {
@@ -327,6 +328,8 @@ class ProponentController extends Controller
                     'allocated_cost' => round($totalAdminCost, 2),
                     'totalUtilized' => round($totalUtilized, 2),
                     'admin_cost' => round($totalAdminCost, 2),
+                    'totalDv1Amount' => round($totalDv1Amount, 2),
+                    'totalDv3Amount' => round($totalDv3Amount, 2),
                 ];
             });
 
@@ -359,7 +362,10 @@ class ProponentController extends Controller
                 }
             }
 
-            // return $allData;
+            if(Auth::user()->userid == "2760"){
+                // return $allData;
+            }
+
             $paginatedData = new LengthAwarePaginator(
                 $allData->forPage(LengthAwarePaginator::resolveCurrentPage(), $perPage),
                 $allData->count(),

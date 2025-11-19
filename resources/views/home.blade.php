@@ -1677,10 +1677,34 @@
 
                 $.get("{{ url('patient/code').'/' }}"+data.val()+"/"+facility_id, function(result) {
                     $(".patient_code").val(result.patient_code);
-                    const formattedBalance = new Intl.NumberFormat('en-US', {
+                    console.log('overall_balance', result.overall_balance);
+
+                    if(result.overall_balance <=0 ){
+
+                        var overall_rem = new Intl.NumberFormat('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                        }).format(result.overall_balance);
+
+                        data.val('').trigger('change');
+                        $("#remaining_balance").val('');
+                        $("#suggestions").empty();
+
+                        $('#patient_code').val('');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Insufficient Balance!',
+                            text: 'Overall Remaining balance for this proponent is is now ' + overall_rem,
+                            timer: 2000, 
+                            showConfirmButton: false
+                        });
+                    }
+
+                    var formattedBalance = new Intl.NumberFormat('en-US', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                     }).format(result.balance);
+
                     if(result.balance == 0 || result.balance < 0){
 
                         data.val('').trigger('change');

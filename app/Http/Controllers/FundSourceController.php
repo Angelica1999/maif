@@ -864,7 +864,8 @@ class FundSourceController extends Controller
         $pat_sum = Patients::whereIn('proponent_id', $proponent_ids)
             ->where(function ($query) {
                 $query->where('expired', '!=', 1)
-                    ->orWhereNull('expired'); // Include NULL values
+                    ->orWhereNull('expired')
+                    ->orWhere('expired', 0); // Include NULL values
             })
             ->sum(DB::raw("
                 IFNULL(actual_amount, CAST(REPLACE(guaranteed_amount, ',', '') AS DECIMAL(20, 2)))
@@ -898,6 +899,18 @@ class FundSourceController extends Controller
             ->toArray();
 
         $dv3_sum = Dv3Fundsource::whereIn('info_id', $info)
+        ->with([
+            'dv3' => function ($query){
+                $query->with([
+                    'facility:id,name',
+                    'user:userid,fname,lname'
+                ]);
+            },
+            'fundsource:id,saa'
+        ])->sum('amount');
+
+        $dv3_sumsd = Dv3Fundsource::whereIn('info_id', $info)
+        // ->where('facility_id')
         ->with([
             'dv3' => function ($query){
                 $query->with([
@@ -965,10 +978,167 @@ class FundSourceController extends Controller
             'disbursement' => count($sl) != 0 ? $dv3_sum + $dv_sum : $dv_sum ,
             // 'disbursement' => $dv_sum,
             'gl_sum' => round($pat_sum, 2),
-            // 'list'=> $saaa ,
-            'dsad' => count($saaa)
+            'dv3'=> $dv3_sum,
+            'overall_balance' => $this->overallBalance($proponent_id)
         ];
     }
+    
+    private function overallBalance($id){
+        $keyword = $id ? $id : 0;
+        $list = Proponent::where('id', $keyword)->pluck('proponent')->toArray();
+
+        $proponentGroups = Proponent::when($list, function ($query) use ($list) {
+                return $query->whereIn('proponent', $list);
+            })
+            ->select('id', 'proponent')
+            ->orderBy('proponent')
+            ->get()
+            ->groupBy('proponent');
+
+        $allProponentIds = $proponentGroups->map(function ($group) {
+            return $group->pluck('id')->toArray();
+        });
+
+        $fundsData = ProponentInfo::whereIn('proponent_id', $allProponentIds->flatten()->toArray())
+            ->selectRaw('
+                proponent_id,
+                SUM(CAST(NULLIF(REPLACE(COALESCE(alocated_funds, "0"), ",", ""), "") AS DECIMAL(20,2))) as total_funds,
+                SUM(CAST(NULLIF(REPLACE(COALESCE(admin_cost, "0"), ",", ""), "") AS DECIMAL(20,2))) as admin_cost
+            ')
+            ->groupBy('proponent_id')
+            ->get()
+            ->groupBy('proponent_id');
+
+        $utilizationData = Patients::whereIn('proponent_id', $allProponentIds->flatten()->toArray())
+            ->where(function ($query) {
+                $query->where('expired', '!=', 1)
+                    ->orWhereNull('expired');
+            })
+            ->selectRaw('
+                proponent_id,
+                SUM(
+                    CASE 
+                        WHEN actual_amount IS NOT NULL AND actual_amount != "" 
+                        THEN CAST(REPLACE(actual_amount, ",", "") AS DECIMAL(20, 2))
+                        ELSE CAST(REPLACE(COALESCE(guaranteed_amount, "0"), ",", "") AS DECIMAL(20, 2))
+                    END
+                ) as total_utilized
+            ')
+            ->groupBy('proponent_id')
+            ->get()
+            ->groupBy('proponent_id');
+
+        $supplementalFunds = SupplementalFunds::whereIn('proponent', $proponentGroups->keys())
+            ->selectRaw('
+                proponent,
+                SUM(CAST(NULLIF(REPLACE(COALESCE(amount, "0"), ",", ""), "") AS DECIMAL(20,2))) as total_amount
+            ')
+            ->groupBy('proponent')
+            ->get()
+            ->keyBy('proponent');
+
+        $subtractedFunds = DB::table('subtracted_funds')
+            ->whereIn('proponent', $proponentGroups->keys())
+            ->selectRaw('
+                proponent,
+                SUM(CAST(NULLIF(REPLACE(COALESCE(amount, "0"), ",", ""), "") AS DECIMAL(20,2))) as total_amount
+            ')
+            ->groupBy('proponent')
+            ->get()
+            ->keyBy('proponent');
+
+        $dv1Data = Utilization::whereIn('proponent_id', $allProponentIds->flatten()->toArray())
+            ->where('status', 0)
+            ->where('facility_id', 837)
+            ->where(function ($query) {
+                $query->whereHas('dv', function ($q) {
+                    $q->whereColumn('div_id', 'route_no');
+                })->orWhereHas('newDv', function ($q) {
+                    $q->whereColumn('div_id', 'route_no');
+                });
+            })
+            ->selectRaw('
+                proponent_id,
+                SUM(CAST(NULLIF(REPLACE(COALESCE(utilize_amount, "0"), ",", ""), "") AS DECIMAL(20,2))) as total_amount
+            ')
+            ->groupBy('proponent_id')
+            ->get()
+            ->groupBy('proponent_id');
+
+        $dv3Data= Utilization::whereIn('proponent_id', $allProponentIds->flatten()->toArray())
+            ->where('status', 0)
+            ->where(function ($query) {
+                $query->whereHas('dv3', function ($q) {
+                    $q->whereColumn('div_id', 'route_no');
+                });
+            })
+            ->selectRaw('
+                proponent_id,
+                SUM(CAST(NULLIF(REPLACE(COALESCE(utilize_amount, "0"), ",", ""), "") AS DECIMAL(20,2))) as total_amount
+            ')
+            ->groupBy('proponent_id')
+            ->get()
+            ->groupBy('proponent_id');
+
+        $allData = $proponentGroups->map(function ($proponentGroup, $proponentName) use (
+            $fundsData,
+            $utilizationData,
+            $supplementalFunds,
+            $subtractedFunds,
+            $dv1Data,
+            $dv3Data
+        ) {
+            $proponentIds = $proponentGroup->pluck('id');
+            
+            $totalFunds = 0;
+            $totalAdminCost = 0;
+            $totalUtilized = 0;
+            $totalDv1Amount = 0;
+            $totalDv3Amount = 0;
+
+            foreach ($proponentIds as $id) {
+                if ($fundsData->has($id)) {
+                    $fundInfo = $fundsData->get($id)->first();
+                    $totalFunds += $fundInfo->total_funds ?? 0;
+                    $totalAdminCost += $fundInfo->admin_cost ?? 0;
+                }
+
+                if ($utilizationData->has($id)) {
+                    $totalUtilized += $utilizationData->get($id)->sum('total_utilized');
+                }
+
+                if ($dv1Data->has($id)) {
+                    $totalDv1Amount += $dv1Data->get($id)->sum('total_amount');
+                }
+                if ($dv3Data->has($id)) {
+                    $totalDv3Amount += $dv3Data->get($id)->sum('total_amount');
+                }
+            }
+
+            $supp = $supplementalFunds->get($proponentName)?->total_amount ?? 0;
+            $sub = $subtractedFunds->get($proponentName)?->total_amount ?? 0;
+
+            $netFunds = $totalFunds - $totalAdminCost;
+            $remaining = $netFunds - $totalUtilized;
+            $finalRemaining = $remaining + $supp - ($totalDv1Amount + $sub);
+
+            return [
+                'proponent' => $proponentGroup->first(),
+                'sum' => round($netFunds, 2),
+                'rem' => round($finalRemaining - $totalDv3Amount , 2),
+                'supp' => round($supp, 2),
+                'sub' => round($sub, 2),
+                'disbursement' => round($totalDv1Amount + $totalDv3Amount, 2),
+                'allocated_cost' => round($totalAdminCost, 2),
+                'totalUtilized' => round($totalUtilized, 2),
+                'admin_cost' => round($totalAdminCost, 2),
+                'totalDv1Amount' => round($totalDv1Amount, 2),
+                'totalDv3Amount' => round($totalDv3Amount, 2),
+            ];
+        });
+
+        return $allData->sum('rem');
+}
 
     public function forPatientFacilityCode($fundsource_id) {
 
