@@ -778,7 +778,6 @@
 <script>
 
     $('#update_form').on('keypress', function(e) {
-        console.log('sample', $('#update_pat_btn').css('display') );
         if (e.key === 'Enter' && $('#update_pat_btn').css('display') === 'none') {
             e.preventDefault();
             return false;
@@ -818,10 +817,6 @@
     }
 
     function forwardPatient(status, forwardUrl, status2, status3) {
-        console.log('sample', status);
-        console.log('status2', status2);
-        console.log('status3', status3);
-
         if (status == 1) {
             Swal.fire({
                 icon: 'warning',
@@ -1227,7 +1222,7 @@
                 success: function(response) {
                     $('#patient_table_container').html($(response).find('#patient_table_container').html());
                     $('#pagination_links').html($(response).find('#pagination_links').html());
-                    console.log('response', response);
+
                     $.each(mail_ids, function(index, id) {
                         $('#' + id).prop('checked', true);
                     });
@@ -1273,7 +1268,7 @@
                 select_val = 1;
                 id_list = [...id_list, ...newIds];
                 mail_ids = [...mail_ids, ...new_mailIds];
-                console.log('mailf-ids', mail_ids);
+
                 $('.send_mails').val(id_list).show();
 
                 if (getStat().includes('0')) {
@@ -1488,8 +1483,6 @@
                 $('.patient_code').val(patient.patient_code);
                 $('.remaining_balance').val(patient.remaining_balance);
                 $('.pat_rem').val(patient.pat_rem);
-                console.log('patient.sent_type', patient.sent_type);
-                console.log('patient.fc_status', patient.fc_status);
 
                 if (patient.sent_type == null || patient.fc_status == "returned") {
 
@@ -1665,6 +1658,11 @@
         }).format(balance);
     }
 
+    var first_rem;
+    var second_rem;
+    var fourth_rem;
+    var overall_balance;    
+
     function onchangeForPatientCode(data) {
 
         if(facility_id == 0){
@@ -1675,59 +1673,125 @@
                 console.log(data.val());
                 console.log(facility_id);
 
+                var suggestionsDiv = $('.suggestions');
+
                 $.get("{{ url('patient/code').'/' }}"+data.val()+"/"+facility_id, function(result) {
                     $(".patient_code").val(result.patient_code);
-                    console.log('overall_balance', result.overall_balance);
-
-                    if(result.overall_balance <=0 ){
-
-                        var overall_rem = new Intl.NumberFormat('en-US', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                        }).format(result.overall_balance);
-
-                        data.val('').trigger('change');
-                        $("#remaining_balance").val('');
-                        $("#suggestions").empty();
-
-                        $('#patient_code').val('');
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Insufficient Balance!',
-                            text: 'Overall Remaining balance for this proponent is is now ' + overall_rem,
-                            timer: 2000, 
-                            showConfirmButton: false
-                        });
-                    }
+                    var fac_name = $('#facility_id option:selected').text();
+                    var pro_name = $('#proponent_id option:selected').text();
 
                     var formattedBalance = new Intl.NumberFormat('en-US', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                     }).format(result.balance);
 
-                    if(result.balance == 0 || result.balance < 0){
+                    first_rem = new Intl.NumberFormat('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }).format(result.first_rem);
 
-                        data.val('').trigger('change');
-                        $('#patient_code').val('');
+                    second_rem = new Intl.NumberFormat('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }).format(result.second_rem);
+
+                    fourth_rem = new Intl.NumberFormat('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }).format(result.fourth_rem);
+
+                    if(result.first_rem <= 0){
                         Swal.fire({
                             icon: 'error',
-                            title: 'Insufficient Balance!',
-                            text: 'Remaining balance is now ' + formattedBalance,
-                            timer: 2000, 
-                            showConfirmButton: false
+                            title: '<strong>Insufficient Balance!</strong>',
+                            html: `
+                                <p style="font-size: 16px; text-align: center;">
+                                    <strong>${pro_name}</strong> has insufficient funds.<br><br>
+                                    <span style="background: #ffe7e7; padding: 4px 8px; border-radius: 5px;">
+                                        <strong>Remaining Funds:</strong> ${first_rem}
+                                    </span><br><br>
+                                    Please check <strong>Fundsource → Proponents</strong> for more details.
+                                </p>
+                            `,
+                            timer: 4000,    
+                            showConfirmButton: false,
                         });
-                    }else{
-                        $('.remaining_balance').val(formattedBalance);
+                        data.val('').trigger('change');
+                        $('#remaining_balance').val('');
+                        $('#patient_code').val('');
+                        suggestionsDiv.empty();
+
+                    }else if(result.second_rem <= 0){
+                        Swal.fire({
+                            icon: 'error',
+                            title: '<strong>Insufficient Balance!</strong>',
+                            html: `
+                                <p style="font-size: 16px; text-align: left;">
+                                    <strong>${pro_name}</strong> has insufficient funds.
+                                    <span style="background: #ffe7e7; padding: 4px 8px; border-radius: 5px;">
+                                        <strong>Remaining Funds:</strong> ${second_rem}
+                                    </span><br><br>
+                                    Please check <strong>Fundsource → Proponents</strong> for more details.
+                                </p>
+                            `,
+                            timer: 4000,
+                            showConfirmButton: false,
+                        });
+                        data.val('').trigger('change');
+                        suggestionsDiv.empty();
+                        $('#remaining_balance').val('');
+                        $('#patient_code').val('');
+                    }else if(result.fourth_rem <= 0){
+                        Swal.fire({
+                            icon: 'error',
+                            title: '<strong>Insufficient Balance!</strong>',
+                            html: `
+                                <p style="font-size: 16px; text-align: center;">
+                                    <strong>${pro_name}</strong> has insufficient funds for 
+                                    <strong>${fac_name}</strong>.<br><br>
+                                    Please check <strong>Fundsource → Proponents</strong> for more details.
+                                </p>
+                            `,
+                            timer: 4000,
+                            showConfirmButton: false,
+                        });
+                        data.val('').trigger('change');
+                        suggestionsDiv.empty();
+                        $('#remaining_balance').val('');
+                        $('#patient_code').val('');
+                    }
+                    // if(result.balance == 0 || result.balance < 0){
+                        // data.val('').trigger('change');
+                        // $('#patient_code').val('');
+                    //     Swal.fire({
+                    //         icon: 'error',
+                    //         title: 'Insufficient Balance!',
+                    //         text: 'Remaining balance is now ' + formattedBalance,
+                    //         timer: 2000, 
+                    //         showConfirmButton: false
+                    //     });
+                    // }
+                    else{
+                        $('.remaining_balance').val(fourth_rem);
                         var suggestions =[];
-                        suggestions.push('Breakdowns: ');
-                        suggestions.push('Allocated Funds - ' + formatBalance(result.total_funds));
-                        suggestions.push('Sum of all GL - ' + formatBalance(result.gl_sum));
-                        suggestions.push('DV - ' + formatBalance(result.disbursement));
-                        suggestions.push('Supplemental Funds - ' + formatBalance(result.supplemental));
-                        suggestions.push('Negative Amount - ' + formatBalance(result.subtracted));
-                        suggestions.push('Remaining Funds - ' + formatBalance(result.balance));
-                        
-                        var suggestionsDiv = $('.suggestions');
+
+                        if(Array.isArray(result.selected_info) && result.selected_info.length > 0){
+                            suggestions.push('Funds under: ' + fac_name);
+                            suggestions.push('Allocated Funds - ' + formatBalance(result.selected_fund));
+                            suggestions.push('Admin Cost - ' + formatBalance(result.selected_cost));
+                            suggestions.push('GL - ' + formatBalance(result.selected_gl));
+                            suggestions.push('Disbursement - ' + formatBalance(result.selected_dv));
+                        }
+                        if(result.check_rem == 1){
+                            suggestions.push('<br> Floating Funds (CVCHD): ');
+                            suggestions.push('Allocated Funds - ' + formatBalance(result.cvchd_funds));
+                            suggestions.push('Admin Cost - ' + formatBalance(result.cvchd_admin));
+                            suggestions.push('Supplemental - ' + formatBalance(result.supp));
+                            suggestions.push('Negative Amount - ' + formatBalance(result.sub));
+                            suggestions.push('Total Usage - ' + formatBalance(result.cvchd_usage));
+                        }
+                        suggestions.push('<br>Remaining Funds - ' + formatBalance(result.fourth_rem));
+
                         suggestionsDiv.empty();
 
                         suggestions.forEach(function(suggestion) {

@@ -1189,5 +1189,142 @@ class ProponentController extends Controller
         return $xlsData;
         exit;
     }
+
+    public function specAllocations($proponent_name){
+
+        $proponent = Proponent::where('proponent', $proponent_name)->get();
+        $pro_lists = $proponent->pluck('id')->toArray();
+
+        $infos = ProponentInfo::whereIn('proponent_id', $pro_lists)->get();
+
+        $total_usage = 0;
+        $total_admin = 0;
+        $total_allo = 0;
+        $total_patient = 0;
+        $total_u = 0;
+        $for_cvchd = 0;
+
+        $utilizations = Utilization::whereIn('proponentinfo_id', $infos->pluck('id'))
+            ->where('status', 0)
+            ->where(function ($query) {
+            $query->whereHas('dv', fn($q) => $q->whereColumn('div_id', 'route_no')
+                                            ->where('facility_id', 837))
+                ->orWhereHas('newDv', fn($q) => $q->whereColumn('div_id', 'route_no')
+                                                    ->where('facility_id', 837))
+                ->orWhereHas('dv3', fn($q) => $q->whereColumn('div_id', 'route_no'));
+            })
+            ->select('proponentinfo_id', 'utilize_amount')
+            ->get();
+
+        $grouped_infos = [];
+        foreach ($infos as $info) {
+            $fac_ids = json_decode($info->facility_id, true);
+
+            if (!is_array($fac_ids)) {
+                $fac_ids = [$info->facility_id];
+            }
+            sort($fac_ids);
+            $group_key = json_encode($fac_ids);
+
+            if (!isset($grouped_infos[$group_key])) {
+                $grouped_infos[$group_key] = [
+                    'facility_ids' => $fac_ids,
+                    'infos' => []
+                ];
+            }
+
+            $grouped_infos[$group_key]['infos'][] = $info;
+        }
+
+        $rem_all_fac = [];
+        $patient_ids = [];
+
+        foreach ($grouped_infos as $group) {
+            $fac_ids = $group['facility_ids'];
+            $group_infos = $group['infos'];
+
+            $facilities = Facility::whereIn('id', $fac_ids)->get();
+            $facility_names = $facilities->pluck('name')->toArray();
+
+            $total_util = 0;
+            $total_admin_cost = 0;
+            $total_allocated = 0;
+
+            foreach ($group_infos as $info) {
+                $allocated = floatval(str_replace(',', '', $info->alocated_funds ?? 0));
+                $admin_cost = floatval(str_replace(',', '', $info->admin_cost ?? 0));
+                $total_allocated += $allocated;
+                $total_admin_cost += $admin_cost;
+
+                $total_util += $utilizations
+                    ->where('proponentinfo_id', $info->id)
+                    ->sum(fn($u) => floatval(str_replace(',', '', $u->utilize_amount ?? 0)));
+            }
+
+            $patients = Patients::whereIn('facility_id', $fac_ids)
+                ->whereIn('proponent_id', $pro_lists)
+                ->whereNotIn('id', $patient_ids)
+                ->get();
+
+            $sum_patient_amount = $patients->sum(function ($p) {
+                $value = $p->actual_amount ?? $p->guaranteed_amount;
+                return floatval(str_replace(',', '', $value ?? 0));
+            });
+
+            $total_allo = $total_allo + $total_allocated;
+            $total_u = $total_u +$total_util;
+            $total_patient = $total_patient +$sum_patient_amount;
+
+            $total_admin = $total_admin + $total_admin_cost;
+            $total_usage = $total_usage + $sum_patient_amount + $total_util;
+
+            if($total_allocated <= 0){
+                $for_cvchd = $for_cvchd + $total_util + $sum_patient_amount;
+                $sum_patient_amount = 0;
+                $total_util = 0;
+            }
+
+            $rem_all_fac[] = [
+                "allocated" => $total_allocated,
+                "admin_cost" => $total_admin_cost,
+                "facilities" => $facility_names,
+                "facility_ids" => $fac_ids,
+                "patient_amount" => $sum_patient_amount,
+                "util" => $total_util,
+                "info_count" => count($group_infos)
+            ];
+
+            $patient_ids = array_merge($patient_ids, $patients->pluck('id')->toArray());
+        }
+
+        $rem_patients = Patients::whereIn('proponent_id', $pro_lists)
+            ->whereNotIn('id', $patient_ids)
+            ->get();
+
+        $rem_sum = $rem_patients->sum(function ($p) {
+            $value = $p->actual_amount ?? $p->guaranteed_amount;
+            return floatval(str_replace(',', '', $value ?? 0));
+        });
+
+        $supplemental = SupplementalFunds::whereIn('proponent', $proponent->pluck('proponent')->toArray())
+            ->sum(DB::raw("CAST(REPLACE(IFNULL(amount, '0'), ',', '') AS DECIMAL(20,2))"));
+
+        $subtracted = DB::table('subtracted_funds')
+            ->whereIn('proponent', $proponent->pluck('proponent')->toArray())
+            ->sum(DB::raw("CAST(REPLACE(IFNULL(amount, '0'), ',', '') AS DECIMAL(20,2))"));
+
+        return view('proponents.proponent_spec', [
+            'data' => $rem_all_fac,
+            'rem_patients' => $rem_sum,
+            'supplemental' => $supplemental,
+            'subtracted' => $subtracted,
+            'proponent' => $proponent[0],
+            'total_allocated' => $total_allo,
+            'total_admin_cost' => $total_admin,
+            'total_usage' => ($total_usage + $rem_sum + $subtracted) - $supplemental,
+            'remaining' => ($total_allo + $supplemental) - ($total_admin + $total_usage + $rem_sum + $subtracted),
+            'for_cvchd' => $for_cvchd
+        ]);
+    }
     
 }

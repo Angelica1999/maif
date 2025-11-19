@@ -14,7 +14,6 @@
         
     }
 
-
     .input-group-append select,
     .input-group-append .btn {
         flex: none;
@@ -93,6 +92,17 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+    }
+
+    .modal-dialog.modal-responsive {
+        max-width: 60%;   /* default for larger screens */
+    }
+
+    @media (max-width: 576px) { /* phones and small devices */
+        .modal-dialog.modal-responsive {
+            max-width: 95%;
+            margin: 1.75rem auto; /* keep it centered */
+        }
     }
 
 </style>
@@ -196,7 +206,12 @@
                                                     <tr>
                                                         <td style="padding:5px">Remaining Funds</td>
                                                         <td class="text-center">:</td>
-                                                        <td><strong>{{ number_format($row['rem'] ?? 0, 2, '.', ',') }}</strong></td>
+                                                        <td><strong>
+                                                            <a href="#allocation_breakdowns" data-toggle="modal" onclick="aloBreakdowns('{{ $row['proponent']['proponent'] }}')">
+                                                                {{ number_format($row['rem'] ?? 0, 2, '.', ',') }}
+                                                            </a>
+                                                            </strong>
+                                                        </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -335,6 +350,20 @@
                     <button type="submit" class="btn btn-warning" onclick="subtracts()">Negate Funds</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="allocation_breakdowns" role="dialog">
+    <div class="modal-dialog modal-responsive" role="document">
+        <div class="modal-content" style="border-radius:0px;">
+            <div class="modal-header" style="text-align:center">
+                <h4 class="text-success modal-title">
+                    <i style="font-size:15px" class="typcn typcn-location-arrow menu-icon"></i>
+                    ALLOCATION OF FUNDS PER FACILITY
+                </h4>
+            </div>
+            <div class="spec_body">
+            </div>
         </div>
     </div>
 </div>
@@ -786,6 +815,13 @@
         $('.sub_body').html(loading);
         $.get("{{ url('proponent/sub-details').'/' }}"+proponent, function(result){
             $('.sub_body').html(result);
+        });
+    }
+
+    function aloBreakdowns(proponent){
+        $('.spec_body').html(loading);
+        $.get("{{ url('proponent/spec-allocations').'/' }}"+proponent, function(result){
+            $('.spec_body').html(result);
         });
     }
 
