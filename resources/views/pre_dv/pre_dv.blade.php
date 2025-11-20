@@ -520,7 +520,7 @@
                 });
             });
 
-            $.get("{{ url('fetch/fundsource').'/' }}"+facility_id, function(result) {
+            $.get("{{ url('fetch/pre-dv/fundsource').'/' }}"+facility_id, function(result) {
                 var data_result = result.info;
                 var text_display;
 
@@ -532,6 +532,7 @@
                     six = [];
                 $.each(data_result, function(index, optionData){
                     var rem_balance = parseFloat(optionData.remaining_balance.replace(/,/g, '')).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+                    var rem_balance_num = parseFloat(optionData.remaining_balance.replace(/,/g, '')); // numeric
 
                     // arrangement:
                     //     - conap specific hospitals
@@ -544,25 +545,45 @@
                     var check_p = 0;  
 
                     var id = optionData.facility_id;
-                
+                    var name_id = optionData.facility_id;
+
+                    if (typeof name_id === 'string') {
+                        try {
+                            name_id = JSON.parse(name_id);  
+                        } catch (e) {
+                            name_id = [name_id];
+                        }
+                    }
+
+                    if (typeof name_id === 'number') {
+                        name_id = [String(name_id)];
+                    }
+
+                    var facilitiesArray = Array.isArray(result.facilities) ? result.facilities : [];
+
+                    var facilityNames = facilitiesArray
+                        .filter(f => name_id.includes(String(f.id)))
+                        .map(f => f.name)
+                        .join(' & ');
+
                     if(optionData.facility !== null){
                         if(optionData.facility.id == facility_id){
-                            text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - SF - ' + rem_balance;
+                            text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - '+ facilityNames +' - ' + rem_balance;
                         }else{
-                            text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + optionData.facility.name + ' - ' + rem_balance;
+                            text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + facilityNames + ' - ' + rem_balance;
                             check_p = 1;
                         } 
                     }else{
                         if(id.includes('702')){
                             check_p = 1;
-                            text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + 'DOH CVCHD' + ' - ' + rem_balance;
+                            text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + facilityNames + ' - ' + rem_balance;
                         }else{
-                            text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - SF - ' + rem_balance;
+                            text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - '+ facilityNames +' - ' + rem_balance;
                         }
                     }
 
                     var color = '';
-                    if(rem_balance == '0' || rem_balance == '0.00'){
+                    if(rem_balance == '0' || rem_balance == '0.00' || rem_balance_num <= 0){
                         color = 'red';
                         if(optionData.fundsource.saa.includes('CONAP')){
                                 obj = {
@@ -590,6 +611,10 @@
                     }else{
 
                         color = 'normal';
+
+                        if (!id.includes(String(facility_id)) && !id.includes('702')) {
+                            color = 'yellow';
+                        }
 
                         if(optionData.fundsource.saa.includes('CONAP')){
                             if(check_p == 1){
@@ -646,7 +671,10 @@
                         templateResult: function (data) {
                             if ($(data.element).data('color') === 'red') {
                                 return $('<span style="color: red;">' + data.text + '</span>');
+                            }else if ($(data.element).data('color') === 'yellow') {
+                                return $('<span style="color: #DAA520;">' + data.text + '</span>');
                             }
+                            
                             return data.text;
                         },
                         placeholder: "Select SAA"

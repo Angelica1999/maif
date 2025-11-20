@@ -1647,6 +1647,9 @@
                     $('#proponent_id').prop('disabled', false); 
                 });
                 $('.proponent_id1').val('').trigger('change');
+                $('.remaining_balance').val('');
+                $('.guaranteed_amount').val('');
+                $('.suggestions').empty();
             }
         }
     }
@@ -1663,6 +1666,9 @@
     var fourth_rem;
     var overall_balance;    
 
+    var f_rem = 0;
+    var s_rem = 0;
+
     function onchangeForPatientCode(data) {
 
         if(facility_id == 0){
@@ -1670,8 +1676,6 @@
         }
         if(edit_c == 0){
             if(data.val()) {
-                console.log(data.val());
-                console.log(facility_id);
 
                 var suggestionsDiv = $('.suggestions');
 
@@ -1679,6 +1683,9 @@
                     $(".patient_code").val(result.patient_code);
                     var fac_name = $('#facility_id option:selected').text();
                     var pro_name = $('#proponent_id option:selected').text();
+
+                    f_rem = result.first_rem;
+                    s_rem = result.second_rem;
 
                     var formattedBalance = new Intl.NumberFormat('en-US', {
                         minimumFractionDigits: 2,
@@ -1790,7 +1797,7 @@
                             suggestions.push('Negative Amount - ' + formatBalance(result.sub));
                             suggestions.push('Total Usage - ' + formatBalance(result.cvchd_usage));
                         }
-                        suggestions.push('<br>Remaining Funds - ' + formatBalance(result.fourth_rem));
+                        suggestions.push('<br>Specific Remaining Funds - ' + formatBalance(result.fourth_rem));
 
                         suggestionsDiv.empty();
 
@@ -1815,14 +1822,79 @@
 
     function check(){
         var rem = parseNumberWithCommas($('#remaining_balance').val());
-        var g_amount = parseNumberWithCommas($('#guaranteed_amount').val());
-        if(g_amount>rem){
-            Lobibox.alert('error', {
-                size: 'mini',
-                msg: 'Inputted amount is greater than the remaning balance!'
-            })
+        var g_amount = parseNumberWithCommas($('#guaranteed_amount').val());   
+
+        if(g_amount>f_rem){
+            Swal.fire({
+                icon: 'error',
+                title: '<strong>Insufficient Balance!</strong>',
+                html: `
+                    <p style="font-size: 16px; text-align: center;">
+                        <span style="background: #ffe7e7; padding: 4px 8px; border-radius: 5px;">
+                            <strong>Overall Remaining Funds:</strong> ${first_rem}
+                        </span><br><br>
+                        Please check <strong>Fundsource → Proponents</strong> for more details.
+                    </p>
+                `,
+                timer: 4000,    
+                showConfirmButton: false,
+            });
+
             $('#guaranteed_amount').val('');
+            return false;
+        }else if(g_amount>s_rem){
+            Swal.fire({
+                icon: 'error',
+                title: '<strong>Insufficient Balance!</strong>',
+                html: `
+                    <p style="font-size: 16px; text-align: center;">
+                        <span style="background: #ffe7e7; padding: 4px 8px; border-radius: 5px;">
+                            <strong>Overall Remaining Funds for GL Allocation :</strong> ${second_rem}
+                        </span><br><br>
+                        Please check <strong>Fundsource → Proponents</strong> for more details.
+                    </p>
+                `,
+                timer: 4000,    
+                showConfirmButton: false,
+            });
+
+            $('#guaranteed_amount').val('');
+            return false;
+        }else if(g_amount>rem){
+            Swal.fire({
+                icon: 'error',
+                title: '<strong>Insufficient Balance!</strong>',
+                html: `
+                    <p style="font-size: 16px; text-align: center;">
+                        <span style="background: #ffe7e7; padding: 4px 8px; border-radius: 5px;">
+                            <strong>Remaining Funds </strong> ${rem}
+                        </span><br><br>
+                        Please check <strong>Fundsource → Proponents</strong> for more details.
+                    </p>
+                `,
+                timer: 4000,    
+                showConfirmButton: false,
+            });
+            $('#guaranteed_amount').val('');
+            return false;
+        }else if(g_amount > 500000){
+            Swal.fire({
+                icon: 'error',
+                title: '<strong>Maximum Limit!</strong>',
+                html: `
+                    <p style="font-size: 16px; text-align: center;">
+                        <span style="background: #ffe7e7; padding: 4px 8px; border-radius: 5px;">
+                            <strong>Maximum Guaranteed Amount for GL is 500,000.00</strong>
+                        </span><br><br>
+                    </p>
+                `,
+                timer: 4000,    
+                showConfirmButton: false,
+            });
+            $('#guaranteed_amount').val('');
+            return false;
         }
+         
     }
 
     function formatDate(item){

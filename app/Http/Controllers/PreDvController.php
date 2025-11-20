@@ -1501,4 +1501,26 @@ class PreDvController extends Controller
             return redirect()->back()->with('update_remarks', true);
         }
     }
+
+    public function fetchPreFundsource(Request $request){
+        $currentYear = date("Y");
+        $info = ProponentInfo::with(['facility', 'fundsource', 'proponent'])
+            ->where(function ($query) use ($request, $currentYear) {
+                $query->where(function ($q) use ($currentYear) {
+                    $q->whereYear('created_at', $currentYear);
+                });
+            })
+            ->whereYear('created_at', $currentYear) 
+            ->orWhere(function ($query) use ($request, $currentYear) {
+                $query->whereYear('created_at', $currentYear);
+            })
+            ->get();
+                    
+        $facility = Facility::where('id', $request->facility_id)->first();
+        return response()->json([
+            'info' => $info, 
+            'facility' => $facility,
+            'facilities' => Facility::select('id','name')->get()
+        ]);
+    }
 }
