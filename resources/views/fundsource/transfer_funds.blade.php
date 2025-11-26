@@ -118,6 +118,14 @@
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group d-flex align-items-right p-2">
+                    <label for="owed" style="">UTANG:</label>
+                    <input class="form-control" type="checkbox" id="owed" name="owed">
+                </div>
+            </div>
+        </div>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

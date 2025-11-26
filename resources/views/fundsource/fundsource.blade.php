@@ -63,7 +63,7 @@
                             <div class="card">
                                 <div class="card-body">
                                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-                                        <h4 class="card-title" style="text-align: left; margin: 0; color: {{ $fund->remaining_balance <= 0 ? 'red' : 'inherit' }};">
+                                        <h4 class="card-title" style="text-align: left; margin: 0; color: {{ $fund->total_remaining <= 0 ? 'red' : 'inherit' }};">
                                             {{ $fund->saa }} 
                                             @if($fund->budget_cost != null | $fund->budget_cost != 0)
                                                 <br><small class="text-info">Fundsource Budget(admin cost) : {{ number_format($fund->budget_cost,2,'.',',') }}</small>
@@ -101,7 +101,24 @@
                                                         </li>
                                                     @endif
                                                     <div class="d-flex justify-content-between align-items-center">
-                                                        <span class="ml-3">Allocated Funds &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->alocated_funds)), 2, '.', ',') }}</strong></span>
+                                                        <span class="ml-3">Allocated Funds &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: 
+                                                            <strong class="text-info">
+                                                                {{ number_format(floatval(str_replace(',', '', $proponentInfo->alocated_funds)), 2, '.', ',') }}
+                                                               
+                                                            </strong>
+                                                            &nbsp;&nbsp;&nbsp;
+                                                            @php
+                                                                $transfer_amount = $transferred
+                                                                    ->where('proponentinfo_id', $proponentInfo->id)
+                                                                    ->sum(function ($item) {
+                                                                        return (float) str_replace(',', '', $item->utilize_amount);
+                                                                    });
+                                                                @endphp
+
+                                                            @if(!in_array($transfer_amount, [null, 0]))
+                                                                ({{ number_format($transfer_amount,2,'.',',') }})
+                                                            @endif
+                                                        </span>
                                                         <button style="min-width:90px; border-radius:0;" id="track" data-backdrop="static" data-proponentInfo-id="{{ $proponentInfo->id }}" data-toggle="modal" href="#track_details2" onclick="track_details2(event)" class='btn btn-sm btn-outline-info track_details2'>Track</button>
                                                     </div>
                                                     <div class="d-flex justify-content-between align-items-center">
@@ -133,7 +150,7 @@
                     <strong>No fundsource found!</strong>
                 </div>
             @endif
-            <div class="pl-5 pr-5 mt-5">
+            <div class="pl-6 pr-6 mt-6" style="margin-top:20px">
                 {!! $fundsources->appends(request()->query())->links('pagination::bootstrap-5') !!}
             </div>
         </div>
@@ -587,7 +604,7 @@
         $('#track_details2').modal('show');
         var info_id = event.target.getAttribute('data-proponentInfo-id');
         var i = 0;
-        
+        console.log('info_id', info_id);
         var url = "{{ url('tracking').'/' }}"+ info_id;
         $.ajax({
             url: url,

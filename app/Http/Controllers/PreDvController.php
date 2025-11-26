@@ -40,6 +40,7 @@ class PreDvController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this->middleware('block.secure.nonadmin');
     }
 
     public function pre_dv(Request $request)
@@ -378,6 +379,12 @@ class PreDvController extends Controller
             });
         }
 
+        if($request->stat_select){
+            $pre_dv->whereHas('new_dv', function ($query) use ($request) {
+                $query->whereIn('status', $request->stat_select);
+            });
+        }
+
         $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(50);
 
         $pre_ids = PreDv::pluck('facility_id')->unique()->values()->toArray();
@@ -396,7 +403,8 @@ class PreDvController extends Controller
             'p_id' => explode(',', $request->p_id),
             'b_id' => explode(',', $request->b_id),
             's_id' => explode(',', $request->s_id),
-            'pros' => Proponent::whereIn('id', PreDVExtension::pluck('proponent_id')->toArray())->get()
+            'pros' => Proponent::whereIn('id', PreDVExtension::pluck('proponent_id')->toArray())->get(),
+            'status' => $request->stat_select
         ]);
     }
 
@@ -696,7 +704,6 @@ class PreDvController extends Controller
     public function savePreDV(Request $request)
     {
         // return 1;
-        $trans = Transmittal::whereIn('id', $request->all_transmittal)->get();
         if($request->all_transmittal){
             Transmittal::whereIn('id', $request->all_transmittal)->update(['used'=>1]);
         }
@@ -1013,7 +1020,14 @@ class PreDvController extends Controller
                 }
 
             }
-            
+
+            $check_latest = PreDVExtension::where('pre_dv_id', $pre_dv->id)->get();
+
+            $fees = PreDVControl::whereIn('predv_extension_id', $check_latest->pluck('id')->toArray())->get();
+            $pre_dv->grand_total = $check_latest ? $check_latest->sum('total_amount') : $pre_dv->grand_total;
+            $pre_dv->prof_fee = $fees ? $fees->sum('prof_fee') : $pre_dv->prof_fee;
+            $pre_dv->save();
+
             return redirect()->back()->with('pre_dv', true);
         } else {
             return redirect()->back()->with('pre_dv_error', true);
@@ -1123,6 +1137,13 @@ class PreDvController extends Controller
                         }
                     }
                 }
+                
+                $check_latest = PreDVExtension::where('pre_dv_id', $pre_dv->id)->get();
+
+                $fees = PreDVControl::whereIn('predv_extension_id', $check_latest->pluck('id')->toArray())->get();
+                $pre_dv->grand_total = $check_latest ? $check_latest->sum('total_amount') : $pre_dv->grand_total;
+                $pre_dv->prof_fee = $fees ? $fees->sum('prof_fee') : $pre_dv->prof_fee;
+                $pre_dv->save();
 
                 NewDV::where('predv_id', $id)->update(
                     [
@@ -1309,15 +1330,13 @@ class PreDvController extends Controller
     }
 
     public function getToken(){
-        $user = Auth::user();
         $loginResponse = Http::post('http://192.168.110.7/guaranteeletter/api/login', [
-            'userid' => $user->userid
+            'userid' => 2760
         ]);
         if (isset($loginResponse['token'])) {
             $token = $loginResponse['token'];
         } else {
-            return 1;
-            // "Authentication failed. Error: " . ($loginResponse['message'] ?? 'Unknown error');
+            "Authentication failed. Error: " . ($loginResponse['message'] ?? 'Unknown error');
         }
         return $token;
     }
@@ -1408,6 +1427,7 @@ class PreDvController extends Controller
                 Transmittal::whereIn('id', $trans_ids)->update([
                     'remarks' => 7
                 ]);
+
                 // Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/obligate');
                 // Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/obligate');
 

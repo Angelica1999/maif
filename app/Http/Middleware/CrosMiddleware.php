@@ -28,10 +28,14 @@ class CrosMiddleware
 
         $response = $next($request);
 
-        foreach ($headers as $key => $value)
-         {
-            $response->header($key, $value);
-         }
+        // foreach ($headers as $key => $value)
+        //  {
+        //     $response->header($key, $value);
+        //  }
+
+        foreach ($headers as $key => $value) {
+            $response->headers->set($key, $value);  // ✅ works for all Response types
+        }
 
         return $response;
     }

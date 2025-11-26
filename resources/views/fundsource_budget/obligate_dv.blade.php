@@ -237,7 +237,7 @@
                                         <span>A. Certified: Expenses/Cash Advance necessary, lawful and incurred under my direct supervision.</span>
                                         <br><br><br>
                                         <div style="display:inline-block;">
-                                            <span style="margin-left:350px"><strong>JONATHAN NEIL V. ERASMO, MD, MPH, FPSM<strong></span>
+                                            <span style="margin-left:350px"><strong>JONATHAN NEIL V. ERASMO, MD, MPH, FPSMS<strong></span>
                                         </div>
                                         <br>
                                         <span style="margin-left:420px">OIC - Director III</span>

@@ -282,7 +282,7 @@
                         <tr style="border: 1px solid black; border-top:0px;">
                             <td style="text-align:center">
                                 <table style="width: 40%; border-collapse: collapse; margin-top:10px">
-                                    <tr><td style="border-bottom:1px solid black">JONATHAN NEIL V. ERASMO, MD, MPH, FPSM</td></tr>
+                                    <tr><td style="border-bottom:1px solid black">JONATHAN NEIL V. ERASMO, MD, MPH, FPSMS</td></tr>
                                     <tr><td style="">OIC - Director III</td></tr>
                                 </table>
                             </td>
@@ -477,7 +477,7 @@
                     @endif
                 @endforeach
             @endif
-            <div style="page-break-before: always;"></div>
+            <!-- <div style="page-break-before: always;"></div>
             <div style="width: 100%; text-align:center;">
                 @if($total_count > 30)
                     <b style="font-size:14px">V1 - {{$pre_dv->facility->name}}</b>
@@ -511,7 +511,7 @@
                         <td style="vertical-align:top; border:none; width:30%; padding:4px; text-align:center"></td>
                     </tr>                        
                 </table> 
-            </div>
+            </div> -->
         @endif
     </body>
 </html>

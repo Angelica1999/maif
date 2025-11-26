@@ -34,12 +34,15 @@ use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use PhpOffice\PhpSpreadsheet\Style\Font;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use Illuminate\Support\Str;
+
 
 class FundSourceController extends Controller
 {
     public function __construct()
     {
        $this->middleware('auth');
+       $this->middleware('block.secure.nonadmin');
     }
 
     public function fundSource(Request $request) {
@@ -136,13 +139,45 @@ class FundSourceController extends Controller
                 $fundsources = $fundsources->where('saa', 'LIKE', "%$request->keyword%");
             }
         }  
-        $currentYear = date("Y");
-
-        $fundsources = $fundsources
-            ->orderByRaw("CASE WHEN YEAR(created_at) = ? THEN 0 ELSE 1 END", [$currentYear]) 
-            ->orderBy('remaining_balance', 'desc') 
-            ->paginate(15);
-
+        $fundsources = $fundsources->get();  
+        $fundsources = $fundsources->map(function ($fund) {
+            $totalRemaining = $fund->proponents->sum(function ($proponent) {
+                return $proponent->proponentInfo->sum(function ($info) {
+                    return (float) str_replace(',', '', $info->remaining_balance);
+                });
+            });
+            $fund->total_remaining = $totalRemaining;
+            return $fund;
+        });
+        
+        $fundsources = $fundsources->sortBy(function ($fund) {
+            $isConap = Str::contains($fund->saa, 'CONAP');
+            $hasPositive = $fund->total_remaining > 0;
+        
+            if ($isConap && $hasPositive) {
+                $group = 0; // CONAP positive
+            } elseif (!$isConap && $hasPositive) {
+                $group = 1; // Non-CONAP positive
+            } elseif ($isConap && !$hasPositive) {
+                $group = 2; // CONAP 0 or less
+            } else {
+                $group = 3; // Non-CONAP 0 or less
+            }
+        
+            return [$group, -$fund->total_remaining];
+        })->values();
+        $page = request()->get('page', 1);
+        $perPage = 15;
+        $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
+            $fundsources->forPage($page, $perPage),
+            $fundsources->count(),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
+        
+        $fundsources = $paginated;
+        
         $user = DB::connection('dohdtr')->table('users')->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
                 ->where('users.userid', '=', Auth::user()->userid)
                 ->select('users.section')
@@ -160,7 +195,10 @@ class FundSourceController extends Controller
             'proponents' => $proponents,
             'facilities' => Facility::get(),
             'user' => $user,
-            'funds_list' => Fundsource::select('id', 'saa')->get()
+            'funds_list' => Fundsource::select('id', 'saa')->get(),
+            'transferred' => Utilization::where('status', 3)->whereHas('transfer', function ($q) {
+                $q->where('owed', 1);
+            })->get()
         ]);
     }
 
@@ -577,6 +615,7 @@ class FundSourceController extends Controller
         }
 
         $transfer = new Transfer();
+        $transfer->owed = $request->input('owed') == "ON" || $request->input('owed') == "on" ? 1 : 0;
         $transfer->from_proponent = $from->proponent_id;
         $transfer->from_saa = $from->fundsource_id;
         $transfer->from_facility = $from->facility_id;
@@ -707,9 +746,15 @@ class FundSourceController extends Controller
 
     public function forPatientCode($proponent_id, $facility_id) {
         $included_ids = IncludedFacility::pluck('facility_id')->toArray();
+       
+
         $user = Auth::user();
         $proponent= Proponent::where('id', $proponent_id)->first();
         $proponent_ids= Proponent::where('proponent', $proponent->proponent)->pluck('id')->toArray();
+        $sl = ProponentInfo::whereIn('proponent_id', $proponent_ids)->where('facility_id', 'LIKE', "%851%")->get();
+        if(count($sl) != 0) {
+            $included_ids[] = 775; // add 775 if 851 exists
+        }
         // $info_sum = ProponentInfo::whereIn('proponent_id', $proponent_ids)
         //     ->selectRaw('SUM(CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(10,2)) - CAST(REPLACE(admin_cost, ",", "") AS DECIMAL(10,2))) as total_amount')
         //     ->value('total_amount');
@@ -748,17 +793,45 @@ class FundSourceController extends Controller
                 CAST(REPLACE(IFNULL(amount, '0'), ',', '') AS DECIMAL(20, 2))
             "));   
         $info = ProponentInfo::whereIn('proponent_id', $proponent_ids)->pluck('id')->toArray();
+
+        $info = ProponentInfo::whereIn('proponent_id', $proponent_ids)
+            ->where(function ($query) use ($included_ids) {
+                $query->whereIn('facility_id', $included_ids);
+                foreach ($included_ids as $id) {
+                    $query->orWhereJsonContains('facility_id', (string) $id);
+                }
+            })
+            ->where(function ($query) {
+                $query->where('facility_id', '!=', 702);
+                $query->whereNot(function ($sub) {
+                    $sub->whereJsonContains('facility_id', '702');
+                });
+            })
+            ->pluck('id')
+            ->toArray();
+
         $dv3_sum = Dv3Fundsource::whereIn('info_id', $info)
-            ->with([
-                'dv3' => function ($query){
-                    $query->with([
-                        'facility:id,name',
-                        'user:userid,fname,lname'
-                    ]);
-                },
-                'fundsource:id,saa'
-            ])->sum('amount');
-        
+        ->with([
+            'dv3' => function ($query){
+                $query->with([
+                    'facility:id,name',
+                    'user:userid,fname,lname'
+                ]);
+            },
+            'fundsource:id,saa'
+        ])->sum('amount');
+
+        // $dv3_sum = Dv3Fundsource::whereIn('info_id', $info)
+        //     ->with([
+        //         'dv3' => function ($query){
+        //             $query->with([
+        //                 'facility:id,name',
+        //                 'user:userid,fname,lname'
+        //             ]);
+        //         },
+        //         'fundsource:id,saa'
+        //     ])->sum('amount');
+
         $dv1 = Utilization::whereIn('proponent_id', $proponent_ids)
             ->where('status', 0)
             ->where('facility_id', 837)
@@ -780,9 +853,16 @@ class FundSourceController extends Controller
             return floatval(str_replace(',', '', $item->utilize_amount));
         });
         
-        // $balance = ($info_sum + $supplemental) - ($subtracted + $dv3_sum + $dv_sum + $pat_sum) ;
+        if (count($sl) != 0) {
+            $balance = ($info_sum + $supplemental) - ($subtracted + $dv3_sum + $dv_sum + $pat_sum) ;
+            $sampp = $dv3_sum;
+        }else{
+            $balance = ($info_sum + $supplemental) - ($subtracted + $pat_sum + $dv_sum) ;
+            $sampp = 2;
+        }
+
+      
         // $balance = ($info_sum + $supplemental) - ($subtracted + $pat_sum) ;
-        $balance = ($info_sum + $supplemental) - ($subtracted + $pat_sum + $dv_sum) ;
 
         $facility = Facility::find($facility_id);
         $patient_code = $proponent->proponent_code.'-'.$this->getAcronym($facility->name).date('YmdHis').$user->id;
@@ -795,8 +875,8 @@ class FundSourceController extends Controller
             'total_funds' => $info_sum,
             'supplemental' => $supplemental,
             'subtracted' => $subtracted,
-            // 'disbursement' => $dv3_sum + $dv_sum,
-            'disbursement' => $dv_sum,
+            'disbursement' => count($sl) != 0 ? $dv3_sum + $dv_sum : $dv_sum ,
+            // 'disbursement' => $dv_sum,
             'gl_sum' => round($pat_sum, 2),
             // 'list'=> $saaa ,
             'dsad' => count($saaa)

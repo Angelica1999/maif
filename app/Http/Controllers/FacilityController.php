@@ -23,6 +23,12 @@ use App\Models\IncludedFacility;
 
 class FacilityController extends Controller
 {
+    public function __construct()
+    {
+       $this->middleware('auth');
+       $this->middleware('block.secure.nonadmin');
+    }
+    
     public function index(Request $request) {
 
         $brgy = Barangay::pluck('muncity_id')->toArray();
@@ -147,7 +153,8 @@ class FacilityController extends Controller
         Facility::where('id', 251)->update(['name' => 'Allied Care Experts (ACE) Medical Center-Dumaguete Doctors, Inc']);
         Facility::where('id', 678)->update(['name' => 'Allied Care Experts (ACE) Medical Center-Cebu, Inc.']);
         Facility::where('id', 776)->update(['name' => 'Allied Care Experts(ACE) Medical Center - Bayawan Inc.']);
-
+        Facility::where('id', 746)->update(['address' => '2049-D Tagbilaran East Road, Tagbilaran City']);
+        Facility::where('id', 849)->update(['name' => 'Tan Chay Duan Renal Center']);
         Facility::where('id', 864)->update(['address' => 'Barili, Cebu']);
 
         return redirect()->back()->with('update_fac', true);
@@ -434,6 +441,19 @@ class FacilityController extends Controller
             $transmittalQuery->whereIn('facility_id', $facs);
         }
 
+        $status = $req->has('viewAll') ? [0] 
+        : (
+            $req->status_data 
+            ? array_map('intval', json_decode($req->status_data[0] ?? '[]', true) ?: $req->status_data) 
+            : [0]
+        );
+
+        if ($req->status_data) {
+            if($status != 0){
+                $transmittalQuery->whereIn('remarks', $status);
+            }
+        }
+
         $facilities = Facility::whereIn('id', $facilityIds)->select('id', 'name')->get();
 
         $stats = (clone $transmittalQuery)
@@ -471,6 +491,7 @@ class FacilityController extends Controller
             'total' => $total,
             'amount' => $amount,
             'facs' => $facs ?? '',
+            'status' => $status ?? '',
         ]);
     }
 
@@ -518,21 +539,20 @@ class FacilityController extends Controller
     }
 
     public function received($control_no, $name){
+        $trans = Transmittal::where('id', $control_no)->first();
 
         $log = new Logbook();
         $log->received_on = date('Y-m-d',strtotime(now()));
         $log->received_by = Auth::user()->userid;
         $log->delivered_by = $name;
-        $log->control_no = $control_no;
+        $log->control_no = $trans->control_no;
         $log->save();
         
-        $trans = Transmittal::where('control_no', $control_no)->first();
         $trans->remarks = 2;
         $trans->save();
 
         // Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$trans->id.'/'.Auth::user()->userid.'/received');
         // Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$trans->id.'/'.Auth::user()->userid.'/received');
-
         $token = $this->getToken();
         if ($token != 1) {
             $response = Http::withHeaders([
@@ -566,13 +586,12 @@ class FacilityController extends Controller
     public function getToken(){
         $user = Auth::user();
         $loginResponse = Http::post('http://192.168.110.7/guaranteeletter/api/login', [
-            'userid' => $user->userid
+            'userid' => 2760
         ]);
         if (isset($loginResponse['token'])) {
             $token = $loginResponse['token'];
         } else {
-            return 1;
-            // "Authentication failed. Error: " . ($loginResponse['message'] ?? 'Unknown error');
+            "Authentication failed. Error: " . ($loginResponse['message'] ?? 'Unknown error');
         }
         return $token;
     }

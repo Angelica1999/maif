@@ -8,6 +8,7 @@ use App\Models\Dv;
 use App\Models\MailHistory;
 use App\Models\AddFacilityInfo;
 use App\Models\Dv2;
+use App\Models\Notif;
 use App\Models\Facility;
 use App\Models\OnlineUser;
 use App\Models\Fundsource_Files;
@@ -48,6 +49,7 @@ class PrintController extends Controller
 {
     public function __construct() {
         $this->middleware('auth');
+        $this->middleware('block.secure.nonadmin');
     }
 
     public function calculateAge($dob) {
@@ -133,6 +135,26 @@ class PrintController extends Controller
                                 'fc_status' => 'referred',
                                 'sent_type' => 3    
                             ]); 
+
+                            $pat = Patients::with('proponentData:id,proponent')->where('id', $id)->first();
+
+                            if(!ctype_digit($pat->created_by)){
+                                $notif = new Notif();
+                                $notif->type = "gl";
+                                $notif->message_type = 2;
+                                $notif->account_type = 1;
+                                $notif->user_type = $pat->proponent_id;
+                                $notif->message = "Patient ".$pat->fname.', '.$pat->lname." was processed by". Auth::user()->fname.' '. Auth::user()->lname. "(MPU)";
+                                $notif->save();
+                            }
+                            
+                            $notif1 = new Notif();
+                            $notif1->type = "gl";
+                            $notif1->message_type = 2;
+                            $notif1->account_type = 2;
+                            $notif1->user_type = $pat->facility_id;
+                            $notif1->message = "Incoming Patient ".$pat->fname.', '.$pat->lname." from ". $pat->proponentData->proponent;
+                            $notif1->save();
                         }
                     }
                 }

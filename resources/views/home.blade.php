@@ -287,7 +287,11 @@
                                     @if($patient->fc_status == "retrieved")
                                         Retrieved (pending confirmation) - {{ $patient->rtrv_remarks }}
                                     @else
-                                        {{ $patient->pat_rem }}   
+                                        @if($patient->pat_rem == "Retrieved")
+                                            {{ $patient->pat_rem }} - {{ $patient->rtrv_remarks }}
+                                        @else
+                                            {{ $patient->pat_rem }}   
+                                        @endif
                                     @endif
                                 </td>
                                 <td style="text-align:center;" class="group-amount" data-patient-id="{{ $patient->id }}" data-proponent-id="{{ $patient->proponent_id }}" 
@@ -709,7 +713,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-footer update_footer">
                         <input type="hidden" value="" name="update_type" id="update_type">
                         <button type="button" class="btn btn-secondary" id="close_modal" data-dismiss="modal">Close</button>
                         <button type="submit" id="update_pat_btn" class="btn btn-primary" style="display:block;" >Update</button>
@@ -772,6 +776,21 @@
 <script src="{{ asset('admin/vendors/x-editable/bootstrap-editable.min.js?v=1') }}"></script>
 @include('maif.editable_js')
 <script>
+
+    $('#update_form').on('keypress', function(e) {
+        console.log('sample', $('#update_pat_btn').css('display') );
+        if (e.key === 'Enter' && $('#update_pat_btn').css('display') === 'none') {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    $(document).on('click', '#update_pat_btn', function(e){
+        e.preventDefault(); 
+        enabledInput(); 
+        $(this).closest('form')[0].submit();
+    });
+
     $('form').on('submit', function () {
         $(this).find('button[type="submit"]').prop('disabled', true).text('Submitting...');
     });
@@ -997,6 +1016,7 @@
         $('#barangay_id').select2();
         $('#facility_id').select2();
         $('#proponent_id').select2();
+        enabledInput();
         form_type = 'create';
     });
 
@@ -1374,38 +1394,38 @@
     //     }
     // }
     function validateAmount(element) {
-    if (event.keyCode === 32) {
-        event.preventDefault();
-    }
-    
-    // Remove everything except digits and dots
-    var cleanedValue = element.value.replace(/[^\d.]/g, '');
-    
-    // Split by decimal point to check for multiple decimals
-    var parts = cleanedValue.split('.');
-    
-    // If more than one decimal point, keep only the first part and first decimal
-    if (parts.length > 2) {
-        cleanedValue = parts[0] + '.' + parts.slice(1).join('');
-    }
-    
-    var numericValue = parseFloat(cleanedValue);
-
-    if ((!isNaN(numericValue) || cleanedValue === '' || cleanedValue === '.') &&
-        !(cleanedValue.length === 1 && cleanedValue[0] === '0')) {
-        // Add thousand separators, but preserve decimal part
-        if (cleanedValue.includes('.')) {
-            var wholePart = cleanedValue.split('.')[0];
-            var decimalPart = cleanedValue.split('.')[1];
-            var formattedWhole = wholePart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-            element.value = formattedWhole + '.' + decimalPart;
-        } else {
-            element.value = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        if (event.keyCode === 32) {
+            event.preventDefault();
         }
-    } else {
-        element.value = '';
+        
+        // Remove everything except digits and dots
+        var cleanedValue = element.value.replace(/[^\d.]/g, '');
+        
+        // Split by decimal point to check for multiple decimals
+        var parts = cleanedValue.split('.');
+        
+        // If more than one decimal point, keep only the first part and first decimal
+        if (parts.length > 2) {
+            cleanedValue = parts[0] + '.' + parts.slice(1).join('');
+        }
+        
+        var numericValue = parseFloat(cleanedValue);
+
+        if ((!isNaN(numericValue) || cleanedValue === '' || cleanedValue === '.') &&
+            !(cleanedValue.length === 1 && cleanedValue[0] === '0')) {
+            // Add thousand separators, but preserve decimal part
+            if (cleanedValue.includes('.')) {
+                var wholePart = cleanedValue.split('.')[0];
+                var decimalPart = cleanedValue.split('.')[1];
+                var formattedWhole = wholePart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                element.value = formattedWhole + '.' + decimalPart;
+            } else {
+                element.value = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            }
+        } else {
+            element.value = '';
+        }
     }
-}
 
     $('#update_send').on('click', function(){
         $('.loading-container').css('display', 'block');
@@ -1468,21 +1488,35 @@
                 $('.patient_code').val(patient.patient_code);
                 $('.remaining_balance').val(patient.remaining_balance);
                 $('.pat_rem').val(patient.pat_rem);
+                console.log('patient.sent_type', patient.sent_type);
+                console.log('patient.fc_status', patient.fc_status);
 
                 if (patient.sent_type == null || patient.fc_status == "returned") {
-                    if(patient.fc_status != "retrieved"){
-                        $('#update_pat_btn').css('display', 'block');
+
+                    if(!["referred", "retrieved"].includes(patient.fc_status)){
                         $('#remove_pat_btn').css('display', 'block');
+                        enabledInput();
                         if (stat != 0) {
                             $('#update_send').css('display', 'block');
                         } else {
                             $('#update_send').css('display', 'none');
                         }
+                    }else{
+                        $('#update_send').css('display', 'none');
+                        $('#remove_pat_btn').css('display', 'none');
+                        disabledInput();
                     }
                 } else {
-                    $('#update_pat_btn').css('display', 'none');
+                    disabledInput();
                     $('#update_send').css('display', 'none');
                     $('#remove_pat_btn').css('display', 'none');
+
+                }
+
+                if(patient.transd_id != null){
+                    $('#update_pat_btn').css('display', 'none');
+                }else{
+                    $('#update_pat_btn').css('display', 'block');
                 }
             }
             edit_c = 0;
@@ -1495,6 +1529,24 @@
             });
             
         });
+    }
+
+    function disabledInput(){
+        $('.date_guarantee_letter').prop('readonly', true);
+        $('.facility_id1').prop('disabled', true);
+        $('.proponent_id1 ').prop('disabled', true);
+        $('.guaranteed_amount').prop('readonly', true);
+        $('.actual_amount').prop('readonly', true);
+        $('.pat_rem').prop('readonly', true);
+    }
+
+    function enabledInput(){
+        $('.date_guarantee_letter').prop('readonly', false);
+        $('.facility_id1').prop('disabled', false);
+        $('.proponent_id1 ').prop('disabled', false);
+        $('.guaranteed_amount').prop('readonly', false);
+        $('.actual_amount').prop('readonly', false);
+        $('.pat_rem').prop('readonly', false);
     }
     
     var form_type = 'create';
@@ -1620,6 +1672,9 @@
         }
         if(edit_c == 0){
             if(data.val()) {
+                console.log(data.val());
+                console.log(facility_id);
+
                 $.get("{{ url('patient/code').'/' }}"+data.val()+"/"+facility_id, function(result) {
                     $(".patient_code").val(result.patient_code);
                     const formattedBalance = new Intl.NumberFormat('en-US', {

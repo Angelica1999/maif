@@ -699,7 +699,7 @@
 
         $('#gl_body').html(loading);
 
-        $.get("{{ url('proponent/util').'/' }}"+code, function(result){
+        $.get("{{ url('proponent/util').'/' }}"+code.replaceAll("/", "$"), function(result){
             if (result == 0) {
                 $('#pro_util').modal('hide');
                 Swal.fire({

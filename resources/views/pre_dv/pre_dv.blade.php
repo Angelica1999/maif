@@ -227,7 +227,7 @@
                                 </div>
                                 <div class="saa_clone" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 2%;">
                                     <select style="width: 50%;" class="select2 saa_id" onchange="autoDeduct($(this))" required>
-                                        <option value=''>SELECT SAA</option>
+                                        <option value=''></option>
                                         <!-- @foreach($saas as $saa)
                                             <option value="{{$saa->id}}" data-balance="{{$saa->alocated_funds}}">{{$saa->saa}}</option>
                                         @endforeach -->
@@ -404,6 +404,9 @@
     });
     
     $('.select2').select2();
+    $('.saa_id').select2({
+        placeholder: "Select SAA"
+    });
     $('#fac_select').select2();
     $('#by_select').select2();
 
@@ -647,7 +650,8 @@
                                 return $('<span style="color: red;">' + data.text + '</span>');
                             }
                             return data.text;
-                        }
+                        },
+                        placeholder: "Select SAA"
                     });
                 });
 
@@ -721,6 +725,7 @@
             }else{
                 $('.delete_btn').css('display', 'block');
                 $('.submit_btn').css('display', 'block');
+                btn_val = 0;
             }
 
             if(stat == 1){
@@ -878,6 +883,7 @@
     }
 
     function autoDeduct(element){
+        console.log('btn_val', btn_val);
         if(btn_val == 0){
             var amountValue = parseFloat(element.closest('.saa_clone').find('.saa_amount').val().replace(/,/g, '')) || 0;
             var w_pro = element.closest('.proponent_clone');
@@ -1123,6 +1129,9 @@
                     });
                     
                     $(proponent_clone).find('.saa_clone').find('.saa_amount').val('');
+                    btn_val = 1;
+                    $(proponent_clone).find('.saa_clone').find('.saa_id').val('').trigger('change');
+                    btn_val = 0;
                     hasErrors = true; // Set error flag
                     return false;
                 }
@@ -1182,7 +1191,6 @@
                         Lobibox.notify('success', {
                             msg: "Successfully created pre_dv!",
                         });
-                        
                         location.reload();
                     },
                     error: function (error) {

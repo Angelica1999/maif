@@ -2,6 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PrintController;
+use App\Models\Notif;
+use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Illuminate\Support\Facades\Redis;
+use Illuminate\Http\Request;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -291,6 +297,49 @@ Route::post('/sending-gl/hold', [App\Http\Controllers\FacilityController::class,
 //Route::match(['get','post'],'/logbook/export', [App\Http\Controllers\HomeController::class, 'exportToExcel'])->name('logbook_export');
 Route::get('/export/logbook', [App\Http\Controllers\HomeController::class, 'exportToExcel'])->name('logbook.export');
 
+Route::post('/notifications/register-tab', function (Illuminate\Http\Request $request) {
+    $clientId = $request->client_id;
+    Redis::sadd("active_tabs", $clientId);
+    Redis::expire("active_tabs", 3600);
+    return response()->json(['status' => 'ok']);
+});
+
+Route::get('/notifications/stream/{clientId}', function ($clientId) {
+    return new StreamedResponse(function () use ($clientId) {
+        set_time_limit(0);
+        if (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+        $start = time();
+        $maxExecutionTime = 30; // restart every 30s instead of 300s
+
+        while (time() - $start < $maxExecutionTime) {
+            // Try to read a notification for this tab
+            $message = Redis::rpop("notifications:{$clientId}");
+            if ($message) {
+                echo "data: {$message}\n\n";
+                ob_flush();
+                flush();
+            }
+            // Send heartbeat every 10s so browser keeps connection alive
+            if ((time() - $start) % 10 === 0) {
+                echo "data: {}\n\n";
+                ob_flush();
+                flush();
+            }
+            usleep(500000); // 0.5s
+        }
+    }, 200, [
+        'Content-Type' => 'text/event-stream',
+        'Cache-Control' => 'no-cache',
+        'Connection' => 'keep-alive',
+    ]);
+});
+Route::get('/maif/notifications/unregister-tab', function (Illuminate\Http\Request $request) {
+    $clientId = $request->query('client_id');
+    Redis::srem("active_tabs", $clientId);
+    return response()->json(['status' => 'ok']);
+});
 
 
 
