@@ -7,13 +7,61 @@
       .custom-center-align .lobibox-body .lobibox-message {
         text-align: center;
     }
+           
+.input-group {
+        justify-content: flex-end;
+        gap: 1px;
+        flex-wrap: nowrap; 
+    }
+     .input-group-append {
+        display: flex;
+        flex-wrap: nowrap;
+        width: 100%;
+        justify-content: flex-end; 
+        
+    }
+.input-group .form-control {
+    width: 250px !important;    /* adjust as needed */
+   
+}
+       @media (max-width: 767px) {
+    .input-group {
+        flex-direction: column;     
+        align-items: stretch;     
+    }
+
+    .input-group .form-control {
+        width: 200% !important;
+        margin-bottom: 5px;
+    }
+
+    .input-group-append {
+        flex-direction: column;     /* stack buttons */
+        width: 100%;
+    }
+
+    .input-group-append .btn {
+        width: 100%;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+    }
+    #gen3_btn{
+         width: 100% !important;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+    }
+}
 </style>
 @extends('layouts.app')
 @section('content')
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-            <div class="float-right" >
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <div class="mb-2 mb-md-0">
+                    <h4 class="card-title">DISBURSEMENT VOUCHER V3</h4>
+                    <p class="card-description">MAIF-IPP</p>
+                </div>
                 <div class="input-group">
                     <form method="GET" action="{{ route('dv3') }}">
                         <div class="input-group">
@@ -42,10 +90,7 @@
                     </form>
                 </div>
             </div>
-            <h4 class="card-title">DISBURSEMENT VOUCHER V3</h4>
-            <p class="card-description">
-                MAIF-IPP
-            </p>
+           
                 <div class="table-responsive">
                     <table class="table table-striped" style="border-spacing: 0;">
                     <thead>

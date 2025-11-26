@@ -22,13 +22,61 @@
         background-color: #fff; 
         box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4); 
     }
+ 
+.input-group {
+        justify-content: flex-end;
+        gap: 1px;
+        flex-wrap: nowrap; 
+    }
+     .input-group-append {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        justify-content: flex-end; 
+        
+    }
+.input-group .form-control {
+    width: 250px !important;    /* adjust as needed */
+    max-width: 100%;
+}
+       @media (max-width: 767px) {
+    .input-group {
+        flex-direction: column;     
+        align-items: stretch;     
+    }
+
+    .input-group .form-control {
+        width: 200% !important;
+        margin-bottom: 5px;
+    }
+
+    .input-group-append {
+        flex-direction: column;     /* stack buttons */
+        width: 100%;
+    }
+
+    .input-group-append .btn {
+        width: 100%;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+    }
+    #gen_btn{
+         width: 100% !important;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+    }
+}
 </style>
 @extends('layouts.app')
 @section('content')
-<div class="col-md-12 grid-margin stretch-card">
+<div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-            <div class="float-right">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <div class="mb-2 mb-md-0">
+                    <h4 class="card-title">DISBURSEMENT VOUCHER</h4>
+                    <p class="card-description">MAIF-IPP</p>
+                </div>
                 <div class="input-group">
                     <form method="GET" action="{{ route('dv')}}">
                         <div class="input-group">
@@ -59,11 +107,7 @@
                     </form>
                 </div>
             </div>
-            
-            <h4 class="card-title">DISBURSEMENT VOUCHER</h4>
-            <p class="card-description">
-                MAIF-IPP
-            </p>
+
             @if(isset($disbursement) && $disbursement->count() > 0)
                 <div class="table-responsive" id="dv_container">
                     <table class="table table-striped" style="width:100%" id="dv_table">

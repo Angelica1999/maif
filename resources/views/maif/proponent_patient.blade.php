@@ -53,13 +53,65 @@
         background-color: #fff; 
         box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4); 
     }
+    #search_patient {
+    width: 250px;   /* fixed smaller width */
+    max-width: 100%; /* keeps it responsive if container shrinks */
+}
+.input-group {
+        justify-content: flex-end;
+        gap: 1px;
+        flex-wrap: nowrap; 
+    }
+     .input-group-append {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        justify-content: flex-end; 
+        
+    }
+   
+.input-group .form-control {
+    width: 150px;    /* adjust as needed */
+    max-width: 100%;
+}
+       @media (max-width: 767px) {
+    .input-group {
+        flex-direction: column;     
+        align-items: stretch;     
+    }
+
+    .input-group .form-control {
+        width: 200% !important;
+        margin-bottom: 5px;
+    }
+
+    .input-group-append {
+        flex-direction: column;     /* stack buttons */
+        width: 100%;
+    }
+
+    .input-group-append .btn {
+        width: 100%;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+    }
+      #gen_btn{
+         width: 100% !important;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+    }
+}
 </style>
 @extends('layouts.app')
 @section('content')
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-            <div class="float-right">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <div class="mb-2 mb-md-0">
+                    <h4 class="card-title">PROPONENT PATIENT</h4>
+                    <p class="card-description">MAIF-IPP</p>
+                </div>
                 <div class="input-group">
                     <form method="GET" action="">
                         <div class="input-group">
@@ -67,7 +119,7 @@
                             <input type="text" class="form-control" name="keyword" id="search_patient" placeholder="Search..." value="{{ $keyword }}" style="width:350px;">
                             <div class="input-group-append">
                                 <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
-                                <button style="width:90px;" class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
+                                <button  class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
                                 <button type="submit" value="filt" style="display:none; background-color:00563B; color:white;" name="filter_col" id="filter_col" class="btn btn-success btn-md"><i class="typcn typcn-filter menu-icon"></i>&nbsp;&nbsp;&nbsp;Filter</button>
                             </div>  
                         </div>
@@ -105,7 +157,7 @@
                     </form>
                     <form method="POST" action="{{ route('save.group') }}">
                         @csrf
-                        <div style="display: flex; justify-content: flex-end;">
+                        <div style="display: flex; ">
                             <label class="totalAmountLabel" style="display:none; height:30px;" ><b> Amount:</b></label>
                             <input style="display:none; vertical-align:center; width:150px" class="form-control group_amountT" name="group_amountT" id="group_amountT" readonly>
                             <button class=" btn-sm group-btn" style="display:none;background-color: green; color: white; height:48px; width:100px">Group</button>
@@ -116,10 +168,6 @@
                     </form>
                 </div>
             </div>
-            <h4 class="card-title">PROPONENT PATIENT</h4>
-            <span class="card-description">
-                MAIF-IPP
-            </span>
             @if(count($patients) > 0)
             <div class="table-responsive" id ="patient_table_container">
                 <table class="table table-striped" id="patient_table">
@@ -306,7 +354,7 @@
                             </td>   
                             <td class="td">{{ $patient->mname }}</td>
                             <td class="td">{{ $patient->lname }}</td>
-                            <td class="td">{{ $patient->facility->name }}</td>
+                            <td class="td">{{ $patient->facility ? $patient->facility->name : '' }}</td>
                             <td class="td">{{ $patient->proponentData ? $patient->proponentData->proponent : 'N/A' }}</td>
                             <td class="td">{{ $patient->patient_code}}</td>
                             {{-- <td>
@@ -339,7 +387,7 @@
                                 @endif
                             </td>
                             <td>{{date('F j, Y', strtotime($patient->created_at))}}</td>
-                            <td class="td">{{ $patient->user_type == null ? $patient->encoded_by->lname .', '. $patient->encoded_by->fname: ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td>
+                            <td class="td">{{ $patient->user_type == null ? ($patient->encoded_by? $patient->encoded_by->lname .', '. $patient->encoded_by->fname : 'No user found' ) : ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td>
                         </tr>
                     @endforeach
                 </tbody>

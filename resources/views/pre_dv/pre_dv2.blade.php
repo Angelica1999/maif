@@ -4,17 +4,72 @@ use App\Models\TrackingDetails;
 ?>
 @extends('layouts.app')
 @section('content')
-<div class="col-md-12 grid-margin stretch-card">
+<style>
+  
+    .input-group {
+        justify-content: flex-end;
+        gap: 1px;
+        flex-wrap: nowrap; 
+    }
+       .input-group-append {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: flex-end; 
+        
+    }
+ .card-title{
+    width: 100px;
+}
+     .input-group .btn{
+       width: 100px;
+    }
+.input-group .form-control {
+    width: 200px;    /* adjust as needed */
+    max-width: 100%;
+}
+       @media (max-width: 767px) {
+    .input-group {
+        flex-direction: column;     
+        align-items: stretch;     
+    }
+
+    .input-group .form-control {
+        width: 200% !important;
+        margin-bottom: 5px;
+    }
+
+    .input-group-append {
+        flex-direction: column;     /* stack buttons */
+        width: 100%;
+    }
+
+    .input-group-append .btn {
+        width: 100%;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+    }
+    #gen_btn{
+         width: 100% !important;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+    }
+}
+</style>    
+<div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-            <div class="float-right">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <div class="mb-2 mb-md-0">
+                    <h4 class="card-title">PRE - DV (v2)</h4>
+                    <p class="card-description">MAIF-IPP</p>
+                </div>
                 <div class="input-group">
                     <form method="GET" action="">
                         <div class="input-group">
                             <input type="text" class="form-control" name="keyword" placeholder="Search..." value="{{$keyword}}" id="search-input" style="width:350px;">
                             <div class="input-group-append">
                                 <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
-                                <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll" style="width:100px"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
+                                <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll" ><img src="\maif\public\images\icons8_eye_16.png">View All</button>
                                 <button type="submit" value="filt" style="display:none; background-color:green; color:white; width:100px; font-size:11px" name="filt_dv" id="filt_dv" class="btn btn-xs"><i class="typcn typcn-filter menu-icon"></i>&nbsp;&nbsp;&nbsp;Filter</button>
                                 <button type="button" id="release_btn" data-target="#releaseTo" style="display:none; background:teal; color:white; width:100px;" onclick="putRoutes($(this))" data-backdrop="static" data-toggle="modal" class="btn btn-md">Release All</button>
                                 <input type="hidden" class="all_route" id="all_route" name="all_route">
@@ -32,11 +87,8 @@ use App\Models\TrackingDetails;
                     </form>
                 </div>
             </div>  
-            <h4 class="card-title">PRE - DV (v2)</h4>
-            <p class="card-description">
-                MAIF-IPP
-            </p>
-            <div class="table-responsive">
+        
+            <div class="table-responsive" style="margin-top: 20px">
                 @if(count($results) > 0)
                     <table class="table table-striped">
                         <thead>
@@ -59,18 +111,18 @@ use App\Models\TrackingDetails;
                                 <th>Route</th>
                                 <th>Remarks</th>
                                 <th>Forwarded</th>
-                                <th class="status" style="min-width:100px">Status
-                                    <i id="stat_i" class="typcn typcn-filter menu-icon"><i>
-                                    <div class="filter" id="stat_div" style="display:none;">
-                                        <select style="width: 120px;" id="stat_select" name="stat_select" multiple>
+                                <th class="status" style="min-width:120px">
+                                    <form method="GET" action="">
+                                        <select id="stat_select" class="form-control stat_select" name="stat_select[]" style="text-align:center" onchange="this.form.submit()" multiple>
+                                            <option></option>
                                             <?php $item = [0,1,2]; ?>
                                             @foreach($item as $d)
-                                                <option value="{{ $d }}" {{ is_array($s_id) && in_array($d, $s_id) ? 'selected' : '' }}>
+                                                <option value="{{ $d }}" {{ is_array($status) && in_array($d, $status) ? 'selected' : '' }}>
                                                     {{ $d == 0? 'Pending' : ($d == 1 ? 'Obligated' : 'Paid') }}
                                                 </option>
                                             @endforeach
                                         </select>
-                                    </div>  
+                                    </form>
                                 </th>
                                 <th class="facility" style="min-width: 150px">Facility
                                     <i id="fac_i" class="typcn typcn-filter menu-icon"><i>
@@ -111,9 +163,9 @@ use App\Models\TrackingDetails;
                                         <select style="width: 120px;" id="by_select" name="by_select" multiple>
                                             <?php $check = []; ?>
                                             @foreach($results as $index => $d)
-                                                @if(!in_array($d->user->userid, $check))
+                                                @if($d->user && !in_array($d->user->userid, $check))
                                                     <option value="{{ $d->user->userid }}" {{ is_array($b_id) && in_array($d->user->userid, $b_id) ? 'selected' : '' }}>
-                                                        {{ $d->user->fname .' '.$d->user->lname }}
+                                                        {{ optional($d->user)->fname .' '. optional($d->user)->lname }}
                                                     </option>
                                                     <?php $check[] = $d->user->userid; ?>
                                                 @endif
@@ -207,7 +259,13 @@ use App\Models\TrackingDetails;
                                         @endforeach
                                     </td>
                                     <td>{{number_format(str_replace(',','',$row->grand_total), 2, '.',',')}}</td>
-                                    <td>{{$row->user->lname .', '.$row->user->fname}}</td>
+                                     <td>  
+                                        @if($row->user)
+                                            {{ $row->user->lname .', '.$row->user->fname }}
+                                          @else
+                                            User not Found
+                                        @endif  
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -306,8 +364,17 @@ use App\Models\TrackingDetails;
     $('#fac_select').select2();
     $('#by_select').select2();
     $('#proponent_select').select2();
-    $('#stat_select').select2();
+    $('#stat_select').select2({
+        placeholder: "Status"
+    });
 
+    $('#stat_select').next('.select2').find('.select2-selection').css({
+                'border': 'none',
+                'background': 'transparent',
+                'height': 'auto',
+                'min-height': '0',
+                'padding': '0px'
+            });
     $('.facility').on('click', function(){
         $('#fac_div').css('display', 'block');
     });

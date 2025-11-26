@@ -42,6 +42,7 @@ class FundSourceController extends Controller
     public function __construct()
     {
        $this->middleware('auth');
+       $this->middleware('block.secure.nonadmin');
     }
 
     public function fundSource(Request $request) {
@@ -194,7 +195,10 @@ class FundSourceController extends Controller
             'proponents' => $proponents,
             'facilities' => Facility::get(),
             'user' => $user,
-            'funds_list' => Fundsource::select('id', 'saa')->get()
+            'funds_list' => Fundsource::select('id', 'saa')->get(),
+            'transferred' => Utilization::where('status', 3)->whereHas('transfer', function ($q) {
+                $q->where('owed', 1);
+            })->get()
         ]);
     }
 
@@ -611,7 +615,7 @@ class FundSourceController extends Controller
         }
 
         $transfer = new Transfer();
-        $transfer->owed = $request->input('owed') == "ON" ? 1 : 0;
+        $transfer->owed = $request->input('owed') == "ON" || $request->input('owed') == "on" ? 1 : 0;
         $transfer->from_proponent = $from->proponent_id;
         $transfer->from_saa = $from->fundsource_id;
         $transfer->from_facility = $from->facility_id;
@@ -857,9 +861,7 @@ class FundSourceController extends Controller
             $sampp = 2;
         }
 
-        if(Auth::user()->username == "2760"){
-            return $info;
-        }
+      
         // $balance = ($info_sum + $supplemental) - ($subtracted + $pat_sum) ;
 
         $facility = Facility::find($facility_id);

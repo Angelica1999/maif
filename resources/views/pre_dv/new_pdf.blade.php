@@ -475,7 +475,7 @@
                     @endif
                 @endforeach
             @endif
-            <div style="page-break-before: always;"></div>
+            <!-- <div style="page-break-before: always;"></div>
             <div style="width: 100%; text-align:center;margin-top:5px">
                 <h6><b>V1 - {{ $pre_dv->facility->name }}</b><h6>
             </div>
@@ -505,7 +505,7 @@
                         <td style="vertical-align:top; border:none; width:30%; padding:4px; text-align:center"></td>
                     </tr>                        
                 </table> 
-            </div>
+            </div> -->
         @endif
     </body>
 </html>

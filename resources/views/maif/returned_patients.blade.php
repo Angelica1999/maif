@@ -57,6 +57,49 @@
         width: 100px;
         border-radius: 0;
     }
+    #search_patient {
+    width: 250px !important;  
+    max-width: 100%; 
+}
+.input-group {
+        justify-content: flex-end;
+        gap: 1px;
+        flex-wrap: nowrap; 
+    }
+     .input-group-append {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end; 
+        
+    }
+
+       @media (max-width: 767px) {
+    .input-group {
+        flex-direction: column;     
+        align-items: stretch;     
+    }
+
+    .input-group .form-control {
+        width: 200% !important;
+        margin-bottom: 5px;
+    }
+
+    .input-group-append {
+        flex-direction: column;     /* stack buttons */
+        width: 100%;
+    }
+
+    .input-group-append .btn {
+        width: 100%;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+    }
+    #gen_btn{
+         width: 100% !important;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+    }
+}
 </style>
 @extends('layouts.app')
 @section('content')
@@ -64,7 +107,11 @@
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-            <div class="float-right">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <div class="mb-2 mb-md-0">
+                    <h4 class="card-title">MANAGE PATIENTS (RETURNED)</h4>
+                    <p class="card-description">MAIF-IPP</p>
+                </div>
                 <div class="input-group">
                     <form method="GET">
                         <div class="input-group">
@@ -117,12 +164,7 @@
                     </form>
                 </div>
             </div>
-           
-            <h4 class="card-title">MANAGE PATIENTS (RETURNED)</h4>
-            <span class="card-description">
-                MAIF-IPP
-            </span>
-            
+</div>
             @if(count($patients) > 0)
             <div class="table-responsive" id ="patient_table_container">
                 <table class="table table-striped" id="patient_table">
@@ -261,7 +303,15 @@
                                     @endif
                                 </td>
                                 <td>
-                                    {{ $patient->pat_rem }}   
+                                    @if($patient->fc_status == "retrieved")
+                                        Retrieved (pending confirmation) - {{ $patient->rtrv_remarks }}
+                                    @else
+                                        @if($patient->pat_rem == "Retrieved")
+                                            {{ $patient->pat_rem }} - {{ $patient->rtrv_remarks }}
+                                        @else
+                                            {{ $patient->pat_rem }}   
+                                        @endif
+                                    @endif
                                 </td>
                                 <td style="text-align:center;" class="group-amount" data-patient-id="{{ $patient->id }}" data-proponent-id="{{ $patient->proponent_id }}" 
                                     data-amount="{{ $patient->actual_amount }}" data-facility-id="{{ $patient->facility_id }}" >
@@ -313,7 +363,7 @@
                                     {{ date('F j, Y', strtotime($patient->created_at)) }}<br>
                                     ( {{  date('H:i:s', strtotime($patient->created_at)) }} )
                                 </td>
-                                <td class="td">{{ $patient->user_type == null ? $patient->encoded_by->lname .', '. $patient->encoded_by->fname: ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td>
+                               <td class="td">{{ $patient->user_type == null ? ($patient->encoded_by? $patient->encoded_by->lname .', '. $patient->encoded_by->fname : 'No user found' ) : ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td>
                             </tr>
                         @endforeach
                     </tbody>

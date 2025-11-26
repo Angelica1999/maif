@@ -58,6 +58,54 @@
         width: 100px;
         border-radius: 0;
     }
+    #search_patient {
+    width: auto !important;   
+    max-width: 100%; 
+}
+.input-group {
+        justify-content: flex-end;
+        gap: 1px;
+        flex-wrap: nowrap; 
+    }
+     .input-group-append {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        justify-content: flex-end; 
+        
+    }
+   
+.input-group .form-control {
+    width: auto !important;    
+    max-width: 100%;
+}
+       @media (max-width: 767px) {
+    .input-group {
+        flex-direction: column;     
+        align-items: stretch;     
+    }
+
+    .input-group .form-control {
+        width: 200% !important;
+        margin-bottom: 5px;
+    }
+
+    .input-group-append {
+        flex-direction: column;     /* stack buttons */
+        width: 100%;
+    }
+
+    .input-group-append .btn {
+        width: 100%;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+    }
+      #gen_btn{
+         width: 100% !important;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+    }
+}
 </style>
 @extends('layouts.app')
 @section('content')
@@ -65,7 +113,11 @@
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-            <div class="float-right">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <div class="mb-2 mb-md-0">
+                    <h4 class="card-title">MANAGE PATIENTS</h4>
+                    <p class="card-description">MAIF-IPP</p>
+                </div>
                 <div class="input-group">
                     <form method="GET" action="{{ route('home') }}">
                         <div class="input-group">
@@ -121,10 +173,7 @@
                     </form>
                 </div>
             </div>
-            <h4 class="card-title">MANAGE PATIENTS</h4>
-            <span class="card-description">
-                MAIF-IPP
-            </span>
+</div>  
 
             @if(count($patients) > 0)
             <div class="table-responsive" id ="patient_table_container">
@@ -287,7 +336,11 @@
                                     @if($patient->fc_status == "retrieved")
                                         Retrieved (pending confirmation) - {{ $patient->rtrv_remarks }}
                                     @else
-                                        {{ $patient->pat_rem }}   
+                                        @if($patient->pat_rem == "Retrieved")
+                                            {{ $patient->pat_rem }} - {{ $patient->rtrv_remarks }}
+                                        @else
+                                            {{ $patient->pat_rem }}   
+                                        @endif
                                     @endif
                                 </td>
                                 <td style="text-align:center;" class="group-amount" data-patient-id="{{ $patient->id }}" data-proponent-id="{{ $patient->proponent_id }}" 
@@ -340,7 +393,7 @@
                                     {{ date('F j, Y', strtotime($patient->created_at)) }}<br>
                                     ( {{  date('H:i:s', strtotime($patient->created_at)) }} )
                                 </td>
-                                <td class="td">{{ $patient->user_type == null ? $patient->encoded_by->lname .', '. $patient->encoded_by->fname: ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td>
+                                <td class="td">{{ $patient->user_type == null ? ($patient->encoded_by? $patient->encoded_by->lname .', '. $patient->encoded_by->fname : 'No user found' ) : ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -709,7 +762,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer update_footer">
+                    <div class="modal-footer">
                         <input type="hidden" value="" name="update_type" id="update_type">
                         <button type="button" class="btn btn-secondary" id="close_modal" data-dismiss="modal">Close</button>
                         <button type="submit" id="update_pat_btn" class="btn btn-primary" style="display:block;" >Update</button>
@@ -772,21 +825,6 @@
 <script src="{{ asset('admin/vendors/x-editable/bootstrap-editable.min.js?v=1') }}"></script>
 @include('maif.editable_js')
 <script>
-
-    $('#update_form').on('keypress', function(e) {
-        console.log('sample', $('#update_pat_btn').css('display') );
-        if (e.key === 'Enter' && $('#update_pat_btn').css('display') === 'none') {
-            e.preventDefault();
-            return false;
-        }
-    });
-
-    $(document).on('click', '#update_pat_btn', function(e){
-        e.preventDefault(); 
-        enabledInput(); 
-        $(this).closest('form')[0].submit();
-    });
-
     $('form').on('submit', function () {
         $(this).find('button[type="submit"]').prop('disabled', true).text('Submitting...');
     });
@@ -1012,7 +1050,6 @@
         $('#barangay_id').select2();
         $('#facility_id').select2();
         $('#proponent_id').select2();
-        enabledInput();
         form_type = 'create';
     });
 
@@ -1484,35 +1521,21 @@
                 $('.patient_code').val(patient.patient_code);
                 $('.remaining_balance').val(patient.remaining_balance);
                 $('.pat_rem').val(patient.pat_rem);
-                console.log('patient.sent_type', patient.sent_type);
-                console.log('patient.fc_status', patient.fc_status);
 
                 if (patient.sent_type == null || patient.fc_status == "returned") {
-
-                    if(!["referred", "retrieved"].includes(patient.fc_status)){
+                    if(patient.fc_status != "retrieved"){
+                        $('#update_pat_btn').css('display', 'block');
                         $('#remove_pat_btn').css('display', 'block');
-                        enabledInput();
                         if (stat != 0) {
                             $('#update_send').css('display', 'block');
                         } else {
                             $('#update_send').css('display', 'none');
                         }
-                    }else{
-                        $('#update_send').css('display', 'none');
-                        $('#remove_pat_btn').css('display', 'none');
-                        disabledInput();
                     }
                 } else {
-                    disabledInput();
+                    $('#update_pat_btn').css('display', 'none');
                     $('#update_send').css('display', 'none');
                     $('#remove_pat_btn').css('display', 'none');
-
-                }
-
-                if(patient.transd_id != null){
-                    $('#update_pat_btn').css('display', 'none');
-                }else{
-                    $('#update_pat_btn').css('display', 'block');
                 }
             }
             edit_c = 0;
@@ -1525,24 +1548,6 @@
             });
             
         });
-    }
-
-    function disabledInput(){
-        $('.date_guarantee_letter').prop('readonly', true);
-        $('.facility_id1').prop('disabled', true);
-        $('.proponent_id1 ').prop('disabled', true);
-        $('.guaranteed_amount').prop('readonly', true);
-        $('.actual_amount').prop('readonly', true);
-        $('.pat_rem').prop('readonly', true);
-    }
-
-    function enabledInput(){
-        $('.date_guarantee_letter').prop('readonly', false);
-        $('.facility_id1').prop('disabled', false);
-        $('.proponent_id1 ').prop('disabled', false);
-        $('.guaranteed_amount').prop('readonly', false);
-        $('.actual_amount').prop('readonly', false);
-        $('.pat_rem').prop('readonly', false);
     }
     
     var form_type = 'create';
@@ -1668,9 +1673,6 @@
         }
         if(edit_c == 0){
             if(data.val()) {
-                console.log(data.val());
-                console.log(facility_id);
-
                 $.get("{{ url('patient/code').'/' }}"+data.val()+"/"+facility_id, function(result) {
                     $(".patient_code").val(result.patient_code);
                     const formattedBalance = new Intl.NumberFormat('en-US', {

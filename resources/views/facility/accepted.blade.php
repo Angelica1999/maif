@@ -25,14 +25,58 @@
     .select2-dropdown {
         border: none !important;
         box-shadow: none !important;
+    
+    } 
+
+.input-group {
+        justify-content: flex-end;
+        gap: 1px;
+        flex-wrap: nowrap; 
+    }
+     .input-group-append {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end; 
+        
+    }
+   
+.input-group .form-control {
+    width: 250px;
+    max-width: 100%;
+}
+     @media (max-width: 767px) {
+    .input-group {
+        flex-direction: column;     
+        align-items: stretch;     
     }
 
+    .input-group .form-control {
+        width: 200%;
+        margin-bottom: 5px;
+    }
+
+    .input-group-append {
+        flex-direction: column;     /* stack buttons */
+        width: 100%;
+    }
+
+    .input-group-append .btn {
+        width: 100%;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+    }
+}
 </style>
-<div class="container-fluid col-lg-12 grid-margin stretch-card">
+<div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <div class="mb-2 mb-md-0">
+                    <h4 class="card-title">TRANSMITTAL : ACCEPTED</h4>
+                    <p class="card-description">MAIF-IPP</p>
+                </div>
             <form method="GET" action="">
-                <div class="input-group float-right w-50" style="min-width: 600px;">
+                <div class="input-group">
                     <input type="text" class="form-control" name="keyword" placeholder="Enter control no ..." value="{{ $keyword }}">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
@@ -42,10 +86,7 @@
                 <button id="filter_btn" name="facility_data[]" class="btn btn-sm btn-info" type="submit" style="display:none;"></button>
                 <button id="status_btn" name="status_data[]" class="btn btn-sm btn-info" type="submit" style="display:none;"></button>
             </form>
-            <h1 class="card-title">TRANSMITTAL : ACCEPTED</h1>
-            <p class="card-description">
-                MAIF-IPP
-            </p>
+</div>
             @if(count($transmittal) > 0)
                 <div class="table-responsive" id="details_table">
                     <table class="table table-striped">

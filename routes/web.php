@@ -301,7 +301,7 @@ Route::get('/notify', function() {
         return response()->json([
             'notify' => $notif
         ]);
-
+    });
 Route::post('/notifications/register-tab', function (Illuminate\Http\Request $request) {
     $clientId = $request->client_id;
     Redis::sadd("active_tabs", $clientId);

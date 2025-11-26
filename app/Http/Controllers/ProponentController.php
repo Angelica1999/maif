@@ -9,6 +9,7 @@ use App\Models\Utilization;
 use App\Models\Proponent;
 use App\Models\Fundsource;
 use App\Models\User;
+use App\Models\Transfer;
 use App\Models\Patients;
 use App\Models\Facility;
 use App\Models\AddFacilityInfo;
@@ -38,6 +39,7 @@ class ProponentController extends Controller
 {
     public function __construct(){
        $this->middleware('auth');
+       $this->middleware('block.secure.nonadmin');
     }
 
     public function proponentList(Request $req){

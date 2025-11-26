@@ -45,6 +45,7 @@ use PhpOffice\PhpSpreadsheet\Style\Font;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Request as RequestFacade;
 
 class HomeController extends Controller
 {
@@ -56,6 +57,7 @@ class HomeController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this->middleware('block.secure.nonadmin');
     }
 
     /**
@@ -848,6 +850,7 @@ class HomeController extends Controller
 
     public function index(Request $request)
     {
+
         Proponent::whereIn('proponent', 
             Proponent::where('status', 1)->pluck('proponent')
         )->update(['status' => 1]);

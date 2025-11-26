@@ -27,6 +27,75 @@
         width: 100%; 
         height: 100%; 
     }
+   
+.input-group {
+        justify-content: flex-end;
+        gap: 1px;
+        flex-wrap: nowrap; 
+    }
+     .input-group-append {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: flex-end; 
+        
+    }
+   
+.input-group .form-control {
+    width: 250px; 
+    max-width: 100%;
+}
+    
+@media (max-width: 1102px){
+    .d-flex{
+        flex-wrap: wrap;
+    }
+.track-btn,
+.transfer-btn {
+    min-width: 80px;
+    margin-left: 10px;
+ 
+}
+
+}
+@media (max-width: 767px) {
+    .input-group {
+        flex-direction: column;     
+        align-items: stretch;     
+    }
+
+    .input-group .form-control {
+        width: 200%;
+        margin-bottom: 5px;
+    }
+
+    .input-group-append {
+        flex-direction: column;     
+        width: 50%;
+    }
+
+    .input-group-append .btn {
+        width: 200%;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+    }
+    .track-btn {
+    min-width: 90px;
+    border-radius: 0;
+}
+.admin-cost-text,
+.allocated-funds-text,
+.remaining-text {
+  
+    font-size: 12px;  
+}
+
+.transfer-btn {
+    min-width: 90px;
+    border-radius: 0;
+    margin-top: 1px;
+}
+}
+
 </style>
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
@@ -37,7 +106,7 @@
                     <p class="card-description">MAIF-IPP</p>
                 </div>
 
-                <form method="GET" action="{{ route('fundsource') }}" class="w-50">
+                <form method="GET" action="{{ route('fundsource') }}" >
                     <div class="input-group">
                         <input type="text" class="form-control" name="keyword" placeholder="SAA, PROPONENT, FACILITY" value="{{ $keyword }}">
                         <div class="input-group-append">
@@ -107,7 +176,7 @@
                                                     <div class="d-flex justify-content-between align-items-center">
                                                         <span class="ml-3">Administrative Cost : <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->admin_cost)), 2, '.', ',') }}</strong></span>
                                                         @if($user->section != 6)
-                                                            <button style="min-width:90px; border-radius:0; margin-top:1px" id="transfer_funds" data-backdrop="static" data-toggle="modal" href="#transfer_fundsource" onclick="transferFunds({{ $proponentInfo->id }})" style="width:100px" class='btn btn-sm btn-outline-success ml-2 transfer_funds'>Transfer</button>
+                                                            <button  id="transfer_funds" data-backdrop="static" data-toggle="modal" href="#transfer_fundsource" onclick="transferFunds({{ $proponentInfo->id }})"  class='btn btn-sm btn-outline-success ml-2 transfer-btn'>Transfer</button>
                                                         @endif
                                                     </div>
                                                     <div class="d-flex justify-content-between align-items-center">
@@ -587,7 +656,7 @@
         $('#track_details2').modal('show');
         var info_id = event.target.getAttribute('data-proponentInfo-id');
         var i = 0;
-        
+        console.log('info_id', info_id);
         var url = "{{ url('tracking').'/' }}"+ info_id;
         $.ajax({
             url: url,

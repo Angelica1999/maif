@@ -17,6 +17,7 @@ use App\Models\TrackingDetails;
                     </div>
                 </div>
             </form>
+</div>
             <h4 class="card-title">PRE - DV (v2)</h4>
             <p class="card-description">
                 MAIF-IPP
