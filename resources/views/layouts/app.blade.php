@@ -465,6 +465,15 @@
 				msg: 'User activated!'
 			});
 		@endif
+		@if(session('invalid_update'))
+			<?php session()->forget('invalid_update'); ?>
+			Swal.fire({
+				icon: 'error',
+				title: 'Error!',
+				text: 'Update failed: the new amount is less than the total breakdown amount for this SAA.',
+				confirmButtonText: 'OK'
+			});
+		@endif
 
 		// if (!sessionStorage.getItem('client_id')) {
 		// 	sessionStorage.setItem('client_id', Math.random().toString(36).substring(2, 15));

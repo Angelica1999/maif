@@ -138,8 +138,10 @@
 
     function checkRemarks(id){
         $('.return_details').empty();
+        $('.return_details').html(loading);
         $.get("{{ url('returned/details').'/' }}" + id, function(result){
-            $('.return_details').append(result);
+            $('.return_details').html(result);
+            console.log('sample', result);
         });
     }
 

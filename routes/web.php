@@ -199,6 +199,7 @@ Route::get('/proponent/sub-update/{id}/{amount}', [App\Http\Controllers\Proponen
 Route::post('/proponent/supplemental-updated', [App\Http\Controllers\ProponentController::class, 'supplementalv2'])->name('proponent.supplementalv2');
 Route::post('/proponent/manage-funds', [App\Http\Controllers\ProponentController::class, 'manageFunds'])->name('manage.funds');
 Route::match(['get','post'],'/summary/excel_proponent', [App\Http\Controllers\ProponentController::class, 'excelPSummary'])->name('excel.proponent_summary');
+Route::get('/proponent/spec-allocations/{proponent}', [App\Http\Controllers\ProponentController::class, 'specAllocations'])->name('details.specific');
 
 Route::match(['get', 'post'],'/proponents/excel/', [App\Http\Controllers\FundSourceController::class, 'generateExcel'])->name('proponent.excel');
 Route::match(['get', 'post'],'/data/update/', [App\Http\Controllers\FacilityController::class, 'updateData'])->name('update.data');
@@ -294,6 +295,8 @@ Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'dash
 Route::get('/samsam', [App\Http\Controllers\FacilityController::class, 'samsam'])->name('samsam');
 Route::get('/sending-hold', [App\Http\Controllers\FacilityController::class, 'sendHold'])->name('send-hold');
 Route::post('/sending-gl/hold', [App\Http\Controllers\FacilityController::class, 'holdSendFacility'])->name('hold.sending_gl');
+Route::get('fundsource_batches/{id}/proponentinfo-batch', [App\Http\Controllers\FundSourceController::class, 'getProponentInfoBatch'])->name('fundsource.proponents_batch');
+Route::get('fetch/pre-dv/fundsource/{facility_id}', [App\Http\Controllers\PreDvController::class, 'fetchPreFundsource'])->name('fetch.pre_dv-fundsource');
 
 Route::post('/notifications/register-tab', function (Illuminate\Http\Request $request) {
     $clientId = $request->client_id;
