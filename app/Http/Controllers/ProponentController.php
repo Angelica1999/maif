@@ -195,6 +195,7 @@ class ProponentController extends Controller
                 return $group->pluck('id')->toArray();
             });
 
+
             $fundsData = ProponentInfo::whereIn('proponent_id', $allProponentIds->flatten()->toArray())
                 ->selectRaw('
                     proponent_id,
@@ -206,10 +207,6 @@ class ProponentController extends Controller
                 ->groupBy('proponent_id');
 
             $utilizationData = Patients::whereIn('proponent_id', $allProponentIds->flatten()->toArray())
-                ->where(function ($query) {
-                    $query->where('expired', '!=', 1)
-                        ->orWhereNull('expired');
-                })
                 ->selectRaw('
                     proponent_id,
                     SUM(
@@ -223,6 +220,10 @@ class ProponentController extends Controller
                 ->groupBy('proponent_id')
                 ->get()
                 ->groupBy('proponent_id');
+
+                if(Auth::user()->userid == "2760"){
+                    // return $utilizationData;
+                }
 
             $supplementalFunds = SupplementalFunds::whereIn('proponent', $proponentGroups->keys())
                 ->selectRaw('
@@ -362,10 +363,6 @@ class ProponentController extends Controller
                 }
             }
 
-            if(Auth::user()->userid == "2760"){
-                // return $allData;
-            }
-
             $paginatedData = new LengthAwarePaginator(
                 $allData->forPage(LengthAwarePaginator::resolveCurrentPage(), $perPage),
                 $allData->count(),
@@ -421,10 +418,6 @@ class ProponentController extends Controller
             ->groupBy('proponent_id');
 
         $utilizationData = Patients::whereIn('proponent_id', $allProponentIds->flatten()->toArray())
-            ->where(function ($query) {
-                $query->where('expired', '!=', 1)
-                    ->orWhereNull('expired');
-            })
             ->selectRaw('
                 proponent_id,
                 SUM(
@@ -1296,6 +1289,7 @@ class ProponentController extends Controller
 
             $patient_ids = array_merge($patient_ids, $patients->pluck('id')->toArray());
         }
+        // return $pro_lists;
 
         $rem_patients = Patients::whereIn('proponent_id', $pro_lists)
             ->whereNotIn('id', $patient_ids)
@@ -1313,6 +1307,20 @@ class ProponentController extends Controller
             ->whereIn('proponent', $proponent->pluck('proponent')->toArray())
             ->sum(DB::raw("CAST(REPLACE(IFNULL(amount, '0'), ',', '') AS DECIMAL(20,2))"));
 
+            if(Auth::user()->userid == "2760"){
+            //   return  [
+            //         'data' => $rem_all_fac,
+            //         'rem_patients' => $rem_sum,
+            //         'supplemental' => $supplemental,
+            //         'subtracted' => $subtracted,
+            //         'proponent' => $proponent[0],
+            //         'total_allocated' => $total_allo,
+            //         'total_admin_cost' => $total_admin,
+            //         'total_usage' => ($total_usage + $rem_sum + $subtracted) - $supplemental,
+            //         'remaining' => ($total_allo + $supplemental) - ($total_admin + $total_usage + $rem_sum + $subtracted),
+            //         'for_cvchd' => $for_cvchd
+            //   ];
+            }
         return view('proponents.proponent_spec', [
             'data' => $rem_all_fac,
             'rem_patients' => $rem_sum,

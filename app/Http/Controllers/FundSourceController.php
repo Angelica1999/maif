@@ -862,11 +862,11 @@ class FundSourceController extends Controller
             ->selectRaw('SUM(CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(10,2)) - CAST(REPLACE(admin_cost, ",", "") AS DECIMAL(10,2))) as total_amount')
             ->value('total_amount');
         $pat_sum = Patients::whereIn('proponent_id', $proponent_ids)
-            ->where(function ($query) {
-                $query->where('expired', '!=', 1)
-                    ->orWhereNull('expired')
-                    ->orWhere('expired', 0); // Include NULL values
-            })
+            // ->where(function ($query) {
+            //     $query->where('expired', '!=', 1)
+            //         ->orWhereNull('expired')
+            //         ->orWhere('expired', 0); // Include NULL values
+            // })
             ->sum(DB::raw("
                 IFNULL(actual_amount, CAST(REPLACE(guaranteed_amount, ',', '') AS DECIMAL(20, 2)))
             ")); 
@@ -1017,10 +1017,6 @@ class FundSourceController extends Controller
             ->groupBy('proponent_id');
 
         $utilizationData = Patients::whereIn('proponent_id', $allProponentIds->flatten()->toArray())
-            ->where(function ($query) {
-                $query->where('expired', '!=', 1)
-                    ->orWhereNull('expired');
-            })
             ->selectRaw('
                 proponent_id,
                 SUM(
@@ -1677,10 +1673,6 @@ class FundSourceController extends Controller
             ->groupBy('proponent_id');
 
         $utilizationData = Patients::whereIn('proponent_id', $allProponentIds->flatten()->toArray())
-            ->where(function ($query) {
-                $query->where('expired', '!=', 1)
-                    ->orWhereNull('expired');
-            })
             ->selectRaw('
                 proponent_id,
                 SUM(

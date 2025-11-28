@@ -680,7 +680,8 @@ class PreDvController extends Controller
             'saas' => $saas,
             'facility_id' => $facility_id,
             'facility' => Facility::where('id', $facility_id)->first(),
-            'info' => $info
+            'info' => $info,
+            'facilities' => Facility::select('id','name')->get()
         ]);
     }
 
