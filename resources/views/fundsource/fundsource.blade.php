@@ -814,6 +814,7 @@
         $('.modal_body').html(loading);
         $('.modal-title').html("Create Breakdowns");
         var url = "{{ url('fundsource/breakdowns').'/' }}"+ fundsourceId;
+        console.log(fundsourceId);
         setTimeout(function() {
             $.ajax({
                 url: url,

@@ -707,6 +707,7 @@ class PrintController extends Controller
             $imagePath = storage_path('app/new_dv'); // Directory to save individual images
             $pdftoppmPath = 'C:\\poppler-24.07.0\\Library\\bin\\pdftoppm.exe';
             $command = "{$pdftoppmPath} -png -f 1 -l 1 {$pdfPath} " . escapeshellarg($imagePath) . " 2>&1";
+
             exec($command, $output, $returnVar);
 
             

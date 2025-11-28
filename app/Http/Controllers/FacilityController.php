@@ -417,7 +417,8 @@ class FacilityController extends Controller
         if ($token != 1) {
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token
-            ])->get('http://192.168.110.7/guaranteeletter/api/transmittal/return-remarks/'.$id);            
+            ])->get('http://192.168.110.7/guaranteeletter/api/transmittal/return-remarks/'.$id);  
+            return $response;      
         } else {
             return "Authentication failed.";
         }
