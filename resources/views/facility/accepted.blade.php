@@ -39,6 +39,9 @@
         justify-content: flex-end; 
         
     }
+     .scrollable-table thead th{
+        white-space: nowrap;        
+    }
    
 .input-group .form-control {
     width: 250px;
@@ -77,7 +80,7 @@
                 </div>
             <form method="GET" action="">
                 <div class="input-group">
-                    <input type="text" class="form-control" name="keyword" placeholder="Enter control no ..." value="{{ $keyword }}">
+                    <input type="text" class="form-control" name="keyword" placeholder="Search..." value="{{ $keyword }}">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
@@ -88,7 +91,7 @@
             </form>
 </div>
             @if(count($transmittal) > 0)
-                <div class="table-responsive" id="details_table">
+                <div class="table-responsive scrollable-table" id="details_table">
                     <table class="table table-striped">
                         <thead>
                             <tr>

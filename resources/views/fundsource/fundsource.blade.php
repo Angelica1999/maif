@@ -193,7 +193,7 @@
                                                     <div class="d-flex justify-content-between align-items-center">
                                                         <span class="ml-3">Administrative Cost : <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->admin_cost)), 2, '.', ',') }}</strong></span>
                                                         @if($user->section != 6)
-                                                            <button  id="transfer_funds" data-backdrop="static" data-toggle="modal" href="#transfer_fundsource" onclick="transferFunds({{ $proponentInfo->id }})"  class='btn btn-sm btn-outline-success ml-2 transfer-btn'>Transfer</button>
+                                                            <button style="min-width:90px; border-radius:0;"  id="transfer_funds" data-backdrop="static" data-toggle="modal" href="#transfer_fundsource" onclick="transferFunds({{ $proponentInfo->id }})"  class='btn btn-sm btn-outline-success ml-2 transfer-btn'>Transfer</button>
                                                         @endif
                                                     </div>
                                                     <div class="d-flex justify-content-between align-items-center">

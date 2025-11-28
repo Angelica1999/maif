@@ -709,6 +709,7 @@ class PrintController extends Controller
             $command = "{$pdftoppmPath} -png -f 1 -l 1 {$pdfPath} " . escapeshellarg($imagePath) . " 2>&1";
             exec($command, $output, $returnVar);
 
+            
             $filePath = storage_path('app/new_dv-1.png');
 
             if (!File::exists($filePath)) {

@@ -65,7 +65,7 @@
                 </div>
             <form method="GET" action="">
                 <div class="input-group">
-                    <input type="text" class="form-control" name="keyword" placeholder="enter.." value="">
+                    <input type="text" class="form-control" name="keyword" placeholder="Search..." value="{{ $keyword ?? '' }}">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>

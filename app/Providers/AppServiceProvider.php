@@ -25,15 +25,15 @@ class AppServiceProvider extends ServiceProvider
 
         $headers = request()->headers;
 
-        if ($headers->has('x-forwarded-proto') && $headers->get('x-forwarded-proto') === 'https') {
-            // HTTPS via forwarded header
-            $scheme = $headers->get('x-forwarded-proto');
-            $host = $headers->get('x-forwarded-host');
-        } else {
-            // Local HTTP
+        // if ($headers->has('x-forwarded-proto') && $headers->get('x-forwarded-proto') === 'https') {
+        //     // HTTPS via forwarded header
+        //     $scheme = $headers->get('x-forwarded-proto');
+        //     $host = $headers->get('x-forwarded-host');
+        // } else {
+        //     // Local HTTP
             $scheme = 'http';
-            $host = '192.168.110.7'; 
-        }
+            $host = 'localhost'; 
+        // }
 
         $root = $scheme . '://' . $host . '/maif';
         URL::forceRootUrl($root);

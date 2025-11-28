@@ -45,6 +45,10 @@
     width: 250px !important;    /* adjust as needed */
     max-width: 100%;
 }
+    .scrollable-table thead th{
+    white-space: nowrap;
+    text-align: center;
+    }
        @media (max-width: 767px) {
     .input-group {
         flex-direction: column;     
@@ -105,7 +109,7 @@
                 </div>
             </div>
         
-            <div class="table-responsive">
+            <div class="table-responsive scrollable-table">
                 @if(count($results) > 0)
                     <table class="table table-striped">
                         <thead>

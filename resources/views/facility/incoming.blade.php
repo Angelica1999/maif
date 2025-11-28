@@ -27,8 +27,12 @@
         justify-content: flex-end; 
         
     }
+    
+    .scrollable-table thead th{
+        white-space: nowrap;      
+    }
 
-.input-group .form-control {
+.input-group .form-control { 
     width: 200px;   
     max-width: 100%;
 }
@@ -44,7 +48,7 @@
     }
 
     .input-group-append {
-        flex-direction: column;     /* stack buttons */
+        flex-direction: column;     
         width: 100%;
     }
 
@@ -65,7 +69,7 @@
                 </div>
             <form method="GET" action="">
                 <div class="input-group ">
-                    <input type="text" class="form-control" name="keyword" placeholder="ENTER .." value="">
+                    <input type="text" class="form-control" name="keyword" placeholder="Search..." value="{{ $keyword ?? '' }}">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
@@ -75,7 +79,7 @@
             </form>
 </div>
             @if(count($transmittal) > 0)
-                <div class="table-responsive" id="details_table" style="margin-top:20px">
+                <div class="table-responsive scrollable-table" id="details_table" >
                     <table class="table table-striped">
                         <thead>
                             <tr>
@@ -94,11 +98,11 @@
                                 <tr>
                                     <td>
                                         @if($item->remarks == 2)
-                                            <button onclick="returnTrans({{ $item->id }})" href="#return" style="border-radius:0; color:white" data-toggle="modal" data-backdrop="static" type="button" class="btn btn-warning btn-xs">Return</button>
-                                            <button onclick="accept({{ $item->id }})" style="border-radius:0; color:white" type="button" class="btn btn-success btn-xs">Accept</button>
+                                            <button onclick="returnTrans({{ $item->id }})" href="#return" style="margin-top:2px; border-radius:0; color:white; width: 60px" data-toggle="modal" data-backdrop="static" type="button" class="btn btn-warning btn-xs">Return</button>
+                                            <button onclick="accept({{ $item->id }})" style="border-radius:0; color:white; margin-top:2px; width: 60px" type="button" class="btn btn-success btn-xs">Accept</button>
                                         @else
                                             <!-- <i class="text-danger">this transmittal is not yet received</i> -->
-                                            <a onclick="receive('{{ $item->id }}')" style="border-radius:0; color:white" type="button" class="btn btn-success btn-xs">Receive</a>
+                                            <a onclick="receive('{{ $item->id }}')" style="width: 60px; border-radius:0; color:white" type="button" class="btn btn-success btn-xs">Receive</a>
                                         @endif
                                     </td>
                                     <td><a onclick="displaySum({{ $item->id }}, {{ $item->remarks }})" href="#summary_display" data-toggle="modal" data-backdrop="static">{{ $item->control_no }}</a></td>
