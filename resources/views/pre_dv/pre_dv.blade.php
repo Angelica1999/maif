@@ -61,8 +61,8 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th style="min-width:200px"></th>
-                                <th>Route No</th>
+                                <th style="min-width:250px"></th>
+                                <th style="min-width:120px">Route No</th>
                                 <th class="fc">Facility
                                     <i id="fac_i" class="typcn typcn-filter menu-icon"><i>
                                     <div class="filter" id="fac_div" style="display:none;">
@@ -80,9 +80,9 @@
                                     </div>  
                                 </th>
                                 <th>No. of Transmittals</th>
-                                <th>Professional Fee</th>
+                                <th style="min-width:150px">Professional Fee</th>
                                 <th style="min-width:100px">Grand Total</th>
-                                <th class="user">Created By
+                                <th class="user" style="min-width:120px">Created By
                                     <i id="by_i" class="typcn typcn-filter menu-icon"><i>
                                     <div class="filter" id="by_div" style="display:none;">
                                         <select style="width: 120px;" id="by_select" name="by_select" multiple>
@@ -98,7 +98,7 @@
                                         </select>
                                     </div>  
                                 </th>
-                                <th>Created On</th>
+                                <th style="min-width:120px">Created On</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -332,178 +332,314 @@
     function updateSAAOption() {
 
         $('.saa_id').prop('disabled', true); 
+        var facility_id = $('.facility_id').val();
+        // $.get("{{ url('fetch/pre-dv/fundsource').'/' }}"+ $('.facility_id').val(), function(result) {
 
-        $.get("{{ url('fetch/pre-dv/fundsource').'/' }}"+ $('.facility_id').val(), function(result) {
+            // GET FUNDSOURCE
+        $.get("{{ url('fetch/pre-dv/fundsource').'/' }}"+facility_id, function(result) {
 
             var data_result = result.info;
-            var facility_id = $('.facility_id').val();
-            var facilitiesArray = Array.isArray(result.facilities) ? result.facilities : [];
 
             var first = [], sec = [], third = [], fourth = [], fifth = [], six = [];
+            var facilitiesArray = Array.isArray(result.facilities) ? result.facilities : [];
 
-            $.each(data_result, function(index, optionData){
+            $.each(data_result, function(index, optionData) {
 
                 var rem_balance = parseFloat(optionData.remaining_balance.replace(/,/g, ''))
-                                    .toLocaleString('en-US',{minimumFractionDigits:2});
-                var rem_balance_num = parseFloat(optionData.remaining_balance.replace(/,/g,'')); 
+                    .toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-                var check_p = 0;  
+                var rem_balance_num = parseFloat(optionData.remaining_balance.replace(/,/g, ''));
 
+                var check_p = 0;
                 var id = optionData.facility_id;
                 var name_id = optionData.facility_id;
 
                 if (typeof name_id === 'string') {
                     try {
-                        name_id = JSON.parse(name_id);  
+                        name_id = JSON.parse(name_id);
                     } catch (e) {
                         name_id = [name_id];
                     }
                 }
-
                 if (typeof name_id === 'number') {
                     name_id = [String(name_id)];
                 }
-
-                var facilitiesArray = Array.isArray(result.facilities) ? result.facilities : [];
 
                 var facilityNames = facilitiesArray
                     .filter(f => name_id.includes(String(f.id)))
                     .map(f => f.name)
                     .join(' & ');
 
-                if(optionData.facility !== null){
-                    if(optionData.facility.id == facility_id){
-                        text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - '+ facilityNames +' - ' + rem_balance;
-                    }else{
+                var text_display;
+                if (optionData.facility !== null) {
+                    if (optionData.facility.id == facility_id) {
+                        text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + facilityNames + ' - ' + rem_balance;
+                    } else {
                         text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + facilityNames + ' - ' + rem_balance;
                         check_p = 1;
-                    } 
-                }else{
-                    if(id.includes('702')){
-                        check_p = 1;
-                        text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + facilityNames + ' - ' + rem_balance;
-                    }else{
-                        text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - '+ facilityNames +' - ' + rem_balance;
                     }
+                } else {
+                    if (id.includes('702')) {
+                        check_p = 1;
+                    }
+                    text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + facilityNames + ' - ' + rem_balance;
                 }
 
                 var color = '';
-                if(rem_balance == '0' || rem_balance == '0.00' || rem_balance_num <= 0){
+                var obj;
+
+                if (rem_balance == '0' || rem_balance == '0.00' || rem_balance_num <= 0) {
                     color = 'red';
-                    if(optionData.fundsource.saa.includes('CONAP')){
-                            obj = {
-                                value: optionData.fundsource_id,
-                                text: text_display,
-                                dataval: optionData.remaining_balance,
-                                dataproponentInfo_id: optionData.id,
-                                dataprogroup: optionData.proponent.pro_group,
-                                dataproponent: optionData.proponent.id,
-                                d_color: color
-                            }
-                            fifth.push(obj);
-                        }else{
-                            obj = {
-                                value: optionData.fundsource_id,
-                                text: text_display,
-                                dataval: optionData.remaining_balance,
-                                dataproponentInfo_id: optionData.id,
-                                dataprogroup: optionData.proponent.pro_group,
-                                dataproponent: optionData.proponent.id,
-                                d_color: color
-                            }
-                            six.push(obj);
-                        }
-                }else{
 
+                    obj = {
+                        value: optionData.fundsource_id,
+                        text: text_display,
+                        dataval: optionData.remaining_balance,
+                        dataproponentInfo_id: optionData.id,
+                        dataprogroup: optionData.proponent.pro_group,
+                        dataproponent: optionData.proponent.id,
+                        d_color: color
+                    };
+
+                    if (optionData.fundsource.saa.includes('CONAP')) {
+                        fifth.push(obj);
+                    } else {
+                        six.push(obj);
+                    }
+
+                } else {
                     color = 'normal';
-
                     if (id.includes(String(facility_id))) {
                         color = 'yellow';
                     }
 
-                    if(optionData.fundsource.saa.includes('CONAP')){
-                        if(check_p == 1){
-                            obj = {
-                                value: optionData.fundsource_id,
-                                text: text_display,
-                                dataval: optionData.remaining_balance,
-                                dataproponentInfo_id: optionData.id,
-                                dataprogroup: optionData.proponent.pro_group,
-                                dataproponent: optionData.proponent.id,
-                                d_color: color
-                            }
-                            sec.push(obj);
-                        }else{
-                            obj = {
-                                value: optionData.fundsource_id,
-                                text: text_display,
-                                dataval: optionData.remaining_balance,
-                                dataproponentInfo_id: optionData.id,
-                                dataprogroup: optionData.proponent.pro_group,
-                                dataproponent: optionData.proponent.id,
-                                d_color: color
-                            }
-                            first.push(obj);
-                        }
-                    }else{
-                        if(check_p == 1){
-                            obj = {
-                                value: optionData.fundsource_id,
-                                text: text_display,
-                                dataval: optionData.remaining_balance,
-                                dataproponentInfo_id: optionData.id,
-                                dataprogroup: optionData.proponent.pro_group,
-                                dataproponent: optionData.proponent.id,
-                                d_color: color
-                            }
-                            fourth.push(obj);
-                        }else{
-                            obj = {
-                                value: optionData.fundsource_id,
-                                text: text_display,
-                                dataval: optionData.remaining_balance,
-                                dataproponentInfo_id: optionData.id,
-                                dataprogroup: optionData.proponent.pro_group,
-                                dataproponent: optionData.proponent.id,
-                                d_color: color
-                            }
-                            third.push(obj);
-                        }
+                    obj = {
+                        value: optionData.fundsource_id,
+                        text: text_display,
+                        dataval: optionData.remaining_balance,
+                        dataproponentInfo_id: optionData.id,
+                        dataprogroup: optionData.proponent.pro_group,
+                        dataproponent: optionData.proponent.id,
+                        d_color: color
+                    };
+
+                    if (optionData.fundsource.saa.includes('CONAP')) {
+                        if (check_p == 1) sec.push(obj);
+                        else first.push(obj);
+                    } else {
+                        if (check_p == 1) fourth.push(obj);
+                        else third.push(obj);
                     }
                 }
             });
 
-            $('.saa_id').empty();
-
-            $('.saa_id').append(
-                $('<option>', {
-                    value: '',
-                    text: 'SELECT SAA'
-                })
-            );
-
-            addOption(first);
-            addOption(sec);
-            addOption(third);
-            addOption(fourth);
-            addOption(fifth);
-            addOption(six);
-
-            $('.saa_id').each(function(){
-                $(this).select2({
-                    templateResult: function(data) {
-                        let c = $(data.element).data('color');
-                        if (c === 'red') return $('<span style="color:red">'+data.text+'</span>');
-                        if (c === 'yellow') return $('<span style="color:#DAA520">'+data.text+'</span>');
-                        return data.text;
-                    },
-                    placeholder: "Select SAA"
+            function buildOptions(arr) {
+                var html = "";
+                arr.forEach(o => {
+                    html += `<option 
+                                value="${o.value}"
+                                data-color="${o.d_color}"
+                                dataval="${o.dataval}"
+                                dataproponentinfo_id="${o.dataproponentInfo_id}"
+                                dataprogroup="${o.dataprogroup}"
+                                dataproponent="${o.dataproponent}"
+                            >${o.text}</option>`;
                 });
+                return html;
+            }
+
+            var final_html =
+                buildOptions(first) +
+                buildOptions(sec) +
+                buildOptions(third) +
+                buildOptions(fourth) +
+                buildOptions(fifth) +
+                buildOptions(six);
+
+            $('.saa_id').html(`<option value="">SELECT SAA</option>` + final_html);
+
+            $('.saa_id').select2({
+                templateResult: function (data) {
+                    let color = $(data.element).data('color');
+                    if (color === 'red') return $('<span style="color:red;">' + data.text + '</span>');
+                    if (color === 'yellow') return $('<span style="color:#DAA520;">' + data.text + '</span>');
+                    return data.text;
+                },
+                placeholder: "Select SAA"
             });
 
             $('.saa_id').prop('disabled', false);
-
         });
+
+        //     var data_result = result.info;
+        //     var facility_id = $('.facility_id').val();
+        //     var facilitiesArray = Array.isArray(result.facilities) ? result.facilities : [];
+
+        //     var first = [], sec = [], third = [], fourth = [], fifth = [], six = [];
+
+        //     $.each(data_result, function(index, optionData){
+
+        //         var rem_balance = parseFloat(optionData.remaining_balance.replace(/,/g, ''))
+        //                             .toLocaleString('en-US',{minimumFractionDigits:2});
+        //         var rem_balance_num = parseFloat(optionData.remaining_balance.replace(/,/g,'')); 
+
+        //         var check_p = 0;  
+
+        //         var id = optionData.facility_id;
+        //         var name_id = optionData.facility_id;
+
+        //         if (typeof name_id === 'string') {
+        //             try {
+        //                 name_id = JSON.parse(name_id);  
+        //             } catch (e) {
+        //                 name_id = [name_id];
+        //             }
+        //         }
+
+        //         if (typeof name_id === 'number') {
+        //             name_id = [String(name_id)];
+        //         }
+
+        //         var facilitiesArray = Array.isArray(result.facilities) ? result.facilities : [];
+
+        //         var facilityNames = facilitiesArray
+        //             .filter(f => name_id.includes(String(f.id)))
+        //             .map(f => f.name)
+        //             .join(' & ');
+
+        //         if(optionData.facility !== null){
+        //             if(optionData.facility.id == facility_id){
+        //                 text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - '+ facilityNames +' - ' + rem_balance;
+        //             }else{
+        //                 text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + facilityNames + ' - ' + rem_balance;
+        //                 check_p = 1;
+        //             } 
+        //         }else{
+        //             if(id.includes('702')){
+        //                 check_p = 1;
+        //                 text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + facilityNames + ' - ' + rem_balance;
+        //             }else{
+        //                 text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - '+ facilityNames +' - ' + rem_balance;
+        //             }
+        //         }
+
+        //         var color = '';
+        //         if(rem_balance == '0' || rem_balance == '0.00' || rem_balance_num <= 0){
+        //             color = 'red';
+        //             if(optionData.fundsource.saa.includes('CONAP')){
+        //                     obj = {
+        //                         value: optionData.fundsource_id,
+        //                         text: text_display,
+        //                         dataval: optionData.remaining_balance,
+        //                         dataproponentInfo_id: optionData.id,
+        //                         dataprogroup: optionData.proponent.pro_group,
+        //                         dataproponent: optionData.proponent.id,
+        //                         d_color: color
+        //                     }
+        //                     fifth.push(obj);
+        //                 }else{
+        //                     obj = {
+        //                         value: optionData.fundsource_id,
+        //                         text: text_display,
+        //                         dataval: optionData.remaining_balance,
+        //                         dataproponentInfo_id: optionData.id,
+        //                         dataprogroup: optionData.proponent.pro_group,
+        //                         dataproponent: optionData.proponent.id,
+        //                         d_color: color
+        //                     }
+        //                     six.push(obj);
+        //                 }
+        //         }else{
+
+        //             color = 'normal';
+
+        //             if (id.includes(String(facility_id))) {
+        //                 color = 'yellow';
+        //             }
+
+        //             if(optionData.fundsource.saa.includes('CONAP')){
+        //                 if(check_p == 1){
+        //                     obj = {
+        //                         value: optionData.fundsource_id,
+        //                         text: text_display,
+        //                         dataval: optionData.remaining_balance,
+        //                         dataproponentInfo_id: optionData.id,
+        //                         dataprogroup: optionData.proponent.pro_group,
+        //                         dataproponent: optionData.proponent.id,
+        //                         d_color: color
+        //                     }
+        //                     sec.push(obj);
+        //                 }else{
+        //                     obj = {
+        //                         value: optionData.fundsource_id,
+        //                         text: text_display,
+        //                         dataval: optionData.remaining_balance,
+        //                         dataproponentInfo_id: optionData.id,
+        //                         dataprogroup: optionData.proponent.pro_group,
+        //                         dataproponent: optionData.proponent.id,
+        //                         d_color: color
+        //                     }
+        //                     first.push(obj);
+        //                 }
+        //             }else{
+        //                 if(check_p == 1){
+        //                     obj = {
+        //                         value: optionData.fundsource_id,
+        //                         text: text_display,
+        //                         dataval: optionData.remaining_balance,
+        //                         dataproponentInfo_id: optionData.id,
+        //                         dataprogroup: optionData.proponent.pro_group,
+        //                         dataproponent: optionData.proponent.id,
+        //                         d_color: color
+        //                     }
+        //                     fourth.push(obj);
+        //                 }else{
+        //                     obj = {
+        //                         value: optionData.fundsource_id,
+        //                         text: text_display,
+        //                         dataval: optionData.remaining_balance,
+        //                         dataproponentInfo_id: optionData.id,
+        //                         dataprogroup: optionData.proponent.pro_group,
+        //                         dataproponent: optionData.proponent.id,
+        //                         d_color: color
+        //                     }
+        //                     third.push(obj);
+        //                 }
+        //             }
+        //         }
+        //     });
+
+        //     $('.saa_id').empty();
+
+        //     $('.saa_id').append(
+        //         $('<option>', {
+        //             value: '',
+        //             text: 'SELECT SAA'
+        //         })
+        //     );
+
+        //     addOption(first);
+        //     addOption(sec);
+        //     addOption(third);
+        //     addOption(fourth);
+        //     addOption(fifth);
+        //     addOption(six);
+
+        //     $('.saa_id').each(function(){
+        //         $(this).select2({
+        //             templateResult: function(data) {
+        //                 let c = $(data.element).data('color');
+        //                 if (c === 'red') return $('<span style="color:red">'+data.text+'</span>');
+        //                 if (c === 'yellow') return $('<span style="color:#DAA520">'+data.text+'</span>');
+        //                 return data.text;
+        //             },
+        //             placeholder: "Select SAA"
+        //         });
+        //     });
+
+        //     $('.saa_id').prop('disabled', false);
+
+        // });
 
     }
 
@@ -583,6 +719,7 @@
             console.log('check', check);
             if(check == 0){
                 $('.fac_control').append(result);
+                updateSAAOption();
             }else{
                 unused_rem.forEach(function(element){
                     // var transd_id = element.transd_id;
@@ -594,11 +731,11 @@
 
                     if (!alreadyExists) {
                         $(element).insertAfter($('.fac_control .proponent_clone').last());
+                        updateSAAOption();
                     }
                 });
             }
 
-            updateSAAOption();
             getGrand();
             getGrandFee();
             

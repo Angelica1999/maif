@@ -39,7 +39,7 @@
                                 <th>Facility</th>
                                 <th>Status</th>
                                 <th>Prepared Date</th>
-                                <th>Total Amount</th>
+                                <th style="min-width:120px;">Total Amount</th>
                                 <th>Created On</th>
                                 <th>Created By</th>
                                 <th></th>

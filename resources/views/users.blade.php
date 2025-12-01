@@ -28,10 +28,10 @@
                     <thead>
                         <tr>
                             <th>Status</th>
-                            <th style="min-width:100px;">@sortablelink('fname', 'First Name')
+                            <th style="min-width:120px;">@sortablelink('fname', 'First Name')
                             <th style="min-width:120px;">@sortablelink('lname', 'Last Name')
                             <th style="min-width:110px;">@sortablelink('birthdate', 'Birthdate')
-                            <th>@sortablelink('user_type', 'Type')
+                            <th style="min-width:100px;">@sortablelink('user_type', 'Type')
                             <th style="width:200px;">
                                 <form method="GET" action="">
                                     <select id="account" class="form-control account" name="account_type" style="text-align:center" onchange="this.form.submit()">
@@ -49,7 +49,7 @@
                                 </form>
                             </th>
                             <th>@sortablelink('email', 'Email')
-                            <th>@sortablelink('contact_no', 'Contact No')
+                            <th style="min-width:120px;">@sortablelink('contact_no', 'Contact No')
                             <th style="min-width:200px;"></th>
                         </tr>
                     </thead>
