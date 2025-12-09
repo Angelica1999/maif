@@ -31,7 +31,7 @@
                             <th>BALANCE</th>
                             <th>DATE</th>
                             <th>REMARKS</th>
-                            <th>Created By</th>
+                            <th style="min-width:120px">Created By</th>
                         </tr>
                     </thead>
                     <tbody>

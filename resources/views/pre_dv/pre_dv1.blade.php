@@ -51,7 +51,7 @@
                                     </select>
                                 </div>  
                             </th>
-                            <th class="proponent">Proponent
+                            <th class="proponent" style="min-width:120px">Proponent
                                 <i id="proponent_i" class="typcn typcn-filter menu-icon"><i>
                                 <div class="filter" id="proponent_div" style="display:none;">
                                     <select style="width: 120px;" id="proponent_select" name="proponent_select" multiple>
