@@ -96,6 +96,12 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
+    .spec_body {
+      
+    overflow-y: auto;  
+    overflow-x: auto;  
+    margin-right: 10px;
+}
     @media (max-width: 763px) {
         .input-group {
             flex-wrap: wrap !important;
@@ -146,6 +152,7 @@
             max-height: 120px !important;
             overflow-y: auto !important; 
         }
+        
     }
 
 </style>

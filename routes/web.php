@@ -297,6 +297,7 @@ Route::get('/sending-hold', [App\Http\Controllers\FacilityController::class, 'se
 Route::post('/sending-gl/hold', [App\Http\Controllers\FacilityController::class, 'holdSendFacility'])->name('hold.sending_gl');
 //Route::match(['get','post'],'/logbook/export', [App\Http\Controllers\HomeController::class, 'exportToExcel'])->name('logbook_export');
 Route::get('/export/logbook', [App\Http\Controllers\HomeController::class, 'exportToExcel'])->name('logbook.export');
+Route::get('/export-track-details-pdf/{id}', [App\Http\Controllers\ProponentController::class, 'exportTrackDetailsPDF'])->name('export.track.details.pdf');
 Route::get('/notify', function() {
     $notif = Notif::where('account_type', 3)->get();
         return response()->json([

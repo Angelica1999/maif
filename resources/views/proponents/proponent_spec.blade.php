@@ -63,5 +63,7 @@
     </div>
 @endif
 <div class="modal-footer">
+    <a href="{{ route('export.track.details.pdf', $proponent->id) }}" target="_blank" class="btn btn-success"><i class="typcn typcn-download menu-icon"></i> PDF</a>
+   
     <button style = "background-color:lightgray" class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> Close</button>
 </div>

@@ -34,6 +34,7 @@ use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use PhpOffice\PhpSpreadsheet\Style\Font;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PDF;
 
 class ProponentController extends Controller
 {
@@ -1346,4 +1347,16 @@ class ProponentController extends Controller
         ]);
     }
     
+   public function exportTrackDetailsPDF($proponent_id)
+{
+    $proponent = Proponent::findOrFail($proponent_id);
+    
+    $response = $this->specAllocations($proponent->proponent);
+    
+    $data = $response->getData();
+    
+    $pdf = PDF::loadView('proponents.track_details_pdf', $data);
+    $pdf->setPaper('A4', 'landscape');
+    return $pdf->stream('track-details-' . $proponent->proponent . '.pdf');
+}
 }

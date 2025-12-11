@@ -74,6 +74,92 @@
     width: 150px;    /* adjust as needed */
     max-width: 100%;
 }
+.table-wrapper {
+    max-width: 100%;
+    border: 2px solid #ddd;
+    position: relative; 
+}
+
+
+.scroll-container {
+    position: absolute; 
+    top: 50%; 
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    padding: 0 10px;
+    pointer-events: none; 
+    z-index: 10; 
+}
+
+.scroll-arrow {
+    pointer-events: auto; 
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: rgba(0, 123, 255, 0.9);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 16px;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.scroll-arrow:hover {
+    background: rgba(0, 86, 179, 0.95);
+    transform: scale(1.1); 
+}
+
+.scroll-arrow:active {
+    background: rgba(0, 64, 133, 1);
+    transform: scale(0.95);
+}
+
+.scroll-arrow:disabled {
+    background: rgba(204, 204, 204, 0.7);
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.scroll-bottom {
+    overflow-x: auto;
+    overflow-y: hidden;
+    background: #646e77ff;
+    border-top: 1px solid #ddd;
+    height: 20px;
+}
+
+.scroll-content {
+    height: 1px;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 600px;
+}
+ @media (max-width: 1600px) {
+    .scroll-container {
+    position: sticky; 
+    }
+   
+}
+ @media (max-width: 1024px) {
+    .scroll-container {
+        display: none;
+   
+    }
+
+ }
+
        @media (max-width: 767px) {
     .input-group {
         flex-direction: column;     
@@ -86,7 +172,7 @@
     }
 
     .input-group-append {
-        flex-direction: column;     /* stack buttons */
+        flex-direction: column; 
         width: 100%;
     }
 
@@ -109,7 +195,7 @@
         <div class="card-body">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
                 <div class="mb-2 mb-md-0">
-                    <h4 class="card-title">PROPONENT PATIENT</h4>
+                    <h4 class="card-title" style="white-space: nowrap;">PROPONENT PATIENT</h4>
                     <p class="card-description">MAIF-IPP</p>
                 </div>
                 <div class="input-group">
@@ -169,6 +255,15 @@
                 </div>
             </div>
             @if(count($patients) > 0)
+               <div class="scroll-container">
+                    <button class="scroll-arrow scroll-arrow-left" id="scrollLeftTop" title="Scroll Left">
+                        <i class="fa fa-chevron-left"></i>
+                    </button>
+                    <div class="scroll-info" id=""></div>
+                    <button class="scroll-arrow scroll-arrow-right" id="scrollRightTop" title="Scroll Right">
+                        <i class="fa fa-chevron-right"></i>
+                    </button>
+                </div>
             <div class="table-responsive" id ="patient_table_container">
                 <table class="table table-striped" id="patient_table">
                 <thead>
@@ -405,6 +500,9 @@
         </div>
     </div>
 </div>
+  <div class="scroll-bottom" id="scrollBottom">
+        <div class="scroll-content" id="scrollContentBottom"></div>
+    </div>
 
 <!--end-->
 <div class="modal fade" id="update_patient" tabindex="-1" role="dialog" style="opacity:1">
@@ -1318,6 +1416,69 @@
         $('.pat_rem').attr('required', false);
         $('.sent_type').val(3);
     }
+    document.addEventListener('DOMContentLoaded', function() {
+        const tableContainer = document.getElementById('patient_table_container');
+        const table = document.getElementById('patient_table');
+        
+        // Arrow buttons
+        const scrollLeftTop = document.getElementById('scrollLeftTop');
+        const scrollRightTop = document.getElementById('scrollRightTop');
+        
+        
+        const scrollAmount = 200; // Pixels to scroll per click
+        
+        // Update arrow button states
+        function updateArrowStates() {
+            const scrollLeft = tableContainer.scrollLeft;
+            const maxScroll = tableContainer.scrollWidth - tableContainer.clientWidth;
+            
+            // Left arrows
+            scrollLeftTop.disabled = scrollLeft <= 0;
+          
+            
+            // Right arrows
+            scrollRightTop.disabled = scrollLeft >= maxScroll - 1; // -1 for rounding
+           
+        }
+        
+        // Scroll function
+        function scrollHorizontally(direction) {
+            const currentScroll = tableContainer.scrollLeft;
+            const newScroll = direction === 'left' 
+                ? Math.max(0, currentScroll - scrollAmount)
+                : currentScroll + scrollAmount;
+            
+            tableContainer.scrollTo({
+                left: newScroll,
+                behavior: 'smooth'
+            });
+        }
+        
+        // Arrow button click events
+        scrollLeftTop.addEventListener('click', () => scrollHorizontally('left'));
+        scrollRightTop.addEventListener('click', () => scrollHorizontally('right'));
+       
+        
+        // Update arrow states when scrolling (manual scroll with mouse/trackpad)
+        tableContainer.addEventListener('scroll', updateArrowStates);
+        
+        // Initialize arrow states
+        updateArrowStates();
+        
+        // Update on window resize
+        window.addEventListener('resize', updateArrowStates);
+        
+        // Optional: Keyboard navigation (left/right arrow keys)
+        tableContainer.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') {
+                scrollHorizontally('left');
+                e.preventDefault();
+            } else if (e.key === 'ArrowRight') {
+                scrollHorizontally('right');
+                e.preventDefault();
+            }
+        });
+    });
 
 </script>
 @endsection
