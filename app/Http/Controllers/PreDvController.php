@@ -1030,12 +1030,12 @@ class PreDvController extends Controller
                 $pre_dv->grand_total = $check_latest ? $check_latest->sum('total_amount') : $pre_dv->grand_total;
                 $pre_dv->prof_fee = $fees ? $fees->sum('prof_fee') : $pre_dv->prof_fee;
                 $pre_dv->save();
-
+                
+                DB::commit();
                 return redirect()->back()->with('pre_dv', true);
             } else {
                 return redirect()->back()->with('pre_dv_error', true);
             }
-            DB::commit();
         } catch (\Exception $e) {
 
             DB::rollBack(); 
@@ -1526,18 +1526,11 @@ class PreDvController extends Controller
 
     public function fetchPreFundsource(Request $request){
         $currentYear = date("Y");
-        $info = ProponentInfo::with(['facility', 'fundsource', 'proponent'])
-            ->where(function ($query) use ($request, $currentYear) {
-                $query->where(function ($q) use ($currentYear) {
-                    $q->whereYear('created_at', $currentYear);
-                });
-            })
-            ->whereYear('created_at', $currentYear) 
-            ->orWhere(function ($query) use ($request, $currentYear) {
-                $query->whereYear('created_at', $currentYear);
-            })
+        $info = ProponentInfo::with(['facility:id,name', 'fundsource:id,saa', 'proponent:id,proponent,pro_group'])
+            ->whereYear('created_at', $currentYear)
             ->get();
-                    
+        // ->orWhereRaw('CAST(REPLACE(remaining_balance, ",", "") AS DECIMAL(15,2)) > 0')
+    
         $facility = Facility::where('id', $request->facility_id)->first();
         return response()->json([
             'info' => $info, 

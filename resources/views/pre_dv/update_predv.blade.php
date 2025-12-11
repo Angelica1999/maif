@@ -83,6 +83,8 @@
 <button type="submit" class="btn-sm btn-success updated_submit" style="display:none">SUBMIT</button>
 
 <script>
+
+    var df=1;
 (function() {
     'use strict';
     
