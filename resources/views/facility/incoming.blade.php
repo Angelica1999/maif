@@ -84,13 +84,13 @@
                         <thead>
                             <tr>
                                 <th style="width:150px"></th>
-                                <th>Control No</th>
+                                <th style="min-width:120px;">Control No</th>
                                 <th>Facility</th>
                                 <th>Status</th>
-                                <th>Prepared Date</th>
-                                <th>Total Amount</th>
-                                <th>Created On</th>
-                                <th>Created By</th>
+                                <th style="min-width:120px;">Prepared Date</th>
+                                <th style="min-width:120px;">Total Amount</th>
+                                <th style="min-width:120px;">Created On</th>
+                                <th style="min-width:120px;">Created By</th>
                             </tr>
                         </thead>
                         <tbody>

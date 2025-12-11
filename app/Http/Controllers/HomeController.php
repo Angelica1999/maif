@@ -2331,6 +2331,12 @@ class HomeController extends Controller
         $patient->remaining_balance = $request->input('remaining_balance');
         $patient->pat_rem = $request->input('pat_rem');
         $patient->sent_type = $request->input('sent_type');
+
+        $date = Carbon::parse($request->input('date_guarantee_letter'));
+        $expiryDate = Carbon::create($date->year + 1, 1, 1); 
+        
+        $patient->expired = Carbon::now()->gte($expiryDate) ? 1 : null;
+
         $patient->save();
         DB::commit();
 

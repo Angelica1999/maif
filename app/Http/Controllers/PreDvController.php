@@ -708,59 +708,70 @@ class PreDvController extends Controller
     public function savePreDV(Request $request)
     {
         // return 1;
-        if($request->all_transmittal){
-            Transmittal::whereIn('id', $request->all_transmittal)->update(['used'=>1]);
-        }
 
-        $decodedData = urldecode($request->data);
-        $all_data = json_decode($decodedData, true);
-        $grand_total = $request->grand_total;
-        $grand_fee = $request->grand_fee;
-        $facility_id = $request->facility_id;
+        DB::beginTransaction();
 
-        $pre_dv = new PreDV();
-        $pre_dv->facility_id = $facility_id;
-        $pre_dv->grand_total = (float) str_replace(',', '', $grand_total);
-        $pre_dv->prof_fee = (float) str_replace(',', '', $grand_fee);
-        $pre_dv->created_by = Auth::user()->userid;
-        $pre_dv->trans_id =  $request->all_transmittal ? implode(',', $request->all_transmittal) : null;
-        $pre_dv->save();
+        try {
+            if($request->all_transmittal){
+                Transmittal::whereIn('id', $request->all_transmittal)->update(['used'=>1]);
+            }
 
-        foreach ($all_data as $value) {
-            $proponent_id = $value['proponent'];
-            $control_nos = $value['pro_clone'];
-            $fundsources = $value['fundsource_clone'];
-            $proponent = Proponent::where('proponent', $proponent_id)->value('id');
+            $decodedData = urldecode($request->data);
+            $all_data = json_decode($decodedData, true);
+            $grand_total = $request->grand_total;
+            $grand_fee = $request->grand_fee;
+            $facility_id = $request->facility_id;
 
-            $pre_extension = new PreDVExtension();
-            $pre_extension->pre_dv_id = $pre_dv->id;
-            $pre_extension->proponent_id = $proponent;
-            $pre_extension->total_amount = (float) str_replace(',', '', $value['total_amount']);
-            $pre_extension->save();
+            $pre_dv = new PreDV();
+            $pre_dv->facility_id = $facility_id;
+            $pre_dv->grand_total = (float) str_replace(',', '', $grand_total);
+            $pre_dv->prof_fee = (float) str_replace(',', '', $grand_fee);
+            $pre_dv->created_by = Auth::user()->userid;
+            $pre_dv->trans_id =  $request->all_transmittal ? implode(',', $request->all_transmittal) : null;
+            $pre_dv->save();
 
-            foreach ($control_nos as $row) {
-                $controls = new PreDVControl();
-                $controls->predv_extension_id = $pre_extension->id;
-                $controls->control_no = $row['control_no'];
-                $controls->patient_1 = $row['patient_1'];
-                if($row['patient_2']){
-                    $controls->patient_2 = $row['patient_2'];
+            foreach ($all_data as $value) {
+                $proponent_id = $value['proponent'];
+                $control_nos = $value['pro_clone'];
+                $fundsources = $value['fundsource_clone'];
+                $proponent = Proponent::where('proponent', $proponent_id)->value('id');
+
+                $pre_extension = new PreDVExtension();
+                $pre_extension->pre_dv_id = $pre_dv->id;
+                $pre_extension->proponent_id = $proponent;
+                $pre_extension->total_amount = (float) str_replace(',', '', $value['total_amount']);
+                $pre_extension->save();
+
+                foreach ($control_nos as $row) {
+                    $controls = new PreDVControl();
+                    $controls->predv_extension_id = $pre_extension->id;
+                    $controls->control_no = $row['control_no'];
+                    $controls->patient_1 = $row['patient_1'];
+                    if($row['patient_2']){
+                        $controls->patient_2 = $row['patient_2'];
+                    }
+                    $controls->amount = (float) str_replace(',', '', $row['amount']);
+                    $controls->prof_fee = (float) str_replace(',', '', $row['prof_fee']);
+                    $controls->save();
                 }
-                $controls->amount = (float) str_replace(',', '', $row['amount']);
-                $controls->prof_fee = (float) str_replace(',', '', $row['prof_fee']);
-                $controls->save();
-            }
 
-            foreach ($fundsources as $saa) {
-                $pre_saa = new PreDVSAA();
-                $pre_saa->predv_extension_id = $pre_extension->id;
-                $pre_saa->fundsource_id = $saa['saa_id'];
-                $pre_saa->info_id = $saa['info_id'];
-                $pre_saa->amount = (float) str_replace(',', '', $saa['saa_amount']);
-                $pre_saa->save();
+                foreach ($fundsources as $saa) {
+                    $pre_saa = new PreDVSAA();
+                    $pre_saa->predv_extension_id = $pre_extension->id;
+                    $pre_saa->fundsource_id = $saa['saa_id'];
+                    $pre_saa->info_id = $saa['info_id'];
+                    $pre_saa->amount = (float) str_replace(',', '', $saa['saa_amount']);
+                    $pre_saa->save();
+                }
             }
+            DB::commit();
+            return redirect()->back()->with('pre_dv', true);
+        } catch (\Exception $e) {
+
+            DB::rollBack(); 
+    
+            return back()->with('error', 'Error occurred while saving PRE-DV.');
         }
-        return redirect()->back()->with('pre_dv', true);
     }
 
     public function displayPreDV($id)
@@ -798,6 +809,7 @@ class PreDvController extends Controller
             })
             ->orWhereIn('proponent_info.facility_id', [$facility_id, '702'])
             ->get();
+
         return view('pre_dv.update_predv', [
             'result' => $pre_dv,
             'proponents' => $proponents,
@@ -968,73 +980,82 @@ class PreDvController extends Controller
 
     public function updatePreDV(Request $request)
     {
+        DB::beginTransaction();
 
-        $decodedData = urldecode($request->data);
-        $all_data = json_decode($decodedData, true);
-        $id = $request->pre_id;
-        $grand_total = (float) str_replace(',','',$request->grand_total);
-        $grand_fee = (float) str_replace(',','',$request->grand_fee);
-        $facility_id = $request->facility_id;
-        $pre_dv = PreDV::where('id', $id)->first();
+        try {
+            $decodedData = urldecode($request->data);
+            $all_data = json_decode($decodedData, true);
+            $id = $request->pre_id;
+            $grand_total = (float) str_replace(',','',$request->grand_total);
+            $grand_fee = (float) str_replace(',','',$request->grand_fee);
+            $facility_id = $request->facility_id;
+            $pre_dv = PreDV::where('id', $id)->first();
 
-        if ($pre_dv) {
-            $pre_dv->facility_id = $facility_id;
-            $pre_dv->grand_total = $grand_total;
-            $pre_dv->prof_fee = $grand_fee;
-            $pre_dv->save();
-            
-            $extension = PreDVExtension::where('pre_dv_id', $id)->pluck('id')->toArray();
-            $ex_control = PreDVControl::whereIn('predv_extension_id', $extension)->delete();
-            $ex_saa = PreDVSAA::whereIn('predv_extension_id', $extension)->delete();
-            PreDVExtension::where('pre_dv_id', $id)->delete();
+            if ($pre_dv) {
+                $pre_dv->facility_id = $facility_id;
+                $pre_dv->grand_total = $grand_total;
+                $pre_dv->prof_fee = $grand_fee;
+                $pre_dv->save();
+                
+                $extension = PreDVExtension::where('pre_dv_id', $id)->pluck('id')->toArray();
+                $ex_control = PreDVControl::whereIn('predv_extension_id', $extension)->delete();
+                $ex_saa = PreDVSAA::whereIn('predv_extension_id', $extension)->delete();
+                PreDVExtension::where('pre_dv_id', $id)->delete();
 
-            foreach ($all_data as $value) {
+                foreach ($all_data as $value) {
 
-                $proponent_id = $value['proponent'];
-                $control_nos = $value['pro_clone'];
-                $fundsources = $value['fundsource_clone'];
-                $proponent = Proponent::where('proponent', $proponent_id)->value('id');
+                    $proponent_id = $value['proponent'];
+                    $control_nos = $value['pro_clone'];
+                    $fundsources = $value['fundsource_clone'];
+                    $proponent = Proponent::where('proponent', $proponent_id)->value('id');
 
-                $pre_extension = new PreDVExtension();
-                $pre_extension->pre_dv_id = $pre_dv->id;
-                $pre_extension->proponent_id = $proponent;
-                $pre_extension->total_amount = (float) str_replace(',', '', $value['total_amount']);
-                $pre_extension->save();
+                    $pre_extension = new PreDVExtension();
+                    $pre_extension->pre_dv_id = $pre_dv->id;
+                    $pre_extension->proponent_id = $proponent;
+                    $pre_extension->total_amount = (float) str_replace(',', '', $value['total_amount']);
+                    $pre_extension->save();
 
-                foreach ($control_nos as $row) {
-                    $controls = new PreDVControl();
-                    $controls->predv_extension_id = $pre_extension->id;
-                    $controls->control_no = $row['control_no'];
-                    $controls->patient_1 = $row['patient_1'];
-                    if($row['patient_2']){
-                        $controls->patient_2 = $row['patient_2'];
+                    foreach ($control_nos as $row) {
+                        $controls = new PreDVControl();
+                        $controls->predv_extension_id = $pre_extension->id;
+                        $controls->control_no = $row['control_no'];
+                        $controls->patient_1 = $row['patient_1'];
+                        if($row['patient_2']){
+                            $controls->patient_2 = $row['patient_2'];
+                        }
+                        $controls->amount = (float) str_replace(',', '', $row['amount']);
+                        $controls->prof_fee = (float) str_replace(',', '', $row['prof_fee']);
+                        $controls->save();
                     }
-                    $controls->amount = (float) str_replace(',', '', $row['amount']);
-                    $controls->prof_fee = (float) str_replace(',', '', $row['prof_fee']);
-                    $controls->save();
-                }
-    
-                foreach ($fundsources as $saa) {
-                    $pre_saa = new PreDVSAA();
-                    $pre_saa->predv_extension_id = $pre_extension->id;
-                    $pre_saa->fundsource_id = $saa['saa_id'];
-                    $pre_saa->info_id = $saa['info_id'];
-                    $pre_saa->amount = (float) str_replace(',', '', $saa['saa_amount']);
-                    $pre_saa->save();
+        
+                    foreach ($fundsources as $saa) {
+                        $pre_saa = new PreDVSAA();
+                        $pre_saa->predv_extension_id = $pre_extension->id;
+                        $pre_saa->fundsource_id = $saa['saa_id'];
+                        $pre_saa->info_id = $saa['info_id'];
+                        $pre_saa->amount = (float) str_replace(',', '', $saa['saa_amount']);
+                        $pre_saa->save();
+                    }
+
                 }
 
+                $check_latest = PreDVExtension::where('pre_dv_id', $pre_dv->id)->get();
+
+                $fees = PreDVControl::whereIn('predv_extension_id', $check_latest->pluck('id')->toArray())->get();
+                $pre_dv->grand_total = $check_latest ? $check_latest->sum('total_amount') : $pre_dv->grand_total;
+                $pre_dv->prof_fee = $fees ? $fees->sum('prof_fee') : $pre_dv->prof_fee;
+                $pre_dv->save();
+                
+                DB::commit();
+                return redirect()->back()->with('pre_dv', true);
+            } else {
+                return redirect()->back()->with('pre_dv_error', true);
             }
+        } catch (\Exception $e) {
 
-            $check_latest = PreDVExtension::where('pre_dv_id', $pre_dv->id)->get();
-
-            $fees = PreDVControl::whereIn('predv_extension_id', $check_latest->pluck('id')->toArray())->get();
-            $pre_dv->grand_total = $check_latest ? $check_latest->sum('total_amount') : $pre_dv->grand_total;
-            $pre_dv->prof_fee = $fees ? $fees->sum('prof_fee') : $pre_dv->prof_fee;
-            $pre_dv->save();
-
-            return redirect()->back()->with('pre_dv', true);
-        } else {
-            return redirect()->back()->with('pre_dv_error', true);
+            DB::rollBack(); 
+    
+            return back()->with('error', 'Error occurred while saving PRE-DV.');
         }
     }
 
@@ -1520,18 +1541,11 @@ class PreDvController extends Controller
 
     public function fetchPreFundsource(Request $request){
         $currentYear = date("Y");
-        $info = ProponentInfo::with(['facility', 'fundsource', 'proponent'])
-            ->where(function ($query) use ($request, $currentYear) {
-                $query->where(function ($q) use ($currentYear) {
-                    $q->whereYear('created_at', $currentYear);
-                });
-            })
-            ->whereYear('created_at', $currentYear) 
-            ->orWhere(function ($query) use ($request, $currentYear) {
-                $query->whereYear('created_at', $currentYear);
-            })
+        $info = ProponentInfo::with(['facility:id,name', 'fundsource:id,saa', 'proponent:id,proponent,pro_group'])
+            ->whereYear('created_at', $currentYear)
             ->get();
-                    
+        // ->orWhereRaw('CAST(REPLACE(remaining_balance, ",", "") AS DECIMAL(15,2)) > 0')
+    
         $facility = Facility::where('id', $request->facility_id)->first();
         return response()->json([
             'info' => $info, 

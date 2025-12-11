@@ -70,9 +70,9 @@
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>@sortablelink('fname', 'First Name')
-                            <th>@sortablelink('lname', 'Last Name')
-                            <th>@sortablelink('birthdate', 'Birthdate')
+                            <th style="min-width:120px;">@sortablelink('fname', 'First Name')
+                            <th style="min-width:120px;">@sortablelink('lname', 'Last Name')
+                            <th style="min-width:120px;">@sortablelink('birthdate', 'Birthdate')
                             <th>@sortablelink('user_type', 'Type')
                             <th>
                                 <form method="GET" action="">
@@ -91,7 +91,7 @@
                                 </form>
                             </th>
                             <th>@sortablelink('email', 'Email')
-                            <th>@sortablelink('contact_no', 'Contact No')
+                            <th style="min-width:120px;">@sortablelink('contact_no', 'Contact No')
                             <th></th>
                         </tr>
                     </thead>

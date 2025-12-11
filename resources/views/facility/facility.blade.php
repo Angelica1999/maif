@@ -84,7 +84,7 @@
                         <th style="min-width:200px">Additional Email(s)</th>
                         <th>VAT</th>
                         <th>EWT</th>
-                        <th>EWT PF</th>
+                        <th style="min-width:100px;">EWT PF</th>
                     </tr>
                 </thead>
                 <tbody>

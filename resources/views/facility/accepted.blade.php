@@ -96,20 +96,18 @@
                         <thead>
                             <tr>
                                 <th></th>
-                                <th>Control No</th>
-                                <th>
-                                    <select id="status_filter" class="select2" style="width: 200px; border: none; background: transparent; display:none" multiple>
+                                <th style="min-width:120px;">Control No</th>
+                                <th style="min-width:150px;">
+                                    <select id="status_filter" class="select2" style="width: 100px; border: none; background: transparent; display:none" multiple>
                                         <option value="">Status</option>
-                                        <!-- <option value="1" {{ in_array(1, array_map('intval', $status)) ? 'selected' : '' }}>In Transit to MPU</option>
-                                        <option value="2" {{ in_array(2, array_map('intval', $status)) ? 'selected' : '' }}>Received by MPU</option>
-                                        <option value="3" {{ in_array(3, array_map('intval', $status)) ? 'selected' : '' }}>Returned by MPU</option> -->
                                         <option value="5" {{ in_array(5, array_map('intval', $status)) ? 'selected' : '' }}>ACCEPTED</option>
                                         <option value="6" {{ in_array(6, array_map('intval', $status)) ? 'selected' : '' }}>DV CREATED</option>
                                         <option value="7" {{ in_array(7, array_map('intval', $status)) ? 'selected' : '' }}>OBLIGATED</option>
                                         <option value="8" {{ in_array(8, array_map('intval', $status)) ? 'selected' : '' }}>PAID</option>
                                     </select> 
-                                    @sortablelink('remarks', '⇅')</th>
-                                <th>
+                                    @sortablelink('remarks', '⇅')
+                                </th>
+                                <th style="min-width:250px;">
                                     <select id="facility_filter" class="select2" style="width: 200px; border: none; background: transparent; display:none" multiple>
                                         <option value="">Facility</option>
                                         @foreach($facilities as $facility)
@@ -118,10 +116,10 @@
                                     </select>
                                     @sortablelink('name', '⇅')
                                 </th>
-                                <th>Prepared Date</th>
-                                <th>Total Amount</th>
-                                <th>Created On</th>
-                                <th>Created By</th>
+                                <th style="min-width:120px;">Prepared Date</th>
+                                <th style="min-width:120px;">Total Amount</th>
+                                <th style="min-width:120px;">Created On</th>
+                                <th style="min-width:120px;">Created By</th>
                             </tr>
                         </thead>
                         <tbody>
