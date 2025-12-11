@@ -43,5 +43,5 @@
     </div>
 </div>
 <script>
-    $('.proponent').select2(); 
+    // $('.proponent').select2(); 
 </script>
