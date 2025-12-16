@@ -228,7 +228,14 @@
                 $select.find('option').each(function() {
                     if ($(this).val() == fundsourceRowId && 
                     $(this).attr('dataproponentinfo_id') == rowId) {
-                        $select.val(fundsourceRowId).trigger('change');
+                        // Set the value on the underlying select
+                        $select.val(fundsourceRowId);
+
+                        // Manually update just the display text
+                        var selectedText = $select.find('option:selected').text();
+                        $select.next('.select2-container').find('.select2-selection__rendered').text(selectedText);
+                        // $select.val(fundsourceRowId).triggerHandler('change');
+                        // $select.val(fundsourceRowId).trigger('change');
                         return false;
                     }       
                 });

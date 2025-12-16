@@ -1065,70 +1065,50 @@ console.log('sample');
     function checkPros(data) {
 
 
-    var saa_list = $(data).closest('.proponent_clone').find('.saa_id');
-    var facility_id = $('.facility_id').val();
-    var proponent_name = data.options[data.selectedIndex].text;
-    console.log('all_optionsdasdas', all_options);
-    if (!all_options || !all_options.info) {
+        var saa_list = $(data).closest('.proponent_clone').find('.saa_id');
+        var facility_id = $('.facility_id').val();
+        var proponent_name = data.options[data.selectedIndex].text;
+        
+        if (!all_options || !all_options.info) {
 
-        $.get("{{ url('fetch/pre-dv/fundsource').'/' }}"+facility_id, function(result) {
-            var data_result = result.info;
-            all_options = result;
+            $.get("{{ url('fetch/pre-dv/fundsource').'/' }}"+facility_id, function(result) {
+                var data_result = result.info;
+                all_options = result;
+            });
+        }
+
+        // Build options once
+        var optionsHTML = buildSAAOptionsHTML(proponent_name, facility_id);
+
+        // Update all SAA selects in this proponent clone efficiently
+        saa_list.each(function() {
+            console.log('saa_list');
+            var $this = $(this);
+            $this.html(optionsHTML);
+
+            $this.select2({
+                escapeMarkup: m => m,
+                templateResult: function (data) {
+                    return $(data.element).data("html") || data.text;
+                },
+                templateSelection: function (data) {
+                    return $(data.element).data("html") || data.text;
+                }
+            });
+            $this.prop('disabled', false);
         });
+
+        // Validate duplicate proponent
+        var arr = getPros();
+        var index = arr.indexOf(data.value);
+        if (index !== -1) {
+            arr.splice(index, 1);
+        }
+        if (arr.includes(data.value)) {
+            alert('This proponent has been selected already!');
+            return;
+        }
     }
-
-    console.log(all_options);
-    // Validate duplicate proponent
-    var arr = getPros();
-    var index = arr.indexOf(data.value);
-    if (index !== -1) {
-        arr.splice(index, 1);
-    }
-    if (arr.includes(data.value)) {
-        alert('This proponent has been selected already!');
-        return;
-    }
-
-    // Build options once
-    var optionsHTML = buildSAAOptionsHTML(proponent_name, facility_id);
-
-    // Update all SAA selects in this proponent clone efficiently
-    saa_list.each(function() {
-        console.log('saa_list');
-        var $this = $(this);
-        $this.html(optionsHTML);
-
-        $this.select2({
-    escapeMarkup: m => m,
-    templateResult: function (data) {
-        return $(data.element).data("html") || data.text;
-    },
-    templateSelection: function (data) {
-        return $(data.element).data("html") || data.text;
-    }
-});
-
-        
-        // Only initialize Select2 if not already initialized
-        // if (!$this.hasClass('select2-hidden-accessible')) {
-        //     console.log('iifif');
-        //     $this.select2({
-        //         templateResult: function (data) {
-        //             let color = $(data.element).data('color');
-        //             if (color === 'red') return $('<span style="color:red;">' + data.text + '</span>');
-        //             if (color === 'yellow') return $('<span style="color:#DAA520;">' + data.text + '</span>');
-        //             return data.text;
-        //         },
-        //         placeholder: "Select SAA"
-        //     });
-        // }else{
-        //     console.log('else');
-
-        // }
-        
-        $this.prop('disabled', false);
-    });
-}
 
 
     function getPros(){
@@ -1259,18 +1239,26 @@ console.log('sample');
 
     function updatePre(id, data, stat){
         console.log('data', data);
+        console.log('stat', stat);
+
         $('.form_body').html(loading);
         $.get("{{ url('fetch/pre-dv/fundsource').'/' }}"+1, function(result) {
             var data_result = result.info;
             all_options = result;
-            console.log('samplee', all_options);
+            console.log('done');
             $('.loading-container').modal('hide');
         });
 
         $.get("{{ url('pre-dv/update/').'/' }}"+id, function(result) {
             $('.form_body').html(result);
-            $('.loading-container').modal('show');
-        $('.loading-container').html(loading);
+
+            if (!all_options || !all_options.info) {
+                $('.loading-container').modal('show');
+                $('.loading-container').html(loading);
+            }else{
+                $('.loading-container').modal('hide');
+            }
+            
             if(data == 1){
                 $('.delete_btn').css('display', 'none');
                 $('.submit_btn').css('display', 'none');
@@ -1446,8 +1434,7 @@ console.log('sample');
     }
 
     function autoDeduct(element){
-        console.log('btn_val', btn_val);
-
+        console.log('dasdasd', btn_val);
         if(btn_val == 0){
             var amountValue = parseFloat(element.closest('.saa_clone').find('.saa_amount').val().replace(/,/g, '')) || 0;
             var w_pro = element.closest('.proponent_clone');
@@ -1559,15 +1546,15 @@ console.log('sample');
                                     .css('background-color', 'red')
                                     .text('')
                                     .html('<span class="typcn typcn-minus menu-icon"></span>');
+
+                                var saaSelect = clonedElement.find('.saa_id');
+                                saaSelect.select2();
+                                var proponent_input = saaSelect
+                                    .closest('.proponent_clone')
+                                    .find('.proponent');
+                                updateSAAOption(saaSelect, proponent_input);
                             }); 
                             data.val(saa_balance.toFixed(2));
-
-                            var saaSelect = clonedElement.find('.saa_id');
-                            saaSelect.select2();
-                            var proponent_input = saaSelect
-                            .closest('.proponent_clone')
-                            .find('.proponent');
-                            updateSAAOption(saaSelect, proponent_input);
                         }else{
                             data.val('');
                             inputted_fundsource(clone_pro)

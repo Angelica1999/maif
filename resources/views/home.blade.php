@@ -1254,7 +1254,6 @@
             e.preventDefault();
             var url = $(this).attr('href');
             loadPaginatedData(url);
-          
         });
 
         var select_val = 0;
