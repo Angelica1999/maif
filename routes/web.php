@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PrintController;
 use App\Models\Notif;
+use App\Models\Patients;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\Support\Facades\Redis;
@@ -340,6 +341,34 @@ Route::get('/maif/notifications/unregister-tab', function (Illuminate\Http\Reque
     $clientId = $request->query('client_id');
     Redis::srem("active_tabs", $clientId);
     return response()->json(['status' => 'ok']);
+});
+
+Route::get('/data-counts', function() {
+    return response()->json([
+        'gl_lists' => Patients::where(function ($query) {
+                $query->whereNull('pro_used')
+                  ->where(function ($q) {
+                      $q->whereNull('fc_status')
+                        ->orWhere('fc_status', '!=', 'returned');
+                  })
+                  ->where(function ($q) {
+                      $q->whereNull('expired')
+                        ->orWhere('expired', '!=', 1);
+                  });
+            })->count(),
+        'returned_lists' => Patients::where(function ($query) {
+                $query->whereNull('pro_used')
+                    ->where('fc_status', "returned");
+            })
+            ->where(function ($q) {
+                $q->whereNull('expired')
+                    ->orWhere('expired', '!=', 1);
+            })->count(),
+        'expired_lists' => Patients::where(function ($query) {
+                $query->whereNull('pro_used')
+                    ->where('expired', 1);
+            })->count()
+    ]);
 });
 
 

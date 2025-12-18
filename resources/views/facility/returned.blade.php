@@ -26,7 +26,7 @@
                 </div>
                 <button id="filter_btn" name="facility_data[]" class="btn btn-sm btn-info" type="submit" style="display:none;"></button>
             </form>
-            <h1 class="card-title">TRANSMITTAL: RETURNED</h1> <span class="text-danger">ongoing updates</span>
+            <h1 class="card-title">TRANSMITTAL: RETURNED</h1>
             <p class="card-description">
                 MAIF-IPP
             </p>

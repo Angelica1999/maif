@@ -879,13 +879,8 @@ class HomeController extends Controller
                 "STR_TO_DATE(CONCAT(YEAR(date_guarantee_letter) + 1, '-01-01'), '%Y-%m-%d') < ?",
                 [Carbon::now()]
             )
-            // ->get();
-            // return $ch;
             ->update(['expired' => 1]);
         
-            if(Auth::user()->userid == "2760"){
-                // return 1;
-            }
         $baseQuery = Patients::with([
             'province:id,description',
             'muncity:id,description', 
