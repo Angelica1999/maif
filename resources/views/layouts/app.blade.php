@@ -474,6 +474,21 @@
 				confirmButtonText: 'OK'
 			});
 		@endif
+		@if(session('expired_gl'))
+			<?php session()->forget('expired_gl'); ?>
+			Swal.fire({
+				icon: 'error',
+				title: '<strong>GL Expired</strong>',
+				html: '<b>Forwarded to expired list.</b>',
+				background: '#fff',
+				timer: 2000,
+				timerProgressBar: true,
+				showConfirmButton: false,
+				didOpen: () => {
+				Swal.showLoading();
+				}
+			});
+		@endif
 
 		// if (!sessionStorage.getItem('client_id')) {
 		// 	sessionStorage.setItem('client_id', Math.random().toString(36).substring(2, 15));

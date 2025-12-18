@@ -24,8 +24,9 @@
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
                     </div>
                 </div>
+                <button id="filter_btn" name="facility_data[]" class="btn btn-sm btn-info" type="submit" style="display:none;"></button>
             </form>
-            <h1 class="card-title">TRANSMITTAL: RETURNED</h1>
+            <h1 class="card-title">TRANSMITTAL: RETURNED</h1> <span class="text-danger">ongoing updates</span>
             <p class="card-description">
                 MAIF-IPP
             </p>
@@ -35,13 +36,20 @@
                         <thead>
                             <tr>
                                 <th></th>
-                                <th>Control No</th>
-                                <th>Facility</th>
-                                <th>Status</th>
-                                <th>Prepared Date</th>
-                                <th style="min-width:120px;">Total Amount</th>
-                                <th>Created On</th>
-                                <th>Created By</th>
+                                <th style="min-width:120px;">Control No @sortablelink('control', '⇅')</th>
+                                <th style="min-width:250px;">
+                                    <select id="facility_filter" class="select2" style="width: 200px; border: none; background: transparent; display:none" multiple>
+                                        <option value="">Facility</option>
+                                        @foreach($facilities as $facility)
+                                            <option value="{{ $facility->id }}" {{ in_array((int) $facility->id, array_map('intval', $facs)) ? 'selected' : '' }}>{{ $facility->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @sortablelink('name', '⇅')
+                                </th>
+                                <th style="min-width:160px;">Prepared Date @sortablelink('prepared', '⇅')</th>
+                                <th style="min-width:150px;">Total Amount @sortablelink('total', '⇅')</th>
+                                <th style="min-width:120px;">Created On @sortablelink('on', '⇅')</th>
+                                <th style="min-width:120px;">Created By @sortablelink('by', '⇅')</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -57,7 +65,6 @@
                                     </td>
                                     <td><a onclick="displaySum({{ $item->id }})" href="#summary_display" data-toggle="modal" data-backdrop="static">{{ $item->control_no }}</a></td>
                                     <td>{{ $item->user->facility->name }}</td>
-                                    <td></td>
                                     <td>{{ date('F j, Y', strtotime($item->prepared_date)) }}</td>
                                     <td>{{ number_format($item->total, 2, '.', ',') }}</td>
                                     <td>{{ date('F j, Y', strtotime($item->created_at)) }}</td>
@@ -80,6 +87,16 @@
                     <strong>No bills found!</strong>
                 </div>
             @endif
+            @error('trans_files.*')
+                <div class="alert alert-danger">{{ $message }}</div>
+            @enderror
+            <div class="pl-5 pr-5 mt-5 alert alert-info" role="alert" style="width: 100%; margin-top:5px;">
+                <strong>Total # of Patients: {{  number_format($patients, 2,'.',',') }}</strong>
+                <strong style="margin-left: 20px;">|</strong>
+                <strong style="margin-left: 20px;">Total No. of transmittals: {{  number_format($total, 2,'.',',') }}</strong>
+                <strong style="margin-left: 20px;">|</strong>
+                <strong style="margin-left: 20px;">Total Amount: {{  number_format($amount, 2,'.',',') }}</strong>
+            </div>
             <div class="pl-5 pr-5 mt-5" id ="pagination_links">
                 {!! $transmittal->appends(request()->query())->links('pagination::bootstrap-5') !!}
             </div>
@@ -135,6 +152,28 @@
 @section('js')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+
+$(document).ready(function() {
+        $('.fa-sort').hide();
+        $('#facility_filter').select2({
+            placeholder: 'Facility',
+            allowClear: true,
+            width: 'resolve',
+            dropdownAutoWidth: true
+        });
+
+        $('#facility_filter').next('.select2').find('.select2-selection').css({
+            'border': 'none',
+            'background': 'transparent',
+            'height': 'auto',
+            'min-height': '0',
+            'padding': '0px'
+        });
+        $('#facility_filter').on('change', function() {
+            $('#filter_btn').val(JSON.stringify($(this).val()));
+            $('#filter_btn').click();
+        });
+    });
 
     function checkRemarks(id){
         $('.return_details').empty();
