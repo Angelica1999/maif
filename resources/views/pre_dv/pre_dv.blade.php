@@ -733,6 +733,7 @@ console.log('sample');
 
     function getTransmittal(data) {  
         var trans_id = data.val();
+        console.log(trans_id);
         var trans_control = data.find('option:selected').text();
         $('.loading-container').modal('show');
         $('.selected_control').css('display', 'flex'); 
@@ -750,6 +751,7 @@ console.log('sample');
 
         $.get("{{ url('transmittal/details').'/' }}" + trans_id + '/' + f_id, function(result) {
             var $html = $('<div>').html(result);
+            console.log(result);
             var result_proponent = $html.find('.proponent').first().val();
             var $controlClones = $html.find('.control_div .control_clone');
             var check = 0;

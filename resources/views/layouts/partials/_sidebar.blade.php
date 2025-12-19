@@ -602,19 +602,19 @@
         @endif
         <br>
         <li class="nav-item">
-            <label for="sidebar-note" style="display: flex; align-items: center;">
+            <div class="text-info" style="display: flex; align-items: center; margin-left:10px">
                 Note(s):
                 <a href="#" data-toggle="modal" data-target="#new_note">
                     <i class="typcn typcn-plus menu-icon"></i>                
                 </a>
-            </label>
-            <label style="color:gray">#Legend:
+            </div>
+            <div style="color:gray; margin-left:10px; color:gray">#Legend:
                 <br>
                 <small style="margin-left:20px">
                     <i style="color:green" class="typcn typcn-media-record menu-icon"></i> DONE
                     <i style="color:blue" class="typcn typcn-media-record-outline menu-icon"></i>  IN-PROGRESS
                 </small>
-            </label>
+            </div>
             @foreach($notes as $note)
                 @if($note->status == 0)
                     <div class="sidebar-note">

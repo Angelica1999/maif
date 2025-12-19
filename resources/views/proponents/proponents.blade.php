@@ -70,11 +70,11 @@
                     @csrf
                     <input type="hidden" name="id" id="id">
                     <div class="form-group">
-                        <b><label>Proponent</label><b>
+                        <b><label for="proponent">Proponent</label><b>
                         <input name="proponent" id="proponent" class="form-control"></input>
                     </div>
                     <div class="form-group">
-                        <b><label>Proponent Code</label><b>
+                        <b><label for="proponent_code">Proponent Code</label><b>
                         <input name="proponent_code" id="proponent_code" class="form-control"></input>
                     </div>
                 </div>
