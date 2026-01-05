@@ -148,27 +148,31 @@ class DashboardController extends Controller{
             ->values();  
 
         if($req->year){
-            $utilization_trend = Utilization::where('status', 0)
-                ->whereNotNull('paid')
-                ->whereYear('created_at', $req->year) // Filter by the selected year
-                ->get()
-                ->groupBy(function ($item) {
-                    return \Carbon\Carbon::parse($item->created_at)->format('M'); 
-                })
-                ->map(function ($items, $month) {
-                    return [
-                        'month' => strtoupper($month), 
-                        'total_utilize_amount' => number_format($items->sum('utilize_amount'), 2, '.', ''), 
-                    ];
-                })
-                ->sortBy(function ($item) {
-                    $months = ['JAN' => 1, 'FEB' => 2, 'MAR' => 3, 'APR' => 4, 'MAY' => 5, 'JUN' => 6, 
-                            'JUL' => 7, 'AUG' => 8, 'SEP' => 9, 'OCT' => 10, 'NOV' => 11, 'DEC' => 12];
-
-                    return $months[$item['month']] ?? 999; 
-                })
-                ->values();
+            $year = $req->year;
+        }else{
+            $year = date('Y');
         }
+
+        $utilization_trend = Utilization::where('status', 0)
+            ->whereNotNull('paid')
+            ->whereYear('created_at', $year) 
+            ->get()
+            ->groupBy(function ($item) {
+                return \Carbon\Carbon::parse($item->created_at)->format('M'); 
+            })
+            ->map(function ($items, $month) {
+                return [
+                    'month' => strtoupper($month), 
+                    'total_utilize_amount' => number_format($items->sum('utilize_amount'), 2, '.', ''), 
+                ];
+            })
+            ->sortBy(function ($item) {
+                $months = ['JAN' => 1, 'FEB' => 2, 'MAR' => 3, 'APR' => 4, 'MAY' => 5, 'JUN' => 6, 
+                        'JUL' => 7, 'AUG' => 8, 'SEP' => 9, 'OCT' => 10, 'NOV' => 11, 'DEC' => 12];
+
+                return $months[$item['month']] ?? 999; 
+            })
+            ->values();
 
         return view('dashboard', [
             'total_amount' => $total_amount, 
@@ -184,7 +188,7 @@ class DashboardController extends Controller{
             'facilities' => $facilities,
             'disbursed' => $utilization_disbursed,
             'trend' => $utilization_trend,
-            'year' => $req->year ?:date('Y')
+            'year' => $year
         ]);
     }
 
