@@ -45,6 +45,7 @@ use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Request as RequestFacade;
+use Illuminate\Support\Facades\Log;
 
 class HomeController extends Controller
 {
@@ -1495,6 +1496,27 @@ class HomeController extends Controller
         ], $filterData));
     }
 
+    public function updateDate($date){
+
+        Patients::where(function ($query) {
+            $query->whereNull('pro_used')
+                ->where('expired', 1);
+        })->update(['date_guarantee_letter'=> $date, 'expired' => null]);
+
+        return redirect()->back()->with('success', 'Date updated successfully');
+    }
+
+    public function deleteReturned(Request $request){
+        Log::info(
+            'DELETED GL:',
+            Patients::whereIn('id', $request->ids)->get()->toArray()
+        );
+        
+        Patients::whereIn('id', $request->ids)->delete();
+
+        return response()->json(['success' => true]);
+    }
+
     public function fetchAdditionalData(){
         // return [
         //     'all_pat' => Patients::get(),
@@ -2517,7 +2539,12 @@ class HomeController extends Controller
         $pat = Patients::with('proponentData:id,proponent')->where('id', $id)->first();
         if($pat){
             $pat->pat_rem = $pat->pat_rem == "Retrieved" ? null : $pat->pat_rem;
-            $pat->fc_status = 'referred';
+            if($pat->remember_token == "expired_1"){
+                $pat->fc_status = 'accepted';
+                $pat->remember_token = null;
+            }else{
+                $pat->fc_status = 'referred';
+            }
             $pat->sent_type = 3;
             $pat->save();
             

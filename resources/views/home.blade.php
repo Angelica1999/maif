@@ -111,7 +111,7 @@
                     <form method="POST" action="{{ route('save.group') }}">
                         @csrf
                         <div style="display: flex; justify-content: flex-end;">
-                            <label class="totalAmountLabel" style="display:none; height:30px;" ><b> Amount:</b></label>
+                            <label for="group_amountT" class="totalAmountLabel" style="display:none; height:30px;" ><b> Amount:</b></label>
                             <input style="display:none; vertical-align:center; width:150px" class="form-control group_amountT" name="group_amountT" id="group_amountT" readonly>
                             <button class=" btn-sm group-btn" style="display:none;background-color: green; color: white; height:48px; width:100px">Group</button>
                             <input type="hidden" class="form-control group_facility" name="group_facility" id="group_facility" >
@@ -213,7 +213,7 @@
                             </th>
                             <th style="min-width:150px">
                                 <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                                    <select class="form-control filter" style="display:none;" id="by_select" name="by_select" multiple></select>
+                                    <select class="form-control filter" aria-hidden="true" style="display:none;" id="by_select" name="by_select" multiple></select>
                                     <a href="{{ route('home', ['sort' => 'encoded_by', 'order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">⇅</a>
                                 </div>
                             </th>
@@ -304,7 +304,8 @@
                                     @endif
                                 </td>
                                 <td class="editable-amount" data-actual-amount="{{ !Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','):0 }}" data-patient-id="{{ $patient->id }}" data-guaranteed-amount="{{str_replace(',', '', $patient->guaranteed_amount)}}">
-                                    <a href="#" class="number_editable"  title="Actual Amount" id="{{ $patient->id }}">{{!Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}</a>
+                                    <!-- <a href="#" class="number_editable"  title="Actual Amount" id="{{ $patient->id }}">{{ !Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}</a> -->
+                                    {{ !Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}
                                 </td>
                                 <td class="td">{{ number_format((float) str_replace(',', '', $patient->guaranteed_amount), 2, '.', ',') }}</td>
                                 <td>{{ date('F j, Y', strtotime($patient->date_guarantee_letter)) }}</td>
@@ -406,7 +407,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="fname">Region</label>
-                                    <select class="js-example-basic-single region" style="width:220px;" id="region" onchange="othersRegion($(this));" name="region">
+                                    <select class="js-example-basic-single region" autocomplete="off" style="width:220px;" id="region" onchange="othersRegion($(this));" name="region">
                                         <option value="">Please select region</option>
                                         <option value="Region 7">Region 7</option>
                                         <option value="NCR">NCR</option>
@@ -582,7 +583,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="fname">Region</label>
-                                    <select class="js-example-basic-single region" style="width:220px;" id="region" onchange="othersRegion($(this));" name="region">
+                                    <select class="js-example-basic-single region" autocomplete="off" style="width:220px;" id="region" onchange="othersRegion($(this));" name="region">
                                         <option value="">Please select region</option>
                                         <option value="Region 7">Region 7</option>
                                         <option value="NCR">NCR</option>
@@ -1286,62 +1287,62 @@
         });
 
         function initializeEditable() {
-            $.fn.editable.defaults.mode = 'popup';
-            $(".number_editable").editable({
-                type : 'number',
-                name: 'actual_amount',
-                title: $(this).data("title"),
-                emptytext: 'empty',
-                success: function(response, newValue) {
-                    var cell = $(this).closest('.editable-amount');
-                    var patientId = cell.data('patient-id');
-                    var guaranteed_amount = cell.data('guaranteed-amount');
-                    var actual_amount = cell.data('actual-amount');
-                    var editableField = this;
-                    var url = "{{ url('update/amount').'/' }}" + patientId + '/' + newValue;
-                    var json = {
-                        "_token" : "<?php echo csrf_token(); ?>",
-                        "value" : newValue
-                    };
+            // $.fn.editable.defaults.mode = 'popup';
+            // $(".number_editable").editable({
+            //     type : 'number',
+            //     name: 'actual_amount',
+            //     title: $(this).data("title"),
+            //     emptytext: 'empty',
+            //     success: function(response, newValue) {
+            //         var cell = $(this).closest('.editable-amount');
+            //         var patientId = cell.data('patient-id');
+            //         var guaranteed_amount = cell.data('guaranteed-amount');
+            //         var actual_amount = cell.data('actual-amount');
+            //         var editableField = this;
+            //         var url = "{{ url('update/amount').'/' }}" + patientId + '/' + newValue;
+            //         var json = {
+            //             "_token" : "<?php echo csrf_token(); ?>",
+            //             "value" : newValue
+            //         };
 
-                    if(newValue == ''){
-                        Lobibox.alert('error',{
-                            size: 'mini',
-                            msg: "Actual amount accepts number only!"
-                        }); 
-                        $(editableField).text(actual_amount);
-                        $(editableField).value(actual_amount);
-                        cell.attr('data-actual-amount', actual_amount);
-                        // location.reload();
-                        return;  
-                    }
-                    var c_amount = newValue.replace(/,/g,'');
+            //         if(newValue == ''){
+            //             Lobibox.alert('error',{
+            //                 size: 'mini',
+            //                 msg: "Actual amount accepts number only!"
+            //             }); 
+            //             $(editableField).text(actual_amount);
+            //             $(editableField).value(actual_amount);
+            //             cell.attr('data-actual-amount', actual_amount);
+            //             // location.reload();
+            //             return;  
+            //         }
+            //         var c_amount = newValue.replace(/,/g,'');
 
-                    if(c_amount > guaranteed_amount){
-                        $(this).html(newValue);
-                        Lobibox.alert('error',{
-                            size: 'mini',
-                            msg: "Inputted actual amount if greater than guaranteed amount!"
-                        }); 
-                        cell.attr('data-actual-amount', actual_amount);
-                        $(editableField).text(actual_amount);
-                        $(editableField).value(actual_amount);
-                        // location.reload();
-                        return;           
-                    }
+            //         if(c_amount > guaranteed_amount){
+            //             $(this).html(newValue);
+            //             Lobibox.alert('error',{
+            //                 size: 'mini',
+            //                 msg: "Inputted actual amount if greater than guaranteed amount!"
+            //             }); 
+            //             cell.attr('data-actual-amount', actual_amount);
+            //             $(editableField).text(actual_amount);
+            //             $(editableField).value(actual_amount);
+            //             // location.reload();
+            //             return;           
+            //         }
 
-                    $.post(url, json, function(result){
-                        Lobibox.notify('success', {
-                            title: "",
-                            msg: "Successfully update actual amount!",
-                            size: 'mini',
-                            rounded: true
-                        });
-                        cell.attr('data-actual-amount', newValue);
-                        // location.reload();
-                    });
-                }
-            });
+            //         $.post(url, json, function(result){
+            //             Lobibox.notify('success', {
+            //                 title: "",
+            //                 msg: "Successfully update actual amount!",
+            //                 size: 'mini',
+            //                 rounded: true
+            //             });
+            //             cell.attr('data-actual-amount', newValue);
+            //             // location.reload();
+            //         });
+            //     }
+            // });
         }
 
         function initializeGroupFunctions() {

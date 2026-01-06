@@ -71,7 +71,7 @@
                             <input type="hidden" class="form-control" name="key">
                             <input type="text" class="form-control" name="keyword" id="search_patient" placeholder="Search..." value="{{ $keyword }}" style="width:400px;">
                             <div class="input-group-append">
-                                <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
+                                <button class="btn btn-sm btn-info" style="width:101px" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
                                 <button class="btn btn-sm btn-warning text-white set_width" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
                                 <button type="submit" value="filt" style="display:none; background-color:00563B; color:white;" name="filter_col" id="filter_col" class="btn btn-md set_width"><i class="typcn typcn-filter menu-icon"></i>Filter</button>
                             </div>  
@@ -79,6 +79,7 @@
                         <div class="input-group">
                             <input type="text" style="text-align:center" class="form-control" id="filter_dates" value="{{ ($generate_dates)?$generate_dates:'' }}" name="filter_dates" />
                             <button type="submit" id="gen_btn" style="background-color:teal; color:white; border-radius:0; " class="btn set_width"><i class="typcn typcn-calendar-outline menu-icon"></i>Range</button>
+                            <button class="btn btn-md update_all" name="update_all[]" id="update_all" style="display:block; background-color: #28a745; color:white;border-radius:0px; width:100px"><i class="typcn typcn-calendar-outline menu-icon"></i>Upd All</button>
                         </div>
                         <input type="hidden" name="filter_date" id="filter_date" value="{{ implode(',', $filter_date) }}"></input>
                         <input type="hidden" name="filter_fname" id="filter_fname" value="{{ implode(',', $filter_fname) }}"></input>
@@ -95,7 +96,7 @@
                         <input type="hidden" name="filter_by" id="filter_by" value="{{ implode(',', $filter_by) }}"></input>
                         <input type="hidden" name="gen" id="gen" value="{{ $gen }}"></input>
                     </form>
-                    <form method="POST" action="{{ route('sent.mails') }}" class="send_mailform">
+                    <!-- <form method="POST" action="{{ route('sent.mails') }}" class="send_mailform">
                         @csrf
                         <div class="input-group" style="display: flex;">
                             <button class="btn btn-md send_mails" name="send_mails[]" id="email_sent" style="display:none; background-color:green; color:white; border-radius:0px; width:125px">Send Mails <img src="\maif\public\images\email_16.png"></button>
@@ -103,7 +104,7 @@
                         <div class="input-group" style="display: flex;">
                             <button class="btn btn-md send_mails" name="send_mails[]" id="system_sent" style="display:none; background-color:darkgreen; color:white;border-radius:0px; width:125px">Send GL to <img src="{{ asset('images/doh-logo.png') }}" width="15px"></button>
                         </div>
-                    </form>
+                    </form> -->
                     <form method="POST" action="{{ route('save.group') }}">
                         @csrf
                         <div style="display: flex; justify-content: flex-end;">
@@ -130,7 +131,9 @@
                         <tr>
                             <th></th>
                             <th></th>
-                            <th><span class="text-info select_all" title="Select/Unselect All"><i class="fa fa-check"></i>All</span></th>
+                            <th>
+                                <!-- <span class="text-info select_all" title="Select/Unselect All"><i class="fa fa-check"></i>All</span> -->
+                            </th>
                             <th style="min-width:90px">@sortablelink('remarks', 'Status')</th>
                             <th>Remarks</th>
                             <th style="min-width:10px; text-align:center;">Group</th>
@@ -228,15 +231,15 @@
                                                 target="_blank" type="button" class="btn btn-xs">
                                                 <i class="fa fa-print"></i> Print
                                             </a>
-                                            @if($patient->facility_id && !in_array($patient->facility_id, $onhold_facs))
+                                            <!-- @if($patient->facility_id && !in_array($patient->facility_id, $onhold_facs))
                                                 <a href="{{ route('patient.sendpdf', ['patientid' => $patient->id]) }}"
                                                     type="button" style="margin-top:1px; width:70px; font-size:11px"
                                                     class="btn btn-success btn-xs" id="send_btn">
                                                     <i class="fa fa-paper-plane"></i> Send
                                                 </a>
-                                            @endif
+                                            @endif -->
                                         </div>
-                                        <div style="display: flex; flex-direction: column; justify-content: center; height: 70px;">
+                                        <!-- <div style="display: flex; flex-direction: column; justify-content: center; height: 70px;">
                                             @if($patient->sent_type == null || $patient->fc_status == 'returned')
                                                 <button 
                                                     onclick="forwardPatient({{ !in_array($patient->facility_id, $active_facility) ? 1 : 0 }}, '{{ route('patient.accept', ['id' => $patient->id]) }}')"
@@ -245,15 +248,15 @@
                                                     <i class="fa fa-share-square"></i> F2F
                                                 </button>
                                             @endif
-                                        </div> 
+                                        </div>  -->
                                     </div>
                                 </td>
                                 <td style="text-align:center;" class="group-email" data-patient-id="{{ $patient->id }}">
-                                    <input class="sent_mails[] " id="mail_ids[]" name="mail_ids[]" type="hidden">
-                                    <input type="checkbox" style="width: 60px; height: 20px;" name="mailCheckbox[]" id="mailCheckboxId_{{ $patient->id }}" 
+                                    <!-- <input class="sent_mails[] " id="mail_ids[]" name="mail_ids[]" type="hidden"> -->
+                                    <!-- <input type="checkbox" style="width: 60px; height: 20px;" name="mailCheckbox[]" id="mailCheckboxId_{{ $patient->id }}" 
                                         data-patient-stat="{{ $patient->sent_type == null || $patient->fc_status == 'returned' ? 1 : 0 }}"
                                         data-patient-stat2="{{ $patient->facility_id && !in_array($patient->facility_id, $onhold_facs) ? 1 : 0 }}"
-                                        class="group-mailCheckBox" onclick="itemChecked($(this))">
+                                        class="group-mailCheckBox" onclick="itemChecked($(this))"> -->
                                 </td>
                                 <td style="text-align:center">
                                     @if($patient->remarks == 1)
@@ -273,7 +276,8 @@
                                     @endif
                                 </td>
                                 <td class="editable-amount" data-actual-amount="{{ !Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','):0 }}" data-patient-id="{{ $patient->id }}" data-guaranteed-amount="{{str_replace(',', '', $patient->guaranteed_amount)}}">
-                                    <a href="#" class="number_editable"  title="Actual Amount" id="{{ $patient->id }}">{{!Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}</a>
+                                    {{ !Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}  
+                                <!-- <a href="#" class="number_editable"  title="Actual Amount" id="{{ $patient->id }}">{{ !Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}</a> -->
                                 </td>
                                 <td class="td">{{ number_format((float) str_replace(',', '', $patient->guaranteed_amount), 2, '.', ',') }}</td>
                                 <td>{{ date('F j, Y', strtotime($patient->date_guarantee_letter)) }}</td>
@@ -486,7 +490,7 @@
                             <div class="col-md-6"  id="actl_amnt">
                                 <div class="form-group">
                                     <label for="fname">Actual Amount</label>
-                                    <input type="number" step="any" class="form-control actual_amount" id="actual_amount" name="actual_amount">
+                                    <input type="number" step="any" class="form-control actual_amount" id="actual_amount" name="actual_amount" disabled>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -570,6 +574,36 @@
 <script src="{{ asset('admin/vendors/x-editable/bootstrap-editable.min.js?v=1') }}"></script>
 @include('maif.editable_js')
 <script>
+
+    $('#update_all').on('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        Swal.fire({
+            title: 'Change Expiry Date',
+            input: 'date',
+            inputLabel: 'Select new date',
+            inputAttributes: {
+                required: true
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Update',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#28a745',
+            preConfirm: (date) => {
+                if (!date) {
+                    Swal.showValidationMessage('Please select a date');
+                }
+                return date;
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var date = result.value;
+                window.location.href = `expired-gl/update/${date}`;
+            }
+        });
+    });
+    
     function forwardPatient(status, forwardUrl) {
         if (status == 1) {
             Swal.fire({
@@ -936,63 +970,63 @@
         });
 
         function initializeEditable() {
-            $.fn.editable.defaults.mode = 'popup';
+            // $.fn.editable.defaults.mode = 'popup';
 
-            $(".number_editable").editable({
-                type : 'number',
-                name: 'actual_amount',
-                title: $(this).data("title"),
-                emptytext: 'empty',
-                success: function(response, newValue) {
-                    var cell = $(this).closest('.editable-amount');
-                    var patientId = cell.data('patient-id');
-                    var guaranteed_amount = cell.data('guaranteed-amount');
-                    var actual_amount = cell.data('actual-amount');
-                    var editableField = this;
-                    var url = "{{ url('update/amount').'/' }}" + patientId + '/' + newValue;
-                    var json = {
-                        "_token" : "<?php echo csrf_token(); ?>",
-                        "value" : newValue
-                    };
+            // $(".number_editable").editable({
+            //     type : 'number',
+            //     name: 'actual_amount',
+            //     title: $(this).data("title"),
+            //     emptytext: 'empty',
+            //     success: function(response, newValue) {
+            //         var cell = $(this).closest('.editable-amount');
+            //         var patientId = cell.data('patient-id');
+            //         var guaranteed_amount = cell.data('guaranteed-amount');
+            //         var actual_amount = cell.data('actual-amount');
+            //         var editableField = this;
+            //         var url = "{{ url('update/amount').'/' }}" + patientId + '/' + newValue;
+            //         var json = {
+            //             "_token" : "<?php echo csrf_token(); ?>",
+            //             "value" : newValue
+            //         };
 
-                    if(newValue == ''){
-                        Lobibox.alert('error',{
-                            size: 'mini',
-                            msg: "Actual amount accepts number only!"
-                        }); 
-                        $(editableField).text(actual_amount);
-                        $(editableField).value(actual_amount);
-                        cell.attr('data-actual-amount', actual_amount);
-                        // location.reload();
-                        return;  
-                    }
-                    var c_amount = newValue.replace(/,/g,'');
+            //         if(newValue == ''){
+            //             Lobibox.alert('error',{
+            //                 size: 'mini',
+            //                 msg: "Actual amount accepts number only!"
+            //             }); 
+            //             $(editableField).text(actual_amount);
+            //             $(editableField).value(actual_amount);
+            //             cell.attr('data-actual-amount', actual_amount);
+            //             // location.reload();
+            //             return;  
+            //         }
+            //         var c_amount = newValue.replace(/,/g,'');
 
-                    if(c_amount > guaranteed_amount){
-                        $(this).html(newValue);
-                        Lobibox.alert('error',{
-                            size: 'mini',
-                            msg: "Inputted actual amount if greater than guaranteed amount!"
-                        }); 
-                        cell.attr('data-actual-amount', actual_amount);
-                        $(editableField).text(actual_amount);
-                        $(editableField).value(actual_amount);
-                        // location.reload();
-                        return;           
-                    }
+            //         if(c_amount > guaranteed_amount){
+            //             $(this).html(newValue);
+            //             Lobibox.alert('error',{
+            //                 size: 'mini',
+            //                 msg: "Inputted actual amount if greater than guaranteed amount!"
+            //             }); 
+            //             cell.attr('data-actual-amount', actual_amount);
+            //             $(editableField).text(actual_amount);
+            //             $(editableField).value(actual_amount);
+            //             // location.reload();
+            //             return;           
+            //         }
 
-                    $.post(url, json, function(result){
-                        Lobibox.notify('success', {
-                            title: "",
-                            msg: "Successfully update actual amount!",
-                            size: 'mini',
-                            rounded: true
-                        });
-                        cell.attr('data-actual-amount', newValue);
-                        // location.reload();
-                    });
-                }
-            });
+            //         $.post(url, json, function(result){
+            //             Lobibox.notify('success', {
+            //                 title: "",
+            //                 msg: "Successfully update actual amount!",
+            //                 size: 'mini',
+            //                 rounded: true
+            //             });
+            //             cell.attr('data-actual-amount', newValue);
+            //             // location.reload();
+            //         });
+            //     }
+            // });
         }
 
         function initializeGroupFunctions() {

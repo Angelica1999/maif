@@ -298,6 +298,8 @@ Route::get('/sending-hold', [App\Http\Controllers\FacilityController::class, 'se
 Route::post('/sending-gl/hold', [App\Http\Controllers\FacilityController::class, 'holdSendFacility'])->name('hold.sending_gl');
 Route::get('fundsource_batches/{id}/proponentinfo-batch', [App\Http\Controllers\FundSourceController::class, 'getProponentInfoBatch'])->name('fundsource.proponents_batch');
 Route::get('fetch/pre-dv/fundsource/{facility_id}', [App\Http\Controllers\PreDvController::class, 'fetchPreFundsource'])->name('fetch.pre_dv-fundsource');
+Route::get('/expired-gl/update/{date}', [App\Http\Controllers\HomeController::class, 'updateDate'])->name('expired.update_date');
+Route::post('/returned-gl/delete-multiple', [App\Http\Controllers\HomeController::class, 'deleteReturned'])->name('returned.del_mul');
 
 Route::post('/notifications/register-tab', function (Illuminate\Http\Request $request) {
     $clientId = $request->client_id;

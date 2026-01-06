@@ -129,12 +129,21 @@ class PrintController extends Controller
             foreach($ids as $id){
                 $pat = Patients::where('id', $id)->first();
                 if($pat != null){
-                    if(in_array($pat->sent_type, [null, 1])){
+                    if(in_array($pat->sent_type, [null, 1, 5])){
                         if(in_array($pat->facility_id, $active_facility) && in_array($pat->facility_id, $onhold_facs)){
-                            Patients::where('id', $id)->update([
-                                'fc_status' => 'referred',
-                                'sent_type' => 3    
-                            ]); 
+
+                            if($pat->remember_token == "expired_1"){
+                                $pat->fc_status = "accepted";
+                                $pat->remember_token = null;
+                            }else{
+                                $pat->fc_status = "referred";
+                            }
+                            $pat->save();
+
+                            // Patients::where('id', $id)->update([
+                            //     'fc_status' => 'referred',
+                            //     'sent_type' => 3    
+                            // ]); 
 
                             $pat = Patients::with('proponentData:id,proponent')->where('id', $id)->first();
 
