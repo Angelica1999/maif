@@ -392,13 +392,13 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="fname">Middle Name</label>
+                                    <label for="mname">Middle Name</label>
                                     <input type="text" class="form-control mname" style="width:220px;" id="mname" name="mname" oninput="this.value = this.value.toUpperCase()" placeholder="Middle Name">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="lname">Date of Birth</label>
+                                    <label for="dob">Date of Birth</label>
                                     <input type="date" class="form-control dob" style="width:220px;" id="dob" name="dob" placeholder="Date of Birth">
                                 </div>
                             </div>
@@ -406,7 +406,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="fname">Region</label>
+                                    <label for="region">Region</label>
                                     <select class="js-example-basic-single region" autocomplete="off" style="width:220px;" id="region" onchange="othersRegion($(this));" name="region">
                                         <option value="">Please select region</option>
                                         <option value="Region 7">Region 7</option>
@@ -430,7 +430,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="lname">Province</label>
+                                    <label for="province_id">Province</label>
                                     <div id="province_body" class="province_body">
                                         <select class="js-example-basic-single province_id" style="width:220px;" id="province_id" name="province_id" onchange="onchangeProvince($(this))">
                                             <option value="">Please select province</option>
@@ -445,7 +445,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="lname">Municipality</label>
+                                    <label for="muncity_id">Municipality</label>
                                     <div id="muncity_body" class="muncity_body">
                                         <select class="js-example-basic-single muncity_id" style="width:220px;" id="muncity_id" name="muncity_id" onchange="onchangeMuncity($(this))">
                                             <option value="">Please select Municipality</option>
@@ -455,7 +455,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="lname">Barangay</label>
+                                    <label for="barangay_id">Barangay</label>
                                     <div id="barangay_body" class="barangay_body">
                                         <select class="js-example-basic-single barangay_id" style="width:220px;" id="barangay_id" name="barangay_id">
                                             <option value="">Please select Barangay</option>
@@ -467,7 +467,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="fname">Date of Guarantee Letter</label>
+                                    <label for="date_guarantee_letter">Date of Guarantee Letter</label>
                                     <input type="date" class="form-control date_guarantee_letter" style="width:220px;" id="date_guarantee_letter" name="date_guarantee_letter" placeholder="Date of Guarantee Letter" required>
                                 </div>
                             </div>
@@ -475,7 +475,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="fname">Facility</label>
+                                    <label for="facility_id">Facility</label>
                                     <select class="js-example-basic-single facility_id1" style="width:220px;" id="facility_id" name="facility_id" onchange="onchangeForProponent($(this))" required>
                                         <option value="">Please select Facility</option>
                                         @foreach($facilities as $facility)
@@ -486,7 +486,7 @@
                             </div> 
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="fname">Proponent</label>
+                                    <label for="proponent_id">Proponent</label>
                                     <select class="js-example-basic-single proponent_id1" style="width:220px;" id="proponent_id" name="proponent_id" onchange="onchangeForPatientCode($(this))" required>
                                         <option value="">Please select Proponent</option>
                                     </select>
@@ -507,13 +507,13 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="fname">Guaranteed Amount</label>
+                                    <label for="guaranteed_amount">Guaranteed Amount</label>
                                     <input type="text" class="form-control guaranteed_amount" id="guaranteed_amount" style="width:220px;" oninput="check()" onkeyup= "validateAmount(this)" name="guaranteed_amount" placeholder="Guaranteed Amount" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="fname">Remaining Balance</label>
+                                    <label for="remaining_balance">Remaining Balance</label>
                                     <input type="text" class="form-control remaining_balance" id="remaining_balance" style="width:220px;" name="remaining_balance" placeholder="Remaining Balance" readonly>
                                 </div>
                                 <div id="suggestions" class="suggestions"></div>
@@ -523,8 +523,16 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="fname">Remarks</label>
+                                    <label for="remarks">Remarks</label>
                                     <textarea type="text" class="form-control pat_rem" id="pat_rem" style="width:470px;" name="pat_rem" placeholder="Remarks"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="notes">Notes</label>
+                                    <textarea type="text" class="form-control notes" id="notes" style="width:470px;" name="notes" placeholder="..."></textarea>
                                 </div>
                             </div>
                         </div>
@@ -568,13 +576,13 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="fname">Middle Name</label>
+                                    <label for="mname">Middle Name</label>
                                     <input type="text" class="form-control mname" style="width:220px;" id="mname" name="mname" oninput="this.value = this.value.toUpperCase()" placeholder="Middle Name">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="lname">Date of Birth</label>
+                                    <label for="dob">Date of Birth</label>
                                     <input type="date" class="form-control dob" style="width:220px;" id="dob" name="dob" placeholder="Date of Birth">
                                 </div>
                             </div>
@@ -582,7 +590,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="fname">Region</label>
+                                    <label for="region">Region</label>
                                     <select class="js-example-basic-single region" autocomplete="off" style="width:220px;" id="region" onchange="othersRegion($(this));" name="region">
                                         <option value="">Please select region</option>
                                         <option value="Region 7">Region 7</option>
@@ -606,7 +614,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="lname">Province</label>
+                                    <label for="province_id">Province</label>
                                     <div id="province_body" class="province_body">
                                         <select class="js-example-basic-single province_id" style="width:220px;" id="province_id" name="province_id" onchange="onchangeProvince($(this))">
                                             <option value="">Please select province</option>
@@ -621,7 +629,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="lname">Municipality</label>
+                                    <label for="muncity_id">Municipality</label>
                                     <div id="muncity_body" class="muncity_body">
                                         <select class="js-example-basic-single muncity_id" style="width:220px;" id="muncity_id" name="muncity_id" onchange="onchangeMuncity($(this))">
                                             <option value="">Please select Municipality</option>
@@ -631,7 +639,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="lname">Barangay</label>
+                                    <label for="barangay_id">Barangay</label>
                                     <div id="barangay_body" class="barangay_body">
                                         <select class="js-example-basic-single barangay_id" style="width:220px;" id="barangay_id" name="barangay_id">
                                             <option value="">Please select Barangay</option>
@@ -643,7 +651,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="fname">Date of Guarantee Letter</label>
+                                    <label for="date_guarantee_letter">Date of Guarantee Letter</label>
                                     <input type="date" class="form-control date_guarantee_letter" style="width:220px;" id="date_guarantee_letter" name="date_guarantee_letter" placeholder="Date of Guarantee Letter" required>
                                 </div>
                             </div>
@@ -651,7 +659,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="fname">Facility</label>
+                                    <label for="facility_id">Facility</label>
                                     <select class="js-example-basic-single facility_id1" style="width:220px;" id="facility_id" name="facility_id" onchange="onchangeForProponent($(this))" required>
                                         <option value="">Please select Facility</option>
                                         @foreach($facilities as $facility)
@@ -662,7 +670,7 @@
                             </div> 
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="fname">Proponent</label>
+                                    <label for="proponent_id">Proponent</label>
                                     <select class="js-example-basic-single proponent_id1" style="width:220px;" id="proponent_id" name="proponent_id" onchange="onchangeForPatientCode($(this))" required>
                                         <option value="">Please select Proponent</option>
                                         @foreach($proponents as $pro)
@@ -686,19 +694,19 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="fname">Guaranteed Amount</label>
+                                    <label for="guaranteed_amount">Guaranteed Amount</label>
                                     <input type="text" class="form-control guaranteed_amount" id="guaranteed_amount" style="width:220px;" oninput="check()" onkeyup= "validateAmount(this)" name="guaranteed_amount" placeholder="Guaranteed Amount" required>
                                 </div>
                             </div>
                             <div class="col-md-6"  id="actl_amnt">
                                 <div class="form-group">
-                                    <label for="fname">Actual Amount</label>
+                                    <label for="actual_amount">Actual Amount</label>
                                     <input type="number" step="any" class="form-control actual_amount" id="actual_amount" name="actual_amount">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="fname">Remaining Balance</label>
+                                    <label for="remaining_balance">Remaining Balance</label>
                                     <input type="text" class="form-control remaining_balance" id="remaining_balance" style="width:220px;" name="remaining_balance" placeholder="Remaining Balance" readonly>
                                 </div>
                                 <div id="suggestions" class="suggestions"></div>
@@ -708,8 +716,16 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="fname">Remarks</label>
+                                    <label for="pat_rem">Remarks</label>
                                     <textarea type="text" class="form-control pat_rem" id="pat_rem" style="width:470px;" name="pat_rem" placeholder="Remarks"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="notes">Notes</label>
+                                    <textarea type="text" class="form-control notes" id="notes" style="width:470px;" name="notes" placeholder="..."></textarea>
                                 </div>
                             </div>
                         </div>
@@ -1453,6 +1469,7 @@
                 $('.fname').val(patient.fname);
                 $('.lname').val(patient.lname);
                 $('.mname').val(patient.mname);
+                $('.notes').text(patient.notes);
                 $('.dob').val(patient.dob);
                 $('.region').select2().val(patient.region).trigger('change');
                 if(patient.region == "Region 7"){
@@ -1531,6 +1548,7 @@
         $('.guaranteed_amount').prop('readonly', true);
         $('.actual_amount').prop('readonly', true);
         $('.pat_rem').prop('readonly', true);
+        $('.notes').prop('readonly', true);
     }
 
     function enabledInput(){
@@ -1540,6 +1558,7 @@
         $('.guaranteed_amount').prop('readonly', false);
         $('.actual_amount').prop('readonly', false);
         $('.pat_rem').prop('readonly', false);
+        $('.notes').prop('readonly', false);
     }
     
     var form_type = 'create';

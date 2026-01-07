@@ -1111,9 +1111,7 @@ class HomeController extends Controller
         $muncityIds = $basePatients->distinct()->pluck('muncity_id')->filter();
         $provinceIds = $basePatients->distinct()->pluck('province_id')->filter();
 
-        $includedIds = cache()->remember('included_facility_ids', 3600, function () {
-            return IncludedFacility::pluck('facility_id')->toArray();
-        });
+        $includedIds = IncludedFacility::pluck('facility_id')->toArray();
 
         $proponentsCode = cache()->remember('proponents_code', 3600, function () {
             return Proponent::groupBy('proponent_code')
@@ -2443,6 +2441,7 @@ class HomeController extends Controller
         $patient->actual_amount = $request->input('actual_amount');
         $patient->remaining_balance = $request->input('remaining_balance');
         $patient->pat_rem = $request->input('pat_rem');
+        $patient->notes = $request->input('notes');
         $patient->sent_type = $request->input('sent_type');
 
         $date = Carbon::parse($request->input('date_guarantee_letter'));
