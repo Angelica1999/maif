@@ -5,7 +5,29 @@
         border-bottom:1px solid black
     }
 </style>
-
+<div id="docViewerModal" class="doc-viewer-modal">
+    <span class="doc-viewer-close" onclick="closeDocViewer()">&times;</span>
+    <button class="doc-viewer-delete" title="Delete document (Del key)">
+            <i class="fas fa-trash-alt"></i> Delete
+        </button>
+    <div class="doc-viewer-container">
+        <div class="doc-viewer-nav doc-viewer-prev" onclick="changeDocument(-1)">
+            <i class="fas fa-chevron-left"></i>
+        </div>
+        <div class="doc-viewer-content" id="docViewerContent">
+            <div class="doc-viewer-loading">
+                <i class="fas fa-spinner"></i>
+            </div>
+        </div>
+        <div class="doc-viewer-nav doc-viewer-next" onclick="changeDocument(1)">
+            <i class="fas fa-chevron-right"></i>
+        </div>
+    </div>
+    <div class="doc-viewer-info">
+        <div class="doc-name" id="docViewerName">Document Name</div>
+        <div class="doc-counter" id="docViewerCounter">1 of 1</div>
+    </div>
+</div>
 <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true" >
     <div class="modal-dialog modal-sm" style="background-color: #17c964; color:white">
         <div class="modal-content">

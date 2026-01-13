@@ -68,10 +68,10 @@
 </style>
 <form  method="post" action="{{ route('pre_dv.process') }}" id ="new_form"> 
     @csrf   
-    <input type="hidden" name="id" value="{{$result->id}}">
-    <input type="hidden" name="extension_id" value="{{$result->id}}">
-    <input type="hidden" name="type" value="{{$type}}">
-    <input type="hidden" class="new_dv_id" name="new_dv_id" value="{{$new_dv?$new_dv->route_no :0}}">
+    <input type="hidden" name="id" value="{{ $result->id }}">
+    <input type="hidden" name="extension_id" value="{{ $result->id }}">
+    <input type="hidden" name="type" value="{{ $type }}">
+    <input type="hidden" class="new_dv_id" name="new_dv_id" value="{{ $new_dv?$new_dv->route_no :0 }}">
     <div class="clearfix"></div>
         <div class="new-times-roman table-responsive">
             <div class="container-fluid">
@@ -102,7 +102,7 @@
                                 <td width="25%">
                                     <span style="margin-bottom: 20px">Fund Cluster :</span><br>
                                     <span style="margin-top: 20px">Date: </span>
-                                    &nbsp;&nbsp;&nbsp;&nbsp;<input type="date" asp-for="Date" name="date" style="width: 150px; height: 28px; font-size:8pt" value="{{$new_dv?$new_dv->date :(new DateTime())->format('Y-m-d')}}" readonly>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<input type="date" asp-for="Date" name="date" style="width: 150px; height: 28px; font-size:8pt" value="{{ $new_dv?$new_dv->date :(new DateTime())->format('Y-m-d') }}" readonly>
                                     <br>
                                     <div>
                                         <span>DV No:  {{$new_dv->dv_no}}</span>
@@ -135,7 +135,7 @@
                                 <td height=4% width =11.8%><b> Payee</td>
                                 <td style="width:29%; border-left: 0 "><b> 
                                     <input type="hidden" id ="for_facility_id">
-                                    <input id="facilityDropdown" name="facilityname" value="{{$result->facility->name}}" style="margin-left:5px;width:260px;" class="form-control" readonly>
+                                    <input id="facilityDropdown" name="facilityname" value="{{ $result->facility->name }}" style="margin-left:5px;width:260px;" class="form-control" readonly>
                                 </td>
                                 <td style="width:28%; border-left: 0 " >
                                     <span>Tin/Employee No. :</span>
@@ -151,7 +151,7 @@
                                             &nbsp;<input class="form-control" type="date" asp-for="Obligated" name="obligated_on" style="width: 150px; height: 28px; font-size:8pt" value="{{$new_dv?$new_dv->obligated_on :(new DateTime())->format('Y-m-d')}}" required>
                                         </div>
                                     @else
-                                        <span>ORS/BURS No. : {{$new_dv->ors_no}}</span>
+                                        <span>ORS/BURS No. : {{ $new_dv->ors_no }}</span>
                                     @endif
                                 </td>
                             </tr>
@@ -466,7 +466,8 @@
                     @if( $type == 'awaiting')
                         <button type="submit" style="border-radius:0px" id="submitBtn" class="btn btn-sm btn-primary"><i class="typcn typcn-tick menu-icon"></i>Obligate</button>
                     @elseif( $type == 'deferred')
-                        <button type="submit" style="border-radius:0px" id="submitBtn" class="btn btn-sm btn-primary"><i class="typcn typcn-tick menu-icon"></i>Pay</button>
+                        <button type="submit" style="border-radius:0px;" id="submitBtn" class="btn btn-sm btn-primary"><i class="typcn typcn-tick menu-icon"></i>Pay</button>
+                        <button type="button" onclick="lddap('{{ $new_dv?$new_dv->route_no :0 }}')" style="border-radius:0px" id="submitBtn" class="btn btn-sm btn-success"><i class="fa fa-upload"></i>Upload</button>
                     @endif
                 </div>
             </div>

@@ -477,7 +477,8 @@ class PreDvController extends Controller
             'saas' => $saas,
             'facilities' => $facilities,
             'keyword' => $request->keyword,
-            'type' => $type
+            'type' => $type,
+            'user' => Auth::user()->userid
         ]);
     }
 
@@ -1527,7 +1528,8 @@ class PreDvController extends Controller
     public function fetchPreFundsource(Request $request){
         $currentYear = date("Y");
         $info = ProponentInfo::with(['facility:id,name', 'fundsource:id,saa', 'proponent:id,proponent,pro_group'])
-            ->whereYear('created_at', $currentYear)
+            // ->whereYear('created_at', $currentYear)
+            ->whereYear('created_at', '>=', $currentYear - 1)
             ->get();
         // ->orWhereRaw('CAST(REPLACE(remaining_balance, ",", "") AS DECIMAL(15,2)) > 0')
     

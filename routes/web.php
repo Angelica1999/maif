@@ -300,6 +300,10 @@ Route::get('fundsource_batches/{id}/proponentinfo-batch', [App\Http\Controllers\
 Route::get('fetch/pre-dv/fundsource/{facility_id}', [App\Http\Controllers\PreDvController::class, 'fetchPreFundsource'])->name('fetch.pre_dv-fundsource');
 Route::get('/expired-gl/update/{date}', [App\Http\Controllers\HomeController::class, 'updateDate'])->name('expired.update_date');
 Route::post('/returned-gl/delete-multiple', [App\Http\Controllers\HomeController::class, 'deleteReturned'])->name('returned.del_mul');
+Route::post('/documents/upload', [App\Http\Controllers\PrintController::class, 'uploadLDDAP'])->name('documents.upload');
+Route::get('/documents/{routeNo}', [App\Http\Controllers\PrintController::class, 'getDocumentsLDDAP'])->name('documents.get');
+Route::get('/documents/download/{filename}', [App\Http\Controllers\PrintController::class, 'downloadLDDAP'])->name('documents.download');
+Route::delete('/documents/delete/{filename}', [App\Http\Controllers\PrintController::class, 'deleteLDDAP'])->name('documents.delete');
 
 Route::post('/notifications/register-tab', function (Illuminate\Http\Request $request) {
     $clientId = $request->client_id;

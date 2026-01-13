@@ -524,7 +524,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="remarks">Remarks</label>
-                                    <textarea type="text" class="form-control pat_rem" id="pat_rem" style="width:470px;" name="pat_rem" placeholder="Remarks"></textarea>
+                                    <textarea type="text" class="form-control pat_rem" id="pat_rem" style="width:470px;" name="pat_rem" placeholder="Remarks" disabled></textarea>
                                 </div>
                             </div>
                         </div>
@@ -717,7 +717,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="pat_rem">Remarks</label>
-                                    <textarea type="text" class="form-control pat_rem" id="pat_rem" style="width:470px;" name="pat_rem" placeholder="Remarks"></textarea>
+                                    <textarea type="text" class="form-control pat_rem" id="pat_rem" style="width:470px;" name="pat_rem" placeholder="Remarks" disabled></textarea>
                                 </div>
                             </div>
                         </div>

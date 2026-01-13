@@ -44,16 +44,20 @@
                 @if(isset($disbursement) && $disbursement->count() > 0)
                     @foreach($disbursement as $dvs)
                         <tr> 
-                            <td>                 
-                                <button type="button" class="btn btn-xs col-sm-12" style="background-color:teal;color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$dvs->route_no}}" onclick="openModal()">
-                                    Track
+                            <td>      
+                                <button type="button"  class="btn btn-sm"  style="background: linear-gradient(135deg, #165A54 0%, #1a6e66 100%); width:80px; color: white;
+                                    border: none; border-radius: 6px; padding: 8px 16px; font-weight: 500; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(22, 90, 84, 0.2);"
+                                    data-toggle="modal" href="#iframeModal" data-routeId="{{ $dvs->route_no }}" id="track_load" onclick="openModal()"
+                                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(22, 90, 84, 0.3)';"
+                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(22, 90, 84, 0.2)';">
+                                    <i class="fa fa-map-marker" style="margin-right: 6px;"></i>Track
                                 </button>
                             </td>
                             <td> 
                                 @if($type == 'pending')
-                                    <a href="#obligate"  onclick="payDv('{{$dvs->route_no}}', 'obligate')" style="background-color:teal;color:white;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">{{ $dvs->route_no }}</a>
+                                    <a href="#obligate"  onclick="payDv('{{$dvs->route_no}}', 'obligate')" class="text-info" data-backdrop="static" data-toggle="modal">{{ $dvs->route_no }}</a>
                                 @else
-                                    <a href="#obligate"  onclick="payDv('{{$dvs->route_no}}', 'view')" style="background-color:teal;color:white;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">{{ $dvs->route_no }}</a>
+                                    <a href="#obligate"  onclick="payDv('{{$dvs->route_no}}', 'view')" class="text-info" data-backdrop="static" data-toggle="modal">{{ $dvs->route_no }}</a>
                                 @endif
                             </td> 
                             <td>{{ $dvs->facility->name }}</td> 

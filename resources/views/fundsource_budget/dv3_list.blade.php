@@ -22,9 +22,17 @@
                     </div>
                 </div>
                 <input type="hidden" class="all_route" id="all_route" name="all_route">
-
-            </form>
-            <h4 class="card-title">DISBURSEMENT VERSION V3</h4>
+            </form> 
+            <h4 class="card-title">
+                DISBURSEMENT VOUCHER (V3)
+                {{
+                    ($type == 'unsettled' || $type == 'dv3_owed')
+                        ? ' : PENDING'
+                        : ($type == 'processed'
+                            ? ' : OBLIGATED'
+                            : ' : PAID')
+                }}
+            </h4>
             <p class="card-description">
                 MAIF-IPP
             </p>
@@ -34,7 +42,7 @@
                     <thead>
                         <tr>
                             <th>Tracking</th>
-                            <th style="min-width:90px;">Route_No</th>
+                            <th style="min-width:170px;">Route_No</th>
                             <th>Remarks</th>
                             <th>Facility</th>
                             <th style="min-width:150px;">SAA</th>
@@ -49,7 +57,13 @@
                         @foreach($dv3 as $index=> $row)
                             <tr>
                                 <td>
-                                    <button type="button" class="btn btn-xs col-sm-12" style="background-color:#165A54;color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$row->route_no}}" id="track_load" onclick="openModal()">Track</button>
+                                    <button type="button"  class="btn btn-sm"  style="background: linear-gradient(135deg, #165A54 0%, #1a6e66 100%); width:80px; color: white;
+                                        border: none; border-radius: 6px; padding: 8px 16px; font-weight: 500; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(22, 90, 84, 0.2);"
+                                        data-toggle="modal" href="#iframeModal" data-routeId="{{ $row->route_no }}" id="track_load" onclick="openModal()"
+                                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(22, 90, 84, 0.3)';"
+                                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(22, 90, 84, 0.2)';">
+                                        <i class="fa fa-map-marker" style="margin-right: 6px;"></i>Track
+                                    </button>
                                 </td>
                                 <td>
                                     <?php
@@ -64,7 +78,7 @@
                                             $doc_id= 0;
                                         }
                                     ?>
-                                    <a data-dvId="{{$row->id}}" onclick="updateDv3('{{$row->route_no}}')" style="background-color:teal;color:white;width:90px;" type="button" class="btn btn-xs" data-backdrop="static" data-toggle="modal">{{ $row->route_no }}</a>
+                                    <a data-dvId="{{$row->id}}" onclick="updateDv3('{{ $row->route_no}} ')" class="text-info" data-backdrop="static" data-toggle="modal">{{ $row->route_no }}</a>
                                 </td>
                                 <td>
                                     @if($row->remarks == 0)
@@ -117,14 +131,13 @@
         </div>
     </div>
 </div>
-
-@endsection
 @include('modal')
+@endsection
 @section('js')
 <script>
 
     var doc_type = @json($type);
-
+    $('#docViewerModal').hide();
     $('.filter-division').select2();
     $('.filter-section').select2();
 

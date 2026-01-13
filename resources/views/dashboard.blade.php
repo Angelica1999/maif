@@ -405,7 +405,7 @@
                 });
 
                 setTimeout(function() {
-                    window.location.href = "dashboard";
+                    // window.location.href = "dashboard";
                 }, 1500);
             }
 

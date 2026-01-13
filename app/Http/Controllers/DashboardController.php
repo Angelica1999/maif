@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 use App\Models\Fundsource;
 use App\Models\Utilization;
 use App\Models\Proponent;
@@ -25,11 +27,16 @@ class DashboardController extends Controller{
         $utilization = Utilization::where('status', 0)
         ->selectRaw('
             IFNULL(SUM(CAST(REPLACE(utilize_amount, ",", "") AS DECIMAL(10,2))), 0) as total_utilize,
-            IFNULL(SUM(CASE WHEN obligated = 1 THEN CAST(REPLACE(utilize_amount, ",", "") AS DECIMAL(10,2)) ELSE 0 END), 0) as total_obligated,
+            IFNULL(SUM(CASE WHEN paid is null and obligated = 1 THEN CAST(REPLACE(utilize_amount, ",", "") AS DECIMAL(10,2)) ELSE 0 END), 0) as total_obligated,
             IFNULL(SUM(CASE WHEN paid = 1 THEN CAST(REPLACE(utilize_amount, ",", "") AS DECIMAL(10,2)) ELSE 0 END), 0) as total_paid,
             IFNULL(SUM(CASE WHEN obligated IS NULL AND paid IS NULL THEN CAST(REPLACE(utilize_amount, ",", "") AS DECIMAL(10,2)) ELSE 0 END), 0) as total_pending
         ')
-        ->first();    
+        ->first();  
+        
+        // if(Auth::user()->userid == "2760"){
+        //     return $utilization;
+        // }
+
 
         $total_amount = $funds->total_amount ?? 0;
         $total_cost = $funds->total_cost ?? 0;

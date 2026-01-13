@@ -5,6 +5,7 @@ use App\Models\Patients;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Dv;
+use App\Models\Utilization;
 use App\Models\MailHistory;
 use App\Models\AddFacilityInfo;
 use App\Models\Dv2;
@@ -17,6 +18,12 @@ use App\Models\Proponent;
 use App\Models\Dv3;
 use App\Models\ProponentInfo;
 use App\Models\Dv3Fundsource;
+use App\Models\Transmittal;
+use App\Models\PreDV;
+use App\Models\PreDVControl;
+use App\Models\PreDVSAA;
+use App\Models\PreDVExtension;
+use App\Models\NewDV;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PdfEmail;
 use Illuminate\Support\Facades\DB;
@@ -27,20 +34,12 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\File;
 use \Mpdf\Mpdf;
 use DNS1D;
-
-// use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-
-// use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Illuminate\Support\Facades\Image;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
-use App\Models\PreDV;
-use App\Models\PreDVControl;
-use App\Models\PreDVSAA;
-use App\Models\PreDVExtension;
-use App\Models\NewDV;
 use PDF;
 
 use App\Jobs\SendMultipleEmails;
@@ -138,6 +137,7 @@ class PrintController extends Controller
                             }else{
                                 $pat->fc_status = "referred";
                             }
+                            $pat->sent_type = 3;
                             $pat->save();
 
                             // Patients::where('id', $id)->update([
@@ -694,18 +694,20 @@ class PrintController extends Controller
                 'result' => $pre_dv
             ];
 
-            $height = 600;
+            $height = 842;
             $width = 500;
-            foreach($pre_dv->extension as $row){
-                foreach($row->controls as $row1){
-                    $height = $height + 165;
-                    $width = $width + 20;
-                }
-                foreach($row->saas as $row2){
-                    $height = $height + 30;
-                    $width = $width + 5;
-                }
+            
+            foreach($pre_dv->extension as $row) {
+                $controlsCount = count($row->controls);
+                $saasCount = count($row->saas);
+                $allCount = count($pre_dv->extension);
+
+                $height += $controlsCount * 145 + $saasCount * 50;
+                $width += $controlsCount * 20 + $saasCount * 5;
             }
+
+            // $height = $height + + ($allCount > 20 ? $allCount * 1.5 : 0);
+
             $pdf = PDF::loadView('pre_dv.pre_pdf', $data);
             // $pdf->setPaper('Folio');
             $pdf->setPaper([0, 0, 595.28, $height]); 
@@ -838,6 +840,155 @@ class PrintController extends Controller
             $pdf->setPaper('Folio');
             return $pdf->stream('dv.pdf');
         }
+    }
+
+    public function uploadLDDAP(Request $request)
+    {
+        try {
+            $request->validate([
+                'documents.*' => 'required|file|mimes:pdf,jpg,jpeg,png|max:10240',
+                'route_no' => 'required|string'
+            ]);
+
+            $routeNo = $request->route_no;
+            $uploadedFiles = [];
+            $errors = [];
+
+            $targetDir = 'C:/Apache24/htdocs/guaranteeletter/storage/app/LDDAP/';
+            
+            if (!is_dir($targetDir)) {
+                mkdir($targetDir, 0777, true);
+            }
+
+            if ($request->hasFile('documents')) {
+                foreach ($request->file('documents') as $file) {
+                    $originalName = $file->getClientOriginalName();
+                    $extension = $file->getClientOriginalExtension();
+                    $baseFilename = pathinfo($originalName, PATHINFO_FILENAME);
+                    
+                    $newFilename = $routeNo . '_' . $baseFilename . '.' . $extension;
+                    
+                    try {
+                        $file->move($targetDir, $newFilename);
+                        $uploadedFiles[] = $newFilename;
+                    } catch (\Exception $e) {
+                        $errors[] = $originalName . ' - Failed to save';
+                    }
+                }
+            }
+
+            if (count($uploadedFiles) > 0) {
+                return response()->json([
+                    'success' => true,
+                    'message' => count($uploadedFiles) . ' file(s) uploaded successfully.',
+                    'files' => $uploadedFiles,
+                    'errors' => $errors
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'LDDAP files were not uploaded. Errors: ' . implode(', ', $errors)
+                ], 400);
+            }
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getDocumentsLDDAP($routeNo)
+    {
+        $dir = 'C:/Apache24/htdocs/guaranteeletter/storage/app/LDDAP/';
+        $files = glob($dir . $routeNo . '_*');
+        
+        $documents = [];
+        foreach ($files as $filePath) {
+            $filename = basename($filePath);
+            $documents[] = [
+                'filename' => $filename,
+                'display_name' => str_replace($routeNo . '_', '', $filename),
+                'size' => filesize($filePath),
+                'size_formatted' => $this->formatBytes(filesize($filePath)),
+                'extension' => pathinfo($filePath, PATHINFO_EXTENSION),
+                'url' => url('documents/download/' . $filename)
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'route_no' => $routeNo,
+            'count' => count($documents),
+            'documents' => $documents
+        ]);
+    }
+
+    /**
+     * Download/view a document
+     */
+    public function downloadLDDAP($filename)
+    {
+        $dir = 'C:/Apache24/htdocs/guaranteeletter/storage/app/LDDAP/';
+        
+        // Security: Prevent directory traversal
+        $filename = basename($filename);
+        $filePath = $dir . $filename;
+
+        // Check if file exists
+        if (!file_exists($filePath)) {
+            abort(404, 'File not found');
+        }
+
+        // Return file response
+        return response()->file($filePath);
+    }
+
+    /**
+     * Delete a document
+     */
+    public function deleteLDDAP($filename)
+    {
+        try {
+            $dir = 'C:/Apache24/htdocs/guaranteeletter/storage/app/LDDAP/';
+            $filename = basename($filename);
+            $filePath = $dir . $filename;
+
+            if (!file_exists($filePath)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'File not found'
+                ], 404);
+            }
+
+            unlink($filePath);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'File deleted successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Helper: Format bytes to human readable
+     */
+    private function formatBytes($bytes, $precision = 2)
+    {
+        $units = ['B', 'KB', 'MB', 'GB'];
+        $bytes = max($bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
+        $bytes /= pow(1024, $pow);
+        
+        return round($bytes, $precision) . ' ' . $units[$pow];
     }
     
 }
