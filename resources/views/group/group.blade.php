@@ -82,7 +82,6 @@
         </div>
     </div>
 </div>
-
 @include('modal')
 @endsection
 @section('js')

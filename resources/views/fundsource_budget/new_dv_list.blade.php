@@ -678,7 +678,7 @@ use App\Models\TrackingDetails;
                     openDocViewer(response.documents, 0);
                 } else {
                     Swal.fire({
-                        icon: 'Error',
+                        icon: 'error',
                         title: 'No LDDAP Found!',
                         text: 'No documents found for this route.',
                         showConfirmButton: false,
