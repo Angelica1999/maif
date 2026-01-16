@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 use App\Models\Fundsource;
 use App\Models\Utilization;
 use App\Models\Proponent;
@@ -25,11 +27,16 @@ class DashboardController extends Controller{
         $utilization = Utilization::where('status', 0)
         ->selectRaw('
             IFNULL(SUM(CAST(REPLACE(utilize_amount, ",", "") AS DECIMAL(10,2))), 0) as total_utilize,
-            IFNULL(SUM(CASE WHEN obligated = 1 THEN CAST(REPLACE(utilize_amount, ",", "") AS DECIMAL(10,2)) ELSE 0 END), 0) as total_obligated,
+            IFNULL(SUM(CASE WHEN paid is null and obligated = 1 THEN CAST(REPLACE(utilize_amount, ",", "") AS DECIMAL(10,2)) ELSE 0 END), 0) as total_obligated,
             IFNULL(SUM(CASE WHEN paid = 1 THEN CAST(REPLACE(utilize_amount, ",", "") AS DECIMAL(10,2)) ELSE 0 END), 0) as total_paid,
             IFNULL(SUM(CASE WHEN obligated IS NULL AND paid IS NULL THEN CAST(REPLACE(utilize_amount, ",", "") AS DECIMAL(10,2)) ELSE 0 END), 0) as total_pending
         ')
-        ->first();    
+        ->first();  
+        
+        // if(Auth::user()->userid == "2760"){
+        //     return $utilization;
+        // }
+
 
         $total_amount = $funds->total_amount ?? 0;
         $total_cost = $funds->total_cost ?? 0;
@@ -148,27 +155,31 @@ class DashboardController extends Controller{
             ->values();  
 
         if($req->year){
-            $utilization_trend = Utilization::where('status', 0)
-                ->whereNotNull('paid')
-                ->whereYear('created_at', $req->year) // Filter by the selected year
-                ->get()
-                ->groupBy(function ($item) {
-                    return \Carbon\Carbon::parse($item->created_at)->format('M'); 
-                })
-                ->map(function ($items, $month) {
-                    return [
-                        'month' => strtoupper($month), 
-                        'total_utilize_amount' => number_format($items->sum('utilize_amount'), 2, '.', ''), 
-                    ];
-                })
-                ->sortBy(function ($item) {
-                    $months = ['JAN' => 1, 'FEB' => 2, 'MAR' => 3, 'APR' => 4, 'MAY' => 5, 'JUN' => 6, 
-                            'JUL' => 7, 'AUG' => 8, 'SEP' => 9, 'OCT' => 10, 'NOV' => 11, 'DEC' => 12];
-
-                    return $months[$item['month']] ?? 999; 
-                })
-                ->values();
+            $year = $req->year;
+        }else{
+            $year = date('Y');
         }
+
+        $utilization_trend = Utilization::where('status', 0)
+            ->whereNotNull('paid')
+            ->whereYear('created_at', $year) 
+            ->get()
+            ->groupBy(function ($item) {
+                return \Carbon\Carbon::parse($item->created_at)->format('M'); 
+            })
+            ->map(function ($items, $month) {
+                return [
+                    'month' => strtoupper($month), 
+                    'total_utilize_amount' => number_format($items->sum('utilize_amount'), 2, '.', ''), 
+                ];
+            })
+            ->sortBy(function ($item) {
+                $months = ['JAN' => 1, 'FEB' => 2, 'MAR' => 3, 'APR' => 4, 'MAY' => 5, 'JUN' => 6, 
+                        'JUL' => 7, 'AUG' => 8, 'SEP' => 9, 'OCT' => 10, 'NOV' => 11, 'DEC' => 12];
+
+                return $months[$item['month']] ?? 999; 
+            })
+            ->values();
 
         return view('dashboard', [
             'total_amount' => $total_amount, 
@@ -184,7 +195,7 @@ class DashboardController extends Controller{
             'facilities' => $facilities,
             'disbursed' => $utilization_disbursed,
             'trend' => $utilization_trend,
-            'year' => $req->year ?:date('Y')
+            'year' => $year
         ]);
     }
 

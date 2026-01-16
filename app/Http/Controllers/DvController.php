@@ -244,13 +244,16 @@ class DvController extends Controller
             ->where(function ($query) use ($request, $currentYear) {
                 $query->where(function ($q) use ($currentYear) {
                     $q->whereJsonContains('proponent_info.facility_id', '702')
-                    ->whereYear('created_at', $currentYear);
+                    // ->whereYear('created_at', $currentYear);
+                    ->whereYear('created_at', '>=', $currentYear - 1);
                 })->orWhereJsonContains('proponent_info.facility_id', [$request->facility_id]);
             })
-            ->whereYear('created_at', $currentYear) // Ensures filtering by year for all conditions
+            // ->whereYear('created_at', $currentYear) // Ensures filtering by year for all conditions
+            ->whereYear('created_at', '>=', $currentYear - 1)
             ->orWhere(function ($query) use ($request, $currentYear) {
                 $query->whereIn('proponent_info.facility_id', [$request->facility_id, '702'])
-                    ->whereYear('created_at', $currentYear);
+                    // ->whereYear('created_at', $currentYear);
+                    ->whereYear('created_at', '>=', $currentYear - 1);
             })
             ->get();
 

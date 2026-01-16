@@ -68,15 +68,10 @@
                                 <td>{{ $row->patient_code }}</td>
                                 <td>{{ $row->lname .', '.$row->fname.' '.$row->mname }}</td>
                                 <td>
-                                    @if($row->expired != 1)
-                                        {{ $row->actual_amount 
-                                            ? number_format((float)str_replace(',', '', $row->actual_amount), 2, '.', ',') 
-                                            : number_format((float)str_replace(',', '', $row->guaranteed_amount), 2, '.', ',') 
-                                        }}
-
-                                    @else
-                                        0
-                                    @endif    
+                                    {{ $row->actual_amount 
+                                        ? number_format((float)str_replace(',', '', $row->actual_amount), 2, '.', ',') 
+                                        : number_format((float)str_replace(',', '', $row->guaranteed_amount), 2, '.', ',') 
+                                    }}  
                                 </td>
                                 <td>{{ $row->facility->name }}</td>
                                 <td>{{ $row->encoded_by ? $row->encoded_by->lname.', '.$row->encoded_by->fname : 

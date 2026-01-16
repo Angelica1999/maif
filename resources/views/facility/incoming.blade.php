@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
 <style>
-   .table th {
+    .table th {
         position: sticky; 
         top: 0; 
         z-index: 2; 
@@ -11,6 +11,20 @@
     #details_table {
         max-height: 500px; 
         overflow-y: auto; 
+    }
+    .select2-container--default .select2-selection--single {
+        border: none !important;
+        box-shadow: none !important;
+        background-color: transparent;
+    }
+
+    .select2-container--default .select2-selection--single:focus {
+        outline: none !important;
+    }
+
+    .select2-dropdown {
+        border: none !important;
+        box-shadow: none !important;
     }
 </style>
 <div class="container-fluid col-lg-12 grid-margin stretch-card">
@@ -25,6 +39,8 @@
                         <button type="button" href="#logbook" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Receive</button>
                     </div>
                 </div>
+                <button id="filter_btn" name="facility_data[]" class="btn btn-sm btn-info" type="submit" style="display:none;"></button>
+                <button id="status_btn" name="status_data[]" class="btn btn-sm btn-info" type="submit" style="display:none;"></button>
             </form>
             <h1 class="card-title">TRANSMITTAL : INCOMING</h1>
             <p class="card-description">
@@ -36,13 +52,28 @@
                         <thead>
                             <tr>
                                 <th style="width:150px"></th>
-                                <th style="min-width:120px;">Control No</th>
-                                <th>Facility</th>
-                                <th>Status</th>
-                                <th style="min-width:120px;">Prepared Date</th>
-                                <th style="min-width:120px;">Total Amount</th>
-                                <th style="min-width:120px;">Created On</th>
-                                <th style="min-width:120px;">Created By</th>
+                                <th style="min-width:120px;">Control No @sortablelink('control', '⇅')</th>
+                                <th style="min-width:250px;">
+                                    <select id="facility_filter" class="select2" style="width: 200px; border: none; background: transparent; display:none" multiple>
+                                        <option value="">Facility</option>
+                                        @foreach($facilities as $facility)
+                                            <option value="{{ $facility->id }}" {{ in_array((int) $facility->id, array_map('intval', $facs)) ? 'selected' : '' }}>{{ $facility->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @sortablelink('name', '⇅')
+                                </th>
+                                <th style="min-width:150px;">
+                                    <select id="status_filter" class="select2" style="width: 100px; border: none; background: transparent; display:none" multiple>
+                                        <option value="">Status</option>
+                                        <option value="1" {{ in_array(1, array_map('intval', $status)) ? 'selected' : '' }}>In transit to MPU</option>
+                                        <option value="2" {{ in_array(2, array_map('intval', $status)) ? 'selected' : '' }}>Received by MPU</option>
+                                    </select> 
+                                    @sortablelink('remarks', '⇅')
+                                </th>
+                                <th style="min-width:160px;">Prepared Date @sortablelink('prepared', '⇅')</th>
+                                <th style="min-width:150px;">Total Amount @sortablelink('total', '⇅')</th>
+                                <th style="min-width:120px;">Created On @sortablelink('on', '⇅')</th>
+                                <th style="min-width:120px;">Created By @sortablelink('by', '⇅')</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -83,6 +114,16 @@
                     <strong>No bills found!</strong>
                 </div>
             @endif
+            @error('trans_files.*')
+                <div class="alert alert-danger">{{ $message }}</div>
+            @enderror
+            <div class="pl-5 pr-5 mt-5 alert alert-info" role="alert" style="width: 100%; margin-top:5px;">
+                <strong>Total # of Patients: {{  number_format($patients, 2,'.',',') }}</strong>
+                <strong style="margin-left: 20px;">|</strong>
+                <strong style="margin-left: 20px;">Total No. of transmittals: {{  number_format($total, 2,'.',',') }}</strong>
+                <strong style="margin-left: 20px;">|</strong>
+                <strong style="margin-left: 20px;">Total Amount: {{  number_format($amount, 2,'.',',') }}</strong>
+            </div>
             <div class="pl-5 pr-5 mt-5" id ="pagination_links">
                 {!! $transmittal->appends(request()->query())->links('pagination::bootstrap-5') !!}
             </div>
@@ -189,7 +230,47 @@
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
 
 <script>
+    $(document).ready(function() {
+        $('.fa-sort').hide();
+        $('#facility_filter').select2({
+            placeholder: 'Facility',
+            allowClear: true,
+            width: 'resolve',
+            dropdownAutoWidth: true
+        });
 
+        $('#facility_filter').next('.select2').find('.select2-selection').css({
+            'border': 'none',
+            'background': 'transparent',
+            'height': 'auto',
+            'min-height': '0',
+            'padding': '0px'
+        });
+        $('#facility_filter').on('change', function() {
+            $('#filter_btn').val(JSON.stringify($(this).val()));
+            $('#filter_btn').click();
+        });
+
+        //
+        $('#status_filter').select2({
+            placeholder: 'Status',
+            allowClear: true,
+            width: 'resolve',
+            dropdownAutoWidth: true
+        });
+
+        $('#status_filter').next('.select2').find('.select2-selection').css({
+            'border': 'none',
+            'background': 'transparent',
+            'height': 'auto',
+            'min-height': '0',
+            'padding': '0px'
+        });
+        $('#status_filter').on('change', function() {
+            $('#status_btn').val(JSON.stringify($(this).val()));
+            $('#status_btn').click();
+        });
+    });
     $('.control_no').select2({
         tags: true,
     });

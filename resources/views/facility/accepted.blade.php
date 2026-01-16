@@ -52,7 +52,7 @@
                         <thead>
                             <tr>
                                 <th></th>
-                                <th style="min-width:120px;">Control No</th>
+                                <th style="min-width:120px;">Control No @sortablelink('control', '⇅')</th>
                                 <th style="min-width:150px;">
                                     <select id="status_filter" class="select2" style="width: 100px; border: none; background: transparent; display:none" multiple>
                                         <option value="">Status</option>
@@ -72,10 +72,10 @@
                                     </select>
                                     @sortablelink('name', '⇅')
                                 </th>
-                                <th style="min-width:120px;">Prepared Date</th>
-                                <th style="min-width:120px;">Total Amount</th>
-                                <th style="min-width:120px;">Created On</th>
-                                <th style="min-width:120px;">Created By</th>
+                                <th style="min-width:160px;">Prepared Date @sortablelink('prepared', '⇅')</th>
+                                <th style="min-width:150px;">Total Amount @sortablelink('total', '⇅')</th>
+                                <th style="min-width:120px;">Created On @sortablelink('on', '⇅')</th>
+                                <th style="min-width:120px;">Created By @sortablelink('by', '⇅')</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -126,7 +126,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="summary_display" role="dialog" style="overflow-y:scroll;">
     <div class="modal-dialog modal-lg" role="document" style="width:900px">
         <div class="modal-content" style="border-radius:0px">
@@ -139,7 +138,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="trans_tracking" role="dialog" style="overflow-y:scroll;">
     <div class="modal-dialog modal-lg" role="document" style="width:300px; height:500px">
         <div class="modal-content" style="border-radius:0px">
@@ -151,7 +149,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="return" role="dialog" style="overflow-y:scroll;">
     <div class="modal-dialog modal-md" role="document">
         <div class="modal-content" style="border-radius:0px">
@@ -169,7 +166,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="trans_remarks" role="dialog" style="overflow-y:scroll;">
     <div class="modal-dialog modal-md" role="document">
         <div class="modal-content" style="border-radius:0px">
@@ -202,7 +198,7 @@
 @section('js')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-   $(document).ready(function() {
+    $(document).ready(function() {
         $('.fa-sort').hide();
         $('#facility_filter').select2({
             placeholder: 'Facility',

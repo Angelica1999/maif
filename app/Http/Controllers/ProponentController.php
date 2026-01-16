@@ -1039,6 +1039,7 @@ class ProponentController extends Controller
         $sheet->getColumnDimension('G')->setWidth(30); 
         $sheet->getColumnDimension('H')->setWidth(20);  
         $sheet->getColumnDimension('I')->setWidth(50);  
+        $sheet->getColumnDimension('J')->setWidth(50);  
 
         $sheet->mergeCells("B1:D1");
         $richText1 = new RichText();
@@ -1096,7 +1097,13 @@ class ProponentController extends Controller
         $sheet->setCellValue('I3', $richText1);
         $sheet->getStyle('I3')->getAlignment()->setWrapText(true);
 
-        $sheet->getStyle('B3:I3')
+        $richText1 = new RichText();
+        $normalText = $richText1->createTextRun("NOTES");
+        $normalText->getFont()->setBold(true); 
+        $sheet->setCellValue('J3', $richText1);
+        $sheet->getStyle('J3')->getAlignment()->setWrapText(true);
+
+        $sheet->getStyle('B3:J3')
             ->getAlignment()
             ->setHorizontal(Alignment::HORIZONTAL_CENTER)
             ->setVertical(Alignment::VERTICAL_CENTER);
@@ -1121,7 +1128,8 @@ class ProponentController extends Controller
                     $facility,
                     $user,
                     $on,
-                    $row->pat_rem
+                    $row->pat_rem,
+                    $row->notes
                 ];
             }
         }else{
@@ -1150,8 +1158,8 @@ class ProponentController extends Controller
             ],
         ];
         
-        $sheet->getStyle('B3:I' . (count($data) + 3))->applyFromArray($styleArray);
-        $sheet->getStyle('B4:I' . (count($data) + 3))->getAlignment()->setWrapText(true);
+        $sheet->getStyle('B3:J' . (count($data) + 3))->applyFromArray($styleArray);
+        $sheet->getStyle('B4:J' . (count($data) + 3))->getAlignment()->setWrapText(true);
 
         $sheet->getStyle('B4:C' . (count($data) + 3))
             ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);

@@ -963,9 +963,11 @@ class FundSourceController extends Controller
 
       
         // $balance = ($info_sum + $supplemental) - ($subtracted + $pat_sum) ;
+        $timestamp = str_replace('.', '', microtime(true));
+        $random = mt_rand(100, 999);
 
         $facility = Facility::find($facility_id);
-        $patient_code = $proponent->proponent_code.'-'.$this->getAcronym($facility->name).date('YmdHis').$user->id;
+        $patient_code = $proponent->proponent_code.'-'.$this->getAcronym($facility->name).$timestamp.$random.$user->id;
         $total = ProponentInfo::whereIn('proponent_id', $proponent_ids)
                 ->sum(DB::raw('CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(10,2)) - CAST(REPLACE(admin_cost, ",", "") AS DECIMAL(10,2))'));
 

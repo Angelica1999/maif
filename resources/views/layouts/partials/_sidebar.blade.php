@@ -251,21 +251,36 @@
                             </a>
                             <ul class="nav flex-column sub-menu">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('home') }}">
-                                        <img src="\maif\public\images\letter_16.png" style="margin-right:12px">
-                                        <span class="menu-title">GL Lists</span>
+                                    <a class="nav-link" href="{{ route('home') }}" style="display: flex; align-items: center; justify-content: space-between;">
+                                        <span style="display: flex; align-items: center; font-size:13.5px">
+                                            <span style="" class="menu-title">📑 &nbsp;&nbsp;GL Lists</span>
+                                        </span>
+                                        <span style="display: flex; align-items: center; ">
+                                            <span class="badge gl_lists" style="font-size: 0.8rem; padding: 0.15rem 0.4rem; border-radius: 8px; background-color: deepskyblue; color: white;"></span>
+                                            <span class="caret"></span>
+                                        </span>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('returned.patients') }}">
-                                        <img src="\maif\public\images\letter_16.png" style="margin-right:12px">
-                                        <span class="menu-title">Returned</span>
+                                    <a class="nav-link" href="{{ route('returned.patients') }}" style="display: flex; align-items: center; justify-content: space-between;">
+                                        <span style="display: flex; align-items: center; font-size:13.5px">
+                                        <span style="" class="menu-title"><img src="\maif\public\images\letter_16.png" style="margin-right:12px">Returned</span>
+                                        </span>
+                                        <span style="display: flex; align-items: center; ">
+                                            <span class="badge returned_lists" style="font-size: 0.8rem; padding: 0.15rem 0.4rem; border-radius: 8px; background-color: #dc3545; color: white;"></span>
+                                            <span class="caret"></span>
+                                        </span>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('expired.patients') }}">
-                                        <img src="\maif\public\images\hos_letter_16.png" style="margin-right:12px">
-                                        <span class="menu-title">Expired</span>
+                                    <a class="nav-link" href="{{ route('expired.patients') }}" style="display: flex; align-items: center; justify-content: space-between;">
+                                        <span style="display: flex; align-items: center; font-size:13.5px">
+                                        <span style="" class="menu-title"><img src="\maif\public\images\hos_letter_16.png" style="margin-right:12px">Expired</span>
+                                        </span>
+                                        <span style="display: flex; align-items: center; ">
+                                            <span class="badge expired_lists" style="font-size: 0.8rem; padding: 0.15rem 0.4rem; border-radius: 8px; background-color: #ffc107; color: black;"></span>
+                                            <span class="caret"></span>
+                                        </span>
                                     </a>
                                 </li>
                             </ul>
@@ -587,19 +602,19 @@
         @endif
         <br>
         <li class="nav-item">
-            <label for="sidebar-note" style="display: flex; align-items: center;">
+            <div class="text-info" style="display: flex; align-items: center; margin-left:10px">
                 Note(s):
                 <a href="#" data-toggle="modal" data-target="#new_note">
                     <i class="typcn typcn-plus menu-icon"></i>                
                 </a>
-            </label>
-            <label style="color:gray">#Legend:
+            </div>
+            <div style="color:gray; margin-left:10px; color:gray">#Legend:
                 <br>
                 <small style="margin-left:20px">
                     <i style="color:green" class="typcn typcn-media-record menu-icon"></i> DONE
                     <i style="color:blue" class="typcn typcn-media-record-outline menu-icon"></i>  IN-PROGRESS
                 </small>
-            </label>
+            </div>
             @foreach($notes as $note)
                 @if($note->status == 0)
                     <div class="sidebar-note">

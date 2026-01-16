@@ -54,7 +54,7 @@
         box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4); 
     }
     .set_width {
-        width: 100px;
+        width: 95px;
         border-radius: 0;
     }
 </style>
@@ -71,14 +71,15 @@
                             <input type="hidden" class="form-control" name="key">
                             <input type="text" class="form-control" name="keyword" id="search_patient" placeholder="Search..." value="{{ $keyword }}" style="width:400px;">
                             <div class="input-group-append">
-                                <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
+                                <button class="btn btn-sm btn-info set_width" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
                                 <button class="btn btn-sm btn-warning text-white set_width" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
                                 <button type="submit" value="filt" style="display:none; background-color:00563B; color:white;" name="filter_col" id="filter_col" class="btn btn-md set_width"><i class="typcn typcn-filter menu-icon"></i>Filter</button>
                             </div>  
                         </div>
                         <div class="input-group">
                             <input type="text" style="text-align:center" class="form-control" id="filter_dates" value="{{ ($generate_dates)?$generate_dates:'' }}" name="filter_dates" />
-                            <button type="submit" id="gen_btn" style="background-color:teal; color:white; border-radius:0; " class="btn set_width"><i class="typcn typcn-calendar-outline menu-icon"></i>Range</button>
+                            <button type="submit" id="gen_btn" style="background-color:teal; color:white; border-radius:0; width:94px" class="btn"><i class="typcn typcn-calendar-outline menu-icon"></i>Range</button>
+                            <button id="delete_mul" style="color:white; border-radius:0; " class="btn btn-danger set_width"><i class="fas fa-trash" style="color:white;"></i>Delete</button>
                         </div>
                         <input type="hidden" name="filter_date" id="filter_date" value="{{ implode(',', $filter_date) }}"></input>
                         <input type="hidden" name="filter_fname" id="filter_fname" value="{{ implode(',', $filter_fname) }}"></input>
@@ -97,6 +98,8 @@
                     </form>
                     <form method="POST" action="{{ route('sent.mails') }}" class="send_mailform">
                         @csrf
+                        <input type="hidden" class="form-control idss" name="idss" id="idss" >
+                        <input type="hidden" class="form-control sent_type" name="sent_type" id="sent_type" value="0">
                         <div class="input-group" style="display: flex;">
                             <button class="btn btn-md send_mails" name="send_mails[]" id="email_sent" style="display:none; background-color:green; color:white; border-radius:0px; width:125px">Send Mails <img src="\maif\public\images\email_16.png"></button>
                         </div>
@@ -107,7 +110,7 @@
                     <form method="POST" action="{{ route('save.group') }}">
                         @csrf
                         <div style="display: flex; justify-content: flex-end;">
-                            <label class="totalAmountLabel" style="display:none; height:30px;" ><b> Amount:</b></label>
+                            <label for="group_amountT" class="totalAmountLabel" style="display:none; height:30px;" ><b> Amount:</b></label>
                             <input style="display:none; vertical-align:center; width:150px" class="form-control group_amountT" name="group_amountT" id="group_amountT" readonly>
                             <button class=" btn-sm group-btn" style="display:none;background-color: green; color: white; height:48px; width:100px">Group</button>
                             <input type="hidden" class="form-control group_facility" name="group_facility" id="group_facility" >
@@ -281,7 +284,8 @@
                                     @endif
                                 </td>
                                 <td class="editable-amount" data-actual-amount="{{ !Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','):0 }}" data-patient-id="{{ $patient->id }}" data-guaranteed-amount="{{str_replace(',', '', $patient->guaranteed_amount)}}">
-                                    <a href="#" class="number_editable"  title="Actual Amount" id="{{ $patient->id }}">{{!Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}</a>
+                                    {{ !Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}      
+                                <!-- <a href="#" class="number_editable"  title="Actual Amount" id="{{ $patient->id }}">{{ !Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}</a> -->
                                 </td>
                                 <td class="td">{{ number_format((float) str_replace(',', '', $patient->guaranteed_amount), 2, '.', ',') }}</td>
                                 <td>{{ date('F j, Y', strtotime($patient->date_guarantee_letter)) }}</td>
@@ -369,13 +373,13 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="fname">Middle Name</label>
+                                    <label for="mname">Middle Name</label>
                                     <input type="text" class="form-control mname" style="width:220px;" id="mname" name="mname" oninput="this.value = this.value.toUpperCase()" placeholder="Middle Name">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="lname">Date of Birth</label>
+                                    <label for="dob">Date of Birth</label>
                                     <input type="date" class="form-control dob" style="width:220px;" id="dob" name="dob" placeholder="Date of Birth">
                                 </div>
                             </div>
@@ -383,7 +387,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="fname">Region</label>
+                                    <label for="region">Region</label>
                                     <select class="js-example-basic-single region" style="width:220px;" id="region" onchange="othersRegion($(this));" name="region">
                                         <option value="">Please select region</option>
                                         <option value="Region 7">Region 7</option>
@@ -407,7 +411,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="lname">Province</label>
+                                    <label for="province_id">Province</label>
                                     <div id="province_body" class="province_body">
                                         <select class="js-example-basic-single province_id" style="width:220px;" id="province_id" name="province_id" onchange="onchangeProvince($(this))">
                                             <option value="">Please select province</option>
@@ -422,7 +426,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="lname">Municipality</label>
+                                    <label for="muncity_id">Municipality</label>
                                     <div id="muncity_body" class="muncity_body">
                                         <select class="js-example-basic-single muncity_id" style="width:220px;" id="muncity_id" name="muncity_id" onchange="onchangeMuncity($(this))">
                                             <option value="">Please select Municipality</option>
@@ -432,7 +436,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="lname">Barangay</label>
+                                    <label for="barangay_id">Barangay</label>
                                     <div id="barangay_body" class="barangay_body">
                                         <select class="js-example-basic-single barangay_id" style="width:220px;" id="barangay_id" name="barangay_id">
                                             <option value="">Please select Barangay</option>
@@ -444,7 +448,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="fname">Date of Guarantee Letter</label>
+                                    <label for="date_guarantee_letter">Date of Guarantee Letter</label>
                                     <input type="date" class="form-control date_guarantee_letter" style="width:220px;" id="date_guarantee_letter" name="date_guarantee_letter" placeholder="Date of Guarantee Letter" required>
                                 </div>
                             </div>
@@ -452,7 +456,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="fname">Facility</label>
+                                    <label for="facility_id">Facility</label>
                                     <select class="js-example-basic-single facility_id1" style="width:220px;" id="facility_id" name="facility_id" onchange="onchangeForProponent($(this))" required>
                                         <option value="">Please select Facility</option>
                                         @foreach($facilities as $facility)
@@ -463,7 +467,7 @@
                             </div> 
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="fname">Proponent</label>
+                                    <label for="proponent_id">Proponent</label>
                                     <select class="js-example-basic-single proponent_id1" style="width:220px;" id="proponent_id" name="proponent_id" onchange="onchangeForPatientCode($(this))" required>
                                         <option value="">Please select Proponent</option>
                                         @foreach($proponents as $pro)
@@ -487,19 +491,19 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="fname">Guaranteed Amount</label>
+                                    <label for="guaranteed_amount">Guaranteed Amount</label>
                                     <input type="text" class="form-control guaranteed_amount" id="guaranteed_amount" style="width:220px;" oninput="check()" onkeyup= "validateAmount(this)" name="guaranteed_amount" placeholder="Guaranteed Amount" required>
                                 </div>
                             </div>
                             <div class="col-md-6"  id="actl_amnt">
                                 <div class="form-group">
-                                    <label for="fname">Actual Amount</label>
-                                    <input type="number" step="any" class="form-control actual_amount" id="actual_amount" name="actual_amount">
+                                    <label for="actual_amount">Actual Amount</label>
+                                    <input type="number" step="any" class="form-control actual_amount" id="actual_amount" name="actual_amount" disabled>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="fname">Remaining Balance</label>
+                                    <label for="remaining_balance">Remaining Balance</label>
                                     <input type="text" class="form-control remaining_balance" id="remaining_balance" style="width:220px;" name="remaining_balance" placeholder="Remaining Balance" readonly>
                                 </div>
                                 <div id="suggestions" class="suggestions"></div>
@@ -509,8 +513,16 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label for="fname">Remarks</label>
+                                    <label for="pat_rem">Remarks</label>
                                     <textarea type="text" class="form-control pat_rem" id="pat_rem" style="width:470px;" name="pat_rem" placeholder="Remarks"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="notes">Notes</label>
+                                    <textarea type="text" class="form-control notes" id="notes" style="width:470px;" name="notes" placeholder="..."></textarea>
                                 </div>
                             </div>
                         </div>
@@ -578,6 +590,44 @@
 <script src="{{ asset('admin/vendors/x-editable/bootstrap-editable.min.js?v=1') }}"></script>
 @include('maif.editable_js')
 <script>
+     $('#delete_mul').on('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (id_list.length === 0) {
+            Swal.fire('No selection', 'Please select at least one patient.', 'warning');
+            return;
+        }
+
+        Swal.fire({
+            title: 'Delete Selected Patients?',
+            text: `You are about to delete ${id_list.length} patient(s). This action cannot be undone.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Delete',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#dc3545'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: 'returned-gl/delete-multiple',
+                    type: 'POST',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        ids: id_list
+                    },
+                    success: function () {
+                        Swal.fire('Deleted!', 'Selected patients were deleted.', 'success');
+                        location.reload();
+                    },
+                    error: function () {
+                        Swal.fire('Error', 'Something went wrong.', 'error');
+                    }
+                });
+            }
+        });
+    });
+
     function forwardPatient(status, forwardUrl) {
         if (status == 1) {
             Swal.fire({
@@ -923,17 +973,26 @@
         });
 
         var select_val = 0;
+        var patients = @json($patients);
+        var newIds = patients.data.map(p => p.id); 
+        var new_mailIds = newIds.map(id => `mailCheckboxId_${id}`);
+
         $(document).on('click', '.select_all', function() {
+
             if(select_val == 0){
                 $('#patient_table').find('input.group-mailCheckBox').prop('checked', true).trigger('change');
-                $('.send_mails').val('').show();
+                select_val = 1;
+                id_list = [...id_list, ...newIds];
+                mail_ids = [...mail_ids, ...new_mailIds];
+
+                $('.send_mails').val(id_list).show();
+
                 if (getStat().includes('0')) {
                     $('#system_sent').hide();
                 }
                 if (getStat2().includes('0')) {
                     $('#email_sent').hide();
                 }
-                select_val = 1;
             }else{
                 $('#patient_table').find('input.group-mailCheckBox').prop('checked', false).trigger('change');
                 $('.send_mails').val('').hide();
@@ -944,63 +1003,63 @@
         });
 
         function initializeEditable() {
-            $.fn.editable.defaults.mode = 'popup';
+            // $.fn.editable.defaults.mode = 'popup';
 
-            $(".number_editable").editable({
-                type : 'number',
-                name: 'actual_amount',
-                title: $(this).data("title"),
-                emptytext: 'empty',
-                success: function(response, newValue) {
-                    var cell = $(this).closest('.editable-amount');
-                    var patientId = cell.data('patient-id');
-                    var guaranteed_amount = cell.data('guaranteed-amount');
-                    var actual_amount = cell.data('actual-amount');
-                    var editableField = this;
-                    var url = "{{ url('update/amount').'/' }}" + patientId + '/' + newValue;
-                    var json = {
-                        "_token" : "<?php echo csrf_token(); ?>",
-                        "value" : newValue
-                    };
+            // $(".number_editable").editable({
+            //     type : 'number',
+            //     name: 'actual_amount',
+            //     title: $(this).data("title"),
+            //     emptytext: 'empty',
+            //     success: function(response, newValue) {
+            //         var cell = $(this).closest('.editable-amount');
+            //         var patientId = cell.data('patient-id');
+            //         var guaranteed_amount = cell.data('guaranteed-amount');
+            //         var actual_amount = cell.data('actual-amount');
+            //         var editableField = this;
+            //         var url = "{{ url('update/amount').'/' }}" + patientId + '/' + newValue;
+            //         var json = {
+            //             "_token" : "<?php echo csrf_token(); ?>",
+            //             "value" : newValue
+            //         };
 
-                    if(newValue == ''){
-                        Lobibox.alert('error',{
-                            size: 'mini',
-                            msg: "Actual amount accepts number only!"
-                        }); 
-                        $(editableField).text(actual_amount);
-                        $(editableField).value(actual_amount);
-                        cell.attr('data-actual-amount', actual_amount);
-                        // location.reload();
-                        return;  
-                    }
-                    var c_amount = newValue.replace(/,/g,'');
+            //         if(newValue == ''){
+            //             Lobibox.alert('error',{
+            //                 size: 'mini',
+            //                 msg: "Actual amount accepts number only!"
+            //             }); 
+            //             $(editableField).text(actual_amount);
+            //             $(editableField).value(actual_amount);
+            //             cell.attr('data-actual-amount', actual_amount);
+            //             // location.reload();
+            //             return;  
+            //         }
+            //         var c_amount = newValue.replace(/,/g,'');
 
-                    if(c_amount > guaranteed_amount){
-                        $(this).html(newValue);
-                        Lobibox.alert('error',{
-                            size: 'mini',
-                            msg: "Inputted actual amount if greater than guaranteed amount!"
-                        }); 
-                        cell.attr('data-actual-amount', actual_amount);
-                        $(editableField).text(actual_amount);
-                        $(editableField).value(actual_amount);
-                        // location.reload();
-                        return;           
-                    }
+            //         if(c_amount > guaranteed_amount){
+            //             $(this).html(newValue);
+            //             Lobibox.alert('error',{
+            //                 size: 'mini',
+            //                 msg: "Inputted actual amount if greater than guaranteed amount!"
+            //             }); 
+            //             cell.attr('data-actual-amount', actual_amount);
+            //             $(editableField).text(actual_amount);
+            //             $(editableField).value(actual_amount);
+            //             // location.reload();
+            //             return;           
+            //         }
 
-                    $.post(url, json, function(result){
-                        Lobibox.notify('success', {
-                            title: "",
-                            msg: "Successfully update actual amount!",
-                            size: 'mini',
-                            rounded: true
-                        });
-                        cell.attr('data-actual-amount', newValue);
-                        // location.reload();
-                    });
-                }
-            });
+            //         $.post(url, json, function(result){
+            //             Lobibox.notify('success', {
+            //                 title: "",
+            //                 msg: "Successfully update actual amount!",
+            //                 size: 'mini',
+            //                 rounded: true
+            //             });
+            //             cell.attr('data-actual-amount', newValue);
+            //             // location.reload();
+            //         });
+            //     }
+            // });
         }
 
         function initializeGroupFunctions() {
@@ -1080,6 +1139,8 @@
                 $('.lname').val(patient.lname);
                 $('.mname').val(patient.mname);
                 $('.dob').val(patient.dob);
+                $('.notes').text(patient.notes);
+
                 $('.region').select2().val(patient.region).trigger('change');
                 if(patient.region == "Region 7"){
                     $('.province_id').select2().val(patient.province_id).trigger('change');

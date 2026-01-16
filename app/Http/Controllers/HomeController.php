@@ -45,6 +45,7 @@ use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Request as RequestFacade;
+use Illuminate\Support\Facades\Log;
 
 class HomeController extends Controller
 {
@@ -857,6 +858,30 @@ class HomeController extends Controller
         $filter_date = $request->input('filter_dates');
         $order = $request->input('order');
 
+        Patients::whereNull('remarks')
+            ->whereNull('sent_type')
+            ->where(function ($q) {
+                $q->whereNotIn('fc_status', ['referred', 'accepted'])
+                ->orWhereNull('fc_status');
+            })
+            ->where(function ($query) {
+            $query->whereNull('pro_used')
+                    ->where(function ($q) {
+                        $q->whereNull('fc_status')
+                        ->orWhere('fc_status', '!=', 'returned');
+                    })
+                    ->where(function ($q) {
+                        $q->whereNull('expired')
+                        ->orWhere('expired', '!=', 1);
+                    });
+            })
+            ->whereRaw('YEAR(created_at) > ?', [2024])
+            ->whereRaw(
+                "STR_TO_DATE(CONCAT(YEAR(date_guarantee_letter) + 1, '-01-01'), '%Y-%m-%d') < ?",
+                [Carbon::now()]
+            )
+            ->update(['expired' => 1]);
+        
         $baseQuery = Patients::with([
             'province:id,description',
             'muncity:id,description', 
@@ -1086,9 +1111,7 @@ class HomeController extends Controller
         $muncityIds = $basePatients->distinct()->pluck('muncity_id')->filter();
         $provinceIds = $basePatients->distinct()->pluck('province_id')->filter();
 
-        $includedIds = cache()->remember('included_facility_ids', 3600, function () {
-            return IncludedFacility::pluck('facility_id')->toArray();
-        });
+        $includedIds = IncludedFacility::pluck('facility_id')->toArray();
 
         $proponentsCode = cache()->remember('proponents_code', 3600, function () {
             return Proponent::groupBy('proponent_code')
@@ -1127,6 +1150,35 @@ class HomeController extends Controller
 
         $filter_date = $request->input('filter_dates');
         $order = $request->input('order');
+        
+        $pro_unsend = 
+            Patients::
+            whereRaw("
+                NOT EXISTS (
+                    SELECT 1 FROM dohdtr.users 
+                    WHERE dohdtr.users.userid = patients.created_by
+                )
+            ")
+            ->whereNotNull('sent_type')
+            ->whereNotIn('sent_type', [2])
+            ->where(function ($query) {
+                $query->whereNull('fc_status')
+                    ->orWhereNotIn('fc_status', ['returned', 'referred', 'accepted']);
+            })
+            ->whereRaw(
+                "STR_TO_DATE(CONCAT(YEAR(date_guarantee_letter) + 1, '-01-01'), '%Y-%m-%d') < ?",
+                [Carbon::now()]
+            )           
+            ->get();
+
+        if(count($pro_unsend) > 0){
+            foreach($pro_unsend as $row){
+                $row->sent_type = null;
+                $row->fc_status = null;
+                $row->expired = 1;
+                $row->save();
+            }
+        }
 
         $baseQuery = Patients::with([
             'province:id,description',
@@ -1207,11 +1259,14 @@ class HomeController extends Controller
         $this->applyColumnFilters($baseQuery, $request);
 
         $this->applySorting($baseQuery, $request);
+
         $all_pats = (clone $baseQuery)->pluck('id')->all();
+        
         $patients = $baseQuery->orderBy('updated_at', 'desc')->paginate(50);
+
         $filter_type = 2;
         $filterData = $this->getFilterData($request, $filter_type);
-
+   
         return view('maif.proponent_patient', array_merge([
             'patients' => $patients,
             'keyword' => $request->keyword,
@@ -1234,6 +1289,20 @@ class HomeController extends Controller
         $filter_date = $request->input('filter_dates');
         $order = $request->input('order');
 
+        Patients::where(function ($query) {
+            $query->whereNull('pro_used')
+                ->where('fc_status', "returned");
+            })
+            ->where(function ($q) {
+                $q->whereNull('expired')
+                    ->orWhere('expired', '!=', 1);
+            })
+            ->whereRaw(
+                "STR_TO_DATE(CONCAT(YEAR(date_guarantee_letter) + 1, '-01-01'), '%Y-%m-%d') < ?",
+                [Carbon::now()]
+            )
+            ->update(['expired' => 1]);
+
         $baseQuery = Patients::with([
             'province:id,description',
             'muncity:id,description', 
@@ -1246,6 +1315,10 @@ class HomeController extends Controller
         ])->where(function ($query) {
             $query->whereNull('pro_used')
                 ->where('fc_status', "returned");
+        })
+        ->where(function ($q) {
+            $q->whereNull('expired')
+                ->orWhere('expired', '!=', 1);
         });
 
         if ($request->gen && $filter_date) {
@@ -1419,6 +1492,27 @@ class HomeController extends Controller
             'id_pat' => '',
             'active_facility' => OnlineUser::where('user_type', 2)->pluck('type_identity')->toArray()
         ], $filterData));
+    }
+
+    public function updateDate($date){
+
+        Patients::where(function ($query) {
+            $query->whereNull('pro_used')
+                ->where('expired', 1);
+        })->update(['date_guarantee_letter'=> $date, 'expired' => null]);
+
+        return redirect()->back()->with('success', 'Date updated successfully');
+    }
+
+    public function deleteReturned(Request $request){
+        Log::info(
+            'DELETED GL:',
+            Patients::whereIn('id', $request->ids)->get()->toArray()
+        );
+        
+        Patients::whereIn('id', $request->ids)->delete();
+
+        return response()->json(['success' => true]);
     }
 
     public function fetchAdditionalData(){
@@ -2186,6 +2280,7 @@ class HomeController extends Controller
     public function createPatientSave(Request $request) {
         $data = $request->all();
         $patient = Patients::create($data);
+
         $patientCount = Patients::where('fname', $request->fname)
             ->where('lname', $request->lname)
             ->where('mname', $request->mname)
@@ -2194,11 +2289,28 @@ class HomeController extends Controller
             ->where('muncity_id', $request->muncity_id)
             ->where('barangay_id', $request->barangay_id)
             ->count();
-        if($patientCount>0){
-            session()->flash('patient_exist', $patientCount);
-        }else{
-            session()->flash('patient_save', true);
+
+
+        $date = Carbon::parse($request->input('date_guarantee_letter'));
+        $expiryDate = Carbon::create($date->year + 1, 1, 1); 
+
+        if (Carbon::now()->gte($expiryDate)) {
+            $patient->expired = Carbon::now()->gte($expiryDate) ? 1 : null;
+            $patient->save();
+            return redirect()->back()->with('expired_gl', true);
+        } else {
+            if ($patientCount > 1) {
+                return redirect()->back()->with('patient_exist', $patientCount);
+            } else {
+                return redirect()->back()->with('patient_save', true);
+            }
         }
+
+        // if($patientCount>0){
+        //     session()->flash('patient_exist', $patientCount);
+        // }else{
+        //     session()->flash('patient_save', true);
+        // }
 
         $util = new ProponentUtilizationV1();
         $util->patient_id = $patient->id;
@@ -2300,7 +2412,7 @@ class HomeController extends Controller
 
         $patientLogs = new PatientLogs();
         $patientLogs->patient_id = $patient->id;
-        $patientLogs->fill(Arr::except($patient->toArray(), ['status', 'sent_type', 'user_type', 'transd_id', 'fc_status', 'expired', 'pro_used', 'rtrv_remarks']));
+        $patientLogs->fill(Arr::except($patient->toArray(), ['status', 'notes', 'sent_type', 'user_type', 'transd_id', 'fc_status', 'expired', 'pro_used', 'rtrv_remarks']));
         unset($patientLogs->id);
         $patientLogs->save();
         
@@ -2329,6 +2441,7 @@ class HomeController extends Controller
         $patient->actual_amount = $request->input('actual_amount');
         $patient->remaining_balance = $request->input('remaining_balance');
         $patient->pat_rem = $request->input('pat_rem');
+        $patient->notes = $request->input('notes');
         $patient->sent_type = $request->input('sent_type');
 
         $date = Carbon::parse($request->input('date_guarantee_letter'));
@@ -2344,7 +2457,11 @@ class HomeController extends Controller
             return redirect()->route('patient.sendpdf', ['patientid' => $patient->id]);
         }
 
-        return redirect()->back()->with('patient_update', true);
+        if($patient->expired == 1){
+            return redirect()->back()->with('expired_gl', true);
+        }else{
+            return redirect()->back()->with('patient_update', true);
+        }
 
     }
 
@@ -2421,7 +2538,12 @@ class HomeController extends Controller
         $pat = Patients::with('proponentData:id,proponent')->where('id', $id)->first();
         if($pat){
             $pat->pat_rem = $pat->pat_rem == "Retrieved" ? null : $pat->pat_rem;
-            $pat->fc_status = 'referred';
+            if($pat->remember_token == "expired_1"){
+                $pat->fc_status = 'accepted';
+                $pat->remember_token = null;
+            }else{
+                $pat->fc_status = 'referred';
+            }
             $pat->sent_type = 3;
             $pat->save();
             

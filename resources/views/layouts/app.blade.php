@@ -474,6 +474,45 @@
 				confirmButtonText: 'OK'
 			});
 		@endif
+		@if(session('expired_gl'))
+			<?php session()->forget('expired_gl'); ?>
+			Swal.fire({
+				icon: 'error',
+				title: '<strong>GL Expired</strong>',
+				html: '<b>Forwarded to expired list.</b>',
+				background: '#fff',
+				timer: 2000,
+				timerProgressBar: true,
+				showConfirmButton: false,
+				didOpen: () => {
+				Swal.showLoading();
+				}
+			});
+		@endif
+
+		function updateCounts() {
+			fetch('/maif/data-counts')
+				.then(response => {
+					if (!response.ok) {
+						throw new Error(`HTTP error! status: ${response.status}`);
+					}
+					const contentType = response.headers.get('content-type');
+					if (!contentType || !contentType.includes('application/json')) {
+						throw new Error('Response is not JSON');
+					}
+					return response.json();
+				})
+				.then(data => {
+					$('.gl_lists').text(data.gl_lists);
+					$('.returned_lists').text(data.returned_lists);
+					$('.expired_lists').text(data.expired_lists);
+				})
+				.catch(error => {
+					console.error('Error fetching counts:', error);
+				});
+		}
+		setInterval(updateCounts, 5000);
+		updateCounts();
 
 		// if (!sessionStorage.getItem('client_id')) {
 		// 	sessionStorage.setItem('client_id', Math.random().toString(36).substring(2, 15));
@@ -522,6 +561,7 @@
 		// window.addEventListener('beforeunload', () => {
 		// 	navigator.sendBeacon(`/maif/notifications/unregister-tab?client_id=${CLIENT_ID}`);
 		// });
+		$('#docViewerModal').hide();
 
 	</script>
    	@yield('js')

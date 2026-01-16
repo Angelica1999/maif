@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PrintController;
 use App\Models\Notif;
+use App\Models\Patients;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\Support\Facades\Redis;
@@ -297,6 +298,12 @@ Route::get('/sending-hold', [App\Http\Controllers\FacilityController::class, 'se
 Route::post('/sending-gl/hold', [App\Http\Controllers\FacilityController::class, 'holdSendFacility'])->name('hold.sending_gl');
 Route::get('fundsource_batches/{id}/proponentinfo-batch', [App\Http\Controllers\FundSourceController::class, 'getProponentInfoBatch'])->name('fundsource.proponents_batch');
 Route::get('fetch/pre-dv/fundsource/{facility_id}', [App\Http\Controllers\PreDvController::class, 'fetchPreFundsource'])->name('fetch.pre_dv-fundsource');
+Route::get('/expired-gl/update/{date}', [App\Http\Controllers\HomeController::class, 'updateDate'])->name('expired.update_date');
+Route::post('/returned-gl/delete-multiple', [App\Http\Controllers\HomeController::class, 'deleteReturned'])->name('returned.del_mul');
+Route::post('/documents/upload', [App\Http\Controllers\PrintController::class, 'uploadLDDAP'])->name('documents.upload');
+Route::get('/documents/{routeNo}', [App\Http\Controllers\PrintController::class, 'getDocumentsLDDAP'])->name('documents.get');
+Route::get('/documents/download/{filename}', [App\Http\Controllers\PrintController::class, 'downloadLDDAP'])->name('documents.download');
+Route::delete('/documents/delete/{filename}', [App\Http\Controllers\PrintController::class, 'deleteLDDAP'])->name('documents.delete');
 
 Route::post('/notifications/register-tab', function (Illuminate\Http\Request $request) {
     $clientId = $request->client_id;
@@ -340,6 +347,34 @@ Route::get('/maif/notifications/unregister-tab', function (Illuminate\Http\Reque
     $clientId = $request->query('client_id');
     Redis::srem("active_tabs", $clientId);
     return response()->json(['status' => 'ok']);
+});
+
+Route::get('/data-counts', function() {
+    return response()->json([
+        'gl_lists' => Patients::where(function ($query) {
+                $query->whereNull('pro_used')
+                  ->where(function ($q) {
+                      $q->whereNull('fc_status')
+                        ->orWhere('fc_status', '!=', 'returned');
+                  })
+                  ->where(function ($q) {
+                      $q->whereNull('expired')
+                        ->orWhere('expired', '!=', 1);
+                  });
+            })->count(),
+        'returned_lists' => Patients::where(function ($query) {
+                $query->whereNull('pro_used')
+                    ->where('fc_status', "returned");
+            })
+            ->where(function ($q) {
+                $q->whereNull('expired')
+                    ->orWhere('expired', '!=', 1);
+            })->count(),
+        'expired_lists' => Patients::where(function ($query) {
+                $query->whereNull('pro_used')
+                    ->where('expired', 1);
+            })->count()
+    ]);
 });
 
 
