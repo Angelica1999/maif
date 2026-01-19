@@ -86,6 +86,7 @@
 @endsection
 @section('js')
 <script>
+    $('#docViewerModal').hide();
     $(document).ready(function(){
         $('#cancel').on('click', function(){
             $('.facility').html('<option value="">Select Patient</option>');

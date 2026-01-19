@@ -92,6 +92,7 @@
 @endsection
 @section('js')
     <script>
+        $('#docViewerModal').hide();
         function openModal() {
             var routeNoo = event.target.getAttribute('data-routeId'); 
             var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNoo;

@@ -301,6 +301,7 @@
 <script src="{{ asset('admin/vendors/daterangepicker-master/moment.min.js?v=1') }}"></script>
 <script src="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.js?v=1') }}"></script>
 <script>
+    $('#docViewerModal').hide();
     var btn_val = 0;
 
     $('.crt_btn').on('click', function(){

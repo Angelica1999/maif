@@ -5,7 +5,7 @@
         border-bottom:1px solid black
     }
 </style>
-<div id="docViewerModal" class="doc-viewer-modal">
+<div id="docViewerModal" class="doc-viewer-modal" style="display:none">
     <span class="doc-viewer-close" onclick="closeDocViewer()">&times;</span>
     <button class="doc-viewer-delete" title="Delete document (Del key)">
             <i class="fas fa-trash-alt"></i> Delete
