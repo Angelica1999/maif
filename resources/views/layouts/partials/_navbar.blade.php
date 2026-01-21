@@ -1,4 +1,3 @@
-
 <nav class="navbar col-sm-12 col-12 p-0 fixed-top d-flex flex-row">
     <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
 		{{-- <a class="navbar-brand brand-logo" href="index.html"><img src="{{ asset('images/doh-logo.png') }}" style="width: 50px; height: 50px;" alt="logo"/>MAIF-IPP</a> --}}
@@ -22,7 +21,7 @@
 								document.getElementById('logout-form').submit();
 							</script>
 						@else
-						{{ Auth::user()->lname }}, {{ Auth::user()->fname }}
+							{{ $description ?? 'N/A' }}
 						@endif
 					</h5>
 				</a>
