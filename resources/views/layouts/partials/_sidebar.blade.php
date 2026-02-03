@@ -134,7 +134,7 @@
     .maif-sidebar .sub-menu {
         max-height: 0;
         overflow: hidden;
-        background: transparent; /* hide black */
+        background: transparent; 
         transition: max-height 0.3s ease, background 0.2s ease;
     }
 
@@ -142,6 +142,11 @@
     .maif-sidebar .nav-item:focus-within > .sub-menu {
         max-height: 1000px;
         background: rgba(0,0,0,0.2);
+        transition-delay: 0s;
+    }
+
+    .maif-sidebar .sub-menu {
+        transition-delay: 1.5s; /* Delay before closing */
     }
 
     .maif-sidebar .sub-menu .nav-link {
@@ -435,7 +440,7 @@
         @if($joinedData->section == 6)
             <ul class="nav flex-column" style="margin-bottom: 0;">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('fundsource_budget') }}">
+                    <a class="nav-link" href="#">
                         <span class="menu-icon">
                             <img src="\maif\public\images\funds_16.png">
                         </span>
@@ -669,7 +674,7 @@
                                     <a class="nav-link" href="{{ route('home') }}" style="display: flex; align-items: center; justify-content: space-between;">
                                         <span style="display: flex; align-items: center;">
                                             <span class="menu-icon"><img src="\maif\public\images\letter_16.png"></span>
-                                            <span class="menu-title">GL Lists</span>
+                                            <span class="menu-title">Lists</span>
                                         </span>
                                         <span class="badge gl_lists"></span>
                                     </a>
@@ -694,19 +699,25 @@
                                 </li>
                             </ul>
                         </li>
+                    </ul>
+                    <ul class="nav flex-column sub-menu">
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('patients') }}">
-                                <img src="\maif\public\images\hos_letter_16.png" style="margin-right:12px">
+                                <span class="menu-icon">
+                                    <img src="\maif\public\images\hos_letter_16.png">
+                                </span>    
                                 <span class="menu-title">Proponent GL</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('group') }}">
-                                <img src="\maif\public\images\gr_pat_16.png" style="margin-right:12px">
+                                <span class="menu-icon">
+                                    <img src="\maif\public\images\gr_pat_16.png">
+                                </span>    
                                 <span class="menu-title">Group Patients</span>
                             </a>
                         </li>
-                    </ul>
+                    </u>
                 </li>
             </ul>
             <!-- Disbursement Voucher -->
@@ -1129,6 +1140,84 @@
                     </ul>
                 </li>
             </ul>
+            @if($id == "2760")
+            <!-- Report -->
+                <ul class="nav flex-column" style=" margin-bottom: 0;">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <span class="menu-icon">
+                                <img src="\maif\public\images\report_16.png">
+                            </span>
+                            <span class="menu-title">FUR</span>
+                            <span class="dropdown-icon">▼</span>
+                        </a>
+                        <ul class="nav flex-column sub-menu">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('report') }}">
+                                    <span class="menu-icon">
+                                        <img src="\maif\public\images\pre_re_16.png">
+                                    </span>
+                                    <span class="menu-title">Government</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('report.facility') }}">
+                                    <span class="menu-icon">
+                                        <img src="\maif\public\images\fc_re_16.png">
+                                    </span>
+                                    <span class="menu-title">Private</span>
+                                    <span class="dropdown-icon">▶</span>
+                                </a>
+                                <ul class="nav flex-column sub-menu">
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ route('report') }}">
+                                            <span class="menu-icon">
+                                                <img src="\maif\public\images\pre_re_16.png">
+                                            </span>
+                                            <span class="menu-title">Incoming</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ route('report.facility') }}">
+                                            <span class="menu-icon">
+                                                <img src="\maif\public\images\fc_re_16.png">
+                                            </span>
+                                            <span class="menu-title">Facilities</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ route('report.saa') }}">
+                                            <span class="menu-icon">
+                                                <img src="\maif\public\images\saa_re_16.png">
+                                            </span>
+                                            <span class="menu-title">Consolidated</span>
+                                            <span class="dropdown-icon">▶</span>
+                                        </a>
+                                        <ul class="nav flex-column sub-menu">
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="{{ route('report') }}">
+                                                    <span class="menu-icon">
+                                                        <img src="\maif\public\images\pre_re_16.png">
+                                                    </span>
+                                                    <span class="menu-title">Annex A</span>
+                                                </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="{{ route('report.facility') }}">
+                                                    <span class="menu-icon">
+                                                        <img src="\maif\public\images\fc_re_16.png">
+                                                    </span>
+                                                    <span class="menu-title">Annex B</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            @endif
             <!-- Logbook -->
             <ul class="nav flex-column" style="margin-bottom: 0;">
                 <li class="nav-item">
@@ -1377,26 +1466,13 @@
     });
     
     // document.querySelectorAll('.nav-link').forEach(link => {
-    //     link.addEventListener('click', function(e) {
-    //         if (!this.nextElementSibling || !this.nextElementSibling.classList.contains('sub-menu')) {
-    //             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-    //             this.classList.add('active');
-    //         }
-    //     });
-        
-    //     if (link.href == window.location.href) {
-    //         link.classList.add('active');
+    //     const dropdownIcon = link.querySelector('.dropdown-icon');
+    //     if (dropdownIcon) {
+    //         link.addEventListener('click', function(e) {
+    //             if (this.nextElementSibling && this.nextElementSibling.classList.contains('sub-menu')) {
+    //                 dropdownIcon.classList.toggle('rotated');
+    //             }
+    //         });
     //     }
     // });
-    
-    document.querySelectorAll('.nav-link').forEach(link => {
-        const dropdownIcon = link.querySelector('.dropdown-icon');
-        if (dropdownIcon) {
-            link.addEventListener('click', function(e) {
-                if (this.nextElementSibling && this.nextElementSibling.classList.contains('sub-menu')) {
-                    dropdownIcon.classList.toggle('rotated');
-                }
-            });
-        }
-    });
 </script>
