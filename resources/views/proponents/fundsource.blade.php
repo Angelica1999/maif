@@ -118,7 +118,7 @@
         <div class="card-body" style="">
             <div style="display: flex; justify-content: space-between; align-items: stretch; width: 100%">
                 <div style="text-align: start;">
-                    <h4 class="card-title">MANAGE FUNDSOURCE: PROPONENTS</h4>
+                    <h4 class="card-title">MANAGE FUNDSOURCE: PROPONENTS <i style="color:red"> ongoing updates for transfer usage</i></h4>
                     <p class="card-description">MAIF-IPP</p>
                 </div>
                 <div>
@@ -819,11 +819,109 @@
     }
 
     function aloBreakdowns(proponent){
+        $('#allocation_breakdowns :focus').blur();
         $('.spec_body').html(loading);
         $.get("{{ url('proponent/spec-allocations').'/' }}"+proponent, function(result){
             $('.spec_body').html(result);
+            $('#allocation_breakdowns').find('button, a, input, select, textarea').first().focus();
         });
     }
+    $('#allocation_breakdowns').on('hide.bs.modal', function () {
+        $(this).find(':focus').blur();  // remove focus from anything inside
+    });
 
+    $(document).on('click', '.btn-transfer', function () {
+        var btn = $(this);
+
+        var proponent     = btn.data('proponent');
+        var facilityIds   = btn.data('facility-ids');
+        var from_facility = btn.data('facility');
+        var facilityNames = btn.attr('data-facility-names');
+
+        try {
+            facilityNames = JSON.parse(facilityNames);
+        } catch (e) {
+            console.error('Invalid facility JSON', facilityNames);
+            facilityNames = [];
+        }
+
+        var amount = parseFloat(btn.data('amount')); // current amount
+        var optionsHtml = '<option value="">Select facility</option>';
+
+        facilityNames.forEach((group, index) => {
+            var label = group.join(' && ');
+            optionsHtml += `<option value="${label}">${label}</option>`;
+        });
+
+        Swal.fire({
+            target: document.getElementById('allocation_breakdowns'),
+            title: 'Transfer Usage',
+            html: `
+                <div class="text-left">
+                    <p><strong>Facility:</strong> ${from_facility}</p>
+                    <p><strong>Current Amount:</strong> ₱${amount}</p>
+
+                    <label class="mt-2">Transfer To Facility</label>
+                    <select id="new_facility" class="form-control" style="width:100%">
+                        ${optionsHtml}
+                    </select>
+
+                    <label class="mt-2">Amount</label>
+                    <input type="number" id="new_amount" class="form-control" value="${amount}" min="0" max="${amount}">
+                    <small id="amount_error" class="text-danger" style="display:none;">Amount cannot be greater than current amount.</small>
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
+            cancelButtonText: 'Cancel',
+            didOpen: () => {
+                $('#new_facility').select2({
+                    dropdownParent: $('.swal2-popup')
+                });
+
+                // Validate on blur
+                $('#new_amount').on('blur input', function () {
+                    const enteredAmount = parseFloat($(this).val());
+                    if (enteredAmount > amount) {
+                        $('#amount_error').show();
+                        $(this).val(amount);
+                    } else {
+                        $('#amount_error').hide();
+                    }
+                });
+            },
+            preConfirm: () => {
+                const newFacility = $('#new_facility').val();
+                const newAmount   = parseFloat($('#new_amount').val());
+
+                if (!newFacility || !newAmount) {
+                    Swal.showValidationMessage('Please select facility and enter amount');
+                    return false;
+                }
+
+                if (newAmount > amount) {
+                    Swal.showValidationMessage('Amount cannot be greater than current amount');
+                    return false;
+                }
+
+                return {
+                    newFacility,
+                    newAmount
+                };
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const { newFacility, newAmount } = result.value;
+
+                const url = `{{ route('usage.transfer') }}`
+                    + `?proponent=${encodeURIComponent(proponent)}`
+                    + `&ids=${encodeURIComponent(JSON.stringify(facilityIds))}`
+                    + `&amount=${encodeURIComponent(newAmount)}`
+                    + `&new_facility=${encodeURIComponent(newFacility)}`;
+
+                window.location.href = url;
+            }
+        });
+    });
 </script>
 @endsection

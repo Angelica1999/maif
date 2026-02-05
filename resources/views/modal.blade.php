@@ -284,7 +284,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="fname">Patient:</label>
+                                <label for="fac_id">Patient:</label>
                                 <select class="js-example-basic-single w-100 facility" style="width:250px" id="fac_id" name="fac_id" required>
                                     <option value="">Select Patient</option>
                                 </select>

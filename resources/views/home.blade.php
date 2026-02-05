@@ -1715,6 +1715,7 @@
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                     }).format(result.first_rem);
+                    console.log(first_rem);
 
                     second_rem = new Intl.NumberFormat('en-US', {
                         minimumFractionDigits: 2,
@@ -1798,6 +1799,7 @@
                     //     });
                     // }
                     else{
+                        console.log(1);
                         $('.remaining_balance').val(fourth_rem);
                         var suggestions =[];
 
