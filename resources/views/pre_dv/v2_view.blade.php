@@ -167,8 +167,8 @@
                                 Assistance for Indigent Patient Program for
                                 <span id="hospitalAddress" name="hospitalname" style="color:red;"></span>
                                 per billing statement dated to 
-                                <input type="month" name="date_from" style="width: 110px; height: 28px; font-size: 8pt;" value="{{ $new_dv ? date('Y-m', strtotime($new_dv->date_from)) : '' }}" required>
-                                <input type="month" name="date_to" style="width: 110px; height: 28px; font-size: 8pt;" value="{{ $new_dv && $new_dv->date_to ? date('Y-m', strtotime($new_dv->date_to)) : '' }}">
+                                <input type="month" name="date_from" style="width: 110px; height: 28px; font-size: 8pt;" value="{{ $new_dv ? date('Y-m', strtotime($new_dv->date_from)) : ( $start_date == '' ? '' : date('Y-m', strtotime($start_date))) }}" required>
+                                <input type="month" name="date_to" style="width: 110px; height: 28px; font-size: 8pt;" value="{{ $new_dv && $new_dv->date_to ? date('Y-m', strtotime($new_dv->date_to)) : (  $end_date == '' ? '' : date('Y-m', strtotime($end_date))) }}">
                                 in the amount of:</p>
                                 <div style="padding:20px;">
                                     <table style="width: 100%; border-collapse: collapse; margin-bottom:15px;">
@@ -337,32 +337,35 @@
                             <td style="width:20%; border-left: 0 " >Uacs Code</td>
                             <td style="width:20%; border-left: 0 " >Debit</td>
                             <td style="width:20%; border-left: 0 " >Credit</td>
-                          </tr>
-                          <tr class="header">
+                        </tr>
+                        <tr class="header">
                             <td height=6% width =40% style="text-align : left;">
-                              &nbsp;&nbsp;&nbsp;&nbsp;<span>Subsidy / Others</span><br>
-                              &nbsp;&nbsp;&nbsp;&nbsp;<span>Accumulated Surplus</span><br>
-                              <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Due to BIR</span><br> 
-                              <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CIB-MDS</span> 
+                                &nbsp;&nbsp;&nbsp;&nbsp;<span>Subsidy / Others</span><br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<span>Accumulated Surplus</span><br>
+                                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Due to BIR</span><br> 
+                                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CIB-MDS</span> 
                             </td>
                             <td style="width:20%; border-left: 0 " >
-                              <br>
-                              <span>50214990</span><br>
-                              <span>30101010</span><br>
-                              <span>20201010</span><br> 
-                              <span>10104040</span> <br><br>
+                                <br>
+                                <span>50214990</span><br>
+                                <span>30101010</span><br>
+                                <span>20201010</span><br> 
+                                <span>10104040</span> <br><br>
                             </td>
                             <td style="width:20%; border-left: 0 ; text-align:right; vertical-align:top" >
                             <br>
-                              <span id="total_debit" class="debit_after">{{number_format(($new_dv? $amount - $new_dv->accumulated: $amount),2,'.',',')}}</span><br>
-                              <input type="text" class="accumulated" id="accumulated" name="accumulated" style="margin-top:1px;width:120px; height: 20px; text-align:right;" oninput="calculateSubsidy(this)" onkeyup="validateAmount(this)" value="{{$new_dv?number_format($new_dv->accumulated,2,'.',','):0}}"autocomplete="off">
+                                <span id="total_debit" class="debit_after">
+                                    {{ number_format(($new_dv? $amount - $new_dv->accumulated : $amount - $prev_accumulated),2,'.',',') }}
+                                    </span><br>
+                                <input type="text" class="accumulated" id="accumulated" name="accumulated" style="margin-top:1px;width:120px; height: 20px; text-align:right;" 
+                                    oninput="calculateSubsidy(this)" onkeyup="validateAmount(this)" value="{{ $new_dv ? number_format($new_dv->accumulated,2,'.',',') : $prev_accumulated }}"autocomplete="off">
                             </td>
                             <td style="width:20%; border-left: 0 ; text-align:right; vertical-align:top" >
-                              <br><br><br>
-                              <span>{{ $date_valid == 0 ? $vat_ewt : $all_tax }}</span><br>
-                              <span>{{ $date_valid == 0 ? $rem : number_format(str_replace(',','',$amount_here) - str_replace(',','',$all_tax), 2, '.', ',') }}</span>
+                                <br><br><br>
+                                <span>{{ $date_valid == 0 ? $vat_ewt : $all_tax }}</span><br>
+                                <span>{{ $date_valid == 0 ? $rem : number_format(str_replace(',','',$amount_here) - str_replace(',','',$all_tax), 2, '.', ',') }}</span>
                             </td>
-                          </tr>
+                        </tr>
                     </table>
                     <table border="2" style="width: 100%;" >
                         <tr>
