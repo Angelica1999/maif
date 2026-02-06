@@ -1093,40 +1093,45 @@ class HomeController extends Controller
 
     private function getFilterData($request, $filter_type)
     {
-        if($filter_type == 1){
-            $basePatients = Patients::whereNull('pro_used');
-        }else{
-            $basePatients = Patients::whereRaw("
-                NOT EXISTS (
-                    SELECT 1 FROM dohdtr.users 
-                    WHERE dohdtr.users.userid = patients.created_by
-                )
-            ");
-        }
-
-        $facilityIds = $basePatients->distinct()->pluck('facility_id')->filter();
-        $proponentIds = $basePatients->distinct()->pluck('proponent_id')->filter();
-        $userIds = $basePatients->distinct()->pluck('created_by')->filter();
-        $barangayIds = $basePatients->distinct()->pluck('barangay_id')->filter();
-        $muncityIds = $basePatients->distinct()->pluck('muncity_id')->filter();
-        $provinceIds = $basePatients->distinct()->pluck('province_id')->filter();
-
-        $includedIds = IncludedFacility::pluck('facility_id')->toArray();
-
-        $proponentsCode = cache()->remember('proponents_code', 3600, function () {
-            return Proponent::groupBy('proponent_code')
+        // Cache these static lookups
+        $provinces = cache()->remember('all_provinces', 3600, fn() => 
+            Province::select('id', 'description')->get()
+        );
+        
+        $municipalities = cache()->remember('all_municipalities', 3600, fn() => 
+            Muncity::select('id', 'description', 'province_id')->get()
+        );
+        
+        $barangays = cache()->remember('all_barangays', 3600, fn() => 
+            Barangay::select('id', 'description', 'muncity_id')->get()
+        );
+        
+        $includedIds = cache()->remember('included_facilities', 600, fn() => 
+            IncludedFacility::pluck('facility_id')->toArray()
+        );
+        
+        $facilities = cache()->remember('included_facilities_data', 600, fn() => 
+            Facility::whereIn('id', $includedIds)->get()
+        );
+        
+        $proponentsCode = cache()->remember('proponents_code', 3600, fn() => 
+            Proponent::groupBy('proponent_code')
                 ->select(DB::raw('MAX(proponent) as proponent'), 
-                        DB::raw('MAX(proponent_code) as proponent_code'),
+                        DB::raw('MAX(proponent_code) as proponent_code'), 
                         DB::raw('MAX(id) as id'))
-                ->get();
-        });
-
+                ->get()
+        );
+        
+        $onholdFacs = cache()->remember('onhold_facilities', 300, fn() => 
+            AddFacilityInfo::where('sent_status', 1)->pluck('facility_id')->toArray()
+        );
+    
         return [
-            'provinces' => Province::select('id', 'description')->get(),
-            'municipalities' => Muncity::select('id', 'description', 'province_id')->get(),
+            'provinces' => $provinces,
+            'municipalities' => $municipalities,
             'proponents' => $proponentsCode,
-            'barangays' => Barangay::select('id', 'description', 'muncity_id')->get(),
-            'facilities' => Facility::whereIn('id', $includedIds)->get(),
+            'barangays' => $barangays,
+            'facilities' => $facilities,
             'filter_date' => explode(',', $request->filter_date ?? ''),
             'filter_fname' => explode(',', $request->filter_fname ?? ''),
             'filter_mname' => explode(',', $request->filter_mname ?? ''),
@@ -1140,11 +1145,11 @@ class HomeController extends Controller
             'filter_barangay' => explode(',', $request->filter_barangay ?? ''),
             'filter_on' => explode(',', $request->filter_on ?? ''),
             'filter_by' => explode(',', $request->filter_by ?? ''),
-            'onhold_facs' => AddFacilityInfo::where('sent_status', 1)->pluck('facility_id')->toArray(),
+            'onhold_facs' => $onholdFacs,
             'filter_stat' => explode(',', $request->filter_stat ?? '')
         ];
     }
-
+    
     public function patients(Request $request)
     {
 
