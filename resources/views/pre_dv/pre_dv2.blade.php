@@ -247,6 +247,7 @@ use App\Models\TrackingDetails;
 <script src="{{ asset('admin/vendors/daterangepicker-master/moment.min.js?v=1') }}"></script>
 <script src="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.js?v=1') }}"></script>
 <script>
+    $('#docViewerModal').hide();
     var x_check = 0;
     function exclude_all(){
         

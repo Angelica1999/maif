@@ -465,6 +465,12 @@
 				msg: 'User activated!'
 			});
 		@endif
+		@if(session('transfer_funds'))
+			<?php session()->forget('transfer_funds'); ?>
+			Lobibox.notify('success', {
+				msg: 'Usage transferred to CVCHD deductibles successfully!'
+			});
+		@endif
 		@if(session('invalid_update'))
 			<?php session()->forget('invalid_update'); ?>
 			Swal.fire({

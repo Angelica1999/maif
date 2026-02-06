@@ -138,8 +138,6 @@
         </div>
     </div>
 </div>
-
-
 @include('modal')
 @endsection
 @include('dv.dv_js')

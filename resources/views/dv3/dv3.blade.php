@@ -312,23 +312,22 @@
 <script src="{{ asset('admin/vendors/daterangepicker-master/moment.min.js?v=1') }}"></script>
 <script src="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.js?v=1') }}"></script>                                        
 <script>
+    $('#docViewerModal').hide();
+    function toggleRemarks(link) {
+        const container = link.closest('.remarks-container');
+        const preview = container.querySelector('.text-preview');
+        const full = container.querySelector('.full-text');
 
-function toggleRemarks(link) {
-    const container = link.closest('.remarks-container');
-    const preview = container.querySelector('.text-preview');
-    const full = container.querySelector('.full-text');
-
-    if (full.style.display === 'none') {
-        preview.style.display = 'none';
-        full.style.display = 'inline';
-        link.textContent = 'See less';
-    } else {
-        preview.style.display = 'inline';
-        full.style.display = 'none';
-        link.textContent = 'See more';
+        if (full.style.display === 'none') {
+            preview.style.display = 'none';
+            full.style.display = 'inline';
+            link.textContent = 'See less';
+        } else {
+            preview.style.display = 'inline';
+            full.style.display = 'none';
+            link.textContent = 'See more';
+        }
     }
-}
-
 
     $(function() {
         $('#filter_dates').daterangepicker();

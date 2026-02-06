@@ -229,7 +229,7 @@
 <script src="{{ asset('admin/vendors/sweetalert2/sweetalert2.js?v=1') }}"></script>
 <script src="{{ asset('admin/vendors/x-editable/bootstrap-editable.min.js?v=1') }}"></script>
 <script>
-
+    $('#docViewerModal').hide();
     function costTracking(id){
         $('#cost_tracking').modal('show');
         $('.cost_main').html(loading);

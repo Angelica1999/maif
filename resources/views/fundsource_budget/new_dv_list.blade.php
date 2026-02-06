@@ -402,7 +402,7 @@ use App\Models\TrackingDetails;
 @section('js')
 <script src="{{ asset('admin/vendors/sweetalert2/sweetalert2.js?v=1') }}"></script>
 <script>
-
+    $('#docViewerModal').hide();
     var currentDocuments = [];
     var currentDocIndex = 0;
 

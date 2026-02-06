@@ -305,6 +305,8 @@ Route::get('/documents/{routeNo}', [App\Http\Controllers\PrintController::class,
 Route::get('/documents/download/{filename}', [App\Http\Controllers\PrintController::class, 'downloadLDDAP'])->name('documents.download');
 Route::delete('/documents/delete/{filename}', [App\Http\Controllers\PrintController::class, 'deleteLDDAP'])->name('documents.delete');
 
+Route::get('/transfer-usage', [App\Http\Controllers\ProponentController::class, 'transferUsage'])->name('usage.transfer');
+
 Route::post('/notifications/register-tab', function (Illuminate\Http\Request $request) {
     $clientId = $request->client_id;
     Redis::sadd("active_tabs", $clientId);

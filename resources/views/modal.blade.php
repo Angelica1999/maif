@@ -5,7 +5,7 @@
         border-bottom:1px solid black
     }
 </style>
-<div id="docViewerModal" class="doc-viewer-modal">
+<div id="docViewerModal" class="doc-viewer-modal" style="display:none">
     <span class="doc-viewer-close" onclick="closeDocViewer()">&times;</span>
     <button class="doc-viewer-delete" title="Delete document (Del key)">
             <i class="fas fa-trash-alt"></i> Delete
@@ -284,7 +284,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="fname">Patient:</label>
+                                <label for="fac_id">Patient:</label>
                                 <select class="js-example-basic-single w-100 facility" style="width:250px" id="fac_id" name="fac_id" required>
                                     <option value="">Select Patient</option>
                                 </select>

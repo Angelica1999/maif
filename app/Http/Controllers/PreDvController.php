@@ -17,6 +17,8 @@ use App\Models\Facility;
 use App\Models\AddFacilityInfo;
 use App\Models\TrackingMaster;
 use App\Models\Transmittal;
+use App\Models\TransmittalDetails;
+use App\Models\TransmittalPatients;
 use App\Models\TrackingDetails;
 use App\Models\ProponentInfo;
 use App\Models\Utilization;
@@ -33,6 +35,7 @@ use PhpOffice\PhpSpreadsheet\Style\Font;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PDF;
+use Carbon\Carbon;
 
 class PreDvController extends Controller
 {
@@ -554,6 +557,27 @@ class PreDvController extends Controller
     public function v2View($id)
     {
         $pre_dv = PreDV::where('id', $id)->with('facility')->first();
+
+        $start_date = '';
+        $end_date = '';
+        $prev_accumulated = 0;
+
+        if($pre_dv->trans_id != null){
+            $transmittal = Transmittal::where('id', $pre_dv->trans_id)->first();
+            if($transmittal){
+                $details = TransmittalDetails::where('transmittal_id', $transmittal->id)->pluck('id')->toArray();
+                $trans_patients = TransmittalPatients::whereIn('transmittal_details', $details)->get();
+                $start_date = $trans_patients->min('start');
+                $end_date = $trans_patients->max('end');
+
+                $previousYear = Carbon::now()->subYear()->year;
+
+                $prev_accumulated = TransmittalPatients::whereIn('transmittal_details', $details)
+                    ->whereYear('start', $previousYear)
+                    ->sum('total');
+            }
+        }
+
         $new_dv = NewDV::where('predv_id', $id)->first();
         // return $new_dv;
         $extension = PreDVExtension::where('pre_dv_id', $pre_dv->id)->pluck('id');
@@ -585,6 +609,9 @@ class PreDvController extends Controller
                 'control' => $control,
                 'new_dv' => $new_dv,
                 'amount' => $grouped->sum('amount'),
+                'start_date' => $start_date,
+                'end_date' => $end_date,
+                'prev_accumulated' => $prev_accumulated
             ]);
         }
     }

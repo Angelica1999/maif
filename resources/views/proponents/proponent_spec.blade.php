@@ -3,7 +3,7 @@
         <table class="table table-list table-hover table-striped" id="track_details">
             <thead style="position: sticky; top: 0; background-color: white; z-index: 1;">
                 <tr style="text-align:left; background-color:gray; color:white">
-                    <th colspan=5>{{ $proponent->proponent }}</th>
+                    <th colspan=6>{{ $proponent->proponent }}</th>
                 </tr>
                 <tr>
                     <th style="text-align:left;">FACILITY</th>
@@ -11,6 +11,7 @@
                     <th>ADMIN COST</th>
                     <th>USAGE</th>
                     <th>REMAINING</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -32,16 +33,35 @@
                         <td style="text-align:margin-right;">{{ number_format($row['admin_cost'], 2,'.',',') }}</td>
                         <td style="text-align:margin-right;">
                             @if(in_array('702', $row['facility_ids']))
-                                {{ number_format($row['util'] + $row['patient_amount'] + $rem_patients + $for_cvchd, 2,'.',',') }}
+                                {{ number_format($row['util'] + $row['patient_amount'] + $rem_patients + $for_cvchd + $usage_total, 2,'.',',') }}
                             @else
                                 {{ number_format($row['util'] + $row['patient_amount'], 2,'.',',') }}
                             @endif
                         </td>
                         <td style="text-align:margin-right;">
                             @if(in_array('702', $row['facility_ids']))
-                                {{ number_format(($row['allocated'] + $supplemental - $subtracted) - ($row['admin_cost'] + $row['util'] + $row['patient_amount'] + $rem_patients + $for_cvchd), 2,'.',',') }}
+                                {{ number_format(($row['allocated'] + $supplemental - $subtracted) - ($row['admin_cost'] + $row['util'] + $row['patient_amount'] + $rem_patients + $usage_total + $for_cvchd), 2,'.',',') }}
                             @else
                                 {{ number_format($row['allocated'] - ($row['admin_cost'] + $row['util'] + $row['patient_amount']), 2,'.',',') }}
+                            @endif
+                        </td>
+                        <td style="text-align:margin-right;">
+                            @if(!in_array('702', $row['facility_ids']))
+                                <a href="javascript:void(0)"
+                                    class="btn btn-xs btn-transfer"
+                                    title="Transfer Usage to CVCHD"
+                                    style="background-color: rgba(0,123,255,0.15); border-color: rgba(0,123,255,0.4); color:#0d6efd;"
+                                    data-proponent="{{ $proponent->proponent }}"
+                                    data-facility-ids='@json($row["facility_ids"])'
+                                    data-facility="{{ collect($row['facilities'])->flatten()->implode(', ') }}"
+                                    data-facility-names='@json($facility_lists)'
+                                    data-amount="{{ in_array('702', $row['facility_ids']) 
+                                            ? $row['util'] + $row['patient_amount'] + $rem_patients + $for_cvchd 
+                                            : $row['util'] + $row['patient_amount'] }}"
+                                    >
+                                        <i class="fa fa-random"></i>
+                                    </a>
+
                             @endif
                         </td>
                     </tr>
@@ -52,6 +72,7 @@
                     <td style="text-align:margin-right;">{{ number_format($total_admin_cost, 2,'.',',') }}</td>
                     <td style="text-align:margin-right;">{{ number_format($total_usage, 2,'.',',') }}</td>
                     <td style="text-align:margin-right;">{{ number_format($remaining, 2,'.',',') }}</td>
+                    <td></td>
                 </tr>
             </tbody>
         </table>
