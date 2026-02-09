@@ -851,6 +851,10 @@ class HomeController extends Controller
     public function index(Request $request)
     {
 
+        if(Auth::user()->userid == "2760"){
+            return 2;
+        }
+
         Proponent::whereIn('proponent', 
             Proponent::where('status', 1)->pluck('proponent')
         )->update(['status' => 1]);
@@ -1149,7 +1153,7 @@ class HomeController extends Controller
             'filter_stat' => explode(',', $request->filter_stat ?? '')
         ];
     }
-    
+
     public function patients(Request $request)
     {
 

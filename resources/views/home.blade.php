@@ -121,7 +121,7 @@
                     </form>
                 </div>
             </div>
-            <h4 class="card-title">MANAGE PATIENTS</h4>
+            <h4 class="card-title">MANAGE PATIENT</h4>
             <span class="card-description">
                 MAIF-IPP
             </span>

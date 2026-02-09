@@ -146,7 +146,7 @@
     }
 
     .maif-sidebar .sub-menu {
-        transition-delay: 1.5s; /* Delay before closing */
+        transition-delay: 1s; 
     }
 
     .maif-sidebar .sub-menu .nav-link {
@@ -1174,7 +1174,7 @@
                                             <span class="menu-icon">
                                                 <img src="\maif\public\images\pre_re_16.png">
                                             </span>
-                                            <span class="menu-title">Incoming</span>
+                                            <span class="menu-title">Incoming Annex A</span>
                                         </a>
                                     </li>
                                     <li class="nav-item">

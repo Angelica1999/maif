@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Generate New DV1</title>
+        <title>Disbursement Voucher</title>
         <!-- <link rel="stylesheet" href="{{ public_path('bootstrap.min.css') }}"> -->
         <style>
             /* #cover {
@@ -56,17 +56,15 @@
                 <div style="page-break-inside: avoid;">
                     <table class="table" style="border-collapse:collapse; width: 100%; font-size:12px">
                         <tr style="border: 1px solid black;">
-                            <td width="23%" style="text-align: center; border-right:none"><img src="{{realpath(__DIR__ . '/../../..').'/public/images/doh-logo.png'}}" width="70"></td>
-                            <td width="54%" style="border-left:none; border-right:none; text-align:center">
-                                <div class="header" style="margin-top: 15px">
-                                    <span style="margin-top: 10px">Republic of the Philippines</span> <br>
-                                    <strong> CENTRAL VISAYAS CENTER for HEALTH DEVELOPMENT</strong> <br>
-                                    <small>Osmeña Boulevard, Cebu City, Philippines 6000</small> <br>
-                                    <small>Regional Director's Office Tel. No (032) 253-6335 Fax No. (032) 254-0109</small><br>
-                                    <small>Official Website <u>www.ro7.doh.gov.ph/</u> Email Address <u>dohro7@gmail.com</u></small><br>
+                            <td width="23%" style="text-align: center; border-right:none; padding:5px"><img src="{{realpath(__DIR__ . '/../../..').'/public/images/doh-logo.png'}}" width="70"></td>
+                            <td width="54%" style="border-left:none; border-right:none; text-align:center; line-height:1.4">
+                                <div class="header" style="margin-top: 15px;">
+                                    <span>Republic of the Philippines</span> <br>
+                                    <strong> DEPARTMENT OF HEALTH</strong> <br>
+                                    <i>Central Visayas Center for Health Development</i><br>
                                 </div>
                             </td>
-                            <td width="23%" style="text-align: right; border-left:none;"><small><i><br><br><br><br><br><br>Appendix 32&nbsp;&nbsp;&nbsp;</i></small> </td>
+                            <td width="23%" style="text-align: center; border-left:none;"><img src="{{realpath(__DIR__ . '/../../..').'/public/images/bagong_pilipinas.png'}}" width="70"></td>
                         </tr>
                     </table>
                     <table class="table" style="border-collapse:collapse; width: 99.9%;">
