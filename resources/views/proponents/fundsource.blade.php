@@ -7,16 +7,18 @@
 
     .input-group-append {
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         width: 100%;
         justify-content: flex-end; 
         
     }
+
+
     .input-group-append select,
     .input-group-append .btn {
         flex: none;
-        min-width: 75px;
-        font-size: 11px;
+        min-width: 70px;
+        font-size: 12px;
         box-sizing: border-box;
     }
 
@@ -94,8 +96,66 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
+    .spec_body {
+      
+    overflow-y: auto;  
+    overflow-x: auto;  
+    margin-right: 10px;
+}
+    @media (max-width: 763px) {
+        .input-group {
+            flex-wrap: wrap !important;
+            width: 100%;
+        }
 
-    </style>
+        .input-group-append {
+            display: flex;
+            flex-wrap: wrap !important;
+            gap: 2px;
+            justify-content: center; 
+            width: 100%;
+        }
+        
+        .input-group-append select,
+        .input-group-append .select2-container {
+            flex: 1 1 100%;
+            max-width: 100% !important;
+            min-width: unset !important;
+            width: 100% !important;
+           
+            font-size: 13px;
+        }
+        .input-group-append .btn,
+        .input-group-append a.btn-sum {
+            flex: 1 1 100%;      
+            max-width: 100% !important;
+            min-width: unset !important;
+            height: 40px !important;
+            font-size: 13px;
+            border-radius: 4px !important;
+            text-align: center;
+        }
+
+        .input-group-append a.btn-sum {
+            display: flex;
+            align-items: center;
+            justify-content: center; 
+            gap: 6px;
+            color: white !important;
+        }
+        .input-group-append .select2-container {
+        min-height: 40px !important;
+        height: auto !important;  
+        }
+        .select2-container--default .select2-selection--multiple {
+            min-height: 40px !important;
+            max-height: 120px !important;
+            overflow-y: auto !important; 
+        }
+        
+    }
+
+</style>
 @extends('layouts.app')
 @section('content')
 <?php 
@@ -104,45 +164,43 @@
     use App\Models\Facility; 
 ?>
 <div class="col-lg-12 grid-margin stretch-card">
-    <div class="card" > 
-        <div class="card-body" style="">
-            <div style="display: flex; justify-content: space-between; align-items: stretch; width: 100%">
+    <div class="card"> 
+        <div class="card-body">
+            <div class="d-flex flex-wrap justify-content-between align-items-stretch w-80">
                 <div style="text-align: start;">
                     <h4 class="card-title">MANAGE FUNDSOURCE: PROPONENTS</h4>
                     <p class="card-description">MAIF-IPP</p>
                 </div>
-                <div>
-                    <div class="input-group">
-                        <form method="GET" action="">
-                            <div class="input-group">
-                                <select class="form-control select2 data_filtering"  name="data_filtering[]" style="display:none" multiple>
-                                    <option value=""></option>
-                                    @foreach($proponents as $row)
-                                        <option value="{{ $row[0]->id }}" {{ in_array($row[0]->id, $keyword) ? 'selected' : '' }}>
-                                            {{ $row[0]->proponent }}
-                                        </option>
-                                    @endforeach
+                <div class="d-flex flex-wrap justify-content-end ">
+                    <form method="GET" action="">
+                        <div class="input-group">
+                            <div class="input-group-append">
+                                    <select class="form-control select2 data_filtering" name="data_filtering[]" style="display:none" multiple>
+                                <option value=""></option>
+                                @foreach($proponents as $row)
+                                    <option value="{{ $row[0]->id }}" {{ in_array($row[0]->id, $keyword) ? 'selected' : '' }}>
+                                        {{ $row[0]->proponent }}
+                                    </option>
+                                @endforeach
+                            </select>
+                                    <button style="width:75px; border-radius:0; height:40px;" class="btn btn-sm btn-info text-white" value="filtered" type="submit" name="filtered_btn"><i class="typcn typcn-filter menu-icon"></i>Filter</button>
+                                <select class="form-control data_sorting" name="data_sorting" style="display:none">
+                                    <option></option>
+                                    <option value="1" {{ $filter_keyword == 1 ? 'selected' : '' }}>Proponent</option>
+                                    <option value="2" {{ $filter_keyword == 2 ? 'selected' : '' }}>Allocated Funds</option>
+                                    <option value="3" {{ $filter_keyword == 3 ? 'selected' : '' }}>GL Total</option>
+                                    <option value="4" {{ $filter_keyword == 4 ? 'selected' : '' }}>Disbursement Total</option>
+                                    <option value="5" {{ $filter_keyword == 5 ? 'selected' : '' }}>Supplemental Funds</option>
+                                    <option value="6" {{ $filter_keyword == 6 ? 'selected' : '' }}>Negative Amount</option>
+                                    <option value="7" {{ $filter_keyword == 7 ? 'selected' : '' }}>Remaining Funds</option>
                                 </select>
-                                <button style="width:75px; border-radius:0; height:40px;" class="btn btn-sm btn-info text-white" value="filtered" type="submit" name="filtered_btn"><i class="typcn typcn-filter menu-icon"></i>Filter</button>
-                                <div class="input-group-append">
-                                    <select class="form-control data_sorting" name="data_sorting" style="display:none">
-                                        <option></option>
-                                        <option value="1" {{ $filter_keyword == 1 ? 'selected' : ''}}>Proponent</option>
-                                        <option value="2" {{ $filter_keyword == 2 ? 'selected' : ''}}>Allocated Funds</option>
-                                        <option value="3" {{ $filter_keyword == 3 ? 'selected' : ''}}>GL Total</option>
-                                        <option value="4" {{ $filter_keyword == 4 ? 'selected' : ''}}>Disbursement Total</option>
-                                        <option value="5" {{ $filter_keyword == 5 ? 'selected' : ''}}>Supplemental Funds</option>
-                                        <option value="6" {{ $filter_keyword == 6 ? 'selected' : ''}}>Negative Amount</option>
-                                        <option value="7" {{ $filter_keyword == 7 ? 'selected' : ''}}>Remaining Funds</option>
-                                    </select>
-                                   <button style="width:75px; border-radius:0; height:40px"  class="btn btn-sm btn-success text-white" value="{{ $sort }}" type="submit" name="sorting_btn"><i class="typcn typcn-filter menu-icon"></i>Sort</button>
-                                        <button style="width:75px; border-radius:0; height:40px" class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View</button>
-                                    <a href="{{ route('excel.proponent_summary') }}" style= "color: white; height:40px" type="button" class="btn btn-sum">
-                                        <img src="\maif\public\images\excel-file.png" style="width: 15px; height: auto;">Summary</a>    
-                                </div>
+
+                                <button style="width:75px; border-radius:0; height:40px" class="btn btn-sm btn-success text-white" value="{{ $sort }}" type="submit" name="sorting_btn"><i class="typcn typcn-filter menu-icon"></i>Sort</button>
+                                <button style="width:75px; border-radius:0; height:40px" class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View</button>
+                                <a href="{{ route('excel.proponent_summary') }}" style="color: white; height:40px" type="button" class="btn btn-sum"><img src="\maif\public\images\excel-file.png" style="width: 13px; height: auto;">Summary</a>    
                             </div>
-                        </form>
-                    </div>
+                        </div>
+                    </form>
                 </div>
             </div>
             <div class="clearfix"></div>
@@ -196,7 +254,12 @@
                                                     <tr>
                                                         <td style="padding:5px">Remaining Funds</td>
                                                         <td class="text-center">:</td>
-                                                        <td><strong>{{ number_format($row['rem'] ?? 0, 2, '.', ',') }}</strong></td>
+                                                        <td><strong>
+                                                            <a href="#allocation_breakdowns" data-toggle="modal" onclick="aloBreakdowns('{{ $row['proponent']['proponent'] }}')">
+                                                                {{ number_format($row['rem'] ?? 0, 2, '.', ',') }}
+                                                            </a>
+                                                            </strong>
+                                                        </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -335,6 +398,20 @@
                     <button type="submit" class="btn btn-warning" onclick="subtracts()">Negate Funds</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="allocation_breakdowns" role="dialog">
+    <div class="modal-dialog modal-responsive" role="document">
+        <div class="modal-content" style="border-radius:0px;">
+            <div class="modal-header" style="text-align:center">
+                <h4 class="text-success modal-title">
+                    <i style="font-size:15px" class="typcn typcn-location-arrow menu-icon"></i>
+                    ALLOCATION OF FUNDS PER FACILITY
+                </h4>
+            </div>
+            <div class="spec_body">
+            </div>
         </div>
     </div>
 </div>
@@ -776,6 +853,13 @@
         $('.sub_body').html(loading);
         $.get("{{ url('proponent/sub-details').'/' }}"+proponent, function(result){
             $('.sub_body').html(result);
+        });
+    }
+
+    function aloBreakdowns(proponent){
+        $('.spec_body').html(loading);
+        $.get("{{ url('proponent/spec-allocations').'/' }}"+proponent, function(result){
+            $('.spec_body').html(result);
         });
     }
 

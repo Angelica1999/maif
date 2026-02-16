@@ -26,19 +26,75 @@
         width: 100%; 
         height: 100%; 
     }
+
+.card-title{
+    width: 200px;
+}
+.input-group {
+        justify-content: flex-end;
+        gap: 1px;
+        flex-wrap: nowrap; 
+    }
+     .input-group-append {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end; 
+        
+    }
+.input-group .form-control {
+    width: 250px !important;    /* adjust as needed */
+    max-width: 100%;
+}
+    .scrollable-table thead th{
+    white-space: nowrap;
+    text-align: center;
+    }
+       @media (max-width: 767px) {
+    .input-group {
+        flex-direction: column;     
+        align-items: stretch;     
+    }
+
+    .input-group .form-control {
+        width: 200% !important;
+        margin-bottom: 5px;
+    }
+
+    .input-group-append {
+        flex-direction: column;     /* stack buttons */
+        width: 100%;
+    }
+
+    .input-group-append .btn {
+        width: 100%;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+        align-items: center; 
+        justify-content: center;
+    }
+    #gen_btn{
+         width: 100% !important;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+    }
+}
 </style>
-<div class="col-md-12 grid-margin stretch-card">
+<div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-            <div class="float-right">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <div class="mb-2 mb-md-0">
+                    <h4 class="card-title">PRE - DV</h4>
+                    <p class="card-description">MAIF-IPP</p>
+                </div>
                 <div class="input-group">
                     <form method="GET" action="">
                         <div class="input-group">
-                            <input type="text" class="form-control" name="keyword" placeholder="Search..." value="{{$keyword}}" id="search-input" style="width:350px;">
+                            <input type="text" class="form-control" name="keyword" placeholder="Search..." value="{{$keyword}}" id="search-input" >
                             <div class="input-group-append">
                                 <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
                                 <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
-                                <button type="button" class="btn btn-success" data-toggle="modal" data-backdrop="static" href="#create_predv" style="width:95px; display: inline-flex; align-items: center; border-radius: 0;"><img src="\maif\public\images\icons8_create_16.png" style="margin-right: 5px;"><span style="vertical-align: middle;">Create</span></button>      
+                                <button type="button" class="btn btn-success" data-toggle="modal" data-backdrop="static" href="#create_predv" style=" display: inline-flex; align-items: center; border-radius: 0;"><img src="\maif\public\images\icons8_create_16.png" style="margin-right: 5px;"><span style="vertical-align: middle;">Create</span></button>      
                                 <button type="submit" value="filt" style="display:none; background-color:green; color:white; width:95px;" name="filt_dv" id="filt_dv" class="btn btn-xs"><i class="typcn typcn-filter menu-icon"></i>&nbsp;&nbsp;&nbsp;Filter</button>
                             </div>
                         </div>
@@ -52,17 +108,14 @@
                     </form>
                 </div>
             </div>
-            <h4 class="card-title">PRE - DV</h4>
-            <p class="card-description">
-                MAIF-IPP
-            </p>
-            <div class="table-responsive">
+        
+            <div class="table-responsive scrollable-table">
                 @if(count($results) > 0)
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th style="min-width:200px"></th>
-                                <th>Route No</th>
+                                <th style="min-width:250px"></th>
+                                <th style="min-width:120px">Route No</th>
                                 <th class="fc">Facility
                                     <i id="fac_i" class="typcn typcn-filter menu-icon"><i>
                                     <div class="filter" id="fac_div" style="display:none;">
@@ -90,7 +143,7 @@
                                 </th>
                                 <th>Professional Fee</th>
                                 <th style="min-width:100px">Grand Total</th>
-                                <th class="user">Created By
+                                <th class="user" style="min-width:120px">Created By
                                     <i id="by_i" class="typcn typcn-filter menu-icon"><i>
                                     <div class="filter" id="by_div" style="display:none;">
                                         <select style="width: 120px;" id="by_select" name="by_select" multiple>
@@ -106,7 +159,7 @@
                                         </select>
                                     </div>  
                                 </th>
-                                <th>Created On</th>
+                                <th style="min-width:120px">Created On</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -133,7 +186,12 @@
                                     </td>
                                     <td>{{ $row->prof_fee != null ? number_format(str_replace(',','',$row->prof_fee), 2, '.',',') : '0.00' }}</td>
                                     <td>{{ number_format(str_replace(',','',$row->grand_total), 2, '.',',') }}</td>
-                                    <td>{{ $row->user->lname .', '.$row->user->fname }}</td>
+                                    <td>  @if($row->user)
+                                            {{ $row->user->lname .', '.$row->user->fname }}
+                                          @else
+                                            User not Found
+                                          @endif  
+                                    </td>
                                     <td>{{ date('F j, Y', strtotime($row->created_at)) }}</td>
                                 </tr>
                             @endforeach
@@ -295,6 +353,7 @@
 <div class="loading-container" style="display:none">
     <img src="\maif\public\images\loading.gif" alt="Loading..." class="loading-spinner">
 </div>
+
 @include('modal')
 @endsection
 @section('js')
@@ -327,6 +386,408 @@
     function displayControl(){
         $('.control_option').css('display', 'block');
     }
+
+//     function updateSAAOption(data_select, proponent_select) {
+//         var facility_id = $('.facility_id').val();
+//         var proponent_name = $(proponent_select).find('option:selected').text();
+
+//         if(proponent_name == '' || proponent_name == null || proponent_name == 'undefined'){
+//             var proponent_name = $(proponent_select).val();
+//         }
+
+//         if(proponent_name == null || proponent_name == '' || proponent_name == 'undefined'){
+//             return false;
+//         }
+
+//         // $.get("{{ url('fetch/pre-dv/fundsource').'/' }}"+ $('.facility_id').val(), function(result) {
+//         // $.get("{{ url('fetch/pre-dv/fundsource').'/' }}"+facility_id, function(result) {
+
+//         if (typeof all_options === "undefined" || !all_options || !all_options.info) {
+//             $.get("{{ url('fetch/pre-dv/fundsource').'/' }}" + facility_id, function(result) {
+//                 if (result && result.info) {
+//                     all_options = result;
+            
+//                     updateSAAOption(data_select, proponent_select);
+//                 }
+//             });
+
+//             return; // STOP — do not proceed until retry
+//         }
+
+//             var data_result = all_options.info;
+//             var first = [], sec = [], third = [], fourth = [], fifth = [], six = [];
+//             var facilitiesArray = Array.isArray(all_options.facilities) ? all_options.facilities : [];
+
+//             $.each(data_result, function(index, optionData) {
+
+//                 var rem_balance = parseFloat(optionData.remaining_balance.replace(/,/g, ''))
+//                     .toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+//                 var pro_name = optionData.proponent.proponent;
+//                 var rem_balance_num = parseFloat(optionData.remaining_balance.replace(/,/g, ''));
+
+//                 var check_p = 0;
+//                 var id = optionData.facility_id;
+//                 var name_id = optionData.facility_id;
+
+//                 if (typeof name_id === 'string') {
+//                     try {
+//                         name_id = JSON.parse(name_id);
+//                     } catch (e) {
+//                         name_id = [name_id];
+//                     }
+//                 }
+//                 if (typeof name_id === 'number') {
+//                     name_id = [String(name_id)];
+//                 }
+
+//                 var facilityNames = facilitiesArray
+//                     .filter(f => name_id.includes(String(f.id)))
+//                     .map(f => f.name)
+//                     .join(' & ');
+
+// //                     1. CONAP Black Font Color (ARRANGED ALPHANUMERICALLY)
+// // 2. CURRENT Black Font Color
+// // 3. CONAP yellow font
+// // 4. CURRENT yellow font
+// // 5. Red Font
+//                 var text_display;
+
+//                 if (optionData.facility !== null) {
+//                     if (optionData.facility.id == facility_id) {
+//                         text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + facilityNames + ' - ' + rem_balance;
+//                     } else {
+//                         text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + facilityNames + ' - ' + rem_balance;
+//                         check_p = 1;
+//                     }
+//                 } else {
+//                     if (id.includes('702')) {
+//                         check_p = 0;
+//                     }else{
+//                         check_p = 1;
+//                     }
+//                     text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + facilityNames + ' - ' + rem_balance;
+//                 }
+
+//                 var color = '';
+//                 var obj;
+
+//                 if (rem_balance == '0' || rem_balance == '0.00' || rem_balance_num <= 0) {
+//                     color = 'red';
+
+//                     obj = {
+//                         value: optionData.fundsource_id,
+//                         text: text_display,
+//                         dataval: optionData.remaining_balance,
+//                         dataproponentInfo_id: optionData.id,
+//                         dataprogroup: optionData.proponent.pro_group,
+//                         dataproponent: optionData.proponent.id,
+//                         d_color: color
+//                     };
+
+//                     if (optionData.fundsource.saa.includes('CONAP')) {
+//                         fifth.push(obj);
+//                     } else {
+//                         six.push(obj);
+//                     }
+
+//                 } else {
+//                     color = 'normal';
+
+//                     if (check_p != 1 && proponent_name == pro_name) {
+//                         color="";
+//                     }else {
+//                         color="yellow";
+//                     }
+                    
+//                     obj = {
+//                         value: optionData.fundsource_id,
+//                         text: text_display,
+//                         dataval: optionData.remaining_balance,
+//                         dataproponentInfo_id: optionData.id,
+//                         dataprogroup: optionData.proponent.pro_group,
+//                         dataproponent: optionData.proponent.id,
+//                         d_color: color
+//                     };
+
+                    
+// // Arrangement inig select SAA:
+
+// // 1. CONAP Black Font Color (ARRANGED ALPHANUMERICALLY)
+// // 2. CURRENT Black Font Color
+// // 3. CONAP yellow font
+// // 4. CURRENT yellow font
+// // 5. Red Font
+
+//                     if (optionData.fundsource.saa.includes('CONAP')) {
+//                         if (check_p != 1 && proponent_name == pro_name) first.push(obj);
+//                         else third.push(obj);
+//                     } else {
+//                         if (check_p != 1 && proponent_name == pro_name) sec.push(obj);
+//                         else fourth.push(obj);
+//                     }
+//                 }
+//             });
+
+//             function buildOptions(arr) {
+//                 var html = "";
+//                 arr.forEach(o => {
+//                     html += `<option 
+//                                 value="${o.value}"
+//                                 data-color="${o.d_color}"
+//                                 dataval="${o.dataval}"
+//                                 dataproponentinfo_id="${o.dataproponentInfo_id}"
+//                                 dataprogroup="${o.dataprogroup}"
+//                                 dataproponent="${o.dataproponent}"
+//                             >${o.text}</option>`;
+//                 });
+//                 return html;
+//             }
+
+//             var final_html =
+//                 buildOptions(first) +
+//                 buildOptions(sec) +
+//                 buildOptions(third) +
+//                 buildOptions(fourth) +
+//                 buildOptions(fifth) +
+//                 buildOptions(six);
+
+//             data_select.html(`<option value="">SELECT SAA</option>` + final_html);
+
+//             data_select.select2({
+//                 templateResult: function (data) {
+//                     let color = $(data.element).data('color');
+//                     if (color === 'red') return $('<span style="color:red;">' + data.text + '</span>');
+//                     if (color === 'yellow') return $('<span style="color:#DAA520;">' + data.text + '</span>');
+//                     return data.text;
+//                 },
+//                 placeholder: "Select SAA"
+//             });
+//         // });
+
+//     }
+
+// Build SAA options HTML (called once per proponent)
+function buildSAAOptionsHTML(proponent_name, facility_id) {
+    // Check cache first
+    var cacheKey = proponent_name + '_' + facility_id;
+    if (saaOptionsCache[cacheKey]) {
+        return saaOptionsCache[cacheKey];
+    }
+
+    if (!all_options || !all_options.info) {
+        console.warn('Fundsource data not loaded yet');
+        return '<option value="">SELECT SAA</option>';
+    }
+
+    var data_result = all_options.info;
+    var facilitiesArray = Array.isArray(all_options.facilities) ? all_options.facilities : [];
+    
+    var first = [], sec = [], third = [], fourth = [], fifth = [], six = [];
+
+    $.each(data_result, function(index, optionData) {
+        var rem_balance = parseFloat(optionData.remaining_balance.replace(/,/g, ''))
+            .toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        var pro_name = optionData.proponent.proponent;
+        var rem_balance_num = parseFloat(optionData.remaining_balance.replace(/,/g, ''));
+
+        var check_p = 0;
+        var id = optionData.facility_id;
+        var name_id = optionData.facility_id;
+
+        if (typeof name_id === 'string') {
+            try {
+                name_id = JSON.parse(name_id);
+            } catch (e) {
+                name_id = [name_id];
+            }
+        }
+        if (typeof name_id === 'number') {
+            name_id = [String(name_id)];
+        }
+
+        var facilityNames = facilitiesArray
+            .filter(f => name_id.includes(String(f.id)))
+            .map(f => f.name)
+            .join(' & ');
+
+        var text_display;
+        if (optionData.facility !== null) {
+            if (optionData.facility.id == facility_id) {
+                text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + facilityNames + ' - ' + rem_balance;
+            } else {
+                text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + facilityNames + ' - ' + rem_balance;
+                check_p = 1;
+            }
+        } else {
+            if (id.includes('702')) {
+                check_p = 0;
+            } else {
+                check_p = 1;
+            }
+            text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + facilityNames + ' - ' + rem_balance;
+        }
+
+        var color = '';
+        var obj;
+
+        if (rem_balance == '0' || rem_balance == '0.00' || rem_balance_num <= 0) {
+            color = 'red';
+            obj = {
+                value: optionData.fundsource_id,
+                text: text_display,
+                dataval: optionData.remaining_balance,
+                dataproponentInfo_id: optionData.id,
+                dataprogroup: optionData.proponent.pro_group,
+                dataproponent: optionData.proponent.id,
+                d_color: color
+            };
+
+            if (optionData.fundsource.saa.includes('CONAP')) {
+                fifth.push(obj);
+            } else {
+                six.push(obj);
+            }
+        } else {
+            color = 'normal';
+            proponent_name = proponent_name.replace(/\s+/g, ' ').trim();
+            pro_name = pro_name.replace(/\s+/g, ' ').trim();
+
+            if (check_p != 1 && proponent_name == pro_name) {
+                color = "normal";
+            } else {
+                color = "#DAA520";
+            }
+
+            obj = {
+                value: optionData.fundsource_id,
+                text: text_display,
+                dataval: optionData.remaining_balance,
+                dataproponentInfo_id: optionData.id,
+                dataprogroup: optionData.proponent.pro_group,
+                dataproponent: optionData.proponent.id,
+                d_color: color
+            };
+
+            if (optionData.fundsource.saa.includes('CONAP')) {
+                if (check_p != 1 && proponent_name == pro_name) first.push(obj);
+                else third.push(obj);
+            } else {
+                if (check_p != 1 && proponent_name == pro_name) sec.push(obj);
+                else fourth.push(obj);
+            }
+        }
+    });
+
+    // function buildOptions(arr) {
+    //     var html = "";
+    //     arr.forEach(o => {
+    //         html += `<option 
+    //                     value="${o.value}"
+    //                     data-color="${o.d_color}"
+    //                     dataval="${o.dataval}"
+    //                     dataproponentinfo_id="${o.dataproponentInfo_id}"
+    //                     dataprogroup="${o.dataprogroup}"
+    //                     dataproponent="${o.dataproponent}"
+    //                 >${o.text}</option>`;
+    //     });
+    //     return html;
+    // }
+
+    function buildOptions(arr) {
+    let html = "";
+    arr.forEach(o => {
+        let coloredHTML = `<span style="color:${o.d_color}">${o.text}</span>`;
+        html += `
+        <option 
+            value="${o.value}"
+            data-color="${o.d_color}"
+            dataval="${o.dataval}"
+            dataproponentinfo_id="${o.dataproponentInfo_id}"
+            dataprogroup="${o.dataprogroup}"
+            dataproponent="${o.dataproponent}"
+            data-html='${coloredHTML.replace(/'/g, "&apos;")}'
+        >${o.text}</option>`;
+    });
+    return html;
+}
+
+
+    var final_html = '<option value="">SELECT SAA</option>' +
+        buildOptions(first) +
+        buildOptions(sec) +
+        buildOptions(third) +
+        buildOptions(fourth) +
+        buildOptions(fifth) +
+        buildOptions(six);
+
+    // Cache the result
+    saaOptionsCache[cacheKey] = final_html;
+    
+    return final_html;
+}
+
+// Update a SINGLE SAA select element
+function updateSAAOption(data_select, proponent_select) {
+    var facility_id = $('.facility_id').val();
+    var proponent_name = $(proponent_select).find('option:selected').text();
+
+    if (!proponent_name || proponent_name == '' || proponent_name == 'undefined') {
+        proponent_name = $(proponent_select).val();
+    }
+
+    if (!proponent_name || proponent_name == '' || proponent_name == 'undefined') {
+        return false;
+    }
+
+    // Wait for data if not loaded
+    if (!all_options || !all_options.info) {
+        $.get("{{ url('fetch/pre-dv/fundsource').'/' }}" + facility_id, function(result) {
+            if (result && result.info) {
+                all_options = result;
+                saaOptionsCache = {}; // Clear cache
+                updateSAAOption(data_select, proponent_select);
+            }
+        });
+        return;
+    }
+console.log('sample');
+    // Build options HTML
+    var optionsHTML = buildSAAOptionsHTML(proponent_name, facility_id);
+    
+    // Update only this select element
+    data_select.html(optionsHTML);
+    
+    data_select.select2({
+    escapeMarkup: m => m,
+    templateResult: function (data) {
+        return $(data.element).data("html") || data.text;
+    },
+    templateSelection: function (data) {
+        return $(data.element).data("html") || data.text;
+    }
+});
+    // Initialize/reinitialize Select2 only if needed
+    // if (!data_select.hasClass('select2-hidden-accessible')) {
+    //     console.log('if');
+    //     data_select.select2({
+    //         templateResult: function (data) {
+    //             let color = $(data.element).data('color');
+    //             if (color === 'red') return $('<span style="color:red;">' + data.text + '</span>');
+    //             if (color === 'yellow') return $('<span style="color:#DAA520;">' + data.text + '</span>');
+    //             return data.text;
+    //         },
+    //         placeholder: "Select SAA"
+    //     });
+    // } else {
+    //     console.log('else');
+
+    //     // Just trigger change to update the display
+    //     data_select.trigger('change.select2');
+
+    // }
+}
+
+
     var all_control = [];
     var all_trans = [];
 
@@ -352,44 +813,93 @@
             var result_proponent = $html.find('.proponent').first().val();
             var $controlClones = $html.find('.control_div .control_clone');
             var check = 0;
+            var result_p = $html.children('.proponent_clone');
+
+            var unused_rem = [];
 
             $('.proponent').each(function () {
                 var $proponentInput = $(this);
                 var proponentVal = $proponentInput.val();
+                var a = proponentVal.replace(/\s+/g, ' ').trim().normalize();
 
-                if (proponentVal == result_proponent) {
-                    var $proponentClone = $proponentInput.closest('.proponent_clone');
-                    var $controlDiv = $proponentClone.find('.control_div');
+                if (a !== null && a !== "") {
 
-                    $controlDiv.append($controlClones);
+                    result_p.each(function(){
+                        var c_clone = $(this).find('.control_clone');
+                        var sample = $(this);
 
-                    var total_amount = 0;
-                    $controlDiv.find('.control_clone .amount').each(function () {
-                        var val = parseFloat($(this).val().replace(/,/g, '')) || 0;
-                        total_amount += val;
+                        var in_pro = $(this).find('.proponent').val();
+
+                        var in_clone = $(this).closest('.proponent_clone');
+                        
+                        var b = in_pro.replace(/\s+/g, ' ').trim().normalize();
+
+                        var $proponentClone = $proponentInput.closest('.proponent_clone');
+                        var $controlDiv = $proponentClone.find('.control_div');
+
+                        if (a === b) {
+                            $controlDiv.append(c_clone);
+
+                            var total_amount = 0;
+                            $controlDiv.find('.control_clone .amount').each(function () {
+                                var val = parseFloat($(this).val().replace(/,/g, '')) || 0;
+                                total_amount += val;
+                            });
+
+                            var $totalAmountInput = $proponentClone.find('.total_amount');
+                            if ($totalAmountInput.length) {
+                                $totalAmountInput.val(total_amount.toLocaleString('en-US', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                }));
+                            }
+
+                            check = 1;
+                        }else{
+                            unused_rem.push(in_clone);
+                        }
                     });
-
-                    var $totalAmountInput = $proponentClone.find('.total_amount');
-                    if ($totalAmountInput.length) {
-                        $totalAmountInput.val(total_amount.toLocaleString('en-US', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2
-                        }));
-                    }
-
-                    check = 1;
                 }
             });
 
-            if (check == 0) {
-                $('.fac_control').append(result);
+            if(check == 0){
+                var newBlocks = $(result);
+
+                $('.fac_control').append(newBlocks); 
+
+                newBlocks.find('.saa_id').each(function () {
+                    $(this).select2();       
+                    var proponent_input = $(this)
+                        .closest('.proponent_clone')
+                        .find('.proponent');
+                    updateSAAOption($(this), proponent_input); 
+                });
+            }else{
+                unused_rem.forEach(function(element){
+                    // var transd_id = element.transd_id;
+                    var transd_id = $(element).find('.proponent').val();
+
+                    var alreadyExists = $('.proponent').filter(function() {
+                        return $(this).val() == transd_id; 
+                    }).length > 0;
+
+                    if (!alreadyExists) {
+                        $(element).insertAfter($('.fac_control .proponent_clone').last());
+                        var saaSelect = $(element).find('.saa_id');
+                        saaSelect.select2();
+                        var proponent_input = $(element)
+                            .closest('.proponent_clone')
+                            .find('.proponent');
+                        updateSAAOption(saaSelect, proponent_input);
+                    }
+                });
             }
 
             getGrand();
             getGrandFee();
-
-            $('.loading-container').modal('hide');
+            
         });
+
         all_trans.forEach(function(value) {
             $('.control_id option').each(function() {
                 if ($(this).val() == value) {
@@ -397,6 +907,10 @@
                 }
             });
         });
+
+        setTimeout(function () {
+            $('.loading-container').modal('hide');
+        }, 5000);
     }
 
     $('#gen_btn').on('click', function(){
@@ -442,16 +956,240 @@
         location.reload();
     })
 
-    function checkPros(data){
-        var arr = getPros();
-        var index = arr.indexOf(data.value);
-        if (index !== -1) {
-            arr.splice(index, 1); 
-        }
-        if(arr.includes(data.value)){
-            alert('This proponent has been selected already!');
-        } 
+    // function checkPros(data){
+    //     console.log('1');
+    //     var saa_list = $(data)
+    //         .closest('.proponent_clone')
+    //         .find('.saa_id');
+
+    //     var arr = getPros();
+    //     var index = arr.indexOf(data.value);
+    //     if (index !== -1) {
+    //         arr.splice(index, 1); 
+    //     }
+    //     if(arr.includes(data.value)){
+    //         alert('This proponent has been selected already!');
+    //     } 
+    //     var facility_id = $('.facility_id').val();
+    //     var proponent_name = data.options[data.selectedIndex].text;
+
+    //     // GET FUNDSOURCE
+    //     $.get("{{ url('fetch/pre-dv/fundsource').'/' }}"+facility_id, function(result) {
+
+    //         var data_result = result.info;
+    //         all_options = result;
+
+    //         var first = [], sec = [], third = [], fourth = [], fifth = [], six = [];
+    //         var facilitiesArray = Array.isArray(result.facilities) ? result.facilities : [];
+
+    //         $.each(data_result, function(index, optionData) {
+    //             var pro_name = optionData.proponent.proponent;
+    //             var rem_balance = parseFloat(optionData.remaining_balance.replace(/,/g, ''))
+    //                 .toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    //             var rem_balance_num = parseFloat(optionData.remaining_balance.replace(/,/g, ''));
+
+    //             var check_p = 0;
+    //             var id = optionData.facility_id;
+    //             var name_id = optionData.facility_id;
+
+    //             if (typeof name_id === 'string') {
+    //                 try {
+    //                     name_id = JSON.parse(name_id);
+    //                 } catch (e) {
+    //                     name_id = [name_id];
+    //                 }
+    //             }
+    //             if (typeof name_id === 'number') {
+    //                 name_id = [String(name_id)];
+    //             }
+
+    //             var facilityNames = facilitiesArray
+    //                 .filter(f => name_id.includes(String(f.id)))
+    //                 .map(f => f.name)
+    //                 .join(' & ');
+
+    //             var text_display;
+    //             if (optionData.facility !== null) {
+    //                 if (optionData.facility.id == facility_id) {
+    //                     text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + facilityNames + ' - ' + rem_balance;
+    //                 } else {
+    //                     text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + facilityNames + ' - ' + rem_balance;
+    //                     check_p = 1;
+    //                 }
+    //             } else {
+    //                 if (id.includes('702')) {
+    //                     check_p = 0;
+    //                 }else{
+    //                     check_p = 1;
+    //                 }
+    //                 text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + facilityNames + ' - ' + rem_balance;
+    //             }
+
+    //             var color = '';
+    //             var obj;
+
+    //             if (rem_balance == '0' || rem_balance == '0.00' || rem_balance_num <= 0) {
+    //                 color = 'red';
+
+    //                 obj = {
+    //                     value: optionData.fundsource_id,
+    //                     text: text_display,
+    //                     dataval: optionData.remaining_balance,
+    //                     dataproponentInfo_id: optionData.id,
+    //                     dataprogroup: optionData.proponent.pro_group,
+    //                     dataproponent: optionData.proponent.id,
+    //                     d_color: color
+    //                 };
+
+    //                 if (optionData.fundsource.saa.includes('CONAP')) {
+    //                     fifth.push(obj);
+    //                 } else {
+    //                     six.push(obj);
+    //                 }
+
+    //             } else {
+    //                 color = 'normal';
+
+    //                 if (check_p != 1 && proponent_name == pro_name) {
+    //                     color="";
+    //                 }else {
+    //                     color="yellow";
+    //                 }
+                    
+    //                 obj = {
+    //                     value: optionData.fundsource_id,
+    //                     text: text_display,
+    //                     dataval: optionData.remaining_balance,
+    //                     dataproponentInfo_id: optionData.id,
+    //                     dataprogroup: optionData.proponent.pro_group,
+    //                     dataproponent: optionData.proponent.id,
+    //                     d_color: color
+    //                 };
+
+    //                 if (optionData.fundsource.saa.includes('CONAP')) {
+    //                     if (check_p != 1 && proponent_name == pro_name) first.push(obj);
+    //                     else third.push(obj);
+    //                 } else {
+    //                     if (check_p != 1 && proponent_name == pro_name) sec.push(obj);
+    //                     else fourth.push(obj);
+    //                 }
+    //             }
+    //         });
+
+    //         function buildOptions(arr) {
+    //             var html = "";
+    //             arr.forEach(o => {
+    //                 html += `<option 
+    //                             value="${o.value}"
+    //                             data-color="${o.d_color}"
+    //                             dataval="${o.dataval}"
+    //                             dataproponentinfo_id="${o.dataproponentInfo_id}"
+    //                             dataprogroup="${o.dataprogroup}"
+    //                             dataproponent="${o.dataproponent}"
+    //                         >${o.text}</option>`;
+    //             });
+    //             return html;
+    //         }
+
+    //         var final_html =
+    //             buildOptions(first) +
+    //             buildOptions(sec) +
+    //             buildOptions(third) +
+    //             buildOptions(fourth) +
+    //             buildOptions(fifth) +
+    //             buildOptions(six);
+
+    //         $('.saa_id').html(`<option value="">SELECT SAA</option>` + final_html);
+
+    //         saa_list.each(function() {
+    //             $(this).html(`<option value="">SELECT SAA</option>` + final_html);
+    //             $(this).select2({
+    //                 templateResult: function (data) {
+    //                     let color = $(data.element).data('color');
+    //                     if (color === 'red') return $('<span style="color:red;">' + data.text + '</span>');
+    //                     if (color === 'yellow') return $('<span style="color:#DAA520;">' + data.text + '</span>');
+    //                     return data.text;
+    //                 },
+    //                 placeholder: "Select SAA"
+    //             });
+
+    //             $(this).prop('disabled', false);
+    //         });
+    //     });
+    // }
+
+    var all_options = null;
+    var saaOptionsCache = {};
+
+    function checkPros(data) {
+
+
+    var saa_list = $(data).closest('.proponent_clone').find('.saa_id');
+    var facility_id = $('.facility_id').val();
+    var proponent_name = data.options[data.selectedIndex].text;
+    console.log('all_optionsdasdas', all_options);
+    if (!all_options || !all_options.info) {
+
+        $.get("{{ url('fetch/pre-dv/fundsource').'/' }}"+facility_id, function(result) {
+            var data_result = result.info;
+            all_options = result;
+        });
     }
+
+    console.log(all_options);
+    // Validate duplicate proponent
+    var arr = getPros();
+    var index = arr.indexOf(data.value);
+    if (index !== -1) {
+        arr.splice(index, 1);
+    }
+    if (arr.includes(data.value)) {
+        alert('This proponent has been selected already!');
+        return;
+    }
+
+    // Build options once
+    var optionsHTML = buildSAAOptionsHTML(proponent_name, facility_id);
+
+    // Update all SAA selects in this proponent clone efficiently
+    saa_list.each(function() {
+        console.log('saa_list');
+        var $this = $(this);
+        $this.html(optionsHTML);
+
+        $this.select2({
+    escapeMarkup: m => m,
+    templateResult: function (data) {
+        return $(data.element).data("html") || data.text;
+    },
+    templateSelection: function (data) {
+        return $(data.element).data("html") || data.text;
+    }
+});
+
+        
+        // Only initialize Select2 if not already initialized
+        // if (!$this.hasClass('select2-hidden-accessible')) {
+        //     console.log('iifif');
+        //     $this.select2({
+        //         templateResult: function (data) {
+        //             let color = $(data.element).data('color');
+        //             if (color === 'red') return $('<span style="color:red;">' + data.text + '</span>');
+        //             if (color === 'yellow') return $('<span style="color:#DAA520;">' + data.text + '</span>');
+        //             return data.text;
+        //         },
+        //         placeholder: "Select SAA"
+        //     });
+        // }else{
+        //     console.log('else');
+
+        // }
+        
+        $this.prop('disabled', false);
+    });
+}
+
 
     function getPros(){
         var pros = [];
@@ -493,180 +1231,44 @@
             // showConfirmButton: false 
         });
     }
-    
 
-    function getFundsource(facility_id){
+    function getFundsource(facility_id) {
+        $('.loading-container').modal('show');
+        $('.loading-container').html(loading);
+        $.get("{{ url('fetch/pre-dv/fundsource').'/' }}"+facility_id, function(result) {
+            var data_result = result.info;
+            all_options = result;
+            console.log('get_fundsousr',all_options);
+            $('.loading-container').modal('hide');
+            // $('.loading-container').html(loading);
+        });
 
         var check_vat = $('.facility_id').find(':selected').attr('datavat');
 
-        if(check_vat == 0){
+        if (check_vat == 0) {
             Swal.fire({
                 icon: "error",
                 title: "No VAT and EWT added",
                 text: "Please add vat and ewt first!"
             });
             $('.facility_id').val('').trigger('change');
-        }else if(check_vat == 1){
-
-            f_id = facility_id;
-            $.get("{{url('pre-dv/control_nos').'/'}}" + f_id, function (result){
-                existing_control = result.controls;   
-                transmittal = result.transmittal;  
-                $('.control_id').empty();
-                $('.control_id').append($('<option>', {value:'', text:'Select Control No'}));
-                transmittal.forEach(function(optionData) {
-                    $('.control_id').append($('<option>', {
-                        value: optionData.id,
-                        text: optionData.control_no
-                    }));
-                });
-            });
-
-            $.get("{{ url('fetch/fundsource').'/' }}"+facility_id, function(result) {
-                var data_result = result.info;
-                var text_display;
-
-                var first = [],
-                    sec = [],
-                    third = [],
-                    fourth = [],
-                    fifth = [],
-                    six = [];
-                $.each(data_result, function(index, optionData){
-                    var rem_balance = parseFloat(optionData.remaining_balance.replace(/,/g, '')).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
-
-                    // arrangement:
-                    //     - conap specific hospitals
-                    //     - conap cvchd
-                    //     - specific hospitals
-                    //     - cvchd
-                    //     - no funds conap
-                    //     - no funds saa 2024
-
-                    var check_p = 0;  
-
-                    var id = optionData.facility_id;
-                
-                    if(optionData.facility !== null){
-                        if(optionData.facility.id == facility_id){
-                            text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - SF - ' + rem_balance;
-                        }else{
-                            text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + optionData.facility.name + ' - ' + rem_balance;
-                            check_p = 1;
-                        } 
-                    }else{
-                        if(id.includes('702')){
-                            check_p = 1;
-                            text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + 'DOH CVCHD' + ' - ' + rem_balance;
-                        }else{
-                            text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - SF - ' + rem_balance;
-                        }
-                    }
-
-                    var color = '';
-                    if(rem_balance == '0' || rem_balance == '0.00'){
-                        color = 'red';
-                        if(optionData.fundsource.saa.includes('CONAP')){
-                                obj = {
-                                    value: optionData.fundsource_id,
-                                    text: text_display,
-                                    dataval: optionData.remaining_balance,
-                                    dataproponentInfo_id: optionData.id,
-                                    dataprogroup: optionData.proponent.pro_group,
-                                    dataproponent: optionData.proponent.id,
-                                    d_color: color
-                                }
-                                fifth.push(obj);
-                            }else{
-                                obj = {
-                                    value: optionData.fundsource_id,
-                                    text: text_display,
-                                    dataval: optionData.remaining_balance,
-                                    dataproponentInfo_id: optionData.id,
-                                    dataprogroup: optionData.proponent.pro_group,
-                                    dataproponent: optionData.proponent.id,
-                                    d_color: color
-                                }
-                                six.push(obj);
-                            }
-                    }else{
-
-                        color = 'normal';
-
-                        if(optionData.fundsource.saa.includes('CONAP')){
-                            if(check_p == 1){
-                                obj = {
-                                    value: optionData.fundsource_id,
-                                    text: text_display,
-                                    dataval: optionData.remaining_balance,
-                                    dataproponentInfo_id: optionData.id,
-                                    dataprogroup: optionData.proponent.pro_group,
-                                    dataproponent: optionData.proponent.id,
-                                    d_color: color
-                                }
-                                sec.push(obj);
-                            }else{
-                                obj = {
-                                    value: optionData.fundsource_id,
-                                    text: text_display,
-                                    dataval: optionData.remaining_balance,
-                                    dataproponentInfo_id: optionData.id,
-                                    dataprogroup: optionData.proponent.pro_group,
-                                    dataproponent: optionData.proponent.id,
-                                    d_color: color
-                                }
-                                first.push(obj);
-                            }
-                        }else{
-                            if(check_p == 1){
-                                obj = {
-                                    value: optionData.fundsource_id,
-                                    text: text_display,
-                                    dataval: optionData.remaining_balance,
-                                    dataproponentInfo_id: optionData.id,
-                                    dataprogroup: optionData.proponent.pro_group,
-                                    dataproponent: optionData.proponent.id,
-                                    d_color: color
-                                }
-                                fourth.push(obj);
-                            }else{
-                                obj = {
-                                    value: optionData.fundsource_id,
-                                    text: text_display,
-                                    dataval: optionData.remaining_balance,
-                                    dataproponentInfo_id: optionData.id,
-                                    dataprogroup: optionData.proponent.pro_group,
-                                    dataproponent: optionData.proponent.id,
-                                    d_color: color
-                                }
-                                third.push(obj);
-                            }
-                        }
-                    }
-
-                    $('.saa_id').select2({
-                        templateResult: function (data) {
-                            if ($(data.element).data('color') === 'red') {
-                                return $('<span style="color: red;">' + data.text + '</span>');
-                            }
-                            return data.text;
-                        },
-                        placeholder: "Select SAA"
-                    });
-                });
-
-                addOption(first);
-                addOption(sec);
-                addOption(third);
-                addOption(fourth);
-                addOption(fifth);
-                addOption(six);
-
-                $('.saa_id').prop('disabled', false);
-            });
-
+            return;
         }
-    } 
+
+        f_id = facility_id;
+
+        $.get("{{url('pre-dv/control_nos').'/'}}" + f_id, function (result) {
+            existing_control = result.controls;
+            transmittal = result.transmittal;
+
+            var html = "<option value=''>Select Control No</option>";
+            transmittal.forEach(optionData => {
+                html += `<option value="${optionData.id}">${optionData.control_no}</option>`;
+            });
+
+            $('.control_id').html(html);
+        });
+    }
 
     function addOption(data){
         data.forEach(function(item) {
@@ -716,12 +1318,23 @@
     var edit_stat = 0;
 
     function updatePre(id, data, stat){
+        console.log('data', data);
         $('.form_body').html(loading);
+        $.get("{{ url('fetch/pre-dv/fundsource').'/' }}"+1, function(result) {
+            var data_result = result.info;
+            all_options = result;
+            console.log('samplee', all_options);
+            $('.loading-container').modal('hide');
+        });
+
         $.get("{{ url('pre-dv/update/').'/' }}"+id, function(result) {
             $('.form_body').html(result);
+            $('.loading-container').modal('show');
+        $('.loading-container').html(loading);
             if(data == 1){
                 $('.delete_btn').css('display', 'none');
                 $('.submit_btn').css('display', 'none');
+                btn_val = 1;
             }else{
                 $('.delete_btn').css('display', 'block');
                 $('.submit_btn').css('display', 'block');
@@ -737,6 +1350,9 @@
             $.get("{{url('pre-dv/control_nos').'/'}}" + f_id, function (result){
                 existing_control = result.controls; 
             }); 
+            
+            console.log('heree');
+
         });
     }
 
@@ -791,6 +1407,12 @@
         if(f_id){
             $.get("{{ url('pre-dv/proponent-clone') .'/' }}" + f_id, function (result) {
                 $('.facility_div').append(result);
+                var lastSaaSelect = $('.proponent_clone').last().find('.saa_id');
+                var proponent_input = $('.proponent_clone').last().find('.proponent');
+                lastSaaSelect.select2();
+                proponent_input.select2();
+
+                // updateSAAOption(lastSaaSelect, proponent_input);
             });
         }else{
             error();
@@ -866,6 +1488,7 @@
     $(document).on('input', '.amount', function(){
         var p_clone = $(this).closest('.proponent_clone');
         calculateAmount(p_clone);
+        console.log('here');
     });
 
     $(document).on('input', '.saa_amount', function(){
@@ -884,6 +1507,7 @@
 
     function autoDeduct(element){
         console.log('btn_val', btn_val);
+
         if(btn_val == 0){
             var amountValue = parseFloat(element.closest('.saa_clone').find('.saa_amount').val().replace(/,/g, '')) || 0;
             var w_pro = element.closest('.proponent_clone');
@@ -937,6 +1561,13 @@
                                     .css('background-color', 'red')
                                     .text('')
                                     .html('<span class="typcn typcn-minus menu-icon"></span>');
+
+                                    var saaSelect = clonedElement.find('.saa_id');
+                                    saaSelect.select2();
+                                    var proponent_input = saaSelect
+                                    .closest('.proponent_clone')
+                                    .find('.proponent');
+                                    updateSAAOption(saaSelect, proponent_input);
                             }); 
                             // w_amount.val(saa_balance.toFixed(2));
                         }
@@ -948,6 +1579,7 @@
     }
 
     $(document).on('input', '.saa_amount', function(){
+        console.log(1);
         var data = $(this);
         var clone_pro = data.closest('.proponent_clone');
         var clone_saa =  data.closest('.saa_clone');
@@ -989,6 +1621,13 @@
                                     .html('<span class="typcn typcn-minus menu-icon"></span>');
                             }); 
                             data.val(saa_balance.toFixed(2));
+
+                            var saaSelect = clonedElement.find('.saa_id');
+                            saaSelect.select2();
+                            var proponent_input = saaSelect
+                            .closest('.proponent_clone')
+                            .find('.proponent');
+                            updateSAAOption(saaSelect, proponent_input);
                         }else{
                             data.val('');
                             inputted_fundsource(clone_pro)
@@ -1024,7 +1663,18 @@
                     .text('')
                     .html('<span class="typcn typcn-minus menu-icon"></span>');
 
+                    var saaSelect = clonedElement.find('.saa_id');
+                    saaSelect.select2();
+                    var proponent_input = saaSelect
+                    .closest('.proponent_clone')
+                    .find('.proponent');
+                    updateSAAOption(saaSelect, proponent_input);
+
             });
+
+            // $('.saa_id').select2(); 
+
+            // updateSAAOption();
         }else{
             error();
         }
@@ -1061,9 +1711,6 @@
         var p_clone = $(this).closest('.proponent_clone');
         $(this).closest('.control_clone').remove();  
         calculateAmount(p_clone);
-    });
-
-    $(document).on('click', '.proponent_clone .control_div .amount', function () {
     });
 
     $('.pre_form1, #pre_form').submit( function(e){
@@ -1166,7 +1813,6 @@
                         all_transmittal : all_trans
                     },
                     success: function (response) {
-                        console.log('response', response);
                         Lobibox.notify('success', {
                             msg: "Successfully created pre_dv!",
                         });

@@ -8,6 +8,9 @@ use App\Models\Utilization;
 use App\Models\Proponent;
 use App\Models\ProponentInfo;
 use App\Models\Facility;
+use App\Models\Patients;
+use App\Models\SupplementalFunds;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller{
 
@@ -18,14 +21,35 @@ class DashboardController extends Controller{
     }
     
     public function dashboard(Request $req){
-        $funds = Fundsource::selectRaw('SUM(CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(10,2))) as total_amount')
+        $fundsQuery = Fundsource::query();
+        
+        if ($req->saa_filter === 'conap') {
+            
+            $fundsQuery->where('saa', 'LIKE', 'CONAP%');
+        } elseif ($req->saa_filter === 'saa') {
+            
+            $fundsQuery->where(function($q) {
+                $q->where('saa', 'NOT LIKE', 'CONAP%')
+                  ->orWhereNull('saa');
+            });
+        }
+        
+        $fundSourceIds = (clone $fundsQuery)->pluck('id');
+        
+        $funds = $fundsQuery->selectRaw('SUM(CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(10,2))) as total_amount')
         ->selectRaw('SUM(CAST(REPLACE(admin_cost, ",", "") AS DECIMAL(10,2))) as total_cost')
         ->first();
 
-        $utilization = Utilization::where('status', 0)
-        ->selectRaw('
+        
+        $utilizationQuery = Utilization::where('status', 0);
+        
+        if ($fundSourceIds->isNotEmpty()) {
+            $utilizationQuery->whereIn('fundsource_id', $fundSourceIds);
+        }
+
+        $utilization = $utilizationQuery->selectRaw('
             IFNULL(SUM(CAST(REPLACE(utilize_amount, ",", "") AS DECIMAL(10,2))), 0) as total_utilize,
-            IFNULL(SUM(CASE WHEN obligated = 1 THEN CAST(REPLACE(utilize_amount, ",", "") AS DECIMAL(10,2)) ELSE 0 END), 0) as total_obligated,
+            IFNULL(SUM(CASE WHEN paid is null AND obligated = 1 THEN CAST(REPLACE(utilize_amount, ",", "") AS DECIMAL(10,2)) ELSE 0 END), 0) as total_obligated,
             IFNULL(SUM(CASE WHEN paid = 1 THEN CAST(REPLACE(utilize_amount, ",", "") AS DECIMAL(10,2)) ELSE 0 END), 0) as total_paid,
             IFNULL(SUM(CASE WHEN obligated IS NULL AND paid IS NULL THEN CAST(REPLACE(utilize_amount, ",", "") AS DECIMAL(10,2)) ELSE 0 END), 0) as total_pending
         ')
@@ -41,17 +65,19 @@ class DashboardController extends Controller{
             $dateRange = explode(' - ', $req->status_filtered);
             $start_date = date('Y-m-d', strtotime($dateRange[0]));
             $end_date = date('Y-m-d', strtotime($dateRange[1]));
-            $utilization = Utilization::where('status', 0)
-            ->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59'])
-            ->selectRaw('
+             $utilizationStatQuery = Utilization::where('status', 0)
+        ->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59']);
+
+        if ($fundSourceIds->isNotEmpty()) {
+            $utilizationStatQuery->whereIn('fundsource_id', $fundSourceIds);
+        }
+            $utilization = $utilizationStatQuery->selectRaw('
                 IFNULL(SUM(CAST(REPLACE(utilize_amount, ",", "") AS DECIMAL(10,2))), 0) as total_utilize,
-                IFNULL(SUM(CASE WHEN obligated = 1 THEN CAST(REPLACE(utilize_amount, ",", "") AS DECIMAL(10,2)) ELSE 0 END), 0) as total_obligated,
+                IFNULL(SUM(CASE WHEN paid is null AND obligated = 1 THEN CAST(REPLACE(utilize_amount, ",", "") AS DECIMAL(10,2)) ELSE 0 END), 0) as total_obligated,
                 IFNULL(SUM(CASE WHEN paid = 1 THEN CAST(REPLACE(utilize_amount, ",", "") AS DECIMAL(10,2)) ELSE 0 END), 0) as total_paid,
                 IFNULL(SUM(CASE WHEN obligated IS NULL AND paid IS NULL THEN CAST(REPLACE(utilize_amount, ",", "") AS DECIMAL(10,2)) ELSE 0 END), 0) as total_pending
             ')
             ->first();
-            // $utilization->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59']);
-            // return $utilization;
         }
 
         $total_utilization1 = $utilization->total_utilize ?? 0;
@@ -59,12 +85,17 @@ class DashboardController extends Controller{
         $total_paid = $utilization->total_paid ?? 0;
         $total_obligated = $utilization->total_obligated ?? 0;
 
+        $proponentInfoQuery = ProponentInfo::query();
+        if ($fundSourceIds->isNotEmpty()) {
+            $proponentInfoQuery->whereIn('fundsource_id', $fundSourceIds);
+        }
+
         $proponentGroups = Proponent::select('id', 'proponent')->orderBy('proponent')->get()->groupBy('proponent');
         $allProponentIds = $proponentGroups->map(function ($group) {
             return $group->pluck('id')->toArray();
         });
 
-        $fundsData = ProponentInfo::whereIn('proponent_id', $allProponentIds->flatten()->toArray())
+        $fundsData = $proponentInfoQuery->whereIn('proponent_id', $allProponentIds->flatten()->toArray())
                 ->selectRaw('
                     proponent_id,
                     SUM(CAST(NULLIF(REPLACE(COALESCE(alocated_funds, "0"), ",", ""), "") AS DECIMAL(20,2))) as total_funds
@@ -73,9 +104,7 @@ class DashboardController extends Controller{
                 ->get()
                 ->groupBy('proponent_id');
 
-        $allData = $proponentGroups->map(function ($proponentGroup, $proponentName) use (
-            $fundsData
-        ) {
+        $allData = $proponentGroups->map(function ($proponentGroup, $proponentName) use ($fundsData) {
             $proponentIds = $proponentGroup->pluck('id');
             
             $totalFunds = 0;
@@ -93,6 +122,7 @@ class DashboardController extends Controller{
             ];
         });
 
+       
         $facilities = ProponentInfo::all()->groupBy(function ($item) {
             $facilityIds = is_array($item->facility_id) ? $item->facility_id : json_decode($item->facility_id, true);
             
@@ -112,11 +142,16 @@ class DashboardController extends Controller{
                 'facility_names' => $facilityNames
             ];
         });
-
-        $utilization_disbursed = Utilization::with('facilitydata:id,name')
+       
+        $utilization_disbursed_query = Utilization::with('facilitydata:id,name')
             ->where('status', 0)
-            ->whereNotNull('paid')
-            ->get()
+            ->whereNotNull('paid');
+        
+        if ($fundSourceIds->isNotEmpty()) {
+            $utilization_disbursed_query->whereIn('fundsource_id', $fundSourceIds);
+        }
+
+        $utilization_disbursed = $utilization_disbursed_query->get()
             ->groupBy('facility_id')
             ->map(function ($items) {
                 return [
@@ -127,9 +162,17 @@ class DashboardController extends Controller{
             ->sortBy('facility_name') 
             ->values(); 
 
-        $utilization_trend = Utilization::where('status', 0)
+        $selectedYear = $req->year ?: date('Y');
+        
+        $utilization_trend_query = Utilization::where('status', 0)
             ->whereNotNull('paid')
-            ->get()
+            ->whereYear('created_at', $selectedYear);
+            
+        if ($fundSourceIds->isNotEmpty()) {
+            $utilization_trend_query->whereIn('fundsource_id', $fundSourceIds);
+        }
+
+        $utilization_trend = $utilization_trend_query->get()
             ->groupBy(function ($item) {
                 return \Carbon\Carbon::parse($item->created_at)->format('M'); 
             })
@@ -145,30 +188,149 @@ class DashboardController extends Controller{
         
                 return $months[$item['month']] ?? 999; 
             })
-            ->values();  
+            ->values();
+            
+        //collectables
+        $fundsDataCollectibles = ProponentInfo::whereIn('proponent_id', $allProponentIds->flatten()->toArray())
+            // ->when($fundSourceIds->isNotEmpty(), function($query) use ($fundSourceIds) {
+            //     return $query->whereIn('fundsource_id', $fundSourceIds);
+            // })
+            ->selectRaw('
+                proponent_id,
+                SUM(CAST(NULLIF(REPLACE(COALESCE(alocated_funds, "0"), ",", ""), "") AS DECIMAL(20,2))) as total_funds,
+                SUM(CAST(NULLIF(REPLACE(COALESCE(admin_cost, "0"), ",", ""), "") AS DECIMAL(20,2))) as admin_cost
+            ')
+            ->groupBy('proponent_id')
+            ->get()
+            ->groupBy('proponent_id');
 
-        if($req->year){
-            $utilization_trend = Utilization::where('status', 0)
-                ->whereNotNull('paid')
-                ->whereYear('created_at', $req->year) // Filter by the selected year
-                ->get()
-                ->groupBy(function ($item) {
-                    return \Carbon\Carbon::parse($item->created_at)->format('M'); 
-                })
-                ->map(function ($items, $month) {
-                    return [
-                        'month' => strtoupper($month), 
-                        'total_utilize_amount' => number_format($items->sum('utilize_amount'), 2, '.', ''), 
-                    ];
-                })
-                ->sortBy(function ($item) {
-                    $months = ['JAN' => 1, 'FEB' => 2, 'MAR' => 3, 'APR' => 4, 'MAY' => 5, 'JUN' => 6, 
-                            'JUL' => 7, 'AUG' => 8, 'SEP' => 9, 'OCT' => 10, 'NOV' => 11, 'DEC' => 12];
+        $utilizationDataCollectibles = Patients::whereIn('proponent_id', $allProponentIds->flatten()->toArray())
+            ->selectRaw('
+                proponent_id,
+                SUM(
+                    CASE 
+                        WHEN actual_amount IS NOT NULL AND actual_amount != "" 
+                        THEN CAST(REPLACE(actual_amount, ",", "") AS DECIMAL(20, 2))
+                        ELSE CAST(REPLACE(COALESCE(guaranteed_amount, "0"), ",", "") AS DECIMAL(20, 2))
+                    END
+                ) as total_utilized
+            ')
+            ->groupBy('proponent_id')
+            ->get()
+            ->groupBy('proponent_id');
 
-                    return $months[$item['month']] ?? 999; 
-                })
-                ->values();
-        }
+        $supplementalFundsCollectibles = SupplementalFunds::whereIn('proponent', $proponentGroups->keys())
+            ->selectRaw('
+                proponent,
+                SUM(CAST(NULLIF(REPLACE(COALESCE(amount, "0"), ",", ""), "") AS DECIMAL(20,2))) as total_amount
+            ')
+            ->groupBy('proponent')
+            ->get()
+            ->keyBy('proponent');
+
+        $subtractedFundsCollectibles = DB::table('subtracted_funds')
+            ->whereIn('proponent', $proponentGroups->keys())
+            ->selectRaw('
+                proponent,
+                SUM(CAST(NULLIF(REPLACE(COALESCE(amount, "0"), ",", ""), "") AS DECIMAL(20,2))) as total_amount
+            ')
+            ->groupBy('proponent')
+            ->get()
+            ->keyBy('proponent');
+
+        $dv1DataCollectibles = Utilization::whereIn('proponent_id', $allProponentIds->flatten()->toArray())
+            // ->when($fundSourceIds->isNotEmpty(), function($query) use ($fundSourceIds) {
+            //     return $query->whereIn('fundsource_id', $fundSourceIds);
+            // })
+            ->where('status', 0)
+            ->where('facility_id', 837)
+            ->where(function ($query) {
+                $query->whereHas('dv', function ($q) {
+                    $q->whereColumn('div_id', 'route_no');
+                })->orWhereHas('newDv', function ($q) {
+                    $q->whereColumn('div_id', 'route_no');
+                });
+            })
+            ->selectRaw('
+                proponent_id,
+                SUM(CAST(NULLIF(REPLACE(COALESCE(utilize_amount, "0"), ",", ""), "") AS DECIMAL(20,2))) as total_amount
+            ')
+            ->groupBy('proponent_id')
+            ->get()
+            ->groupBy('proponent_id');
+
+        $dv3DataCollectibles = Utilization::whereIn('proponent_id', $allProponentIds->flatten()->toArray())
+            // ->when($fundSourceIds->isNotEmpty(), function($query) use ($fundSourceIds) {
+            //     return $query->whereIn('fundsource_id', $fundSourceIds);
+            // })
+            ->where('status', 0)
+            ->where(function ($query) {
+                $query->whereHas('dv3', function ($q) {
+                    $q->whereColumn('div_id', 'route_no');
+                });
+            })
+            ->selectRaw('
+                proponent_id,
+                SUM(CAST(NULLIF(REPLACE(COALESCE(utilize_amount, "0"), ",", ""), "") AS DECIMAL(20,2))) as total_amount
+            ')
+            ->groupBy('proponent_id')
+            ->get()
+            ->groupBy('proponent_id');
+
+        $collectibles = $proponentGroups->map(function ($proponentGroup, $proponentName) use (
+            $fundsDataCollectibles,
+            $utilizationDataCollectibles,
+            $supplementalFundsCollectibles,
+            $subtractedFundsCollectibles,
+            $dv1DataCollectibles,
+            $dv3DataCollectibles
+        ) {
+            $proponentIds = $proponentGroup->pluck('id');
+            
+            $totalFunds = 0;
+            $totalAdminCost = 0;
+            $totalUtilized = 0;
+            $totalDv1Amount = 0;
+            $totalDv3Amount = 0;
+
+            foreach ($proponentIds as $id) {
+                if ($fundsDataCollectibles->has($id)) {
+                    $fundInfo = $fundsDataCollectibles->get($id)->first();
+                    $totalFunds += $fundInfo->total_funds ?? 0;
+                    $totalAdminCost += $fundInfo->admin_cost ?? 0;
+                }
+
+                if ($utilizationDataCollectibles->has($id)) {
+                    $totalUtilized += $utilizationDataCollectibles->get($id)->sum('total_utilized');
+                }
+
+                if ($dv1DataCollectibles->has($id)) {
+                    $totalDv1Amount += $dv1DataCollectibles->get($id)->sum('total_amount');
+                }
+                
+                if ($dv3DataCollectibles->has($id)) {
+                    $totalDv3Amount += $dv3DataCollectibles->get($id)->sum('total_amount');
+                }
+            }
+
+            $supp = $supplementalFundsCollectibles->get($proponentName)?->total_amount ?? 0;
+            $sub = $subtractedFundsCollectibles->get($proponentName)?->total_amount ?? 0;
+
+            // Same calculation as ProponentController::fundsource() for 'rem'
+            $netFunds = $totalFunds - $totalAdminCost;
+            $remaining = $netFunds - $totalUtilized;
+            $finalRemaining = $remaining + $supp - ($totalDv1Amount + $sub);
+            $rem = $finalRemaining - $totalDv3Amount;
+
+            // Only include if remaining is strictly negative (exclude zero and positive)
+            if ($rem < -1) {
+                return [
+                    'proponent_name' => $proponentName,
+                    'collectible_amount' => abs($rem)
+                ];
+            }
+            return null;
+        })->filter()->sortByDesc('proponent_name')->values();
 
         return view('dashboard', [
             'total_amount' => $total_amount, 
@@ -184,7 +346,9 @@ class DashboardController extends Controller{
             'facilities' => $facilities,
             'disbursed' => $utilization_disbursed,
             'trend' => $utilization_trend,
-            'year' => $req->year ?:date('Y')
+            'collectibles' => $collectibles,
+            'year' => $req->year ?: date('Y'),
+            'saa_filter' => $req->saa_filter
         ]);
     }
 

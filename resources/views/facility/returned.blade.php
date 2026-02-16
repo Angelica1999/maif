@@ -11,24 +11,68 @@
     #details_table {
         max-height: 500px; 
         overflow-y: auto; 
+    } #search_patient {
+    width: 250px;   
+    max-width: 100%;
+}
+.input-group {
+        justify-content: flex-end;
+        gap: 1px;
+        flex-wrap: nowrap; 
     }
+     .input-group-append {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end; 
+        
+    }
+   
+.input-group .form-control {
+    width: 250px; 
+    max-width: 100%;
+}
+    
+     @media (max-width: 767px) {
+    .input-group {
+        flex-direction: column;     
+        align-items: stretch;     
+    }
+
+    .input-group .form-control {
+        width: 200%;
+        margin-bottom: 5px;
+    }
+
+    .input-group-append {
+        flex-direction: column;     /* stack buttons */
+        width: 100%;
+    }
+
+    .input-group-append .btn {
+        width: 100%;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+    }
+}
 </style>
-<div class="container-fluid col-lg-12 grid-margin stretch-card">
+<div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <div class="mb-2 mb-md-0">
+                    <h4 class="card-title">TRANSMITTAL: RETURNED</h4>
+                    <p class="card-description">MAIF-IPP</p>
+                </div>
             <form method="GET" action="">
-                <div class="input-group float-right w-50" style="min-width: 600px;">
-                    <input type="text" class="form-control" name="keyword" placeholder="" value="">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="keyword" placeholder="Search..." value="{{ $keyword ?? '' }}">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
                     </div>
                 </div>
             </form>
-            <h1 class="card-title">TRANSMITTAL: RETURNED</h1>
-            <p class="card-description">
-                MAIF-IPP
-            </p>
+        </div>
             @if(count($transmittal) > 0)
                 <div class="table-responsive" id="details_table">
                     <table class="table table-striped">
@@ -39,7 +83,7 @@
                                 <th>Facility</th>
                                 <th>Status</th>
                                 <th>Prepared Date</th>
-                                <th>Total Amount</th>
+                                <th style="min-width:120px;">Total Amount</th>
                                 <th>Created On</th>
                                 <th>Created By</th>
                                 <th></th>
@@ -138,8 +182,10 @@
 
     function checkRemarks(id){
         $('.return_details').empty();
+        $('.return_details').html(loading);
         $.get("{{ url('returned/details').'/' }}" + id, function(result){
-            $('.return_details').append(result);
+            $('.return_details').html(result);
+            console.log('sample', result);
         });
     }
 

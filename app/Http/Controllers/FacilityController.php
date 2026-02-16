@@ -233,20 +233,35 @@ class FacilityController extends Controller
     }
 
     public function incoming(Request $req){
-        $transmittal = Transmittal::where('status', 1)
-            ->with([
-                'user.facility' => function ($query) {
-                    $query->select('id', 'name');
-                }
-            ])
-            ->orderBy('id', 'desc')
-            ->paginate(50);
-         
+        $keyword = $req->viewAll ? '' : $req->keyword;
+            $transmittal = Transmittal::where('status', 1)
+                ->when($keyword, function($query) use ($keyword) {
+                    $query->where(function($q) use ($keyword) {
+                        $q->where('control_no', 'like', "%$keyword%")
+                        ->orWhereHas('user', function($q2) use ($keyword) {
+                            $q2->whereRaw("CONCAT(fname, ' ', lname) LIKE ?", ["%{$keyword}%"]);
+                            })
+                            ->orWhereHas('user.facility', function($q3) use ($keyword) {
+                                $q3->where('name', 'like', "%$keyword%");
+                            });
+                        });
+                    })
+                ->with([
+                    'user.facility' => function ($query) {
+                        $query->select('id', 'name');
+                    }
+                ])
+                ->orderBy('id', 'desc')
+                ->paginate(50)
+                ->appends(['keyword' => $keyword]);
+            
+               
         $trans = Transmittal::pluck('control_no')->toArray();
 
         return view('facility.incoming',[
             'transmittal' => $transmittal,
-            'control_no' => $trans
+            'control_no' => $trans,
+            'keyword' => $keyword
         ]);
     }
 
@@ -370,7 +385,19 @@ class FacilityController extends Controller
     }
 
     public function returned(Request $req){
-        $transmittal = Transmittal::where('status', 3)
+        $keyword = $req->viewAll ? '' : $req->keyword;
+            $transmittal = Transmittal::where('status', 3)
+                ->when($keyword, function($query) use ($keyword) {
+                    $query->where(function($q) use ($keyword) {
+                        $q->where('control_no', 'like', "%$keyword%")
+                        ->orWhereHas('user', function($q2) use ($keyword) {
+                            $q2->whereRaw("CONCAT(fname, ' ', lname) LIKE ?", ["%{$keyword}%"]);
+                            })
+                            ->orWhereHas('user.facility', function($q3) use ($keyword) {
+                                $q3->where('name', 'like', "%$keyword%");
+                            });
+                        });
+                    })
             ->with([
                 'user.facility' => function ($query) {
                     $query->select('id', 'name');
@@ -378,7 +405,8 @@ class FacilityController extends Controller
             ])
             ->orderBy('id', 'desc')->paginate(50);
         return view('facility.returned',[
-            'transmittal' => $transmittal
+            'transmittal' => $transmittal,
+            'keyword' => $keyword
         ]);
     }
 
@@ -389,7 +417,8 @@ class FacilityController extends Controller
         if ($token != 1) {
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token
-            ])->get('http://192.168.110.7/guaranteeletter/api/transmittal/return-remarks/'.$id);            
+            ])->get('http://192.168.110.7/guaranteeletter/api/transmittal/return-remarks/'.$id);  
+            return $response;      
         } else {
             return "Authentication failed.";
         }
@@ -433,8 +462,16 @@ class FacilityController extends Controller
             ->distinct()
             ->pluck('facility_id');
 
-        if (!$viewAll && !empty($keyword)) {
-            $transmittalQuery->where('control_no', 'LIKE', "%{$keyword}%");
+          if (!$viewAll && !empty($keyword)) {
+            $transmittalQuery->where(function ($q) use ($keyword) {
+                $q->where('control_no', 'LIKE', "%{$keyword}%")
+                ->orWhereHas('user', function($q2) use ($keyword) {
+                $q2->whereRaw("CONCAT(fname, ' ', lname) LIKE ?", ["%{$keyword}%"]);
+                })                 
+                ->orWhereHas('user.facility', function ($q3) use ($keyword) {
+                    $q3->where('name', 'LIKE', "%{$keyword}%");
+                });
+            });
         }
 
         if ($req->facility_data) {

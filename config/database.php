@@ -2,13 +2,14 @@
 
 use Illuminate\Support\Str;
 
-//$host = "192.168.110.31";
-//$username="rtayong_31";
-//$password = "rtayong_31";
+// $host = "192.168.110.31";
+// $username="rtayong_31";
+// $password = "rtayong_31";
 
 $host = "localhost";
 $username="root";
 $password = "";
+
 return [
 
     /*

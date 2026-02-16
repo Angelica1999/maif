@@ -57,6 +57,152 @@
         width: 100px;
         border-radius: 0;
     }
+       #search_patient {
+    width: 250px !important;   
+    max-width: 100%; 
+}
+.input-group {
+        justify-content: flex-end;
+        gap: 1px;
+        flex-wrap: nowrap; 
+    }
+     .input-group-append {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        justify-content: flex-end; 
+        
+    }
+    .table-wrapper {
+    max-width: 100%;
+    border: 2px solid #ddd;
+    position: relative;
+}
+
+
+.scroll-container {
+    position: absolute; 
+    top: 50%; 
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    padding: 0 10px;
+    pointer-events: none; 
+    
+}
+
+.scroll-arrow {
+    pointer-events: auto;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: rgba(0, 123, 255, 0.9); 
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 16px;
+    border-radius: 50%; 
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); 
+}
+
+.scroll-arrow:hover {
+    background: rgba(0, 86, 179, 0.95);
+    transform: scale(1.1); 
+}
+
+.scroll-arrow:active {
+    background: rgba(0, 64, 133, 1);
+    transform: scale(0.95);
+}
+
+.scroll-arrow:disabled {
+    background: rgba(204, 204, 204, 0.7);
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.scroll-info {
+    position: absolute;
+    top: -30px; 
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+    background: rgba(248, 249, 250, 0.95);
+    padding: 5px 15px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.scroll-bottom {
+    overflow-x: auto;
+    overflow-y: hidden;
+    background: #f8f9fa;
+    border-top: 1px solid #ddd;
+    height: 20px;
+}
+
+.scroll-content {
+    height: 1px;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 600px;
+}
+@media (max-width: 1600px) {
+    .scroll-container {
+    position: sticky; 
+     top: 45%;
+    } 
+}
+ @media (max-width: 1024px) {
+    .scroll-container {
+        display: none;
+    }
+
+ }
+.input-group .form-control {
+    width: 250px; 
+    max-width: 100%;
+}
+       @media (max-width: 767px) {
+    .input-group {
+        flex-direction: column;     
+        align-items: stretch;     
+    }
+
+    .input-group .form-control {
+        width: 200% !important;
+        margin-bottom: 5px;
+    }
+
+    .input-group-append {
+        flex-direction: column;     /* stack buttons */
+        width: 100%;
+    }
+
+    .input-group-append .btn {
+        width: 100%;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+    }
+    #gen_btn{
+         width: 100% !important;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+    }
+}
 </style>
 @extends('layouts.app')
 @section('content')
@@ -64,7 +210,11 @@
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-            <div class="float-right">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <div class="mb-2 mb-md-0">
+                    <h4 class="card-title">MANAGE PATIENTS (EXPIRED)</h4>
+                    <p class="card-description">MAIF-IPP</p>
+                </div>
                 <div class="input-group">
                     <form method="GET">
                         <div class="input-group">
@@ -117,13 +267,20 @@
                     </form>
                 </div>
             </div>
-           
-            <h4 class="card-title">MANAGE PATIENTS (EXPIRED)</h4>
-            <span class="card-description">
-                MAIF-IPP
-            </span>
+
             
             @if(count($patients) > 0)
+                 <div class="scroll-container">
+                        <button class="scroll-arrow scroll-arrow-left" id="scrollLeftTop" title="Scroll Left">
+                            <i class="fa fa-chevron-left"></i>
+                        </button>
+                        <div class="" id="">
+                        
+                        </div>
+                        <button class="scroll-arrow scroll-arrow-right" id="scrollRightTop" title="Scroll Right">
+                            <i class="fa fa-chevron-right"></i>
+                        </button>
+                    </div>
             <div class="table-responsive" id ="patient_table_container">
                 <table class="table table-striped" id="patient_table">
                     <thead>
@@ -313,7 +470,7 @@
                                     {{ date('F j, Y', strtotime($patient->created_at)) }}<br>
                                     ( {{  date('H:i:s', strtotime($patient->created_at)) }} )
                                 </td>
-                                <td class="td">{{ $patient->user_type == null ? $patient->encoded_by->lname .', '. $patient->encoded_by->fname: ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td>
+                               <td class="td">{{ $patient->user_type == null ? ($patient->encoded_by? $patient->encoded_by->lname .', '. $patient->encoded_by->fname : 'No user found' ) : ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -1366,6 +1523,62 @@
         var id = event.target.getAttribute('data-id');
         window.location.href= "patient/return/" + id;
     }
+document.addEventListener('DOMContentLoaded', function () {
+
+    const tableContainer = document.getElementById('patient_table_container');
+    const scrollLeftTop = document.getElementById('scrollLeftTop');
+    const scrollRightTop = document.getElementById('scrollRightTop');
+    const scrollAmount = 200;
+
+    if (!tableContainer) return;
+
+    function updateArrowStates() {
+        if (!scrollLeftTop || !scrollRightTop) return;
+
+        const scrollLeft = tableContainer.scrollLeft;
+        const maxScroll = tableContainer.scrollWidth - tableContainer.clientWidth;
+
+        scrollLeftTop.disabled = scrollLeft <= 0;
+        scrollRightTop.disabled = scrollLeft >= maxScroll - 1;
+    }
+
+    function scrollHorizontally(direction) {
+        const currentScroll = tableContainer.scrollLeft;
+        const newScroll = direction === 'left'
+            ? Math.max(0, currentScroll - scrollAmount)
+            : currentScroll + scrollAmount;
+
+        tableContainer.scrollTo({
+            left: newScroll,
+            behavior: 'smooth'
+        });
+    }
+
+    if (scrollLeftTop) {
+        scrollLeftTop.addEventListener('click', () => scrollHorizontally('left'));
+    }
+
+    if (scrollRightTop) {
+        scrollRightTop.addEventListener('click', () => scrollHorizontally('right'));
+    }
+
+    tableContainer.addEventListener('scroll', updateArrowStates);
+
+    tableContainer.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowLeft') {
+            scrollHorizontally('left');
+            e.preventDefault();
+        } else if (e.key === 'ArrowRight') {
+            scrollHorizontally('right');
+            e.preventDefault();
+        }
+    });
+
+    window.addEventListener('resize', updateArrowStates);
+
+    updateArrowStates();
+});
+
 
     </script>
 @endsection

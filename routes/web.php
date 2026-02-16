@@ -199,6 +199,7 @@ Route::get('/proponent/sub-update/{id}/{amount}', [App\Http\Controllers\Proponen
 Route::post('/proponent/supplemental-updated', [App\Http\Controllers\ProponentController::class, 'supplementalv2'])->name('proponent.supplementalv2');
 Route::post('/proponent/manage-funds', [App\Http\Controllers\ProponentController::class, 'manageFunds'])->name('manage.funds');
 Route::match(['get','post'],'/summary/excel_proponent', [App\Http\Controllers\ProponentController::class, 'excelPSummary'])->name('excel.proponent_summary');
+Route::get('/proponent/spec-allocations/{proponent}', [App\Http\Controllers\ProponentController::class, 'specAllocations'])->name('details.specific');
 
 Route::match(['get', 'post'],'/proponents/excel/', [App\Http\Controllers\FundSourceController::class, 'generateExcel'])->name('proponent.excel');
 Route::match(['get', 'post'],'/data/update/', [App\Http\Controllers\FacilityController::class, 'updateData'])->name('update.data');
@@ -296,6 +297,15 @@ Route::get('/sending-hold', [App\Http\Controllers\FacilityController::class, 'se
 Route::post('/sending-gl/hold', [App\Http\Controllers\FacilityController::class, 'holdSendFacility'])->name('hold.sending_gl');
 //Route::match(['get','post'],'/logbook/export', [App\Http\Controllers\HomeController::class, 'exportToExcel'])->name('logbook_export');
 Route::get('/export/logbook', [App\Http\Controllers\HomeController::class, 'exportToExcel'])->name('logbook.export');
+Route::get('/export-track-details-pdf/{id}', [App\Http\Controllers\ProponentController::class, 'exportTrackDetailsPDF'])->name('export.track.details.pdf');
+Route::get('/notify', function() {
+    $notif = Notif::where('account_type', 3)->get();
+        return response()->json([
+            'notify' => $notif
+        ]);
+    });
+Route::get('fundsource_batches/{id}/proponentinfo-batch', [App\Http\Controllers\FundSourceController::class, 'getProponentInfoBatch'])->name('fundsource.proponents_batch');
+Route::get('fetch/pre-dv/fundsource/{facility_id}', [App\Http\Controllers\PreDvController::class, 'fetchPreFundsource'])->name('fetch.pre_dv-fundsource');
 
 Route::post('/notifications/register-tab', function (Illuminate\Http\Request $request) {
     $clientId = $request->client_id;

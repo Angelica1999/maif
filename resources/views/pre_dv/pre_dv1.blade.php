@@ -1,13 +1,70 @@
 @extends('layouts.app')
 @section('content')
-<div class="col-md-12 grid-margin stretch-card">
+<style>
+
+.card-title{
+    width: 200px;
+}
+.input-group {
+        justify-content: flex-end;
+        gap: 1px;
+        flex-wrap: nowrap; 
+    }
+     .input-group-append {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end; 
+        
+    }
+      .input-group .btn{
+       width: 100px;
+    }
+.input-group .form-control {
+    width: 250px; 
+    max-width: 100%;
+}
+       @media (max-width: 767px) {
+    .input-group {
+        flex-direction: column;     
+        align-items: stretch;     
+    }
+
+    .input-group .form-control {
+        width: 200% !important;
+        margin-bottom: 5px;
+    }
+  .input-group .btn{
+       width: 100px;
+    }
+    .input-group-append {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .input-group-append .btn {
+        width: 100%;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+    }
+    #gen_btn{
+         width: 100% !important;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+    }
+}
+</style>    
+<div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-            <div class="float-right">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <div class="mb-2 mb-md-0">
+                    <h4 class="card-title">PRE - DV (v1)</h4>
+                    <p class="card-description">MAIF-IPP</p>
+                </div>
                 <div class="input-group">
                     <form method="GET" action="">
                         <div class="input-group">
-                            <input type="text" class="form-control" name="keyword" placeholder="Search..." value="{{$keyword}}" id="search-input" style="width:350px;">
+                            <input type="text" class="form-control" name="keyword" placeholder="Search..." value="{{$keyword}}" id="search-input" >
                             <div class="input-group-append">
                                 <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
                                 <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
@@ -16,7 +73,7 @@
                         </div>
                         <div class = "input-group">
                             <input type="text" style="text-align:center" class="form-control" id="dates_filter" value="" name="dates_filter" />
-                            <button type="submit" id="gen_btn" style="background-color:teal; color:white; width:79px; border-radius: 0; font-size:11px" class="btn btn-xs"><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
+                            <button type="submit" id="gen_btn" style="background-color:teal; color:white;  border-radius: 0; font-size:11px" class="btn btn-xs"><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
                         </div>
                         <input type="hidden" name="f_id" class="fc_id" value="{{ implode(',',$f_id) }}">
                         <input type="hidden" name="p_id" class="proponent_id" value="{{ implode(',',$p_id) }}">
@@ -25,11 +82,8 @@
                     </form>
                 </div>
             </div>
-            <h4 class="card-title">PRE - DV (v1)</h4>
-            <p class="card-description">
-                MAIF-IPP
-            </p>
-            <div class="table-responsive">
+           
+            <div class="table-responsive" style="margin-top: 20px">
             @if(count($results) > 0)
                 <table class="table table-striped">
                     <thead>
@@ -51,7 +105,7 @@
                                     </select>
                                 </div>  
                             </th>
-                            <th class="proponent">Proponent
+                            <th class="proponent" style="min-width:120px">Proponent
                                 <i id="proponent_i" class="typcn typcn-filter menu-icon"><i>
                                 <div class="filter" id="proponent_div" style="display:none;">
                                     <select style="width: 120px;" id="proponent_select" name="proponent_select" multiple>
@@ -74,12 +128,12 @@
                                     <select style="width: 120px;" id="by_select" name="by_select" multiple>
                                         <?php $check = []; ?>
                                         @foreach($results as $index => $d)
-                                            @if(!in_array($d->user->userid, $check))
-                                                <option value="{{ $d->user->userid }}" {{ is_array($b_id) && in_array($d->user->userid, $b_id) ? 'selected' : '' }}>
-                                                    {{ $d->user->fname .' '.$d->user->lname }}
-                                                </option>
-                                                <?php $check[] = $d->user->userid; ?>
-                                            @endif
+                                          @if($d->user && !in_array($d->user->userid, $check))
+                                            <option value="{{ $d->user->userid }}" {{ is_array($b_id) && in_array($d->user->userid, $b_id) ? 'selected' : '' }}>
+                                                {{ optional($d->user)->fname .' '. optional($d->user)->lname }}
+                                            </option>
+                                            <?php $check[] = $d->user->userid; ?>
+                                          @endif
                                         @endforeach
                                     </select>
                                 </div>  
@@ -110,7 +164,12 @@
                                     @endforeach
                                 </td>
                                 <td class="td">{{number_format(str_replace(',','',$row->grand_total), 2, '.',',')}}</td>
-                                <td class="td">{{$row->user->lname .', '.$row->user->fname}}</td>
+                                 <td>  @if($row->user)
+                                            {{ $row->user->lname .', '.$row->user->fname }}
+                                          @else
+                                            User not Found
+                                          @endif  
+                                </td>
                                 <td>{{ date('F j, Y', strtotime($row->created_at)) }}</td>
                             </tr>
                         @endforeach

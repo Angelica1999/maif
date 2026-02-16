@@ -31,6 +31,10 @@
 						<i class="typcn typcn-cog text-primary"></i>
 						Settings
 					</a>
+					<a class="dropdown-item">
+						<i class="typcn typcn-cog text-danger"></i>
+						Reco/Bugs
+					</a>
 					<a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
 						<i class="typcn typcn-power text-primary"></i>
 						Logout
