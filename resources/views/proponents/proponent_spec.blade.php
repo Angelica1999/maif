@@ -46,23 +46,21 @@
                             @endif
                         </td>
                         <td style="text-align:margin-right;">
-                            @if(!in_array('702', $row['facility_ids']))
-                                <a href="javascript:void(0)"
-                                    class="btn btn-xs btn-transfer"
-                                    title="Transfer Usage to CVCHD"
-                                    style="background-color: rgba(0,123,255,0.15); border-color: rgba(0,123,255,0.4); color:#0d6efd;"
-                                    data-proponent="{{ $proponent->proponent }}"
-                                    data-facility-ids='@json($row["facility_ids"])'
-                                    data-facility="{{ collect($row['facilities'])->flatten()->implode(', ') }}"
-                                    data-facility-names='@json($facility_lists)'
-                                    data-amount="{{ in_array('702', $row['facility_ids']) 
-                                            ? $row['util'] + $row['patient_amount'] + $rem_patients + $for_cvchd 
-                                            : $row['util'] + $row['patient_amount'] }}"
-                                    >
-                                        <i class="fa fa-random"></i>
-                                    </a>
+                            <a href="javascript:void(0)"
+                                class="btn btn-xs btn-transfer"
+                                title="Transfer Usage to CVCHD"
+                                style="background-color: rgba(0,123,255,0.15); border-color: rgba(0,123,255,0.4); color:#0d6efd;"
+                                data-proponent="{{ $proponent->proponent }}"
+                                data-facility-ids='@json($row["facility_ids"])'
+                                data-facility="{{ collect($row['facilities'])->flatten()->implode(', ') }}"
+                                data-facility-names='@json($facility_lists)'
+                                data-amount="{{ in_array('702', $row['facility_ids']) 
+                                        ? $row['util'] + $row['patient_amount'] + $rem_patients + $for_cvchd 
+                                        : $row['util'] + $row['patient_amount'] }}"
+                                >
+                                    <i class="fa fa-random"></i>
+                                </a>
 
-                            @endif
                         </td>
                     </tr>
                 @endforeach

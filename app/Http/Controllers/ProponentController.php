@@ -1245,6 +1245,8 @@ class ProponentController extends Controller
         $usage_ids = [];
         $usage_to_ids = [];
         $usage_total = 0;
+        $sample = [];
+
         foreach ($grouped_infos as $group) {
             $fac_ids = $group['facility_ids'];  
             $group_infos = $group['infos'];

@@ -1767,6 +1767,8 @@ class FundSourceController extends Controller
 
         // $cvchd_util_sum = $cvchd_util_sum + $usage_amount + $additional_cvchd_usage;
 
+        $usage_cvchd_amount = UsageTransfer::whereJsonContains('facility_id', "702")->whereNotIn('id', $usage_ids)->where('proponent', $proponent->proponent)->sum('amount');
+
         $cvchd_transfer_usage = UsageTransfer::where(function($query) use ($proponent) {
                 $query->whereJsonContains('to_fid', "702") // matches ["702"]
                     ->orWhereNull('to_fid');            // also allow null
@@ -1775,7 +1777,7 @@ class FundSourceController extends Controller
             ->where('proponent', $proponent->proponent)
             ->sum('amount');
             
-        $cvchd_util_sum = $cvchd_util_sum + $additional_cvchd_usage + $cvchd_transfer_usage;
+        $cvchd_util_sum = $cvchd_util_sum + $additional_cvchd_usage + $cvchd_transfer_usage - $usage_cvchd_amount;
 
         $check_all = $check_all + $cvchd_util_sum;
 
