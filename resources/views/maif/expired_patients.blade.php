@@ -1523,54 +1523,62 @@
         var id = event.target.getAttribute('data-id');
         window.location.href= "patient/return/" + id;
     }
-   document.addEventListener('DOMContentLoaded', function() {
-        const tableContainer = document.getElementById('patient_table_container');
-        const table = document.getElementById('patient_table');
-        
-        const scrollLeftTop = document.getElementById('scrollLeftTop');
-        const scrollRightTop = document.getElementById('scrollRightTop');
-        
-        const scrollAmount = 200; 
-    
-        function updateArrowStates() {
-            const scrollLeft = tableContainer.scrollLeft;
-            const maxScroll = tableContainer.scrollWidth - tableContainer.clientWidth;
-            scrollLeftTop.disabled = scrollLeft <= 0;
-          
-            scrollRightTop.disabled = scrollLeft >= maxScroll - 1; 
-           
-        }
-        
-        function scrollHorizontally(direction) {
-            const currentScroll = tableContainer.scrollLeft;
-            const newScroll = direction === 'left' 
-                ? Math.max(0, currentScroll - scrollAmount)
-                : currentScroll + scrollAmount;
-            
-            tableContainer.scrollTo({
-                left: newScroll,
-                behavior: 'smooth'
-            });
-        }
-        
-        scrollLeftTop.addEventListener('click', () => scrollHorizontally('left'));
-        scrollRightTop.addEventListener('click', () => scrollHorizontally('right'));
-       
-        tableContainer.addEventListener('scroll', updateArrowStates);
-        
-        updateArrowStates();
-        
-        window.addEventListener('resize', updateArrowStates);
-        
-        tableContainer.addEventListener('keydown', function(e) {
-            if (e.key === 'ArrowLeft') {
-                scrollHorizontally('left');
-                e.preventDefault();
-            } else if (e.key === 'ArrowRight') {
-                scrollHorizontally('right');
-                e.preventDefault();
-            }
+document.addEventListener('DOMContentLoaded', function () {
+
+    const tableContainer = document.getElementById('patient_table_container');
+    const scrollLeftTop = document.getElementById('scrollLeftTop');
+    const scrollRightTop = document.getElementById('scrollRightTop');
+    const scrollAmount = 200;
+
+    if (!tableContainer) return;
+
+    function updateArrowStates() {
+        if (!scrollLeftTop || !scrollRightTop) return;
+
+        const scrollLeft = tableContainer.scrollLeft;
+        const maxScroll = tableContainer.scrollWidth - tableContainer.clientWidth;
+
+        scrollLeftTop.disabled = scrollLeft <= 0;
+        scrollRightTop.disabled = scrollLeft >= maxScroll - 1;
+    }
+
+    function scrollHorizontally(direction) {
+        const currentScroll = tableContainer.scrollLeft;
+        const newScroll = direction === 'left'
+            ? Math.max(0, currentScroll - scrollAmount)
+            : currentScroll + scrollAmount;
+
+        tableContainer.scrollTo({
+            left: newScroll,
+            behavior: 'smooth'
         });
+    }
+
+    if (scrollLeftTop) {
+        scrollLeftTop.addEventListener('click', () => scrollHorizontally('left'));
+    }
+
+    if (scrollRightTop) {
+        scrollRightTop.addEventListener('click', () => scrollHorizontally('right'));
+    }
+
+    tableContainer.addEventListener('scroll', updateArrowStates);
+
+    tableContainer.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowLeft') {
+            scrollHorizontally('left');
+            e.preventDefault();
+        } else if (e.key === 'ArrowRight') {
+            scrollHorizontally('right');
+            e.preventDefault();
+        }
     });
+
+    window.addEventListener('resize', updateArrowStates);
+
+    updateArrowStates();
+});
+
+
     </script>
 @endsection

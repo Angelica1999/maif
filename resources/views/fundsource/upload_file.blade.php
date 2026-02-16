@@ -70,10 +70,23 @@
                         <div class="card">
                             <div class="card-body">
                                 <div>
-                                    <img src="{{ url('storage/app/' . $file->path) }}" alt="Image" class="img-fluid mb-2" style="width: 100%;">
+                                   @php
+                                        $imagePath = storage_path('app/' . $file->path);
+                                        if (file_exists($imagePath)) {
+                                            list($width, $height) = getimagesize($imagePath);
+                                            $isPortrait = $height > $width;
+                                            $imgSrc = $isPortrait ? url('storage/app/rotate/' . $file->path) : url('storage/app/' . $file->path);
+                                            $displayPath = $isPortrait ? 'rotate/' . $file->path : $file->path;
+                                        } else {
+                                            $imgSrc = url('storage/app/' . $file->path);
+                                            $displayPath = $file->path;
+                                        }
+                                    @endphp
+
+                                    <img src="{{ $imgSrc }}" alt="Image" class="img-fluid mb-2" style="width: 100%;">
                                 </div>
                                 <div class="text-center">
-                                    <a href="#sample" data-toggle="modal" onclick="image('{{ $file->path }}')">{{ $file->saa_no }}</a>
+                                    <a href="#sample" data-toggle="modal" onclick="image('{{ $displayPath  }}')">{{ $file->saa_no }}</a>
                                     <img src="\maif\public\images\icons8_delete_16.png" onclick="deleteImage({{$file->id}})">
                                 </div>
                             </div>
@@ -117,7 +130,7 @@
                     @csrf
                     <div class="form-group">
                         <b><label>Files:</label><b><br>
-                        <input style="" class="form-control" type="file"  id="file-upload" name="files[]" multiple>
+                        <input style="" class="form-control" type="file"  id="file-upload" name="files[]" multiple accept="image/jpeg,image/jpg,image/png">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -131,7 +144,11 @@
 
 @endsection
 @section('js')
+    <script src="{{ asset('admin/js/modal_error.js') }}"></script> 
     <script>
+        $(document).ready(function () {
+            initializeModalAccessibility('#upload_files');
+        });
 
        function image(path) {
             $('#sample_modal').html('<img src="{{ url('storage/app/') }}/' + path + '" alt="Image" class="img-fluid mb-2" style="width: 100%;">');

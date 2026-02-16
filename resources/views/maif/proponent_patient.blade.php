@@ -83,7 +83,7 @@
 
 .scroll-container {
     position: absolute; 
-    top: 50%; 
+    top: 45%; 
     left: 0;
     right: 0;
     transform: translateY(-50%);
@@ -844,67 +844,296 @@
             window.location.href = forwardUrl;
         }
     }
-    $(document).ready(function () {
-        $('.fa-sort').hide();
+      
+        // Declare global variables at the top of the file
+    var mail_ids = [];
+    var id_list = [];
+    var group_i = [];
+    var group_a = [];
+    var g_fac, g_pro;
+    var all_patients = false;
+    var selectedProponentId = 0;
+    var selectedFacilityId = 0;
+    var form_type = '';
 
-        function initializeSelect2(selector, route, placeholder) {
-            $(selector).select2({
-                ajax: {
-                    url: route,
-                    dataType: 'json',
-                    delay: 250,
-                    data: function (params) {
-                        return {
-                            search: params.term || '',
-                            page: params.page || 1,
-                            _token: '{{ csrf_token() }}'
-                        };
-                    },
-                    processResults: function (data, params) {
-                        params.page = params.page || 1;
-                        return {
-                            results: data.results,
-                            pagination: {
-                                more: data.has_more
-                            }
-                        };
-                    },
-                    cache: true
-                },
-                minimumInputLength: 0,
-                placeholder: placeholder,
-                allowClear: true,
-                closeOnSelect: false,
-                width: '100%',
-                templateResult: function (option) {
-                    if (option.loading) return option.text;
-                    return $('<span>' + option.text + '</span>');
-                },
-                templateSelection: function (option) {
-                    return option.text;
-                }
-            });
+$(function() {
+    $('#filter_dates').daterangepicker();
+});
 
-            $(selector).on('select2:select', function (e) {
-                console.log(`Selected from ${selector}:`, e.params.data);
-            });
+$('#system_sent').on('click', function(){
+    $('.sent_type').val(1);
+});
 
-            $(selector).on('select2:unselect', function (e) {
-                console.log(`Unselected from ${selector}:`, e.params.data);
-            });
+$('#crt_pnt').on('click', function(){
+    $('#region').select2();
+    $('#province_id').select2();
+    $('#muncity_id').select2();
+    $('#province_id').select2();
+    $('#barangay_id').select2();
+    $('#facility_id').select2();
+    $('#proponent_id').select2();
+    form_type = 'create';
+});
 
-            $(selector).on('select2:opening', function () {
-                console.log(`Opening ${selector} dropdown...`);
-            });
-            $(selector).next('.select2').find('.select2-selection').css({
-                'border': 'none',
-                'background': 'transparent',
-                'height': 'auto',
-                'min-height': '0',
-                'padding': '0px'
-            });
+$('#gen_btn').on('click', function(){
+    $('#gen').val('1');
+});
+
+$('.filter').on('click', function(){
+    $('#filter_col').css('display', 'block');
+    console.log('sample');
+});
+
+var selectFields = [
+    '#date_select',
+    '#fname_select',
+    '#mname_select',
+    '#lname_select',
+    '#facility_select',
+    '#proponent_select',
+    '#region_select',
+    '#province_select',
+    '#muncity_select',
+    '#barangay_select',
+    '#on_select',
+    '#by_select',
+    '#stat_select'
+];
+
+$(selectFields.join(',')).on('select2:select select2:unselect', function () {
+    var hasValue = selectFields.some(selector => {
+        return $(selector).val() && $(selector).val().length > 0;
+    });
+
+    if (hasValue) {
+        $('#filter_col').show();
+    } else {
+        $('#filter_col').hide();
+    }
+});
+
+$('#filter_col').on('click', function(){
+    $('#filter_date').val($('#date_select').val());
+    $('#filter_fname').val($('#fname_select').val());
+    $('#filter_mname').val($('#mname_select').val());
+    $('#filter_lname').val($('#lname_select').val());
+    $('#filter_facility').val($('#facility_select').val());
+    $('#filter_proponent').val($('#proponent_select').val());
+    $('#filter_code').val($('#code_select').val());
+    $('#filter_region').val($('#region_select').val());
+    $('#filter_province').val($('#province_select').val());
+    $('#filter_municipality').val($('#muncity_select').val());
+    $('#filter_barangay').val($('#barangay_select').val());
+    $('#filter_on').val($('#on_select').val());
+    $('#filter_by').val($('#by_select').val());
+    $('#filter_stat').val($('#stat_select').val());
+});
+
+$('#code_select').select2();
+
+$('#fname_select').change(function() {
+    var selectedValues = $(this).val();
+});
+
+var all_patients = @json($all_pats);
+
+$('#list_body').on('click', function(){
+    $('.filter').hide();
+});
+
+$('.btn-secondary').on('click', function(e) {
+    $('#update_form')[0].reset();
+    $('#facility_id').val('').trigger('change');
+    $('#proponent_id').val('').trigger('change');
+});
+
+$('.send_mailform').on('click', function(e) {
+    $('.loading-container').show();
+});
+
+$('#send_btn').on('click', function(e) {
+    $('.loading-container').show();
+});
+
+function error(){   
+    Lobibox.alert('error',{
+        size: 'mini',
+        msg: "There is an impostor! Find it"
+    });
+}
+
+function amountError(){
+    Lobibox.alert('error',{
+        size: 'mini',
+        msg: "There is no actual amount! Fill it"
+    });
+}
+
+function getStat(){
+    var all_stat = [];
+    $('.group-mailCheckBox:checked').each(function(){ 
+        var element = $(this);  
+        var data_stat = element.attr('data-stat');
+        all_stat.push(data_stat);
+    });
+    return all_stat;
+}
+
+function getStat2(){
+    var all_stat = [];
+    $('.group-mailCheckBox:checked').each(function(){ 
+        var element = $(this);  
+        var data_stat = element.attr('data-patient-stat2');
+        all_stat.push(data_stat);
+    });
+    return all_stat;
+}
+
+function itemChecked(element){
+    var parentTd = $(element).closest('td');   
+    var patientId = parentTd.attr('data-patient-id');
+    var checkboxId = element.attr("id");
+    if(id_list.includes(patientId)){
+        id_list = id_list.filter(id => id !== patientId);
+        mail_ids = mail_ids.filter(id => id !== checkboxId);
+    } else {
+        id_list.push(patientId);
+        mail_ids.push(checkboxId);
+    }
+
+    if(id_list.length != 0){
+        $('.send_mails').val(id_list).show();
+    }else{
+        $('.send_mails').val('').hide();
+    }
+    if (getStat().includes('0')) {
+        $('#system_sent').hide();
+    }
+    if (getStat2().includes('0')) {
+        $('#email_sent').hide();
+    }
+}
+
+function groupItem(element){
+    var parentTd = $(element).closest('td');   
+    var patientId = parentTd.attr('data-patient-id');
+    var row = $(element).closest('tr');   
+    var edit = row.find('td.editable-amount');
+    var val = edit.attr('data-actual-amount');
+    amount = val.replace(/,/g,'');
+    
+    if(group_i.includes(patientId)){
+        var r_index = group_i.indexOf(patientId); 
+        group_i = group_i.filter(id => id !== patientId);
+        if (r_index !== -1) {
+            group_a.splice(r_index, 1);
+        }
+    }else{
+        if(amount == 0 || amount == null || amount == ''){
+            alert('Fill up actual amount first!');
+            element.prop('checked', false);
+        }else{
+            var c_pro = parentTd.attr('data-proponent-id');
+            var c_fac = parentTd.attr('data-facility-id');
+            if (g_fac != 0 || c_fac == g_fac || g_pro != 0 || c_pro == g_pro) {
+                group_a.push(amount);
+                group_i.push(patientId);
+                g_fac = c_fac;
+                g_pro = c_pro;
+            }else{
+                alert('Make sure you are selecting patient with same facility and proponent!');
+                element.prop('checked', false);
+            }
+        }
+    }        
+    
+    var sum = group_a.reduce((accumulator, currentValue) => accumulator + parseFloat(currentValue), 0);
+    if(group_a.length != 0){
+        sum = sum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        $('.group_amountT').val(sum).show();
+        $('.group_facility').val(g_fac);
+        $('.group_proponent').val(g_pro);
+        $('.group_patients').val(group_i.join(','));
+        $('.group-btn').show();
+        $('.totalAmountLabel').show();
+    }else{
+        $('.group_amountT').val('').hide();
+        $('.totalAmountLabel').hide();
+        $('.group-btn').hide();
+    }
+}
+
+$(document).ready(function () {
+    $('.fa-sort').hide();
+
+    // Move the initializeSelect2 function outside so it can be reused
+    function initializeSelect2(selector, route, placeholder) {
+        // Destroy existing Select2 instance if it exists
+        if ($(selector).hasClass("select2-hidden-accessible")) {
+            $(selector).select2('destroy');
         }
 
+        $(selector).select2({
+            ajax: {
+                url: route,
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        search: params.term || '',
+                        page: params.page || 1,
+                        _token: '{{ csrf_token() }}'
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: data.results,
+                        pagination: {
+                            more: data.has_more
+                        }
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 0,
+            placeholder: placeholder,
+            allowClear: true,
+            closeOnSelect: false,
+            width: '100%',
+            templateResult: function (option) {
+                if (option.loading) return option.text;
+                return $('<span>' + option.text + '</span>');
+            },
+            templateSelection: function (option) {
+                return option.text;
+            }
+        });
+
+        $(selector).on('select2:select', function (e) {
+            console.log(`Selected from ${selector}:`, e.params.data);
+        });
+
+        $(selector).on('select2:unselect', function (e) {
+            console.log(`Unselected from ${selector}:`, e.params.data);
+        });
+
+        $(selector).on('select2:opening', function () {
+            console.log(`Opening ${selector} dropdown...`);
+        });
+        
+        $(selector).next('.select2').find('.select2-selection').css({
+            'border': 'none',
+            'background': 'transparent',
+            'height': 'auto',
+            'min-height': '0',
+            'padding': '0px',
+            'width':'100px'
+        });
+    }
+
+    // Function to initialize all Select2 dropdowns
+    function initializeAllSelect2() {
         initializeSelect2("#date_select", '{{ route("get.dates", ["type" => "4"]) }}', "Date");
         initializeSelect2("#fname_select", '{{ route("get.names", ["type" => "4"]) }}', "First Name");
         initializeSelect2("#mname_select", '{{ route("get.m_names", ["type" => "4"]) }}', "Middle Name");
@@ -917,380 +1146,66 @@
         initializeSelect2("#barangay_select", '{{ route("get.barangay", ["type" => "4"]) }}', "Barangay");
         initializeSelect2("#on_select", '{{ route("get.created_at", ["type" => "4"]) }}', "Created On");
         initializeSelect2("#by_select", '{{ route("get.created_by", ["type" => "4"]) }}', "Created By");
-    });
-
-    $(function() {
-        $('#filter_dates').daterangepicker();
-    });
-
-    $('#system_sent').on('click', function(){
-        $('.sent_type').val(1);
-    });
-
-    $('#crt_pnt').on('click', function(){
-        $('#region').select2();
-        $('#province_id').select2();
-        $('#muncity_id').select2();
-        $('#province_id').select2();
-        $('#barangay_id').select2();
-        $('#facility_id').select2();
-        $('#proponent_id').select2();
-        form_type = 'create';
-    });
-
-    $('#gen_btn').on('click', function(){
-        $('#gen').val('1');
-    });
-
-    $('.filter').on('click', function(){
-        $('#filter_col').css('display', 'block');
-        console.log('sample');
-    });
-
-    var selectFields = [
-        '#date_select',
-        '#fname_select',
-        '#mname_select',
-        '#lname_select',
-        '#facility_select',
-        '#proponent_select',
-        '#region_select',
-        '#province_select',
-        '#muncity_select',
-        '#barangay_select',
-        '#on_select',
-        '#by_select',
-        '#stat_select'
-    ];
-
-    $(selectFields.join(',')).on('select2:select select2:unselect', function () {
-        var hasValue = selectFields.some(selector => {
-            return $(selector).val() && $(selector).val().length > 0;
-        });
-
-        if (hasValue) {
-            $('#filter_col').show();
-        } else {
-            $('#filter_col').hide();
-        }
-    });
-    $(function() {
-        $('#filter_dates').daterangepicker();
-    });
-
-    $('#system_sent').on('click', function(){
-        $('.sent_type').val(1);
-    });
-
-    $('#gen_btn').on('click', function(){
-        $('#gen').val('1');
-    });
-
-    $('.filter').on('click', function(){
-        $('#filter_col').css('display', 'block');
-    })
-    $('#filter_col').on('click', function(){
-        $('#filter_date').val($('#date_select').val());
-        $('#filter_fname').val($('#fname_select').val());
-        $('#filter_mname').val($('#mname_select').val());
-        $('#filter_lname').val($('#lname_select').val());
-        $('#filter_facility').val($('#facility_select').val());
-        $('#filter_proponent').val($('#proponent_select').val());
-        $('#filter_code').val($('#code_select').val());
-        $('#filter_region').val($('#region_select').val());
-        $('#filter_province').val($('#province_select').val());
-        $('#filter_municipality').val($('#muncity_select').val());
-        $('#filter_barangay').val($('#barangay_select').val());
-        $('#filter_on').val($('#on_select').val());
-        $('#filter_by').val($('#by_select').val());
-        $('#filter_stat').val($('#stat_select').val());
-    });
-
-    $('#code_select').select2();
-
-    $('#fname_select').change(function() {
-        var selectedValues = $(this).val();
-    });
-
-    var all_patients = @json($all_pats);
-
-    $('#list_body').on('click', function(){
-        $('.filter').hide();
-    });
-
-    $('.btn-secondary').on('click', function(e) {
-        $('#update_form')[0].reset();
-        $('#facility_id').val('').trigger('change');
-        $('#proponent_id').val('').trigger('change');
-
-    });
-
-    $('.send_mailform').on('click', function(e) {
-        $('.loading-container').show();
-    });
-
-    $('#send_btn').on('click', function(e) {
-        $('.loading-container').show();
-    });
-
-    function error(){
-        Lobibox.alert('error',{
-            size: 'mini',
-            msg: "There is an impostor! Find it"
-        });
-    }
-
-    function amountError(){
-        Lobibox.alert('error',{
-            size: 'mini',
-            msg: "There is no actual amount! Fill it"
-        });
-    }
-
-    var all_ids = [];
-    var id_list = [];
-    var mail_ids = [];
-    var selectedProponentId = 0, selectedFacilityId = 0;
-
-    function getStat(){
-        var all_stat = [];
-        $('.group-mailCheckBox:checked').each(function(){ 
-            var element = $(this);  
-            var data_stat = element.attr('data-stat');
-            all_stat.push(data_stat);
-        });
-
-        return all_stat;
-    }
-
-    function getStat2(){
-        var all_stat = [];
-        $('.group-mailCheckBox:checked').each(function(){ 
-            var element = $(this);  
-            var data_stat = element.attr('data-patient-stat2');
-            all_stat.push(data_stat);
-        });
-
-        return all_stat;
-    }
-
-    function itemChecked(element){
-        var parentTd = $(element).closest('td');   
-        var patientId = parentTd.attr('data-patient-id');
-        var checkboxId = element.attr("id");
-        if(id_list.includes(patientId)){
-            id_list = id_list.filter(id => id !== patientId);
-            mail_ids = mail_ids.filter(id => id !== checkboxId);
-        } else {
-            id_list.push(patientId);
-            mail_ids.push(checkboxId);
-        }
-
-        if(id_list.length != 0){
-            $('.send_mails').val(id_list).show();
-        }else{
-            $('.send_mails').val('').hide();
-        }
-        if (getStat().includes('0')) {
-            $('#system_sent').hide();
-        }
-        if (getStat2().includes('0')) {
-            $('#email_sent').hide();
-        }
-    }
-
-    var group_a = [];
-    var group_i = [];
-    var g_fac, g_pro;
-
-    function groupItem(element){
-
-        var parentTd = $(element).closest('td');   
-        var patientId = parentTd.attr('data-patient-id');
-        var row = $(element).closest('tr');   
-        var edit = row.find('td.editable-amount');
-        var val = edit.attr('data-actual-amount');
-        amount = val.replace(/,/g,'');
-        if(group_i.includes(patientId)){
-            var r_index = group_i.indexOf(patientId); 
-            group_i = group_i.filter(id => id !== patientId);
-            if (r_index !== -1) {
-                group_a.splice(r_index, 1);
-            }
-        }else{
-            if(amount == 0 || amount == null || amount == ''){
-                alert('Fill up actual amount first!');
-                element.prop('checked', false);
-            }else{
-                var c_pro = parentTd.attr('data-proponent-id');
-                var c_fac = parentTd.attr('data-facility-id');
-                if (g_fac != 0 || c_fac == g_fac || g_pro != 0 || c_pro == g_pro) {
-                    group_a.push(amount);
-                    group_i.push(patientId);
-                    g_fac = c_fac;
-                    g_pro = c_pro;
-                }else{
-                    alert('Make sure you are selecting patient with same facility and proponent!');
-                    element.prop('checked', false);
-                }
-            }
-        }        
-        var sum = group_a.reduce((accumulator, currentValue)  => accumulator + parseFloat(currentValue), 0);
-        if(group_a.length != 0){
-            sum = sum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            $('.group_amountT').val(sum).show();
-            $('.group_facility').val(g_fac);
-            $('.group_proponent').val(g_pro);
-            $('.group_patients').val(group_i.join(','));
-            $('.group-btn').show();
-            $('.totalAmountLabel').show();
-        }else{
-            $('.group_amountT').val('').hide();
-            $('.totalAmountLabel').hide();
-            $('.group-btn').hide();
-        }
-    }
-
-    $(document).ready(function () {
         
-        function loadPaginatedData(url) {
-            $.ajax({
-                url: url,
-                method: 'GET',
-                success: function(response) {
-                    $('#patient_table_container').html($(response).find('#patient_table_container').html());
-                    $('#pagination_links').html($(response).find('#pagination_links').html());
-
-                    $.each(mail_ids, function(index, id) {
-                        $('#' + id).prop('checked', true);
-                    });
-
-                    $.each(group_i, function(index, id) {
-                        $('#someCheckboxId_' + id).prop('checked', true);
-                    });
-                    
-                    if(selectedProponentId != 0){
-                        $('#patient_table tbody tr').each(function() {
-                            var row = $(this);
-                            var proponentId = $(row).find('.group-amount').data('proponent-id');
-                            var facilityId = $(row).find('.group-amount').data('facility-id');
-
-                            if (proponentId !== selectedProponentId || facilityId !== selectedFacilityId) {
-                                $(row).find('.group-checkbox').prop('disabled', true);
-                                $(row).find('.group-checkbox').prop('checked', false);
-                            } else {
-                                $(row).find('.group-checkbox').prop('disabled', false);
-                            }
-                        });
-                    }
-                    initializeEditable();
-                }
-            });
+        // Also initialize stat_select with its specific settings
+        if ($('#stat_select').hasClass("select2-hidden-accessible")) {
+            $('#stat_select').select2('destroy');
         }
-
-        $(document).on('click', '#pagination_links a', function(e) {
-            e.preventDefault();
-            var url = $(this).attr('href');
-            loadPaginatedData(url);
-          
+        $('#stat_select').select2({
+            placeholder: "Status"
+        });
+        $('#stat_select').next('.select2').find('.select2-selection').css({
+            'border': 'none',
+            'background': 'transparent',
+            'height': 'auto',
+            'min-height': '0',
+            'padding': '0px',
+            'width' :'100px'
         });
 
-        var patients = @json($patients);
-        var newIds = patients.data.map(p => p.id); 
-        var new_mailIds = newIds.map(id => `mailCheckboxId_${id}`);
+        // Reinitialize code_select
+        if ($('#code_select').hasClass("select2-hidden-accessible")) {
+            $('#code_select').select2('destroy');
+        }
+        $('#code_select').select2();
 
-        $(document).on('click', '.select_all', function() {
-            if(all_patients){
-                $('#patient_table').find('input.group-mailCheckBox').prop('checked', true).trigger('change');                    
-                id_list = [...new Set([...id_list, ...newIds])];
-                mail_ids = [...new Set([...mail_ids, ...new_mailIds])];
+        // Reattach select2 event listeners for filter button
+        $(selectFields.join(',')).off('select2:select select2:unselect').on('select2:select select2:unselect', function () {
+            var hasValue = selectFields.some(selector => {
+                return $(selector).val() && $(selector).val().length > 0;
+            });
 
-                $('.send_mails').val(id_list).show();
-                console.log('all', id_list);
-                if (getStat().includes('0')) {
-                    $('#system_sent').hide();
-                }
-                if (getStat2().includes('0')) {
-                    $('#email_sent').hide();
-                }
+            if (hasValue) {
+                $('#filter_col').show();
+            } else {
+                $('#filter_col').hide();
             }
         });
-        
-        $(document).on('click', '.unselect_all', function() {
-            $('#patient_table').find('input.group-mailCheckBox').prop('checked', false).trigger('change');
-            $('.send_mails').val('').hide();
-            id_list = [];
-            console.log('all', id_list);
-            mail_ids = [];
-        });
+    }
 
+    // Initialize Select2 on page load
+    initializeAllSelect2();
 
-        function initializeEditable() {
-            $.fn.editable.defaults.mode = 'popup';
+    function loadPaginatedData(url) {
+        $.ajax({
+            url: url,
+            method: 'GET',
+            success: function(response) {
+                $('#patient_table_container').html($(response).find('#patient_table_container').html());
+                $('#pagination_links').html($(response).find('#pagination_links').html());
 
-            $(".number_editable").editable({
-                type : 'number',
-                name: 'actual_amount',
-                title: $(this).data("title"),
-                emptytext: 'empty',
-                success: function(response, newValue) {
-                    var cell = $(this).closest('.editable-amount');
-                    var patientId = cell.data('patient-id');
-                    var guaranteed_amount = cell.data('guaranteed-amount');
-                    var actual_amount = cell.data('actual-amount');
-                    var editableField = this;
-                    var url = "{{ url('update/amount').'/' }}" + patientId + '/' + newValue;
-                    var json = {
-                        "_token" : "<?php echo csrf_token(); ?>",
-                        "value" : newValue
-                    };
+                // Reinitialize Select2 after loading new content
+                initializeAllSelect2();
 
-                    if(newValue == ''){
-                        Lobibox.alert('error',{
-                            size: 'mini',
-                            msg: "Actual amount accepts number only!"
-                        }); 
-                        $(editableField).text(actual_amount);
-                        $(editableField).value(actual_amount);
-                        cell.attr('data-actual-amount', actual_amount);
-                        // location.reload();
-                        return;  
-                    }
-                    var c_amount = newValue.replace(/,/g,'');
+                $.each(mail_ids, function(index, id) {
+                    $('#' + id).prop('checked', true);
+                });
 
-                    if(c_amount > guaranteed_amount){
-                        $(this).html(newValue);
-                        Lobibox.alert('error',{
-                            size: 'mini',
-                            msg: "Inputted actual amount if greater than guaranteed amount!"
-                        }); 
-                        cell.attr('data-actual-amount', actual_amount);
-                        $(editableField).text(actual_amount);
-                        $(editableField).value(actual_amount);
-                        // location.reload();
-                        return;           
-                    }
-
-                    $.post(url, json, function(result){
-                        Lobibox.notify('success', {
-                            title: "",
-                            msg: "Successfully update actual amount!",
-                            size: 'mini',
-                            rounded: true
-                        });
-                        cell.attr('data-actual-amount', newValue);
-                        // location.reload();
-                    });
-                }
-            });
-        }
-
-        function initializeGroupFunctions() {
-
-            $('#patient_table').on('change', '.group-checkbox', function() {
-                if ($(this).prop('checked')) {
-                    selectedProponentId = $(this).closest('.group-amount').data('proponent-id');
-                    selectedFacilityId = $(this).closest('.group-amount').data('facility-id');
+                $.each(group_i, function(index, id) {
+                    $('#someCheckboxId_' + id).prop('checked', true);
+                });
+                
+                if(selectedProponentId != 0){
                     $('#patient_table tbody tr').each(function() {
                         var row = $(this);
                         var proponentId = $(row).find('.group-amount').data('proponent-id');
@@ -1303,16 +1218,138 @@
                             $(row).find('.group-checkbox').prop('disabled', false);
                         }
                     });
-                } else {
-                    $('#patient_table').find('.group-checkbox').prop('disabled', false);
                 }
-            });
-        }
-        
-        initializeEditable();
-        initializeGroupFunctions();
+                initializeEditable();
+                initializeGroupFunctions();
+                initializeScrollButtons(); 
+            }
+        });
+    }
 
+    $(document).on('click', '#pagination_links a', function(e) {
+        e.preventDefault();
+        var url = $(this).attr('href');
+        loadPaginatedData(url);
     });
+
+    var patients = @json($patients);
+    var newIds = patients.data.map(p => p.id); 
+    var new_mailIds = newIds.map(id => `mailCheckboxId_${id}`);
+
+    $(document).on('click', '.select_all', function() {
+        if(all_patients){
+            $('#patient_table').find('input.group-mailCheckBox').prop('checked', true).trigger('change');                    
+            id_list = [...new Set([...id_list, ...newIds])];
+            mail_ids = [...new Set([...mail_ids, ...new_mailIds])];
+
+            $('.send_mails').val(id_list).show();
+            console.log('all', id_list);
+            if (getStat().includes('0')) {
+                $('#system_sent').hide();
+            }
+            if (getStat2().includes('0')) {
+                $('#email_sent').hide();
+            }
+        }
+    });
+    
+    $(document).on('click', '.unselect_all', function() {
+        $('#patient_table').find('input.group-mailCheckBox').prop('checked', false).trigger('change');
+        $('.send_mails').val('').hide();
+        id_list = [];
+        console.log('all', id_list);
+        mail_ids = [];
+    });
+
+    function initializeEditable() {
+        $.fn.editable.defaults.mode = 'popup';
+
+        $(".number_editable").editable({
+            type : 'number',
+            name: 'actual_amount',
+            title: $(this).data("title"),
+            emptytext: 'empty',
+            success: function(response, newValue) {
+                var cell = $(this).closest('.editable-amount');
+                var patientId = cell.data('patient-id');
+                var guaranteed_amount = cell.data('guaranteed-amount');
+                var actual_amount = cell.data('actual-amount');
+                var editableField = this;
+                var url = "{{ url('update/amount').'/' }}" + patientId + '/' + newValue;
+                var json = {
+                    "_token" : "<?php echo csrf_token(); ?>",
+                    "value" : newValue
+                };
+
+                if(newValue == ''){
+                    Lobibox.alert('error',{
+                        size: 'mini',
+                        msg: "Actual amount accepts number only!"
+                    }); 
+                    $(editableField).text(actual_amount);
+                    $(editableField).value(actual_amount);
+                    cell.attr('data-actual-amount', actual_amount);
+                    return;  
+                }
+                var c_amount = newValue.replace(/,/g,'');
+
+                if(c_amount > guaranteed_amount){
+                    $(this).html(newValue);
+                    Lobibox.alert('error',{
+                        size: 'mini',
+                        msg: "Inputted actual amount if greater than guaranteed amount!"
+                    }); 
+                    cell.attr('data-actual-amount', actual_amount);
+                    $(editableField).text(actual_amount);
+                    $(editableField).value(actual_amount);
+                    return;           
+                }
+
+                $.post(url, json, function(result){
+                    Lobibox.notify('success', {
+                        title: "",
+                        msg: "Successfully update actual amount!",
+                        size: 'mini',
+                        rounded: true
+                    });
+                    cell.attr('data-actual-amount', newValue);
+                });
+            }
+        });
+    }
+
+    function initializeGroupFunctions() {
+        $('#patient_table').on('change', '.group-checkbox', function() {
+            if ($(this).prop('checked')) {
+                selectedProponentId = $(this).closest('.group-amount').data('proponent-id');
+                selectedFacilityId = $(this).closest('.group-amount').data('facility-id');
+                $('#patient_table tbody tr').each(function() {
+                    var row = $(this);
+                    var proponentId = $(row).find('.group-amount').data('proponent-id');
+                    var facilityId = $(row).find('.group-amount').data('facility-id');
+
+                    if (proponentId !== selectedProponentId || facilityId !== selectedFacilityId) {
+                        $(row).find('.group-checkbox').prop('disabled', true);
+                        $(row).find('.group-checkbox').prop('checked', false);
+                    } else {
+                        $(row).find('.group-checkbox').prop('disabled', false);
+                    }
+                });
+            } else {
+                // Check if there are any other checkboxes still checked
+                var anyChecked = $('#patient_table').find('.group-checkbox:checked').length > 0;
+                if (!anyChecked) {
+                    $('#patient_table').find('.group-checkbox').prop('disabled', false);
+                    selectedProponentId = 0;
+                    selectedFacilityId = 0;
+                }
+            }
+        });
+    }
+    
+    initializeEditable();
+    initializeGroupFunctions();
+});
 
     $('#update_send').on('click', function(){
         $('.loading-container').show();
@@ -1416,59 +1453,59 @@
         $('.pat_rem').attr('required', false);
         $('.sent_type').val(3);
     }
-    document.addEventListener('DOMContentLoaded', function() {
-        const tableContainer = document.getElementById('patient_table_container');
-        const table = document.getElementById('patient_table');
+
+   document.addEventListener('DOMContentLoaded', function() {
+    initializeScrollButtons();
+    });
+
+function initializeScrollButtons() {
+    const tableContainer = document.getElementById('patient_table_container');
+    const table = document.getElementById('patient_table');
+    
+    const scrollLeftTop = document.getElementById('scrollLeftTop');
+    const scrollRightTop = document.getElementById('scrollRightTop');
+    
+    const scrollAmount = 200; 
+    
+    function updateArrowStates() {
+        if (!tableContainer) return; // Safety check
         
-        // Arrow buttons
-        const scrollLeftTop = document.getElementById('scrollLeftTop');
-        const scrollRightTop = document.getElementById('scrollRightTop');
+        const scrollLeft = tableContainer.scrollLeft;
+        const maxScroll = tableContainer.scrollWidth - tableContainer.clientWidth;
         
+        if (scrollLeftTop) scrollLeftTop.disabled = scrollLeft <= 0;
+        if (scrollRightTop) scrollRightTop.disabled = scrollLeft >= maxScroll - 1;
+    }
+    
+    function scrollHorizontally(direction) {
+        if (!tableContainer) return;
         
-        const scrollAmount = 200; // Pixels to scroll per click
+        const currentScroll = tableContainer.scrollLeft;
+        const newScroll = direction === 'left' 
+            ? Math.max(0, currentScroll - scrollAmount)
+            : currentScroll + scrollAmount;
         
-        // Update arrow button states
-        function updateArrowStates() {
-            const scrollLeft = tableContainer.scrollLeft;
-            const maxScroll = tableContainer.scrollWidth - tableContainer.clientWidth;
-            
-            // Left arrows
-            scrollLeftTop.disabled = scrollLeft <= 0;
-          
-            
-            // Right arrows
-            scrollRightTop.disabled = scrollLeft >= maxScroll - 1; // -1 for rounding
-           
-        }
-        
-        // Scroll function
-        function scrollHorizontally(direction) {
-            const currentScroll = tableContainer.scrollLeft;
-            const newScroll = direction === 'left' 
-                ? Math.max(0, currentScroll - scrollAmount)
-                : currentScroll + scrollAmount;
-            
-            tableContainer.scrollTo({
-                left: newScroll,
-                behavior: 'smooth'
-            });
-        }
-        
-        // Arrow button click events
-        scrollLeftTop.addEventListener('click', () => scrollHorizontally('left'));
-        scrollRightTop.addEventListener('click', () => scrollHorizontally('right'));
-       
-        
-        // Update arrow states when scrolling (manual scroll with mouse/trackpad)
+        tableContainer.scrollTo({
+            left: newScroll,
+            behavior: 'smooth'
+        });
+    }
+    
+    // Remove old event listeners by cloning and replacing
+    if (scrollLeftTop) {
+        const newScrollLeftTop = scrollLeftTop.cloneNode(true);
+        scrollLeftTop.parentNode.replaceChild(newScrollLeftTop, scrollLeftTop);
+        newScrollLeftTop.addEventListener('click', () => scrollHorizontally('left'));
+    }
+    
+    if (scrollRightTop) {
+        const newScrollRightTop = scrollRightTop.cloneNode(true);
+        scrollRightTop.parentNode.replaceChild(newScrollRightTop, scrollRightTop);
+        newScrollRightTop.addEventListener('click', () => scrollHorizontally('right'));
+    }
+    
+    if (tableContainer) {
         tableContainer.addEventListener('scroll', updateArrowStates);
-        
-        // Initialize arrow states
-        updateArrowStates();
-        
-        // Update on window resize
-        window.addEventListener('resize', updateArrowStates);
-        
-        // Optional: Keyboard navigation (left/right arrow keys)
         tableContainer.addEventListener('keydown', function(e) {
             if (e.key === 'ArrowLeft') {
                 scrollHorizontally('left');
@@ -1478,7 +1515,12 @@
                 e.preventDefault();
             }
         });
-    });
-
+    }
+    
+    updateArrowStates();
+    
+    window.addEventListener('resize', updateArrowStates);
+}
 </script>
 @endsection
+

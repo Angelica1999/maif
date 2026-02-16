@@ -1943,8 +1943,10 @@ class FundSourceController extends Controller
             $path = $upload->storeAs('uploads',$filename);
             $imagePath = storage_path('app/' . $path);
 
-            if (exif_imagetype($imagePath) == IMAGETYPE_JPEG || exif_imagetype($imagePath) == IMAGETYPE_TIFF_II || exif_imagetype($imagePath) == IMAGETYPE_TIFF_MM) {
-                $exif = exif_read_data($imagePath);
+             $imageType = exif_imagetype($imagePath);
+
+            if (exif_imagetype($imagePath) == IMAGETYPE_JPEG || $imageType == IMAGETYPE_PNG || exif_imagetype($imagePath) == IMAGETYPE_TIFF_II || exif_imagetype($imagePath) == IMAGETYPE_TIFF_MM) {
+                $exif = @exif_read_data($imagePath);
             } else {
                 return "Please upload jpeg file.";
             }
@@ -1964,7 +1966,11 @@ class FundSourceController extends Controller
                     break;
             }
 
-            imagejpeg($img, $imagePath);
+             if ($imageType == IMAGETYPE_PNG) {
+                imagepng($img, $imagePath);
+            } else {
+                imagejpeg($img, $imagePath);
+            }
             imagedestroy($img);
 
             $ffiles = new Fundsource_Files();
@@ -1980,14 +1986,24 @@ class FundSourceController extends Controller
             if (!file_exists(storage_path('app/rotate'))) {
                 mkdir(storage_path('app/rotate'), 0777, true);
             }
-            $image1 = imagecreatefromjpeg($imagePath1);
-        
+             if ($imageType == IMAGETYPE_PNG) {
+                $image1 = imagecreatefrompng($imagePath);
+            } else {
+                $image1 = imagecreatefromjpeg($imagePath);
+            }
             $rotatedImage = imagerotate($image1, 270, 0);
         
-            imagejpeg($rotatedImage, $rotatedImagePath);
+            // Save rotated version
+            if ($imageType == IMAGETYPE_PNG) {
+                imagepng($rotatedImage, $rotatedImagePath);
+            } else {
+                imagejpeg($rotatedImage, $rotatedImagePath);
+            }
         
             imagedestroy($image1);
             imagedestroy($rotatedImage);
+
+           
         }
         return redirect()->back()->with('upload_files', true);
     }
