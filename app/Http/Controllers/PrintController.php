@@ -137,6 +137,7 @@ class PrintController extends Controller
                             }else{
                                 $pat->fc_status = "referred";
                             }
+                            $pat->forwarded_by_m = Auth::user()->userid;
                             $pat->sent_type = 3;
                             $pat->save();
 

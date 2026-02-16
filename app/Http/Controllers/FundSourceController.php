@@ -1146,8 +1146,6 @@ class FundSourceController extends Controller
 
     public function forPatientCode($proponent_id, $facility_id) {
 
-        
-
         // $overall = $this->overallBalance1($proponent_id);
         // $included = $this->forPatientCode1($proponent_id, $facility_id);
         // $firstKey = $overall->keys()->first();

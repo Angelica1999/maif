@@ -304,8 +304,18 @@ Route::post('/documents/upload', [App\Http\Controllers\PrintController::class, '
 Route::get('/documents/{routeNo}', [App\Http\Controllers\PrintController::class, 'getDocumentsLDDAP'])->name('documents.get');
 Route::get('/documents/download/{filename}', [App\Http\Controllers\PrintController::class, 'downloadLDDAP'])->name('documents.download');
 Route::delete('/documents/delete/{filename}', [App\Http\Controllers\PrintController::class, 'deleteLDDAP'])->name('documents.delete');
-
 Route::get('/transfer-usage', [App\Http\Controllers\ProponentController::class, 'transferUsage'])->name('usage.transfer');
+
+Route::get('fur/submission', [App\Http\Controllers\FURController::class, 'incomingFUR'])->name('fur.submission');
+Route::post('/fur/return', [App\Http\Controllers\FURController::class, 'returnFUR'])->name('return.fur');
+Route::post('/fur/accept', [App\Http\Controllers\FURController::class, 'acceptFUR'])->name('accept.fur');
+Route::get('/fur/annexA/excel/{id}/{year}', [App\Http\Controllers\FURController::class, 'annexAExcel'])->name('annex_a.excel');
+Route::get('/fur/annexB/excel/{id}/{month}/{year}', [App\Http\Controllers\FURController::class, 'annexBExcel'])->name('annex_b.excel');
+Route::get('/fur/private-institutions', [App\Http\Controllers\FURController::class, 'furFacilities'])->name('fur.facilities');
+Route::get('/fur/private-facility', [App\Http\Controllers\FURController::class, 'facilityView'])->name('fur.facility_view');
+Route::get('/fur/annex-a/{id}/{year}', [App\Http\Controllers\FURController::class, 'annexAView'])->name('fur.annex_a');
+Route::get('/fur/fc-annex-b/{id}/{year}', [App\Http\Controllers\FURController::class, 'fcAnnex'])->name('fur.fc_annex_b');
+Route::get('/fur/consolidated/annex-a', [App\Http\Controllers\FURController::class, 'consoA'])->name('fur.consolidated_a');
 
 Route::post('/notifications/register-tab', function (Illuminate\Http\Request $request) {
     $clientId = $request->client_id;

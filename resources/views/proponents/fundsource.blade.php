@@ -118,7 +118,7 @@
         <div class="card-body" style="">
             <div style="display: flex; justify-content: space-between; align-items: stretch; width: 100%">
                 <div style="text-align: start;">
-                    <h4 class="card-title">MANAGE FUNDSOURCE: PROPONENTS <i style="color:red"> ongoing updates for transfer usage</i></h4>
+                    <h4 class="card-title">MANAGE FUNDSOURCE: PROPONENTS</h4>
                     <p class="card-description">MAIF-IPP</p>
                 </div>
                 <div>

@@ -295,7 +295,7 @@
                                 @endif
                             </td>
                             <td class="editable-amount" data-actual-amount="{{ !Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','):0 }}" data-patient-id="{{ $patient->id }}" data-guaranteed-amount="{{str_replace(',', '', $patient->guaranteed_amount)}}">
-                                <a href="#" class="number_editable"  title="Actual Amount" id="{{ $patient->id }}">{{!Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}</a>
+                               {{!Empty($patient->actual_amount)?number_format($patient->actual_amount, 2, '.', ','): 0 }}
                             </td>
                             <td class="td">{{ number_format((float) str_replace(',', '', $patient->guaranteed_amount), 2, '.', ',') }}</td>
                             <td>{{ date('F j, Y', strtotime($patient->date_guarantee_letter)) }}</td>
@@ -1036,7 +1036,6 @@
                             }
                         });
                     }
-                    initializeEditable();
                 }
             });
         }
@@ -1076,68 +1075,7 @@
             console.log('all', id_list);
             mail_ids = [];
         });
-
-
-        function initializeEditable() {
-            $.fn.editable.defaults.mode = 'popup';
-
-            $(".number_editable").editable({
-                type : 'number',
-                name: 'actual_amount',
-                title: $(this).data("title"),
-                emptytext: 'empty',
-                success: function(response, newValue) {
-                    var cell = $(this).closest('.editable-amount');
-                    var patientId = cell.data('patient-id');
-                    var guaranteed_amount = cell.data('guaranteed-amount');
-                    var actual_amount = cell.data('actual-amount');
-                    var editableField = this;
-                    var url = "{{ url('update/amount').'/' }}" + patientId + '/' + newValue;
-                    var json = {
-                        "_token" : "<?php echo csrf_token(); ?>",
-                        "value" : newValue
-                    };
-
-                    if(newValue == ''){
-                        Lobibox.alert('error',{
-                            size: 'mini',
-                            msg: "Actual amount accepts number only!"
-                        }); 
-                        $(editableField).text(actual_amount);
-                        $(editableField).value(actual_amount);
-                        cell.attr('data-actual-amount', actual_amount);
-                        // location.reload();
-                        return;  
-                    }
-                    var c_amount = newValue.replace(/,/g,'');
-
-                    if(c_amount > guaranteed_amount){
-                        $(this).html(newValue);
-                        Lobibox.alert('error',{
-                            size: 'mini',
-                            msg: "Inputted actual amount if greater than guaranteed amount!"
-                        }); 
-                        cell.attr('data-actual-amount', actual_amount);
-                        $(editableField).text(actual_amount);
-                        $(editableField).value(actual_amount);
-                        // location.reload();
-                        return;           
-                    }
-
-                    $.post(url, json, function(result){
-                        Lobibox.notify('success', {
-                            title: "",
-                            msg: "Successfully update actual amount!",
-                            size: 'mini',
-                            rounded: true
-                        });
-                        cell.attr('data-actual-amount', newValue);
-                        // location.reload();
-                    });
-                }
-            });
-        }
-
+        
         function initializeGroupFunctions() {
 
             $('#patient_table').on('change', '.group-checkbox', function() {
@@ -1162,7 +1100,6 @@
             });
         }
         
-        initializeEditable();
         initializeGroupFunctions();
 
     });

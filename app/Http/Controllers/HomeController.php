@@ -851,10 +851,6 @@ class HomeController extends Controller
     public function index(Request $request)
     {
 
-        if(Auth::user()->userid == "2760"){
-            return 2;
-        }
-
         Proponent::whereIn('proponent', 
             Proponent::where('status', 1)->pluck('proponent')
         )->update(['status' => 1]);
@@ -2421,7 +2417,10 @@ class HomeController extends Controller
 
         $patientLogs = new PatientLogs();
         $patientLogs->patient_id = $patient->id;
-        $patientLogs->fill(Arr::except($patient->toArray(), ['status', 'notes', 'sent_type', 'user_type', 'transd_id', 'fc_status', 'expired', 'pro_used', 'rtrv_remarks']));
+        $patientLogs->fill(Arr::except($patient->toArray(), [
+            'status', 'notes', 'sent_type', 'user_type', 'transd_id', 'fc_status', 'expired', 'pro_used', 'rtrv_remarks',
+            'forwarded_by_p','retrieved_by_p','deleted_by','accepted_by_h','confirmed_by_h','returned_by_h','forwarded_by_m','returned_by_m'
+        ]));
         unset($patientLogs->id);
         $patientLogs->save();
         
@@ -2523,6 +2522,7 @@ class HomeController extends Controller
         }
         Patients::where('id', $id)->update([
             'sent_type' => $request->sent_type, 
+            'returned_by_m' => Auth::user()->userid,
             'fc_status' => $request->sent_type == 3 ? 'referred' : null, 
         ]);
         ReturnedPatients::insert([
@@ -2553,6 +2553,7 @@ class HomeController extends Controller
             }else{
                 $pat->fc_status = 'referred';
             }
+            $pat->forwarded_by_m = Auth::user()->userid;
             $pat->sent_type = 3;
             $pat->save();
             
@@ -2582,7 +2583,8 @@ class HomeController extends Controller
         Patients::where('id', $id)->update([
             'fc_status' => 'retrieved',
             'rtrv_remarks' => $remarks,
-            'pat_rem' => "Retrieved"
+            'pat_rem' => "Retrieved",
+            'retrieved_by_p' => Auth::user()->userid
         ]);
 
         $pat = Patients::where('id', $id)->first();
@@ -2620,7 +2622,10 @@ class HomeController extends Controller
 
             $patientLogs = new PatientLogs();
             $patientLogs->patient_id = $patient->id;
-            $patientLogs->fill(Arr::except($patient->toArray(), ['status', 'sent_type', 'user_type', 'transd_id', 'fc_status', 'expired', 'pro_used', 'rtrv_remarks']));
+            $patientLogs->fill(Arr::except($patient->toArray(), [
+                'status', 'sent_type', 'user_type', 'transd_id', 'fc_status', 'expired', 'pro_used', 'rtrv_remarks',
+                'forwarded_by_p','retrieved_by_p','deleted_by','accepted_by_h','confirmed_by_h','returned_by_h','forwarded_by_m','returned_by_m'
+            ]));
             unset($patientLogs->id);
             $patientLogs->save();
             $patientLogs->update([

@@ -82,19 +82,17 @@
           <div class="container-fluid">
             <div class="row">
                 <div class="col-md-12">
-                    <table cellpadding="0" cellspacing="0" width="100%" style="margin-top: 10px">
-                        <tr>
-                            <td width="23%" style="text-align: center; border-right:none"><img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/doh-logo.png'))) }}" width="40%" ></td>
-                            <td width="54%" style="border-left:none; border-right:none; ">
-                              <div class="header" style="margin-top: 20px">
-                                  <span style="margin-top: 10px">Republic of the Philippines</span> <br>
-                                  Department of Health<br>
-                                  <strong> CENTRAL VISAYAS FOR HEALTH DEVELOPMENT</strong> <br>
-                                  <small>Osmeña Boulevard, Sambag II, Cebu City, 6000 Philippines</small> <br>
-                                  <small>Regional Director's Office Tel. NO. (032) 253-6335 Fax No. (032) 254-0109</small><br>
-                              </div>
+                    <table cellpadding="0" cellspacing="0" width="100%">
+                        <tr style="border: 1px solid black;">
+                            <td width="23%" style="text-align: center; border-right:none; padding:5px"><img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/doh-logo.png'))) }}" width="40%" ></td>
+                            <td width="54%" style="border-left:none; border-right:none; text-align:center; line-height:1.4">
+                                <div class="header" style="margin-top: 15px;">
+                                    <span>Republic of the Philippines</span> <br>
+                                    <strong> DEPARTMENT OF HEALTH</strong> <br>
+                                    <i>Central Visayas Center for Health Development</i><br>
+                                </div>
                             </td>
-                          <td width="23%" style="text-align: right; border-left:none;"><small><i><br><br><br><br><br><br><br><br><br>Appendix 32&nbsp;&nbsp;&nbsp;</i></small> </td>
+                            <td width="23%" style="text-align: center; border-left:none;"><img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/bagong_pilipinas.png'))) }}" width="40%" ></td>
                         </tr>
                     </table>
                     <table border="2" style="width: 100%;" >
