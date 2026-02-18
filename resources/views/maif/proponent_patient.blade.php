@@ -630,9 +630,6 @@
     }
 
     function forwardPatient(status, forwardUrl, status2, status3) {
-        console.log('status', status);
-        console.log('status2', status2);
-        console.log('status3', status3);
 
         if (status == 1) {
             Swal.fire({
@@ -797,7 +794,6 @@
 
     $('.filter').on('click', function(){
         $('#filter_col').css('display', 'block');
-        console.log('sample');
     });
 
     var selectFields = [
@@ -1058,7 +1054,6 @@
                 mail_ids = [...new Set([...mail_ids, ...new_mailIds])];
 
                 $('.send_mails').val(id_list).show();
-                console.log('all', id_list);
                 if (getStat().includes('0')) {
                     $('#system_sent').hide();
                 }
@@ -1072,7 +1067,6 @@
             $('#patient_table').find('input.group-mailCheckBox').prop('checked', false).trigger('change');
             $('.send_mails').val('').hide();
             id_list = [];
-            console.log('all', id_list);
             mail_ids = [];
         });
         

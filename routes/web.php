@@ -316,6 +316,7 @@ Route::get('/fur/private-facility', [App\Http\Controllers\FURController::class, 
 Route::get('/fur/annex-a/{id}/{year}', [App\Http\Controllers\FURController::class, 'annexAView'])->name('fur.annex_a');
 Route::get('/fur/fc-annex-b/{id}/{year}', [App\Http\Controllers\FURController::class, 'fcAnnex'])->name('fur.fc_annex_b');
 Route::get('/fur/consolidated/annex-a', [App\Http\Controllers\FURController::class, 'consoA'])->name('fur.consolidated_a');
+Route::get('/fur/consolidated/annex-b', [App\Http\Controllers\FURController::class, 'consoB'])->name('fur.consolidated_b');
 
 Route::post('/notifications/register-tab', function (Illuminate\Http\Request $request) {
     $clientId = $request->client_id;

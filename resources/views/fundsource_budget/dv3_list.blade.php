@@ -324,7 +324,6 @@
                         }
 
                         var section = result.section;
-                        console.log('section', section);
                         if(section == 6 || section == 7){
                             $('.dv3_facility').prop('disabled', true);
                             $('.dv3_saa').prop('disabled', true);
@@ -336,7 +335,6 @@
                             $('.dv3_saa').prop('disabled', true);
                             $('#dv3_date').prop('disabled', true);
                         }else{
-                            console.log('dsad');
                             $('.add_more').prop('disabled', false);
                             $('.dv3_saa').removeAttr('disabled');
                             $('.amount').removeAttr('disabled');

@@ -374,34 +374,10 @@ $(document).ready(function() {
     
     var check = 0;
     var vat = 0, ewt = 0;
-    $(document).ready(function() {
-        // var type = $('.identifier').val();
-        // if(type == "processed" || type == "done"){
-        //     $('.ors_no').css('display', 'none');
-        //     $('.btn-success').css('display', 'none');
-        // }
 
-        // var section = {{ $section }};
-        // console.log('section', section);
-        // if(section == 6 || section == 7){
-        //     $('.dv3_facility').prop('disabled', true);
-        //     $('.dv3_saa').prop('disabled', true);
-        //     $('#dv3_date').prop('disabled', true);
-        // }else if(type == undefined){
-        //     $('.ors_no').css('display', 'none');
-        //     $('.btn-success').css('display', 'none');
-        //     $('.dv3_facility').prop('disabled', true);
-        //     $('.dv3_saa').prop('disabled', true);
-        //     $('#dv3_date').prop('disabled', true);
-        // }else{
-        //     console.log('dsad');
-        //     $('.add_more').prop('disabled', false);
-        //     $('.dv3_saa').removeAttr('disabled');
-        //     $('.amount').removeAttr('disabled');
-        // }
+    $(document).ready(function() {
         
         $(document).off('click', '.container .clone_saa .add_more').on('click', '.container .clone_saa .add_more', function () {
-            console.log('clicked');
             check = check + 1;
             $('.loading-container').show();
             var $this = $(this);

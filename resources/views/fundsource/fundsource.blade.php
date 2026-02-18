@@ -603,7 +603,6 @@
         $('#track_details2').modal('show');
         var info_id = event.target.getAttribute('data-proponentInfo-id');
         var i = 0;
-        console.log('info_id', info_id);
         var url = "{{ url('tracking').'/' }}"+ info_id;
         $.ajax({
             url: url,
@@ -744,7 +743,6 @@
         $('.modal_body').html(loading);
         $('.modal-title').html("Create Breakdowns");
         var url = "{{ url('fundsource/breakdowns').'/' }}"+ fundsourceId;
-        console.log(fundsourceId);
         setTimeout(function() {
             $.ajax({
                 url: url,

@@ -1153,7 +1153,7 @@
                         </a>
                         <ul class="nav flex-column sub-menu">
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('report') }}">
+                                <a class="nav-link" href="#">
                                     <span class="menu-icon">
                                         <img src="\maif\public\images\pre_re_16.png">
                                     </span>
@@ -1203,7 +1203,7 @@
                                                 </a>
                                             </li>
                                             <li class="nav-item">
-                                                <a class="nav-link" href="{{ route('report.facility') }}">
+                                                <a class="nav-link" href="{{ route('fur.consolidated_b') }}">
                                                     <span class="menu-icon">
                                                         <img src="\maif\public\images\fc_re_16.png">
                                                     </span>

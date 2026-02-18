@@ -1492,11 +1492,13 @@ class ProponentController extends Controller
     public function transferUsage(Request $request){
 
         $names = explode('&&', $request->new_facility);
+        $names = array_map('trim', $names);
+
         $ids = Facility::whereIn('name', $names)
             ->pluck('id')              
             ->map(fn($id) => (string) $id) 
             ->toArray();               
-        
+
         $usage = new UsageTransfer();
         $usage->proponent = $request->proponent;
         $usage->facility_id = $request->ids;

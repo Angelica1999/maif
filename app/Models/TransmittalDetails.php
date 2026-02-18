@@ -10,4 +10,8 @@ class TransmittalDetails extends Model
     use HasFactory;
 
     protected $table = "transmittal_details";
+
+    public function patients(){
+        return $this->hasMany(TransmittalPatients::class, 'transmittal_details', 'id');
+    }
 }

@@ -204,7 +204,6 @@
             cancelButtonColor: '#dc3545'
         }).then((result) => {
             if (result.isConfirmed) {
-                console.log('sd', id);
                 $.ajax({
                 type: 'POST',
                 url: '{{ route("accept.fur") }}',
@@ -259,7 +258,6 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 var remarks = result.value; 
-                console.log('sd', id);
                 $.ajax({
                 type: 'POST',
                 url: '{{ route("return.fur") }}',
