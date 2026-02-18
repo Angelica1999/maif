@@ -475,8 +475,6 @@ use App\Models\TrackingDetails;
 
     function deleteCurrentDocument() {
         var doc = currentDocuments[currentDocIndex];
-        console.log('doc', doc);
-
         Swal.fire({
             title: 'Delete Document?',
             html: `Are you sure you want to delete<br><strong>"${doc.display_name}"</strong>?`,
@@ -668,13 +666,11 @@ use App\Models\TrackingDetails;
     }
 
     function loadAndViewDocuments(routeNo) {
-        console.log('sample')
         $.ajax({
             url: '/maif/documents/' + routeNo,
             type: 'GET',
             success: function(response) {
                 if(response.success && response.documents.length > 0) {
-                    console.log(response.documents);
                     openDocViewer(response.documents, 0);
                 } else {
                     Swal.fire({

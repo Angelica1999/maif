@@ -180,7 +180,6 @@ $(document).ready(function() {
         $('.return_details').html(loading);
         $.get("{{ url('returned/details').'/' }}" + id, function(result){
             $('.return_details').html(result);
-            console.log('sample', result);
         });
     }
 

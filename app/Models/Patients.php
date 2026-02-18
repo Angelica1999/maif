@@ -72,4 +72,12 @@ class Patients extends Model
     public function pat_remarks(){
         return $this->hasMany(ReturnedPatients::class, 'patient_id', 'id');
     }
+
+    public function trans(){
+        return $this->belongsTo(TransmittalPatients::class, 'transd_id','id');
+    }
+
+    public function annexB(){
+        return $this->belongsTo(AnnexB::class, 'id','patient_id');
+    }
 }

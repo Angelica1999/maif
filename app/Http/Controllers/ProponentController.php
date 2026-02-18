@@ -1245,6 +1245,8 @@ class ProponentController extends Controller
         $usage_ids = [];
         $usage_to_ids = [];
         $usage_total = 0;
+        $sample = [];
+
         foreach ($grouped_infos as $group) {
             $fac_ids = $group['facility_ids'];  
             $group_infos = $group['infos'];
@@ -1490,11 +1492,13 @@ class ProponentController extends Controller
     public function transferUsage(Request $request){
 
         $names = explode('&&', $request->new_facility);
+        $names = array_map('trim', $names);
+
         $ids = Facility::whereIn('name', $names)
             ->pluck('id')              
             ->map(fn($id) => (string) $id) 
             ->toArray();               
-        
+
         $usage = new UsageTransfer();
         $usage->proponent = $request->proponent;
         $usage->facility_id = $request->ids;

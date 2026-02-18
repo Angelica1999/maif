@@ -121,7 +121,7 @@
                     </form>
                 </div>
             </div>
-            <h4 class="card-title">MANAGE PATIENTS</h4>
+            <h4 class="card-title">MANAGE PATIENT</h4>
             <span class="card-description">
                 MAIF-IPP
             </span>
@@ -1715,7 +1715,6 @@
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                     }).format(result.first_rem);
-                    console.log(first_rem);
 
                     second_rem = new Intl.NumberFormat('en-US', {
                         minimumFractionDigits: 2,
@@ -1786,20 +1785,7 @@
                         suggestionsDiv.empty();
                         $('#remaining_balance').val('');
                         $('#patient_code').val('');
-                    }
-                    // if(result.balance == 0 || result.balance < 0){
-                        // data.val('').trigger('change');
-                        // $('#patient_code').val('');
-                    //     Swal.fire({
-                    //         icon: 'error',
-                    //         title: 'Insufficient Balance!',
-                    //         text: 'Remaining balance is now ' + formattedBalance,
-                    //         timer: 2000, 
-                    //         showConfirmButton: false
-                    //     });
-                    // }
-                    else{
-                        console.log(1);
+                    }else{
                         $('.remaining_balance').val(fourth_rem);
                         var suggestions =[];
 
@@ -1827,7 +1813,6 @@
                         });
                         suggestionsDiv.show();
                     }
-                   
                 });
             }
         }

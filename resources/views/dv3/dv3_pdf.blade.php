@@ -45,18 +45,16 @@
             	<table border= 1px solid black width= 100%>
 					<div>
 						<table style="width:100%; font-size:12px">
-							<tr>
-							<td width="23%" style="text-align: center; border-right:none; padding:4px"><img src="{{realpath(__DIR__ . '/../../..').'/public/images/doh-logo.png'}}" width="70"></td>
-							<td width="54%" style="border-left:none; border-right:none; ">
-								<div class="header" style="margin-top: 10px; margin-bottom: 10px; line-height:1.2;">
-									<div>Republic of the Philippines</div>
-									<strong>CENTRAL VISAYAS CENTER for HEALTH DEVELOPMENT</strong>
-									<div><small>Osmeña Boulevard, Cebu City, Philippines 6000</small></div>
-									<div><small>Regional Director's Office Tel. No (032) 253-6335 Fax No. (032) 254-0109</small></div>
-									<div><small>Official Website <u>www.ro7.doh.gov.ph/</u> Email Address <u>dohro7@gmail.com</u></small></div>
-								</div>
-							</td>
-							<td width="23%" style="text-align: right; border-left:none; vertical-align:bottom"><small>Appendix 32</i></small> </td>
+							<tr style="border: 1px solid black;">
+								<td width="23%" style="text-align: center; border-right:none; padding:5px"><img src="{{realpath(__DIR__ . '/../../..').'/public/images/doh-logo.png'}}" width="70"></td>
+								<td width="54%" style="border-left:none; border-right:none; text-align:center; line-height:1.4">
+									<div class="header" style="margin-top: 15px;">
+										<span>Republic of the Philippines</span> <br>
+										<strong> DEPARTMENT OF HEALTH</strong> <br>
+										<i>Central Visayas Center for Health Development</i><br>
+									</div>
+								</td>
+								<td width="23%" style="text-align: center; border-left:none;"><img src="{{realpath(__DIR__ . '/../../..').'/public/images/bagong_pilipinas.png'}}" width="70"></td>
 							</tr>
 						</table>
 						<table width=100%>

@@ -61,7 +61,7 @@
     }
     
     .maif-sidebar .nav-item {
-        position: relative;
+        /* position: relative; */
         margin-bottom: 2px;
         /* border-radius: 6px; */
         overflow: hidden;
@@ -146,7 +146,7 @@
     }
 
     .maif-sidebar .sub-menu {
-        transition-delay: 1.5s; /* Delay before closing */
+        transition-delay: 1s; 
     }
 
     .maif-sidebar .sub-menu .nav-link {
@@ -717,7 +717,7 @@
                                 <span class="menu-title">Group Patients</span>
                             </a>
                         </li>
-                    </u>
+                    </ul>
                 </li>
             </ul>
             <!-- Disbursement Voucher -->
@@ -1153,7 +1153,7 @@
                         </a>
                         <ul class="nav flex-column sub-menu">
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('report') }}">
+                                <a class="nav-link" href="#">
                                     <span class="menu-icon">
                                         <img src="\maif\public\images\pre_re_16.png">
                                     </span>
@@ -1170,15 +1170,15 @@
                                 </a>
                                 <ul class="nav flex-column sub-menu">
                                     <li class="nav-item">
-                                        <a class="nav-link" href="{{ route('report') }}">
+                                        <a class="nav-link" href="{{ route('fur.submission') }}">
                                             <span class="menu-icon">
                                                 <img src="\maif\public\images\pre_re_16.png">
                                             </span>
-                                            <span class="menu-title">Incoming</span>
+                                            <span class="menu-title">Submission</span>
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="{{ route('report.facility') }}">
+                                        <a class="nav-link" href="{{ route('fur.facilities') }}">
                                             <span class="menu-icon">
                                                 <img src="\maif\public\images\fc_re_16.png">
                                             </span>
@@ -1186,7 +1186,7 @@
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="{{ route('report.saa') }}">
+                                        <a class="nav-link" href="#">
                                             <span class="menu-icon">
                                                 <img src="\maif\public\images\saa_re_16.png">
                                             </span>
@@ -1195,7 +1195,7 @@
                                         </a>
                                         <ul class="nav flex-column sub-menu">
                                             <li class="nav-item">
-                                                <a class="nav-link" href="{{ route('report') }}">
+                                                <a class="nav-link" href="{{ route('fur.consolidated_a') }}">
                                                     <span class="menu-icon">
                                                         <img src="\maif\public\images\pre_re_16.png">
                                                     </span>
@@ -1203,7 +1203,7 @@
                                                 </a>
                                             </li>
                                             <li class="nav-item">
-                                                <a class="nav-link" href="{{ route('report.facility') }}">
+                                                <a class="nav-link" href="{{ route('fur.consolidated_b') }}">
                                                     <span class="menu-icon">
                                                         <img src="\maif\public\images\fc_re_16.png">
                                                     </span>
@@ -1450,7 +1450,7 @@
     </div>
 </nav>
 
-<script>
+<script>    
     function showModal() {
         document.getElementById('new_note').classList.add('show');
     }
