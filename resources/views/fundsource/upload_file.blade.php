@@ -2,12 +2,58 @@
 
 @section('content')
 <style>
+
+.input-group {
+        justify-content: flex-end;
+        gap: 1px;
+        flex-wrap: nowrap; 
+        width: auto;
+    }
+     .input-group-append {
+        display: flex;
+        flex-wrap: wrap;
+ 
+        justify-content: flex-end; 
+        
+    }
+
+.input-group .form-control {
+    width: 250px; 
+    max-width: 100%;
+}
+    @media (max-width: 767px) {
+    .input-group {
+        flex-direction: column;     
+        align-items: stretch;     
+    }
+
+    .input-group .form-control {
+        width: 200%;
+        margin-bottom: 5px;
+    }
+
+    .input-group-append {
+        flex-direction: column;     /* stack buttons */
+        width: 100%;
+    }
+
+    .input-group-append .btn {
+        width: 100%;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+    }
+}
 </style>
-<div class="container-fluid col-lg-12 grid-margin stretch-card">
+<div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <div class="mb-2 mb-md-0">
+                    <h4 class="card-title">FUNDSOURCE FILES</h4>
+                    <p class="card-description">MAIF-IPP</p>
+                </div>
             <form method="GET" action="">
-                <div class="input-group float-right w-50" style="min-width: 600px;">
+                <div class="input-group">
                     <input type="text" class="form-control" name="keyword" placeholder="SAA NO." value="{{$keyword}}">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
@@ -16,10 +62,7 @@
                     </div>
                 </div>
             </form>
-            <h4 class="card-title">FUNDSOURCE FILES</h4>
-            <p class="card-description">
-                MAIF-IPP
-            </p>
+        </div>
             <div class="row">
             @if(count($files)>0)
                 @foreach($files as $file)
@@ -27,10 +70,23 @@
                         <div class="card">
                             <div class="card-body">
                                 <div>
-                                    <img src="{{ url('storage/app/' . $file->path) }}" alt="Image" class="img-fluid mb-2" style="width: 100%;">
+                                   @php
+                                        $imagePath = storage_path('app/' . $file->path);
+                                        if (file_exists($imagePath)) {
+                                            list($width, $height) = getimagesize($imagePath);
+                                            $isPortrait = $height > $width;
+                                            $imgSrc = $isPortrait ? url('storage/app/rotate/' . $file->path) : url('storage/app/' . $file->path);
+                                            $displayPath = $isPortrait ? 'rotate/' . $file->path : $file->path;
+                                        } else {
+                                            $imgSrc = url('storage/app/' . $file->path);
+                                            $displayPath = $file->path;
+                                        }
+                                    @endphp
+
+                                    <img src="{{ $imgSrc }}" alt="Image" class="img-fluid mb-2" style="width: 100%;">
                                 </div>
                                 <div class="text-center">
-                                    <a href="#sample" data-toggle="modal" onclick="image('{{ $file->path }}')">{{ $file->saa_no }}</a>
+                                    <a href="#sample" data-toggle="modal" onclick="image('{{ $displayPath  }}')">{{ $file->saa_no }}</a>
                                     <img src="\maif\public\images\icons8_delete_16.png" onclick="deleteImage({{$file->id}})">
                                 </div>
                             </div>
@@ -74,7 +130,7 @@
                     @csrf
                     <div class="form-group">
                         <b><label>Files:</label><b><br>
-                        <input style="" class="form-control" type="file"  id="file-upload" name="files[]" multiple>
+                        <input style="" class="form-control" type="file"  id="file-upload" name="files[]" multiple accept="image/jpeg,image/jpg,image/png">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -88,7 +144,11 @@
 
 @endsection
 @section('js')
+    <script src="{{ asset('admin/js/modal_error.js') }}"></script> 
     <script>
+        $(document).ready(function () {
+            initializeModalAccessibility('#upload_files');
+        });
 
        function image(path) {
             $('#sample_modal').html('<img src="{{ url('storage/app/') }}/' + path + '" alt="Image" class="img-fluid mb-2" style="width: 100%;">');

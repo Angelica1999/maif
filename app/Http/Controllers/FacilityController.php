@@ -335,13 +335,6 @@ class FacilityController extends Controller
 
         return view('facility.incoming', [
             'transmittal' => $transmittal,
-            'facilities' => $facilities,
-            'patients' => $patients,
-            'keyword' => $keyword,
-            'total' => $total,
-            'amount' => $amount,
-            'facs' => $facs ?? '',
-            'status' => $status ?? '',
             'control_no' => $trans
         ]);
     }
@@ -466,112 +459,15 @@ class FacilityController extends Controller
     }
 
     public function returned(Request $req){
-
-        $keyword = $req->has('viewAll') ? '' : $req->keyword;
-        $viewAll = $req->has('viewAll');
-        $facs = $req->has('viewAll') ? [0] 
-            : (
-                $req->facility_data 
-                ? array_map('intval', json_decode($req->facility_data[0] ?? '[]', true) ?: $req->facility_data) 
-                : [0]
-            );
-    
-        $transmittalQuery = Transmittal::where('status', 3)
+        $transmittal = Transmittal::where('status', 3)
             ->with([
                 'user.facility' => function ($query) {
                     $query->select('id', 'name');
                 }
-            ]);
-            
-        $facilityIds = (clone $transmittalQuery)
-            ->select('facility_id')
-            ->distinct()
-            ->pluck('facility_id');
-
-        if (!$viewAll && !empty($keyword)) {
-            $transmittalQuery->where('control_no', 'LIKE', "%{$keyword}%");
-        }
-
-        if ($req->facility_data) {
-            $transmittalQuery->whereIn('facility_id', $facs);
-        }
-
-        $status = $req->has('viewAll') ? [0] 
-        : (
-            $req->status_data 
-            ? array_map('intval', json_decode($req->status_data[0] ?? '[]', true) ?: $req->status_data) 
-            : [0]
-        );
-
-        if ($req->status_data) {
-            if($status != 0){
-                $transmittalQuery->whereIn('remarks', $status);
-            }
-        }
-
-        $facilities = Facility::whereIn('id', $facilityIds)->select('id', 'name')->get();
-
-        $stats = (clone $transmittalQuery)
-            ->selectRaw('COUNT(*) as total_count, SUM(total) as total_amount')
-            ->first();
-
-        $total = $stats->total_count ?? 0;
-        $amount = $stats->total_amount ?? 0;
-
-        if ($req->sort == "name" && $req->direction){
-            $f_order = Facility::orderBy('name', $req->direction)->pluck('id')->toArray();    
-            $transmittal = (clone $transmittalQuery)
-                ->orderByRaw('FIELD(facility_id, ' . implode(',', $f_order) . ')')
-                ->paginate(50);
-        }elseif($req->sort == "remarks" && $req->direction){
-            $transmittal = (clone $transmittalQuery)
-            ->orderBy('remarks', $req->direction)
-            ->paginate(50);
-        }elseif($req->sort == "total" && $req->direction){
-            $transmittal = (clone $transmittalQuery)
-            ->orderBy('total', $req->direction)
-            ->paginate(50);
-        }elseif($req->sort == "on" && $req->direction){
-            $transmittal = (clone $transmittalQuery)
-            ->orderBy('created_at', $req->direction)
-            ->paginate(50);
-        }elseif($req->sort == "prepared" && $req->direction){
-            $transmittal = (clone $transmittalQuery)
-            ->orderBy('prepared_date', $req->direction)
-            ->paginate(50);
-        }elseif($req->sort == "by" && $req->direction){
-            $transmittal = (clone $transmittalQuery)
-            ->orderBy(
-                OnlineUser::select('fname')
-                    ->whereColumn('users.username', 'transmittal.created_by'),
-                $req->direction
-            )
-            ->paginate(50);
-        
-        }elseif($req->sort == "control" && $req->direction){
-            $transmittal = (clone $transmittalQuery)
-            ->orderBy('control_no', $req->direction)
-            ->paginate(50);
-        }else{
-            $transmittal = (clone $transmittalQuery)
-            ->orderBy('id', 'desc')
-            ->paginate(50);
-        }
-
-        $patients = DB::table('transmittal_patients as tp')
-            ->join('transmittal_details as td', 'tp.transmittal_details', '=', 'td.id')
-            ->whereIn('td.transmittal_id', $transmittal->pluck('id'))
-            ->count();
-
-        return view('facility.returned', [
-            'transmittal' => $transmittal,
-            'facilities' => $facilities,
-            'patients' => $patients,
-            'keyword' => $keyword,
-            'total' => $total,
-            'amount' => $amount,
-            'facs' => $facs ?? '',
-            'status' => $status ?? ''
+            ])
+            ->orderBy('id', 'desc')->paginate(50);
+        return view('facility.returned',[
+            'transmittal' => $transmittal
         ]);
     }
 
@@ -627,8 +523,16 @@ class FacilityController extends Controller
             ->distinct()
             ->pluck('facility_id');
 
-        if (!$viewAll && !empty($keyword)) {
-            $transmittalQuery->where('control_no', 'LIKE', "%{$keyword}%");
+          if (!$viewAll && !empty($keyword)) {
+            $transmittalQuery->where(function ($q) use ($keyword) {
+                $q->where('control_no', 'LIKE', "%{$keyword}%")
+                ->orWhereHas('user', function($q2) use ($keyword) {
+                $q2->whereRaw("CONCAT(fname, ' ', lname) LIKE ?", ["%{$keyword}%"]);
+                })                 
+                ->orWhereHas('user.facility', function ($q3) use ($keyword) {
+                    $q3->where('name', 'LIKE', "%{$keyword}%");
+                });
+            });
         }
 
         if ($req->facility_data) {

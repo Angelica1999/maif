@@ -58,6 +58,148 @@
         width: 100px;
         border-radius: 0;
     }
+    #search_patient {
+    width: auto !important;   
+    max-width: 100%; 
+}
+.table-wrapper {
+    max-width: 100%;
+    border: 2px solid #ddd;
+    position: relative;
+}
+
+
+.scroll-container {
+    position: absolute; 
+    top: 45%; 
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    padding: 0 10px;
+    pointer-events: none; 
+    z-index: 10; 
+}
+
+.scroll-arrow {
+    pointer-events: auto;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: rgba(0, 123, 255, 0.9); 
+    color: white;
+    /* position: sticky; */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 16px;
+    border-radius: 50%; 
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); 
+}
+
+.scroll-arrow:hover {
+    background: rgba(0, 86, 179, 0.95);
+    transform: scale(1.1); 
+}
+
+.scroll-arrow:active {
+    background: rgba(0, 64, 133, 1);
+    transform: scale(0.95);
+}
+
+.scroll-info {
+    position: absolute;
+    top: -50px; 
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+    background: rgba(248, 249, 250, 0.95);
+    padding: 5px 15px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.scroll-bottom {
+    overflow-x: auto;
+    overflow-y: hidden;
+    background: #f8f9fa;
+    border-top: 1px solid #ddd;
+    height: 20px;
+}
+
+.scroll-content {
+    height: 1px;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 600px;
+}
+@media (max-width: 1600px) {
+    .scroll-container {
+    position: sticky; 
+     top: 45%;
+    } 
+}
+ @media (max-width: 1024px) {
+    .scroll-container {
+        display: none;
+    }
+
+ }
+.input-group {
+        justify-content: flex-end;
+        gap: 1px;
+        flex-wrap: nowrap; 
+    }
+     .input-group-append {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        justify-content: flex-end; 
+        
+    }
+   
+.input-group .form-control {
+    width: auto !important;    
+    max-width: 100%;
+}
+       @media (max-width: 767px) {
+    .input-group {
+        flex-direction: column;     
+        align-items: stretch;     
+    }
+
+    .input-group .form-control {
+        width: 200% !important;
+        margin-bottom: 5px;
+    }
+
+    .input-group-append {
+        flex-direction: column;     
+        width: 100%;
+    }
+
+    .input-group-append .btn {
+        width: 100%;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+    }
+      #gen_btn{
+         width: 100% !important;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+    }
+}
 </style>
 @extends('layouts.app')
 @section('content')
@@ -65,15 +207,20 @@
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-            <div class="float-right">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <div class="mb-2 mb-md-0">
+                    <h4 class="card-title" style="white-space: nowrap;">MANAGE PATIENTS</h4>
+                    <p class="card-description">MAIF-IPP</p>
+                </div>
                 <div class="input-group">
                     <form method="GET" action="{{ route('home') }}">
                         <div class="input-group">
-                            <input type="hidden" class="form-control" name="key">
+                            <!-- <input type="hidden" class="form-control" name="key"> -->
                             <input type="text" class="form-control" name="keyword" id="search_patient" placeholder="Search..." value="{{ $keyword }}" style="width:400px;">
                             <div class="input-group-append">
                                 <button class="btn btn-md btn-info uniform-button" type="submit" style="border-radius:0;"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
-                                <button class="btn btn-md btn-warning text-white uniform-button" style="border-radius:0;" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png"> View All</button>
+                                <button type="button" class="btn btn-md btn-warning text-white uniform-button" onclick="viewAll()"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
+                                <!-- <button class="btn btn-md btn-warning text-white uniform-button" style="border-radius:0;" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png"> View All</button> -->
                                 <button type="button" href="#create_patient" id="crt_pnt" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md set_width"><img src="\maif\public\images\icons8_create_16.png">Create</button>
                                 <button type="submit" value="filt" style="display:none; background-color:00563B; color:white;" name="filter_col" id="filter_col" class="btn btn-md set_width"><i class="typcn typcn-filter menu-icon"></i>Filter</button>
                             </div>  
@@ -127,6 +274,15 @@
             </span>
 
             @if(count($patients) > 0)
+                <div class="scroll-container" >
+                        <button class="scroll-arrow scroll-arrow-left" id="scrollLeftTop" title="Scroll Left">
+                            <i class="fa fa-chevron-left"></i>
+                        </button>
+                        <div class="" id=""></div>
+                        <button class="scroll-arrow scroll-arrow-right" id="scrollRightTop" title="Scroll Right">
+                            <i class="fa fa-chevron-right"></i>
+                        </button>
+                    </div>
             <div class="table-responsive" id ="patient_table_container">
                 <table class="table table-striped" id="patient_table">
                     <thead>
@@ -345,7 +501,7 @@
                                     {{ date('F j, Y', strtotime($patient->created_at)) }}<br>
                                     ( {{  date('H:i:s', strtotime($patient->created_at)) }} )
                                 </td>
-                                <td class="td">{{ $patient->user_type == null ? $patient->encoded_by->lname .', '. $patient->encoded_by->fname: ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td>
+                                <td class="td">{{ $patient->user_type == null ? ($patient->encoded_by? $patient->encoded_by->lname .', '. $patient->encoded_by->fname : 'No user found' ) : ($patient->gl_user? $patient->gl_user->lname .', '. $patient->gl_user->fname:'') }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -936,110 +1092,203 @@
             });
         }
     }
+    function viewAll() {
+    document.querySelectorAll('input[type=hidden]').forEach(el => el.value = '');
+    location.href = "{{ route('home') }}";
+}
+// Declare global variables at the top of the file
+var all_ids = [];
+var id_list = [];
+var mail_ids = [];
+var group_a = [];
+var group_i = [];
+var g_fac, g_pro;
+var selectedProponentId = 0;
+var selectedFacilityId = 0;
+var select_val = 0;
+
+$(function() {
+    $('#filter_dates').daterangepicker();
+});
+
+$('#system_sent').on('click', function(){
+    $('.sent_type').val(1);
+});
+
+$('#crt_pnt').on('click', function(){
+    $('#region').select2();
+    $('#province_id').select2();
+    $('#muncity_id').select2();
+    $('#province_id').select2();
+    $('#barangay_id').select2();
+    $('#facility_id').select2();
+    $('#proponent_id').select2();
+    form_type = 'create';
+});
+
+$('#gen_btn').on('click', function(){
+    $('#gen').val('1');
+});
+
+$('.filter').on('click', function(){
+    $('#filter_col').css('display', 'block');
+});
+
+$('#filter_col').on('click', function(){
+    $('#filter_date').val($('#date_select').val());
+    $('#filter_fname').val($('#fname_select').val());
+    $('#filter_mname').val($('#mname_select').val());
+    $('#filter_lname').val($('#lname_select').val());
+    $('#filter_facility').val($('#facility_select').val());
+    $('#filter_proponent').val($('#proponent_select').val());
+    $('#filter_code').val($('#code_select').val());
+    $('#filter_region').val($('#region_select').val());
+    $('#filter_province').val($('#province_select').val());
+    $('#filter_municipality').val($('#muncity_select').val());
+    $('#filter_barangay').val($('#barangay_select').val());
+    $('#filter_on').val($('#on_select').val());
+    $('#filter_by').val($('#by_select').val());
+});
+
+$('#code_select').select2();
+
+$('#fname_select').change(function() {
+    var selectedValues = $(this).val(); 
+});
+
+$('#list_body').on('click', function(){
+    $('.filter').hide();
+});
+
+$('.btn-secondary').on('click', function(e) {
+    $('#contractForm')[0].reset();
+    $('#facility_id').val('').trigger('change');
+    $('#proponent_id').val('').trigger('change');
+});
+
+$('.send_mailform').on('click', function(e) {
+    $('.loading-container').show();
+});
+
+$('#send_btn').on('click', function(e) {
+    $('.loading-container').show();
+});
+
+function error(){
+    Lobibox.alert('error',{
+        size: 'mini',
+        msg: "There is an impostor! Find it"
+    });
+}
+
+function amountError(){
+    Lobibox.alert('error',{
+        size: 'mini',
+        msg: "There is no actual amount! Fill it"
+    });
+}
+
+function getStat(){
+    var all_stat = [];
+    $('.group-mailCheckBox:checked').each(function(){ 
+        var element = $(this);  
+        var data_stat = element.attr('data-patient-stat');
+        all_stat.push(data_stat);
+    });
+    return all_stat;
+}
+
+function getStat2(){
+    var all_stat = [];
+    $('.group-mailCheckBox:checked').each(function(){ 
+        var element = $(this);  
+        var data_stat = element.attr('data-patient-stat2');
+        all_stat.push(data_stat);
+    });
+    return all_stat;
+}
+
+function itemChecked(element){
+    var parentTd = $(element).closest('td');   
+    var patientId = parentTd.attr('data-patient-id');
+    var checkboxId = element.attr("id");
+
+    if(id_list.includes(patientId)){
+        id_list = id_list.filter(id => id !== patientId);
+        mail_ids = mail_ids.filter(id => id !== checkboxId);
+    } else {
+        id_list.push(patientId);
+        mail_ids.push(checkboxId);
+    }
+
+    if(id_list.length != 0){
+        $('.send_mails').val(id_list).show();
+    }else{
+        $('.send_mails').val(id_list).hide();
+    }
+
+    if (getStat().includes('0')) {
+        $('#system_sent').hide();
+    }
+
+    if (getStat2().includes('0')) {
+        $('#email_sent').hide();
+    }
+}
+
+function groupItem(element){
+    var parentTd = $(element).closest('td');   
+    var patientId = parentTd.attr('data-patient-id');
+    var row = $(element).closest('tr');   
+    var edit = row.find('td.editable-amount');
+    var val = edit.attr('data-actual-amount');
+    amount = val.replace(/,/g,'');
     
-    $(document).ready(function () {
-        $('.fa-sort').hide();
-
-        function initializeSelect2(selector, route, placeholder) {
-            $(selector).select2({
-                ajax: {
-                    url: route,
-                    dataType: 'json',
-                    delay: 250,
-                    data: function (params) {
-                        return {
-                            search: params.term || '',
-                            page: params.page || 1,
-                            _token: '{{ csrf_token() }}'
-                        };
-                    },
-                    processResults: function (data, params) {
-                        params.page = params.page || 1;
-                        return {
-                            results: data.results,
-                            pagination: {
-                                more: data.has_more
-                            }
-                        };
-                    },
-                    cache: true
-                },
-                minimumInputLength: 0,
-                placeholder: placeholder,
-                allowClear: true,
-                closeOnSelect: false,
-                width: '100%',
-                templateResult: function (option) {
-                    if (option.loading) return option.text;
-                    return $('<span>' + option.text + '</span>');
-                },
-                templateSelection: function (option) {
-                    return option.text;
-                }
-            });
-
-            $(selector).on('select2:select', function (e) {
-                console.log(`Selected from ${selector}:`, e.params.data);
-            });
-
-            $(selector).on('select2:unselect', function (e) {
-                console.log(`Unselected from ${selector}:`, e.params.data);
-            });
-
-            $(selector).on('select2:opening', function () {
-                console.log(`Opening ${selector} dropdown...`);
-            });
-            $(selector).next('.select2').find('.select2-selection').css({
-                'border': 'none',
-                'background': 'transparent',
-                'height': 'auto',
-                'min-height': '0',
-                'padding': '0px'
-            });
+    if(group_i.includes(patientId)){
+        var r_index = group_i.indexOf(patientId); 
+        group_i = group_i.filter(id => id !== patientId);
+        if (r_index !== -1) {
+            group_a.splice(r_index, 1);
         }
+    }else{
+        if(amount == 0 || amount == null || amount == ''){
+            alert('Fill up actual amount first!');
+            element.prop('checked', false);
+        }else{
+            var c_pro = parentTd.attr('data-proponent-id');
+            var c_fac = parentTd.attr('data-facility-id');
+            if (g_fac != 0 || c_fac == g_fac || g_pro != 0 || c_pro == g_pro) {
+                group_a.push(amount);
+                group_i.push(patientId);
+                g_fac = c_fac;
+                g_pro = c_pro;
+            }else{
+                alert('Make sure you are selecting patient with same facility and proponent!');
+                element.prop('checked', false);
+            }
+        }
+    }
+    
+    var sum = group_a.reduce((accumulator, currentValue) => accumulator + parseFloat(currentValue), 0);
+    if(group_a.length != 0){
+        sum = sum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        $('.group_amountT').val(sum).show();
+        $('.group_facility').val(g_fac);
+        $('.group_proponent').val(g_pro);
+        $('.group_patients').val(group_i.join(','));
+        $('.group-btn').show();
+        $('.totalAmountLabel').show();
+    }else{
+        $('.group_amountT').val('').hide();
+        $('.totalAmountLabel').hide();
+        $('.group-btn').hide();
+    }
+}
 
-        initializeSelect2("#date_select", '{{ route("get.dates", ["type" => "1"]) }}', "Date");
-        initializeSelect2("#fname_select", '{{ route("get.names", ["type" => "1"]) }}', "First Name");
-        initializeSelect2("#mname_select", '{{ route("get.m_names", ["type" => "1"]) }}', "Middle Name");
-        initializeSelect2("#lname_select", '{{ route("get.l_names", ["type" => "1"]) }}', "Last Name");
-        initializeSelect2("#facility_select", '{{ route("get.facilities") }}', "Facility");
-        initializeSelect2("#proponent_select", '{{ route("get.proponents") }}', "Proponent");
-        initializeSelect2("#region_select", '{{ route("get.region", ["type" => "1"]) }}', "Region");
-        initializeSelect2("#province_select", '{{ route("get.province", ["type" => "1"]) }}', "Province");
-        initializeSelect2("#muncity_select", '{{ route("get.municipalities", ["type" => "1"]) }}', "Municipality");
-        initializeSelect2("#barangay_select", '{{ route("get.barangay", ["type" => "1"]) }}', "Barangay");
-        initializeSelect2("#on_select", '{{ route("get.created_at", ["type" => "1"]) }}', "Created On");
-        initializeSelect2("#by_select", '{{ route("get.created_by", ["type" => "1"]) }}', "Created By");
-    });
+$(document).ready(function () {
+    $('.fa-sort').hide();
 
-    $(function() {
-        $('#filter_dates').daterangepicker();
-    });
-
-    $('#system_sent').on('click', function(){
-        $('.sent_type').val(1);
-    });
-
-    $('#crt_pnt').on('click', function(){
-        $('#region').select2();
-        $('#province_id').select2();
-        $('#muncity_id').select2();
-        $('#province_id').select2();
-        $('#barangay_id').select2();
-        $('#facility_id').select2();
-        $('#proponent_id').select2();
-        enabledInput();
-        form_type = 'create';
-    });
-
-    $('#gen_btn').on('click', function(){
-        $('#gen').val('1');
-    });
-
-    $('.filter').on('click', function(){
-        $('#filter_col').css('display', 'block');
-    });
-
+    // Move selectFields inside document.ready
     var selectFields = [
         '#date_select',
         '#fname_select',
@@ -1055,217 +1304,147 @@
         '#by_select'
     ];
 
-    $(selectFields.join(',')).on('select2:select select2:unselect', function () {
-        var hasValue = selectFields.some(selector => {
-            return $(selector).val() && $(selector).val().length > 0;
-        });
-
-        if (hasValue) {
-            $('#filter_col').show();
-        } else {
-            $('#filter_col').hide();
-        }
-    });
-
-    $('#filter_col').on('click', function(){
-        $('#filter_date').val($('#date_select').val());
-        $('#filter_fname').val($('#fname_select').val());
-        $('#filter_mname').val($('#mname_select').val());
-        $('#filter_lname').val($('#lname_select').val());
-        $('#filter_facility').val($('#facility_select').val());
-        $('#filter_proponent').val($('#proponent_select').val());
-        $('#filter_code').val($('#code_select').val());
-        $('#filter_region').val($('#region_select').val());
-        $('#filter_province').val($('#province_select').val());
-        $('#filter_municipality').val($('#muncity_select').val());
-        $('#filter_barangay').val($('#barangay_select').val());
-        $('#filter_on').val($('#on_select').val());
-        $('#filter_by').val($('#by_select').val());
-    });
-
-    $('#code_select').select2();
-
-    $('#fname_select').change(function() {
-        var selectedValues = $(this).val(); 
-    });
-
-    $('#list_body').on('click', function(){
-        $('.filter').hide();
-    });
-
-    $('.btn-secondary').on('click', function(e) {
-        $('#contractForm')[0].reset();
-        $('#facility_id').val('').trigger('change');
-        $('#proponent_id').val('').trigger('change');
-
-    });
-
-    $('.send_mailform').on('click', function(e) {
-        $('.loading-container').show();
-    });
-
-    $('#send_btn').on('click', function(e) {
-        $('.loading-container').show();
-    });
-
-    function error(){
-        Lobibox.alert('error',{
-            size: 'mini',
-            msg: "There is an impostor! Find it"
-        });
-    }
-
-    function amountError(){
-        Lobibox.alert('error',{
-            size: 'mini',
-            msg: "There is no actual amount! Fill it"
-        });
-    }
-
-    var all_ids = [];
-    var id_list = [];
-    var mail_ids = [];
-    var selectedProponentId = 0, selectedFacilityId = 0;
-
-    function getStat(){
-        var all_stat = [];
-        $('.group-mailCheckBox:checked').each(function(){ 
-            var element = $(this);  
-            var data_stat = element.attr('data-patient-stat');
-            all_stat.push(data_stat);
-        });
-
-        return all_stat;
-    }
-
-    function getStat2(){
-        var all_stat = [];
-        $('.group-mailCheckBox:checked').each(function(){ 
-            var element = $(this);  
-            var data_stat = element.attr('data-patient-stat2');
-            all_stat.push(data_stat);
-        });
-
-        return all_stat;
-    }
-
-    function itemChecked(element){
-        var parentTd = $(element).closest('td');   
-        var patientId = parentTd.attr('data-patient-id');
-        var checkboxId = element.attr("id");
-
-        if(id_list.includes(patientId)){
-            id_list = id_list.filter(id => id !== patientId);
-            mail_ids = mail_ids.filter(id => id !== checkboxId);
-        } else {
-            id_list.push(patientId);
-            mail_ids.push(checkboxId);
+    function initializeSelect2(selector, route, placeholder) {
+        // Destroy existing Select2 instance if it exists
+        if ($(selector).hasClass("select2-hidden-accessible")) {
+            $(selector).select2('destroy');
         }
 
-        if(id_list.length != 0){
-            $('.send_mails').val(id_list).show();
-        }else{
-            $('.send_mails').val(id_list).hide();
-        }
-
-        if (getStat().includes('0')) {
-            $('#system_sent').hide();
-        }
-
-        if (getStat2().includes('0')) {
-            $('#email_sent').hide();
-        }
-        
-    }
-
-    var group_a = [];
-    var group_i = [];
-    var g_fac, g_pro;
-
-    function groupItem(element){
-
-        var parentTd = $(element).closest('td');   
-        var patientId = parentTd.attr('data-patient-id');
-        var row = $(element).closest('tr');   
-        var edit = row.find('td.editable-amount');
-        var val = edit.attr('data-actual-amount');
-        amount = val.replace(/,/g,'');
-        if(group_i.includes(patientId)){
-            var r_index = group_i.indexOf(patientId); 
-            group_i = group_i.filter(id => id !== patientId);
-            if (r_index !== -1) {
-                group_a.splice(r_index, 1);
+        $(selector).select2({
+            ajax: {
+                url: route,
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return {
+                        search: params.term || '',
+                        page: params.page || 1,
+                        _token: '{{ csrf_token() }}'
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: data.results,
+                        pagination: {
+                            more: data.has_more
+                        }
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 0,
+            placeholder: placeholder,
+            allowClear: true,
+            closeOnSelect: false,
+            width: '100%',
+            templateResult: function (option) {
+                if (option.loading) return option.text;
+                return $('<span>' + option.text + '</span>');
+            },
+            templateSelection: function (option) {
+                return option.text;
             }
-        }else{
-            if(amount == 0 || amount == null || amount == ''){
-                alert('Fill up actual amount first!');
-                element.prop('checked', false);
-            }else{
-                var c_pro = parentTd.attr('data-proponent-id');
-                var c_fac = parentTd.attr('data-facility-id');
-                if (g_fac != 0 || c_fac == g_fac || g_pro != 0 || c_pro == g_pro) {
-                    group_a.push(amount);
-                    group_i.push(patientId);
-                    g_fac = c_fac;
-                    g_pro = c_pro;
-                }else{
-                    alert('Make sure you are selecting patient with same facility and proponent!');
-                    element.prop('checked', false);
-                }
-            }
-        }
+        });
+
+        $(selector).on('select2:select', function (e) {
+            console.log(`Selected from ${selector}:`, e.params.data);
+        });
+
+        $(selector).on('select2:unselect', function (e) {
+            console.log(`Unselected from ${selector}:`, e.params.data);
+        });
+
+        $(selector).on('select2:opening', function () {
+            console.log(`Opening ${selector} dropdown...`);
+        });
         
-        var sum = group_a.reduce((accumulator, currentValue)  => accumulator + parseFloat(currentValue), 0);
-        if(group_a.length != 0){
-            sum = sum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            $('.group_amountT').val(sum).show();
-            $('.group_facility').val(g_fac);
-            $('.group_proponent').val(g_pro);
-            $('.group_patients').val(group_i.join(','));
-            $('.group-btn').show();
-            $('.totalAmountLabel').show();
-        }else{
-            $('.group_amountT').val('').hide();
-            $('.totalAmountLabel').hide();
-            $('.group-btn').hide();
-        }
+        $(selector).next('.select2').find('.select2-selection').css({
+            'border': 'none',
+            'background': 'transparent',
+            'height': 'auto',
+            'min-height': '0',
+            'padding': '0px'
+        });
     }
 
-    $(document).ready(function () {
-        function loadPaginatedData(url) {
-            $.ajax({
-                url: url,
-                method: 'GET',
-                success: function(response) {
-                    $('#patient_table_container').html($(response).find('#patient_table_container').html());
-                    $('#pagination_links').html($(response).find('#pagination_links').html());
+    function initializeAllSelect2() {
+        initializeSelect2("#date_select", '{{ route("get.dates", ["type" => "1"]) }}', "Date");
+        initializeSelect2("#fname_select", '{{ route("get.names", ["type" => "1"]) }}', "First Name");
+        initializeSelect2("#mname_select", '{{ route("get.m_names", ["type" => "1"]) }}', "Middle Name");
+        initializeSelect2("#lname_select", '{{ route("get.l_names", ["type" => "1"]) }}', "Last Name");
+        initializeSelect2("#facility_select", '{{ route("get.facilities") }}', "Facility");
+        initializeSelect2("#proponent_select", '{{ route("get.proponents") }}', "Proponent");
+        initializeSelect2("#region_select", '{{ route("get.region", ["type" => "1"]) }}', "Region");
+        initializeSelect2("#province_select", '{{ route("get.province", ["type" => "1"]) }}', "Province");
+        initializeSelect2("#muncity_select", '{{ route("get.municipalities", ["type" => "1"]) }}', "Municipality");
+        initializeSelect2("#barangay_select", '{{ route("get.barangay", ["type" => "1"]) }}', "Barangay");
+        initializeSelect2("#on_select", '{{ route("get.created_at", ["type" => "1"]) }}', "Created On");
+        initializeSelect2("#by_select", '{{ route("get.created_by", ["type" => "1"]) }}', "Created By");
 
-                    $.each(mail_ids, function(index, id) {
-                        $('#' + id).prop('checked', true);
-                    });
+        // Reinitialize code_select
+        if ($('#code_select').hasClass("select2-hidden-accessible")) {
+            $('#code_select').select2('destroy');
+        }
+        $('#code_select').select2();
 
-                    $.each(group_i, function(index, id) {
-                        $('#someCheckboxId_' + id).prop('checked', true);
-                    });
-                    
-                    if(selectedProponentId != 0){
-                        $('#patient_table tbody tr').each(function() {
-                            var row = $(this);
-                            var proponentId = $(row).find('.group-amount').data('proponent-id');
-                            var facilityId = $(row).find('.group-amount').data('facility-id');
-
-                            if (proponentId !== selectedProponentId || facilityId !== selectedFacilityId) {
-                                $(row).find('.group-checkbox').prop('disabled', true);
-                                $(row).find('.group-checkbox').prop('checked', false);
-                            } else {
-                                $(row).find('.group-checkbox').prop('disabled', false);
-                            }
-                        });
-                    }
-                    initializeEditable();
-                }
+        // Reattach select2 event listeners for filter button
+        $(selectFields.join(',')).off('select2:select select2:unselect').on('select2:select select2:unselect', function () {
+            var hasValue = selectFields.some(selector => {
+                return $(selector).val() && $(selector).val().length > 0;
             });
-        }
+
+            if (hasValue) {
+                $('#filter_col').show();
+            } else {
+                $('#filter_col').hide();
+            }
+        });
+    }
+
+    // Initialize Select2 on page load
+    initializeAllSelect2();
+
+    function loadPaginatedData(url) {
+        $.ajax({
+            url: url,
+            method: 'GET',
+            success: function(response) {
+                $('#patient_table_container').html($(response).find('#patient_table_container').html());
+                $('#pagination_links').html($(response).find('#pagination_links').html());
+
+                // Reinitialize Select2 after loading new content
+                initializeAllSelect2();
+
+                $.each(mail_ids, function(index, id) {
+                    $('#' + id).prop('checked', true);
+                });
+
+                $.each(group_i, function(index, id) {
+                    $('#someCheckboxId_' + id).prop('checked', true);
+                });
+                
+                if(selectedProponentId != 0){
+                    $('#patient_table tbody tr').each(function() {
+                        var row = $(this);
+                        var proponentId = $(row).find('.group-amount').data('proponent-id');
+                        var facilityId = $(row).find('.group-amount').data('facility-id');
+
+                        if (proponentId !== selectedProponentId || facilityId !== selectedFacilityId) {
+                            $(row).find('.group-checkbox').prop('disabled', true);
+                            $(row).find('.group-checkbox').prop('checked', false);
+                        } else {
+                            $(row).find('.group-checkbox').prop('disabled', false);
+                        }
+                    });
+                }
+                
+                initializeEditable();
+                initializeGroupFunctions();
+                initializeScrollButtons();
+            }
+        });
+    }
 
         $(document).on('click', '#pagination_links a', function(e) {
             e.preventDefault();
@@ -1361,35 +1540,38 @@
             // });
         }
 
-        function initializeGroupFunctions() {
+    function initializeGroupFunctions() {
+        $('#patient_table').on('change', '.group-checkbox', function() {
+            if ($(this).prop('checked')) {
+                selectedProponentId = $(this).closest('.group-amount').data('proponent-id');
+                selectedFacilityId = $(this).closest('.group-amount').data('facility-id');
+                $('#patient_table tbody tr').each(function() {
+                    var row = $(this);
+                    var proponentId = $(row).find('.group-amount').data('proponent-id');
+                    var facilityId = $(row).find('.group-amount').data('facility-id');
 
-            $('#patient_table').on('change', '.group-checkbox', function() {
-                if ($(this).prop('checked')) {
-                    selectedProponentId = $(this).closest('.group-amount').data('proponent-id');
-                    selectedFacilityId = $(this).closest('.group-amount').data('facility-id');
-                    $('#patient_table tbody tr').each(function() {
-                        var row = $(this);
-                        var proponentId = $(row).find('.group-amount').data('proponent-id');
-                        var facilityId = $(row).find('.group-amount').data('facility-id');
-
-                        if (proponentId !== selectedProponentId || facilityId !== selectedFacilityId) {
-                            $(row).find('.group-checkbox').prop('disabled', true);
-                            $(row).find('.group-checkbox').prop('checked', false);
-                        } else {
-                            $(row).find('.group-checkbox').prop('disabled', false);
-                        }
-                    });
-                } else {
+                    if (proponentId !== selectedProponentId || facilityId !== selectedFacilityId) {
+                        $(row).find('.group-checkbox').prop('disabled', true);
+                        $(row).find('.group-checkbox').prop('checked', false);
+                    } else {
+                        $(row).find('.group-checkbox').prop('disabled', false);
+                    }
+                });
+            } else {
+                var anyChecked = $('#patient_table').find('.group-checkbox:checked').length > 0;
+                if (!anyChecked) {
                     $('#patient_table').find('.group-checkbox').prop('disabled', false);
+                    selectedProponentId = 0;
+                    selectedFacilityId = 0;
                 }
-            });
-        }
-        
-        initializeEditable();
-        initializeGroupFunctions();
-
-    });
-
+            }
+        });
+    }
+    
+    initializeEditable();
+    initializeGroupFunctions();
+    
+});
     // function validateAmount(element) {
     //     if (event.keyCode === 32) {
     //         event.preventDefault();
@@ -1502,31 +1684,19 @@
                 $('.pat_rem').val(patient.pat_rem);
 
                 if (patient.sent_type == null || patient.fc_status == "returned") {
-
-                    if(!["referred", "retrieved"].includes(patient.fc_status)){
+                    if(patient.fc_status != "retrieved"){
+                        $('#update_pat_btn').css('display', 'block');
                         $('#remove_pat_btn').css('display', 'block');
-                        enabledInput();
                         if (stat != 0) {
                             $('#update_send').css('display', 'block');
                         } else {
                             $('#update_send').css('display', 'none');
                         }
-                    }else{
-                        $('#update_send').css('display', 'none');
-                        $('#remove_pat_btn').css('display', 'none');
-                        disabledInput();
                     }
                 } else {
-                    disabledInput();
+                    $('#update_pat_btn').css('display', 'none');
                     $('#update_send').css('display', 'none');
                     $('#remove_pat_btn').css('display', 'none');
-
-                }
-
-                if(patient.transd_id != null){
-                    $('#update_pat_btn').css('display', 'none');
-                }else{
-                    $('#update_pat_btn').css('display', 'block');
                 }
             }
             edit_c = 0;
@@ -1695,8 +1865,8 @@
         }
         if(edit_c == 0){
             if(data.val()) {
-
-                var suggestionsDiv = $('.suggestions');
+                console.log(data.val());
+                console.log(facility_id);
 
                 $.get("{{ url('patient/code').'/' }}"+data.val()+"/"+facility_id, function(result) {
                     $(".patient_code").val(result.patient_code);
@@ -1969,5 +2139,73 @@
         var id = event.target.getAttribute('data-id');
         window.location.href= "patient/return/" + id;
     }
+    document.addEventListener('DOMContentLoaded', function() {
+    initializeScrollButtons();
+    });
+
+function initializeScrollButtons() {
+    const tableContainer = document.getElementById('patient_table_container');
+    const table = document.getElementById('patient_table');
+    
+    const scrollLeftTop = document.getElementById('scrollLeftTop');
+    const scrollRightTop = document.getElementById('scrollRightTop');
+    
+    const scrollAmount = 200; 
+    
+    function updateArrowStates() {
+        if (!tableContainer) return; // Safety check
+        
+        const scrollLeft = tableContainer.scrollLeft;
+        const maxScroll = tableContainer.scrollWidth - tableContainer.clientWidth;
+        
+        if (scrollLeftTop) scrollLeftTop.disabled = scrollLeft <= 0;
+        if (scrollRightTop) scrollRightTop.disabled = scrollLeft >= maxScroll - 1;
+    }
+    
+    function scrollHorizontally(direction) {
+        if (!tableContainer) return;
+        
+        const currentScroll = tableContainer.scrollLeft;
+        const newScroll = direction === 'left' 
+            ? Math.max(0, currentScroll - scrollAmount)
+            : currentScroll + scrollAmount;
+        
+        tableContainer.scrollTo({
+            left: newScroll,
+            behavior: 'smooth'
+        });
+    }
+    
+    // Remove old event listeners by cloning and replacing
+    if (scrollLeftTop) {
+        const newScrollLeftTop = scrollLeftTop.cloneNode(true);
+        scrollLeftTop.parentNode.replaceChild(newScrollLeftTop, scrollLeftTop);
+        newScrollLeftTop.addEventListener('click', () => scrollHorizontally('left'));
+    }
+    
+    if (scrollRightTop) {
+        const newScrollRightTop = scrollRightTop.cloneNode(true);
+        scrollRightTop.parentNode.replaceChild(newScrollRightTop, scrollRightTop);
+        newScrollRightTop.addEventListener('click', () => scrollHorizontally('right'));
+    }
+    
+    if (tableContainer) {
+        tableContainer.addEventListener('scroll', updateArrowStates);
+        tableContainer.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') {
+                scrollHorizontally('left');
+                e.preventDefault();
+            } else if (e.key === 'ArrowRight') {
+                scrollHorizontally('right');
+                e.preventDefault();
+            }
+        });
+    }
+    
+    updateArrowStates();
+    
+    window.addEventListener('resize', updateArrowStates);
+}
+
 </script>
 @endsection

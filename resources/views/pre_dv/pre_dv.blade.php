@@ -26,19 +26,75 @@
         width: 100%; 
         height: 100%; 
     }
+
+.card-title{
+    width: 200px;
+}
+.input-group {
+        justify-content: flex-end;
+        gap: 1px;
+        flex-wrap: nowrap; 
+    }
+     .input-group-append {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end; 
+        
+    }
+.input-group .form-control {
+    width: 250px !important;    /* adjust as needed */
+    max-width: 100%;
+}
+    .scrollable-table thead th{
+    white-space: nowrap;
+    text-align: center;
+    }
+       @media (max-width: 767px) {
+    .input-group {
+        flex-direction: column;     
+        align-items: stretch;     
+    }
+
+    .input-group .form-control {
+        width: 200% !important;
+        margin-bottom: 5px;
+    }
+
+    .input-group-append {
+        flex-direction: column;     /* stack buttons */
+        width: 100%;
+    }
+
+    .input-group-append .btn {
+        width: 100%;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+        align-items: center; 
+        justify-content: center;
+    }
+    #gen_btn{
+         width: 100% !important;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+    }
+}
 </style>
-<div class="col-md-12 grid-margin stretch-card">
+<div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-            <div class="float-right">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <div class="mb-2 mb-md-0">
+                    <h4 class="card-title">PRE - DV</h4>
+                    <p class="card-description">MAIF-IPP</p>
+                </div>
                 <div class="input-group">
                     <form method="GET" action="">
                         <div class="input-group">
-                            <input type="text" class="form-control" name="keyword" placeholder="Search..." value="{{$keyword}}" id="search-input" style="width:350px;">
+                            <input type="text" class="form-control" name="keyword" placeholder="Search..." value="{{$keyword}}" id="search-input" >
                             <div class="input-group-append">
                                 <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
                                 <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
-                                <button type="button" class="btn btn-success" data-toggle="modal" data-backdrop="static" href="#create_predv" style="width:95px; display: inline-flex; align-items: center; border-radius: 0;"><img src="\maif\public\images\icons8_create_16.png" style="margin-right: 5px;"><span style="vertical-align: middle;">Create</span></button>      
+                                <button type="button" class="btn btn-success" data-toggle="modal" data-backdrop="static" href="#create_predv" style=" display: inline-flex; align-items: center; border-radius: 0;"><img src="\maif\public\images\icons8_create_16.png" style="margin-right: 5px;"><span style="vertical-align: middle;">Create</span></button>      
                                 <button type="submit" value="filt" style="display:none; background-color:green; color:white; width:95px;" name="filt_dv" id="filt_dv" class="btn btn-xs"><i class="typcn typcn-filter menu-icon"></i>&nbsp;&nbsp;&nbsp;Filter</button>
                             </div>
                         </div>
@@ -52,11 +108,8 @@
                     </form>
                 </div>
             </div>
-            <h4 class="card-title">PRE - DV</h4>
-            <p class="card-description">
-                MAIF-IPP
-            </p>
-            <div class="table-responsive">
+        
+            <div class="table-responsive scrollable-table">
                 @if(count($results) > 0)
                     <table class="table table-striped">
                         <thead>
@@ -79,8 +132,16 @@
                                         </select>
                                     </div>  
                                 </th>
-                                <th>No. of Transmittals</th>
-                                <th style="min-width:150px">Professional Fee</th>
+                                @php
+                                    $sortOrder = request('sort_order', 'desc'); // default
+                                    $nextOrder = $sortOrder === 'asc' ? 'desc' : 'asc';
+                                    $icon = $sortOrder === 'asc' ? '▲' : '▼';
+                                @endphp
+                                <th>
+                                    No. of Transmittals 
+                                    <a href="{{ request()->fullUrlWithQuery(['sort_order' => $nextOrder]) }}">{!! $icon !!}</a>
+                                </th>
+                                <th>Professional Fee</th>
                                 <th style="min-width:100px">Grand Total</th>
                                 <th class="user" style="min-width:120px">Created By
                                     <i id="by_i" class="typcn typcn-filter menu-icon"><i>
@@ -121,17 +182,16 @@
                                     </td>
                                     <td><a data-toggle="modal" data-backdrop="static" href="#update_predv" onclick="updatePre( {{ $row->id }}, {{ $row->new_dv?1:2 }}, {{ $row->new_dv && $row->new_dv->edit_status == 1 ? 1: 0 }} )">{{ $row->facility->name }}</a></td>
                                     <td>
-                                        <?php
-                                            $total = 0;
-                                            foreach($row->extension as $item){
-                                                $total = $total + count($item->controls);
-                                            }
-                                            echo $total;
-                                        ?>
+                                       {{ $row->controls_count }}
                                     </td>
                                     <td>{{ $row->prof_fee != null ? number_format(str_replace(',','',$row->prof_fee), 2, '.',',') : '0.00' }}</td>
                                     <td>{{ number_format(str_replace(',','',$row->grand_total), 2, '.',',') }}</td>
-                                    <td>{{ $row->user->lname .', '.$row->user->fname }}</td>
+                                    <td>  @if($row->user)
+                                            {{ $row->user->lname .', '.$row->user->fname }}
+                                          @else
+                                            User not Found
+                                          @endif  
+                                    </td>
                                     <td>{{ date('F j, Y', strtotime($row->created_at)) }}</td>
                                 </tr>
                             @endforeach

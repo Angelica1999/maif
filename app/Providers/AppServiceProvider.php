@@ -28,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
         //
 
         // $headers = request()->headers;
+        // $headers = request()->headers;
 
         // if ($headers->has('x-forwarded-proto') && $headers->get('x-forwarded-proto') === 'https') {
         //     // HTTPS via forwarded header

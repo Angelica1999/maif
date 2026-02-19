@@ -722,6 +722,7 @@ class PrintController extends Controller
 
             exec($command, $output, $returnVar);
 
+            
             $filePath = storage_path('app/new_dv-1.png');
 
             if (!File::exists($filePath)) {

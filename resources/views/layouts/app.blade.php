@@ -64,6 +64,7 @@
    <script src="{{ asset('admin/js/template.js') }}"></script>
    <script src="{{ asset('admin/js/settings.js') }}"></script>
    <script src="{{ asset('admin/js/todolist.js') }}"></script>
+   <script src="{{ asset('admin/js/modal_error.js') }}"></script> 
    <script src="{{ asset('admin/vendors/select2/select2.min.js') }}"></script>
    <script src="{{ asset('Lobibox/lobibox.js?v=').date('His') }}"></script>
    <script src="{{ asset('admin/vendors/sweetalert2/sweetalert2.js?v=1') }}"></script>
@@ -99,6 +100,378 @@
       // });
    </script> -->
 
+   <script>
+      $(document).ready(function () {
+        initializeModalAccessibility('#update_fundsource');
+      });
+       appModal();
+      var path_gif = "{{ asset('images/loading.gif') }}";
+      var loading = '<center><img src="'+path_gif+'" alt=""></center>';
+   
+      @if(session('facility_save'))
+            <?php session()->forget('facility_save'); ?>
+            Lobibox.notify('success', {
+               msg: 'Successfully saved Facility!'
+            });
+      @endif
+      @if(session('patient_update'))
+         <?php session()->forget('patient_update'); ?>
+         Lobibox.notify('success', {
+               msg: 'Successfully updated patient!'
+         });
+      @endif
+      @if(session('patient_save'))
+         <?php session()->forget('patient_save'); ?>
+         Lobibox.notify('success', {
+               msg: 'Successfully saved patient!'
+         });
+      @endif
+      @if(session('fundsource_save'))
+         <?php session()->forget('fundsource_save'); ?>
+         Lobibox.notify('success', {
+               msg: 'Successfully saved Fund Source!'
+         });
+      @endif
+      @if(session('fundsource_update'))
+         <?php session()->forget('fundsource_update'); ?>
+         Lobibox.notify('success', {
+               msg: 'Successfully update Fund Source!'
+         });
+      @endif
+      @if(session('dv_create'))
+         <?php session()->forget('dv_create'); ?>
+         Lobibox.notify('success', {
+            msg: 'Disbursement was Created!'
+         });
+      @endif
+      @if(session('dv_update'))
+         <?php session()->forget('dv_create'); ?>
+         Lobibox.notify('success', {
+            msg: 'Disbursement was updated!'
+         });
+      @endif
+      @if(session('fund_transfer'))
+         <?php session()->forget('fund_transfer'); ?>
+         Lobibox.notify('success', {
+            msg: 'Funds successfuly transferred!'
+         });
+      @endif
+      @if(session('actual_amount'))
+         <?php session()->forget('actual_amount'); ?>
+         Lobibox.notify('success', {
+            msg: 'Actual Amount successfuly updated!'
+         });
+      @endif
+      @if(session('save_group'))
+         <?php session()->forget('save_group'); ?>
+         Lobibox.notify('success', {
+            msg: 'Group successfuly saved!'
+         });
+      @endif
+      @if(session('create_dv2'))
+         <?php session()->forget('save_group'); ?>
+         Lobibox.notify('success', {
+            msg: 'Disbursement Voucher V2 successfuly created!'
+         });
+      @endif
+      @if(session('email_sent'))
+         <?php session()->forget('email_sent'); ?>
+         Lobibox.notify('success', {
+            msg: 'Sucessfully sent an email!'
+         });
+      @endif
+      @if(session('email_unsent'))
+      <?php session()->forget('email_unsent'); ?>
+         window.close();
+         Lobibox.notify('error', {
+            msg: 'Cannot send an email, please provide correct email!'
+         });
+      @endif
+      @if(session('save_patientgroup'))
+         <?php session()->forget('save_patientgroup'); ?>
+         Lobibox.notify('success', {
+            msg: 'Successfully added a patient in a group!'
+         });
+      @endif
+      @if(session('update_group'))
+         <?php session()->forget('update_group'); ?>
+         Lobibox.notify('success', {
+            msg: 'Please update disbursement voucher!'
+         });
+      @endif
+      @if(session('remove_patientgroup'))
+         <?php session()->forget('remove_patientgroup'); ?>
+         Lobibox.notify('error', {
+            msg: 'Successfully removed a message!'
+         });
+      @endif
+      @if(session('breakdowns_created'))
+         <?php session()->forget('breakdowns_created'); ?>
+         Lobibox.notify('success', {
+            msg: 'Successfully created a breakdowns!'
+         });
+      @endif
+      @if(session('obligate'))
+         <?php session()->forget('obligate'); ?>
+         Lobibox.notify('success', {
+            msg: 'Dv was successfully obligated!'
+         });
+      @endif
+      @if(session('saa_exist'))
+         <?php session()->forget('saa_exist'); ?>
+         Lobibox.notify('error', {
+            msg: 'Saa exists already!'
+         });
+      @endif
+      @if(session()->has('patient_exist'))
+         <?php $patientCount = session('patient_exist'); ?>
+         <?php session()->forget('patient_exist'); ?>
+         Lobibox.notify('success', {
+            msg: 'Successfully added a patient! This patient has been added {{ $patientCount}} time(s).'
+         });
+      @endif
+      @if(session('pay_dv'))
+         <?php session()->forget('pay_dv'); ?>
+         Lobibox.notify('success', {
+            msg: 'Successfully paid the disbursement!'
+         });
+      @endif
+      @if(session('releaseAdded'))
+         <?php session()->forget('releaseAdded'); ?>
+         Lobibox.notify('success', {
+            msg: ' Successfully released! '
+         });
+      @endif
+      @if(session('add_dvno'))
+         <?php session()->forget('add_dvno'); ?>
+         Lobibox.notify('success', {
+            msg: 'Successfully add dv no!'
+         });
+      @endif
+      @if(session('update_dv2'))
+         <?php session()->forget('update_dv2'); ?>
+         Lobibox.notify('success', {
+            msg: 'Successfully update dv2!'
+         });
+      @endif
+      @if(session('add_deductions'))
+         <?php session()->forget('add_deductions'); ?>
+         Lobibox.notify('success', {
+            msg: 'Successfully added a usage in administrative cost!'
+         });
+      @endif
+      @if(session('upload_files'))
+         <?php session()->forget('upload_files'); ?>
+         Lobibox.notify('success', {
+            msg: 'File uploaded successfully!'
+         });
+      @endif
+      @if(session('dv2_remove'))
+         <?php session()->forget('dv2_remove'); ?>
+         Lobibox.notify('error', {
+            msg: 'Disbursement voucher version 2 successfully removed!'
+         });
+      @endif
+      @if(session('dv_remove'))
+         <?php session()->forget('dv_remove'); ?>
+         Lobibox.notify('error', {
+            msg: 'Successfully removed Disbursement Voucher!'
+         });
+      @endif
+      @if(session('remove_patient'))
+         <?php session()->forget('remove_patient'); ?>
+         Lobibox.notify('error', {
+            msg: 'Successfully removed the patient!'
+         });
+      @endif
+      @if(session('update_fac'))
+         <?php session()->forget('update_fac'); ?>
+         Lobibox.notify('success', {
+            msg: 'Successfully updated facility list!'
+         });
+      @endif
+      @if(session('update_proponent'))
+         <?php session()->forget('update_proponent'); ?>
+         Lobibox.notify('success', {
+            msg: 'Successfully updated the proponent!'
+         });
+      @endif
+      @if(session('unreachable'))
+         <?php session()->forget('unreachable'); ?>
+         Lobibox.notify('error', {
+            msg: 'Cannot find proponent!'
+         });
+      @endif
+      @if(session('dv3'))
+         <?php session()->forget('dv3'); ?>
+         Lobibox.notify('success', {
+            msg: 'Successfully created disbursement voucher version 3!'
+         });
+      @endif
+      @if(session('dv3_update'))
+         <?php session()->forget('dv3_update'); ?>
+         Lobibox.notify('success', {
+            msg: 'Successfully updated this disbursement voucher version 3!'
+         });
+      @endif
+      @if(session('dv3_obligate'))
+         <?php session()->forget('dv3_obligate'); ?>
+         Lobibox.notify('success', {
+            msg: 'Successfully obligated this disbursement voucher version 3!'
+         });
+      @endif
+      @if(session('dv3_paid'))
+         <?php session()->forget('dv3_paid'); ?>
+         Lobibox.notify('success', {
+            msg: 'Successfully paid this disbursement voucher version 3!'
+         });
+      @endif
+      @if(session('note'))
+         <?php session()->forget('note'); ?>
+         Lobibox.notify('success', {
+            msg: 'Successfully created a note!'
+         });
+      @endif
+      @if(session('note_update'))
+         <?php session()->forget('note_update'); ?>
+         Lobibox.notify('success', {
+            msg: 'Successfully updated this note!'
+         });
+      @endif
+      @if(session('note_delete'))
+         <?php session()->forget('note_delete'); ?>
+         Lobibox.notify('error', {
+            msg: 'Successfully removed this note!'
+         });
+      @endif
+      @if(session('dv3_remove'))
+         <?php session()->forget('dv3_remove'); ?>
+         Lobibox.notify('error', {
+            msg: 'Successfully removed this disbursement voucher v3!'
+         });
+      @endif
+      @if(session('notes_update'))
+         <?php session()->forget('notes_update'); ?>
+         Lobibox.notify('success', {
+            msg: 'Done!'
+         });
+      @endif
+      @if(session('update_remarks'))
+         <?php session()->forget('update_remarks'); ?>
+         Lobibox.notify('success', {
+            msg: 'Done!'
+         });
+      @endif
+      @if(session('pre_dv'))
+         <?php session()->forget('pre_dv'); ?>
+         Lobibox.notify('success', {
+            msg: 'Success!'
+         });
+      @endif
+      @if(session('pre_dv_error'))
+         <?php session()->forget('pre_dv_error'); ?>
+         Lobibox.notify('error', {
+            msg: 'Data not found!'
+         });
+      @endif
+      @if(session('remove_pre_dv'))
+         <?php session()->forget('remove_pre_dv'); ?>
+         Lobibox.notify('error', {
+            msg: 'Successfully removed!'
+         });
+      @endif
+      @if(session('pre_dv_update'))
+         <?php session()->forget('pre_dv_update'); ?>
+         Lobibox.notify('success', {
+            msg: 'Successfully updated!'
+         });
+      @endif
+      @if(session('pre_dv_remove'))
+         <?php session()->forget('pre_dv_remove'); ?>
+         Lobibox.notify('error', {
+            msg: 'Successfully removed!'
+         });
+      @endif
+      @if(session('process_bills'))
+         <?php session()->forget('process_bills'); ?>
+         Lobibox.notify('succes', {
+            msg: 'Successfully process!'
+         });
+      @endif
+      @if(session('facility_send'))
+         <?php session()->forget('facility_send'); ?>
+         Lobibox.notify('succes', {
+            msg: 'Patient was successfully send to facility!'
+         });
+      @endif
+      @if(session('return_gl'))
+         <?php session()->forget('return_gl'); ?>
+         Lobibox.notify('error', {
+            msg: 'Return patient successfully!'
+         });
+      @endif
+      @if(session('activate_user'))
+         <?php session()->forget('activate_user'); ?>
+         Lobibox.notify('success', {
+            msg: 'User was successfully activated!'
+         });
+      @endif
+      @if(session('not_found'))
+         <?php session()->forget('not_found'); ?>
+         Lobibox.notify('error', {
+            msg: 'User was not found!'
+         });
+      @endif
+      @if(session('logbook'))
+         <?php session()->forget('logbook'); ?>
+         Lobibox.notify('success', {
+            msg: 'Successfully added into log!'
+         });
+      @endif
+      @if(session('trans_return'))
+         <?php session()->forget('trans_return'); ?>
+         Lobibox.notify('error', {
+            msg: 'Successfully return the transmittal!'
+         });
+      @endif
+      @if(session('process_gl'))
+         <?php session()->forget('process_gl'); ?>
+         Lobibox.notify('success', {
+            msg: 'Successfully process the gl!'
+         });
+      @endif
+      @if(session('manage_funds'))
+         <?php session()->forget('manage_funds'); ?>
+         Lobibox.notify('success', {
+            msg: 'Successfully manage funds!'
+         });
+      @endif
+      @if(session('added_facility'))
+         <?php session()->forget('added_facility'); ?>
+         Lobibox.notify('success', {
+            msg: 'Successfully added this facility!'
+         });
+      @endif
+      @if(session('patient_transfer'))
+         <?php session()->forget('patient_transfer'); ?>
+         Lobibox.notify('success', {
+            msg: 'Successfully change the patient(s) code!'
+         });
+      @endif
+      @if(session('user_deactivation'))
+         <?php session()->forget('user_deactivation'); ?>
+         Lobibox.notify('error', {
+            msg: 'User deactivated!'
+         });
+      @endif
+      @if(session('user_activation'))
+         <?php session()->forget('user_activation'); ?>
+         Lobibox.notify('success', {
+            msg: 'User activated!'
+         });
+      @endif
+   </script>
+   @yield('js')
 	<script>
 		var path_gif = "{{ asset('images/loading.gif') }}";
 		var loading = '<center><img src="'+path_gif+'" alt=""></center>';

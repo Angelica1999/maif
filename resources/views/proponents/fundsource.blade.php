@@ -1,5 +1,4 @@
-<style>
-
+    <style>
     .input-group {
         justify-content: flex-end;
         gap: 1px;
@@ -8,17 +7,18 @@
 
     .input-group-append {
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         width: 100%;
         justify-content: flex-end; 
         
     }
 
+
     .input-group-append select,
     .input-group-append .btn {
         flex: none;
-        min-width: 75px;
-        font-size: 11px;
+        min-width: 70px;
+        font-size: 12px;
         box-sizing: border-box;
     }
 
@@ -66,7 +66,6 @@
     .select2-container .select2-selection--multiple .select2-selection__rendered {
         line-height: 40px !important;
     }
-    /* Keep select boxes responsive but compact */
     #gl_tracking select,
     #gl_tracking .select2-container {
         width: 100% !important;
@@ -75,7 +74,12 @@
         font-size: 13px;
     }
 
-    /* For select fields inside table cells */
+    #gl_tracking .modal-content {
+        position: relative;
+        padding-bottom: 30px;
+        overflow-x: auto;
+    }
+
     #gl_tracking td select {
         display: block;
         min-width: 100px;
@@ -87,22 +91,68 @@
         padding: 2px 4px;
     }
 
-    /* Prevent long Select2 selected values from stretching */
     #gl_tracking .select2-selection__rendered {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
-
-    .modal-dialog.modal-responsive {
-        max-width: 60%;   /* default for larger screens */
-    }
-
-    @media (max-width: 576px) { /* phones and small devices */
-        .modal-dialog.modal-responsive {
-            max-width: 95%;
-            margin: 1.75rem auto; /* keep it centered */
+    .spec_body {
+      
+    overflow-y: auto;  
+    overflow-x: auto;  
+    margin-right: 10px;
+}
+    @media (max-width: 763px) {
+        .input-group {
+            flex-wrap: wrap !important;
+            width: 100%;
         }
+
+        .input-group-append {
+            display: flex;
+            flex-wrap: wrap !important;
+            gap: 2px;
+            justify-content: center; 
+            width: 100%;
+        }
+        
+        .input-group-append select,
+        .input-group-append .select2-container {
+            flex: 1 1 100%;
+            max-width: 100% !important;
+            min-width: unset !important;
+            width: 100% !important;
+           
+            font-size: 13px;
+        }
+        .input-group-append .btn,
+        .input-group-append a.btn-sum {
+            flex: 1 1 100%;      
+            max-width: 100% !important;
+            min-width: unset !important;
+            height: 40px !important;
+            font-size: 13px;
+            border-radius: 4px !important;
+            text-align: center;
+        }
+
+        .input-group-append a.btn-sum {
+            display: flex;
+            align-items: center;
+            justify-content: center; 
+            gap: 6px;
+            color: white !important;
+        }
+        .input-group-append .select2-container {
+        min-height: 40px !important;
+        height: auto !important;  
+        }
+        .select2-container--default .select2-selection--multiple {
+            min-height: 40px !important;
+            max-height: 120px !important;
+            overflow-y: auto !important; 
+        }
+        
     }
 
 </style>
@@ -114,45 +164,43 @@
     use App\Models\Facility; 
 ?>
 <div class="col-lg-12 grid-margin stretch-card">
-    <div class="card" > 
-        <div class="card-body" style="">
-            <div style="display: flex; justify-content: space-between; align-items: stretch; width: 100%">
+    <div class="card"> 
+        <div class="card-body">
+            <div class="d-flex flex-wrap justify-content-between align-items-stretch w-80">
                 <div style="text-align: start;">
                     <h4 class="card-title">MANAGE FUNDSOURCE: PROPONENTS</h4>
                     <p class="card-description">MAIF-IPP</p>
                 </div>
-                <div>
-                    <div class="input-group">
-                        <form method="GET" action="">
-                            <div class="input-group">
-                                <select class="form-control select2 data_filtering"  name="data_filtering[]" style="display:none" multiple>
-                                    <option value=""></option>
-                                    @foreach($proponents as $row)
-                                        <option value="{{ $row[0]->id }}" {{ in_array($row[0]->id, $keyword) ? 'selected' : '' }}>
-                                            {{ $row[0]->proponent }}
-                                        </option>
-                                    @endforeach
+                <div class="d-flex flex-wrap justify-content-end ">
+                    <form method="GET" action="">
+                        <div class="input-group">
+                            <div class="input-group-append">
+                                    <select class="form-control select2 data_filtering" name="data_filtering[]" style="display:none" multiple>
+                                <option value=""></option>
+                                @foreach($proponents as $row)
+                                    <option value="{{ $row[0]->id }}" {{ in_array($row[0]->id, $keyword) ? 'selected' : '' }}>
+                                        {{ $row[0]->proponent }}
+                                    </option>
+                                @endforeach
+                            </select>
+                                    <button style="width:75px; border-radius:0; height:40px;" class="btn btn-sm btn-info text-white" value="filtered" type="submit" name="filtered_btn"><i class="typcn typcn-filter menu-icon"></i>Filter</button>
+                                <select class="form-control data_sorting" name="data_sorting" style="display:none">
+                                    <option></option>
+                                    <option value="1" {{ $filter_keyword == 1 ? 'selected' : '' }}>Proponent</option>
+                                    <option value="2" {{ $filter_keyword == 2 ? 'selected' : '' }}>Allocated Funds</option>
+                                    <option value="3" {{ $filter_keyword == 3 ? 'selected' : '' }}>GL Total</option>
+                                    <option value="4" {{ $filter_keyword == 4 ? 'selected' : '' }}>Disbursement Total</option>
+                                    <option value="5" {{ $filter_keyword == 5 ? 'selected' : '' }}>Supplemental Funds</option>
+                                    <option value="6" {{ $filter_keyword == 6 ? 'selected' : '' }}>Negative Amount</option>
+                                    <option value="7" {{ $filter_keyword == 7 ? 'selected' : '' }}>Remaining Funds</option>
                                 </select>
-                                <button style="width:75px; border-radius:0; height:40px;" class="btn btn-sm btn-info text-white" value="filtered" type="submit" name="filtered_btn"><i class="typcn typcn-filter menu-icon"></i>Filter</button>
-                                <div class="input-group-append">
-                                    <select class="form-control data_sorting" name="data_sorting" style="display:none">
-                                        <option></option>
-                                        <option value="1" {{ $filter_keyword == 1 ? 'selected' : ''}}>Proponent</option>
-                                        <option value="2" {{ $filter_keyword == 2 ? 'selected' : ''}}>Allocated Funds</option>
-                                        <option value="3" {{ $filter_keyword == 3 ? 'selected' : ''}}>GL Total</option>
-                                        <option value="4" {{ $filter_keyword == 4 ? 'selected' : ''}}>Disbursement Total</option>
-                                        <option value="5" {{ $filter_keyword == 5 ? 'selected' : ''}}>Supplemental Funds</option>
-                                        <option value="6" {{ $filter_keyword == 6 ? 'selected' : ''}}>Negative Amount</option>
-                                        <option value="7" {{ $filter_keyword == 7 ? 'selected' : ''}}>Remaining Funds</option>
-                                    </select>
-                                    <button  class="btn btn-sm btn-success text-white" style="height:40px" value="{{ $sort }}" type="submit" name="sorting_btn"><i class="typcn typcn-filter menu-icon"></i>Sort</button>
-                                    <button  class="btn btn-sm btn-warning text-white" style="height:40px" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View</button>
-                                    <a href="{{ route('excel.proponent_summary') }}" style= "color: white; height:40px" type="button" class="btn btn-sum">
-                                        <img src="\maif\public\images\excel-file.png" style="width: 15px; height: auto;">Summary</a>    
-                                </div>
+
+                                <button style="width:75px; border-radius:0; height:40px" class="btn btn-sm btn-success text-white" value="{{ $sort }}" type="submit" name="sorting_btn"><i class="typcn typcn-filter menu-icon"></i>Sort</button>
+                                <button style="width:75px; border-radius:0; height:40px" class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View</button>
+                                <a href="{{ route('excel.proponent_summary') }}" style="color: white; height:40px" type="button" class="btn btn-sum"><img src="\maif\public\images\excel-file.png" style="width: 13px; height: auto;">Summary</a>    
                             </div>
-                        </form>
-                    </div>
+                        </div>
+                    </form>
                 </div>
             </div>
             <div class="clearfix"></div>
@@ -414,32 +462,22 @@
             width: '200px'
         });
 
-        $('.facility_2').select2({
-            placeholder: 'Select Facility',
-            width: '100%'
-        });
-        
-    }
-
-    // Run on page load
-    $(window).on('load', function() {
-        cleanAndInitSelect2();
-    });
-
-    // Also run after any modal closes (like #gl_tracking, #modified_funds)
-    $('body').on('hidden.bs.modal', function () {
-        setTimeout(() => {
-            cleanAndInitSelect2();
-        },);
-    });
-
-    // Optional debug tool: check if ghosts still exist
-    setTimeout(() => {
-        const ghostCount = $('.select2-container').length;
-        if (ghostCount > $('.data_filtering, .data_sorting, .facility_2').length) {
-            console.warn("⚠️ Ghost Select2 elements detected:", ghostCount);
+            $('.facility_2').select2({
+                placeholder: 'Select Facility',
+                width: '100%'
+            });
+            
         }
-    },);
+
+        $(document).ready(function () {
+            cleanAndInitSelect2();
+        });
+
+        $('body').on('hidden.bs.modal', function () {
+            setTimeout(() => {
+                cleanAndInitSelect2();
+            },);
+        });
 
     function subtracts(){
         $('.funds_type').val(2);

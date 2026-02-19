@@ -6,13 +6,43 @@
     use App\Models\ProponentInfo; 
     use App\Models\Facility; 
 ?>
+<style>
+    @media (max-width: 767px) {
+    .input-group {
+        flex-direction: column;     
+        align-items: stretch;     
+    }
 
+    .input-group .form-control {
+        width: 200%;
+        margin-bottom: 5px;
+    }
+
+    .input-group-append {
+        flex-direction: column;     /* stack buttons */
+        width: 100%;
+    }
+
+    .input-group-append .btn {
+        width: 100%;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+    }
+}
+
+</style>
+</style>    
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <div class="mb-2 mb-md-0">
+                    <h4 class="card-title">MANAGE FUNDSOURCE: BUDGET</h4>
+                    <p class="card-description">MAIF-IPP</p>
+                </div>
             <meta name="csrf-token" content="{{ csrf_token() }}">
             <form method="GET" action="{{ route('fundsource_budget') }}">
-                <div class="input-group float-right w-50" style="min-width: 600px;">
+                <div class="input-group" >
                     <input type="text" class="form-control" name="keyword" placeholder="SAA" value="{{$keyword}}" aria-label="Recipient's username">
                         <div class="input-group-append">
                             <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
@@ -20,10 +50,7 @@
                         </div>
                 </div>
             </form>
-            <h4 class="card-title">MANAGE FUNDSOURCE: BUDGET</h4>
-            <p class="card-description">
-                MAIF-IPP
-            </p>
+         </div>  
             @if(isset($fundsources) && $fundsources->count() > 0)
                 <div class="row">
                     @foreach($fundsources as $fund)
@@ -656,12 +683,12 @@
     }
 
     function openModal(link) {
-        var routeNoo = $(link).data('routeid');
-        var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNoo;
+        var routeNo = $(link).data('routeid');
+        var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNo;
+        var base_url = "{{ url('/') }}";
+        $('.modal-body').append('<img class="loadingGif" src="' + base_url + '/public/images/loading.gif" alt="Loading..." style="display:block; margin:auto;">');
 
-        $('.modal-body').append('<img class="loadingGif" src="public/images/loading.gif" alt="Loading..." style="display:block; margin:auto;">');
-
-        var iframe = $('#trackIframe');
+        var iframe = $('#track_iframe');
 
         iframe.hide();
 
@@ -672,7 +699,7 @@
             $('.loadingGif').css('display', 'none');
         });
 
-        $('#myModal').modal('show');
+        $('#i_frame').modal('show');
     }
 
     function getDv( link) {

@@ -1,12 +1,62 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+    #search_patient {
+    width: 250px;   /* fixed smaller width */
+    max-width: 100%; /* keeps it responsive if container shrinks */
+    }
+.input-group {
+        justify-content: flex-end;
+        gap: 1px;
+        flex-wrap: nowrap; 
+        width: auto;
+    }
+     .input-group-append {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: flex-end; 
+        
+    }
+   
+.input-group .form-control {
+    width: 250px; 
+    max-width: 100%;
+}
+    
+    @media (max-width: 767px) {
+    .input-group {
+        flex-direction: column;     
+        align-items: stretch;     
+    }
 
-<div class="container-fluid col-lg-12 grid-margin stretch-card">
+    .input-group .form-control {
+        width: 200%;
+        margin-bottom: 5px;
+    }
+
+    .input-group-append {
+        flex-direction: column;     /* stack buttons */
+        width: 100%;
+    }
+
+    .input-group-append .btn {
+        width: 100%;   
+        border-radius: 5px !important;
+        margin-bottom: 5px;
+    }
+}
+</style>   
+<div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+                <div class="mb-2 mb-md-0">
+                    <h4 class="card-title">ADMIN COST</h4>
+                    <p class="card-description">MAIF-IPP</p>
+                </div>
             <form method="GET" action="">
-                <div class="input-group float-right w-50" style="min-width: 600px;">
+                <div class="input-group" >
                     <input type="text" class="form-control" name="keyword" placeholder="SAA NO." value="{{$keyword}}">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
@@ -14,10 +64,7 @@
                     </div>
                 </div>
             </form>
-            <h4 class="card-title">ADMIN COST</h4>
-            <p class="card-description">
-                MAIF-IPP
-            </p>
+        </div>
             @if(count($fundsources) > 0)
             <div class="clearfix"></div>
             <div class="table-responsive">

@@ -126,10 +126,19 @@ class PreDvController extends Controller
                     'proponent:id,proponent',
                     'controls',
                     'saas.saa:id,saa'
-                ])->withCount('controls'); // Count controls directly
+                ]);
             }
-        ]);
+        ])->withCount('extension as controls_count');
+
         
+        $sortOrder = $request->input('sort_order'); 
+
+        if ($sortOrder) {
+            $pre_dv = $pre_dv->orderBy('controls_count', $sortOrder);
+        } else {
+            $pre_dv = $pre_dv->orderBy('id', 'desc');
+        }
+
         $gen_date = $request->dates_filter;
         
         if ($request->generate && !$request->viewAll) {
@@ -218,7 +227,8 @@ class PreDvController extends Controller
             'grand_amount' => $grand_amount,
             'generated_dates' => $gen_date,
             'total_control' => $totalControls,
-            'grand_fee' => $grand_fee
+            'grand_fee' => $grand_fee,
+            'sortOrder'       => $sortOrder
         ]);
     }
 
@@ -267,7 +277,10 @@ class PreDvController extends Controller
             $keyword = $request->keyword;
             $pre_dv->WhereHas('facility', function ($query) use ($keyword) {
                 $query->where('name', 'LIKE', '%' . $keyword . '%');
+                 })->orWhereHas('extension.proponent', function ($query) use ($keyword) {
+                $query->where('proponent', 'LIKE', '%' . $keyword . '%'); 
             });
+            
         }
 
         if($request->f_id){
@@ -350,6 +363,8 @@ class PreDvController extends Controller
                 $query->where('route_no', 'LIKE', '%' . $keyword . '%');
             })->orWhereHas('facility', function ($query) use ($keyword) {
                 $query->where('name', 'LIKE', '%' . $keyword . '%');
+            })->orWhereHas('extension.proponent', function ($query) use ($keyword) {
+                $query->where('proponent', 'LIKE', '%' . $keyword . '%');    
             })->orWhereHas('extension.controls', function ($query) use ($keyword) {
                 $query->where('control_no', 'LIKE', '%' . $keyword . '%');
             });

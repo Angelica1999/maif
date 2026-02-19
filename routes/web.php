@@ -296,6 +296,15 @@ Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'dash
 Route::get('/samsam', [App\Http\Controllers\FacilityController::class, 'samsam'])->name('samsam');
 Route::get('/sending-hold', [App\Http\Controllers\FacilityController::class, 'sendHold'])->name('send-hold');
 Route::post('/sending-gl/hold', [App\Http\Controllers\FacilityController::class, 'holdSendFacility'])->name('hold.sending_gl');
+//Route::match(['get','post'],'/logbook/export', [App\Http\Controllers\HomeController::class, 'exportToExcel'])->name('logbook_export');
+Route::get('/export/logbook', [App\Http\Controllers\HomeController::class, 'exportToExcel'])->name('logbook.export');
+Route::get('/export-track-details-pdf/{id}', [App\Http\Controllers\ProponentController::class, 'exportTrackDetailsPDF'])->name('export.track.details.pdf');
+Route::get('/notify', function() {
+    $notif = Notif::where('account_type', 3)->get();
+        return response()->json([
+            'notify' => $notif
+        ]);
+    });
 Route::get('fundsource_batches/{id}/proponentinfo-batch', [App\Http\Controllers\FundSourceController::class, 'getProponentInfoBatch'])->name('fundsource.proponents_batch');
 Route::get('fetch/pre-dv/fundsource/{facility_id}', [App\Http\Controllers\PreDvController::class, 'fetchPreFundsource'])->name('fetch.pre_dv-fundsource');
 Route::get('/expired-gl/update/{date}', [App\Http\Controllers\HomeController::class, 'updateDate'])->name('expired.update_date');

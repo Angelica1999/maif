@@ -35,6 +35,7 @@ use PhpOffice\PhpSpreadsheet\RichText\RichText;
 use PhpOffice\PhpSpreadsheet\Style\Font;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PDF;
 
 class ProponentController extends Controller
 {
@@ -671,9 +672,20 @@ class ProponentController extends Controller
             ->map(function ($group) {
                 return $group->first(); // Select only the first record in each group
             });
+             $keyword = request('keyword');
+
+    $trackingQuery = Patients::whereIn('proponent_id', $ids);
+
+    if ($keyword) {
+        $trackingQuery->where(function($query) use ($keyword) {
+            $query->where('fname', 'LIKE', '%' . $keyword . '%')
+                ->orWhere('mname', 'LIKE', '%' . $keyword . '%')
+                ->orWhere('lname', 'LIKE', '%' . $keyword . '%');
+        });
+    }
     
-        $tracking = Patients::whereIn('proponent_id', $ids)->with('facility:id,name','encoded_by:userid,fname,lname,mname', 'gl_user:username,fname,lname')
-            ->orderBy('id', 'asc')->paginate(20);
+
+        $tracking = $trackingQuery->with('facility:id,name','encoded_by:userid,fname,lname,mname', 'gl_user:username,fname,lname')->orderBy('id', 'asc')->paginate(20);
         $facilities = Facility::whereIn('id', Patients::whereIn('proponent_id', $ids)->pluck('facility_id')->toArray())->select('id', 'name')->get(); 
         $info = ProponentInfo::whereIn('proponent_id', $ids)->pluck('id')->toArray();
         
@@ -1511,4 +1523,16 @@ class ProponentController extends Controller
 
     }
     
+   public function exportTrackDetailsPDF($proponent_id)
+{
+    $proponent = Proponent::findOrFail($proponent_id);
+    
+    $response = $this->specAllocations($proponent->proponent);
+    
+    $data = $response->getData();
+    
+    $pdf = PDF::loadView('proponents.track_details_pdf', $data);
+    $pdf->setPaper('A4', 'landscape');
+    return $pdf->stream('track-details-' . $proponent->proponent . '.pdf');
+}
 }
