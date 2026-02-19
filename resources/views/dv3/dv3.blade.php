@@ -171,7 +171,9 @@
                             @foreach($dv3 as $index=> $row)
                                 <tr>
                                     <td style="padding: 5;">
-                                        <button type="button" class="btn btn-xs col-sm-12" style="border-radius:0; background-color:#165A54; color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$row->route_no}}" id="track_load" onclick="openModal()">Track</button>
+                                        <button type="button" class="btn btn-xs col-sm-12" style="border-radius:0; background-color:#165A54; color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$row->route_no}}" id="track_load" onclick="openModal()">
+                                            <i class="fa fa-search-location"></i> Track
+                                        </button>
                                     </td>
                                     <td style="padding: 5;">
                                         <?php
@@ -186,17 +188,25 @@
                                                 $doc_id= 0;
                                             }
                                         ?>
-                                        <a data-dvId="{{$row->id}}" href="#create_dv3" onclick="updateDv3('{{$row->route_no}}')" style="border-radius:0; background-color:teal; color:white;width:90px;" type="button" class="btn btn-xs" data-backdrop="static" data-toggle="modal">{{ $row->route_no }}</a>
+                                        <a data-dvId="{{$row->id}}" href="#create_dv3" onclick="updateDv3('{{$row->route_no}}')" style="border-radius:0; background-color:teal; color:white;width:100px;" type="button" class="btn btn-xs" data-backdrop="static" data-toggle="modal">
+                                            <i class="fa fa-eye"></i> {{ $row->route_no }}
+                                        </a>
                                         @if(Auth::user()->userid != 1027 && Auth::user()->userid != 2660)
-                                            <button data-toggle="modal" data-target="#releaseTo" data-id="{{ $doc_id }}" data-route_no="{{ $row->route_no }}" onclick="putRoute($(this))" style="border-radius:0; background-color:#1E90FF; color:white; width:90px; margin-top:1px" type="button" class="btn btn-xs">Release To</button>
+                                            <button data-toggle="modal" data-target="#releaseTo" data-id="{{ $doc_id }}" data-route_no="{{ $row->route_no }}" onclick="putRoute($(this))" style="border-radius:0; background-color:#1E90FF; color:white; width:100px; margin-top:1px" type="button" class="btn btn-xs">
+                                                <i class="fa fa-paper-plane"></i> Release To
+                                            </button>
                                         @endif
                                     </td>
                                     @if(Auth::user()->userid != 1027 && Auth::user()->userid != 2660)
                                         <td style="padding: 5;">
-                                            <a href="{{ route('dv3.pdf', ['route_no' => $row->route_no]) }}" style="border-radius:0; background-color:green; color:white; width:60px;" target="_blank" type="button" class="btn btn-xs">Print</a>
+                                            <a href="{{ route('dv3.pdf', ['route_no' => $row->route_no]) }}" style="border-radius:0; background-color:green; color:white; width:60px;" target="_blank" type="button" class="btn btn-xs">
+                                                <i class="fa fa-print"></i> Print
+                                            </a>
                                         </td>
                                         <td style="padding: 5;">
-                                            <a href="#dv_history" onclick="getHistory('{{$row->route_no}}')" style="border-radius:0; background-color:#0D98BA; color:white; width:80px;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">Edit History</a>
+                                            <a href="#dv_history" onclick="getHistory('{{$row->route_no}}')" style="border-radius:0; background-color:#0D98BA; color:white; width:90px;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">
+                                                <i class="fa fa-history"></i> Edit History
+                                            </a>
                                         </td>
                                         <td style="text-align:center;padding: 5;" class="group-release" data-route_no="{{ $row->route_no }}" data-id="{{ $doc_id }}" >
                                             <input type="checkbox" style="width: 60px; height: 20px; border-radius:0;" name="release_dv[]" id="releaseDvId_{{ $index }}" 

@@ -73,7 +73,7 @@
             @endif
             <br>
             <div style="float:right">
-                <button class="btn-sm btn-success" href="#admin_cost" data-toggle="modal">DEDUCT ADMIN COST</button>
+                <button class="btn-sm btn-success" href="#admin_cost" data-toggle="modal"><i class="fa fa-minus-circle"></i> DEDUCT ADMIN COST</button>
             </div>
             <div class="pl-5 pr-5 mt-5">
                 {!! $fundsources->appends(request()->query())->links('pagination::bootstrap-5') !!}
@@ -149,52 +149,55 @@
 </div><!-- /.modal -->
 @endsection
 @section('js')
-    <script>
+<script>
+    $('#saa').select2();
 
-        $('#saa').select2();
+    $('#admin_cost').on('hide.bs.modal', function () {
+        $(this).find('input, select, textarea, button').blur();
+    });
 
-        $('#admin_cost').on('hidden.bs.modal', function () {
-            $(this).find('form')[0].reset(); 
-            $('#saa').val('');
+    $('#admin_cost').on('hidden.bs.modal', function () {
+        $(this).find('form')[0].reset(); 
+        $('#saa').val('');
+    });
+
+    function putBalance(fundsource_id){
+        var url = "{{ url('admin_cost/balance').'/' }}"+ fundsource_id;
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(result){
+                $('#rem_bal').val(result);
+            }
         });
+    }
 
-        function putBalance(fundsource_id){
-            var url = "{{ url('admin_cost/balance').'/' }}"+ fundsource_id;
-            $.ajax({
-                url: url,
-                type: 'GET',
-                success: function(result){
-                    $('#rem_bal').val(result);
-                }
-            });
+    function validateAmount(element) {
+        if (event.keyCode === 32) {
+            event.preventDefault();
         }
+        var cleanedValue = element.value.replace(/[^\d.]/g, '');
+        var numericValue = parseFloat(cleanedValue);
 
-        function validateAmount(element) {
-            if (event.keyCode === 32) {
-                event.preventDefault();
-            }
-            var cleanedValue = element.value.replace(/[^\d.]/g, '');
-            var numericValue = parseFloat(cleanedValue);
-
-            if ((!isNaN(numericValue) || cleanedValue === '' || cleanedValue === '.') &&
-                !(cleanedValue.length === 1 && cleanedValue[0] === '0')) {
-                    element.value = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-            }else{
-                element.value = '';
-            }
+        if ((!isNaN(numericValue) || cleanedValue === '' || cleanedValue === '.') &&
+            !(cleanedValue.length === 1 && cleanedValue[0] === '0')) {
+                element.value = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }else{
+            element.value = '';
         }
+    }
 
-        function calculate(){
+    function calculate(){
 
-            var input = parseFloat($('#deductions').val().replace(/,/g, ""));
-            var rem_bal = parseFloat($('#rem_bal').val().replace(/,/g, ""));
+        var input = parseFloat($('#deductions').val().replace(/,/g, ""));
+        var rem_bal = parseFloat($('#rem_bal').val().replace(/,/g, ""));
 
-            if(input > rem_bal){
-                alert('Inputted deductions must be numbers and lesser than or equal to balance!')
-                $('#deductions').val('')
-            }else{
-                $('#bal').val(parseFloat(rem_bal-input).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}));
-            }
+        if(input > rem_bal){
+            alert('Inputted deductions must be numbers and lesser than or equal to balance!')
+            $('#deductions').val('')
+        }else{
+            $('#bal').val(parseFloat(rem_bal-input).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}));
         }
-    </script>
+    }
+</script>
 @endsection

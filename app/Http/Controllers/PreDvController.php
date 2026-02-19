@@ -256,7 +256,6 @@ class PreDvController extends Controller
         $saas = Fundsource::get();
         $proponents = Proponent::select('proponent')->groupBy('proponent')->get();
         $facilities = Facility::get();
-
         if($request->viewAll){
             $request->keyword = '';
             $request->f_id = '';

@@ -41,7 +41,7 @@ use App\Models\TrackingDetails;
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th style="padding:5px; min-width:300px"></th>
+                                <th style="padding:5px; min-width:350px"></th>
                                 <th style="width:140px">
                                     <span onclick="exclude_all()" style="color: #007BFF; cursor: pointer;" 
                                         onmouseover="this.style.color='#0056b3'" 
@@ -152,10 +152,18 @@ use App\Models\TrackingDetails;
                                                     $stat = "none";
                                                 }
                                             ?>                                   
-                                            <button type="button" class="btn btn-xs" style="background-color:#165A54; border-radius:0; color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$row->new_dv->route_no}}" id="track_load" onclick="openModal()">Track</button>
-                                            <a href="{{ route('new_dv.pdf', ['id' => $row->id]) }}" style="background-color:green; border-radius:0; color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
-                                            <button data-toggle="modal" data-target="#releaseTo" data-id="{{ $doc_id }}" data-route_no="{{ $row->new_dv->route_no }}" onclick="putRoute($(this))" style="background-color:#1E90FF; border-radius:0; color:white; width:85px;" type="button" class="btn btn-xs">Release To</button>
-                                            <button data-toggle="modal" data-target="#acceptModal" data-id="{{ $doc_id }}" data-route_no="{{ $row->new_dv->route_no }}" onclick="acceptModal({{ $doc_id }}, '{{ $row->new_dv->route_no }}')" style="background-color:blue; border-radius:0; color:white; width:85px; display: inline-block" type="button" class="btn btn-xs accept_document">Accept</button>
+                                            <button type="button" class="btn btn-xs" style="background-color:#165A54; border-radius:0; color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$row->new_dv->route_no}}" id="track_load" onclick="openModal()">
+                                                <i class="fa fa-search-location"></i> Track
+                                            </button>
+                                            <a href="{{ route('new_dv.pdf', ['id' => $row->id]) }}" style="background-color:green; border-radius:0; color:white; width:70px;" target="_blank" type="button" class="btn btn-xs">
+                                                <i class="fa fa-print"></i> Print
+                                            </a>
+                                            <button data-toggle="modal" data-target="#releaseTo" data-id="{{ $doc_id }}" data-route_no="{{ $row->new_dv->route_no }}" onclick="putRoute($(this))" style="background-color:#1E90FF; border-radius:0; color:white; width:85px;" type="button" class="btn btn-xs">
+                                                <i class="fa fa-paper-plane"></i> Release To
+                                            </button>
+                                            <button data-toggle="modal" data-target="#acceptModal" data-id="{{ $doc_id }}" data-route_no="{{ $row->new_dv->route_no }}" onclick="acceptModal({{ $doc_id }}, '{{ $row->new_dv->route_no }}')" style="background-color:blue; border-radius:0; color:white; width:70px; display: inline-block" type="button" class="btn btn-xs accept_document">
+                                                <i class="fa fa-check"></i> Accept
+                                            </button>
                                         @else
                                             <span class="text-danger"><i>dv is not yet created</i></span>
                                         @endif

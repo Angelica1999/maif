@@ -16,7 +16,7 @@
                         </div>
                         <div class = "input-group">
                             <input type="text" style="text-align:center" class="form-control" id="dates_filter" value="" name="dates_filter" />
-                            <button type="submit" id="gen_btn" style="background-color:teal; color:white; width:79px; border-radius: 0; font-size:11px" class="btn btn-xs"><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
+                            <button type="submit" id="gen_btn" style="background-color:teal; color:white; border-radius: 0; font-size:11px" class="btn btn-xs"><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
                         </div>
                         <input type="hidden" name="f_id" class="fc_id" value="{{ implode(',',$f_id) }}">
                         <input type="hidden" name="p_id" class="proponent_id" value="{{ implode(',',$p_id) }}">
@@ -171,8 +171,8 @@
             $('#by_div').css('display', 'block');
         });
 
-        $('.filter').on('click', function(){
-            $('#filt_dv').css('display', 'block');
+        $('#by_select, #proponent_select').on('change', function(){
+            $('#filt_dv').trigger('click');
         });
 
         $('.proponent').on('click', function(){
@@ -181,7 +181,7 @@
 
         $('#filt_dv').on('click', function(){
             $('.fc_id').val($('#fac_select').val());
-            $('.userid').val($('#by_select').val());
+            $('.user_id').val($('#by_select').val());
             $('.proponent_id').val($('#proponent_select').val());
         }); 
 

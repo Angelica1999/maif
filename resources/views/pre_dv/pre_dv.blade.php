@@ -105,11 +105,19 @@
                             @foreach($results as $row)
                                 <tr>
                                     <td>
-                                        <a href="{{ route('pre.excel', ['id' => $row->id]) }}" style="background-color:teal; border-radius:0; color:white; width:55px;" type="button" class="btn btn-xs">Excel</a>    
+                                        <a href="{{ route('pre.excel', ['id' => $row->id]) }}" style="background-color:teal; border-radius:0; color:white; width:70px;" type="button" class="btn btn-xs">
+                                            <i class="fa fa-file-excel"></i> Excel
+                                        </a>    
                                         @if($row->new_dv)                                  
-                                            <button type="button" class="btn btn-xs" style="border-radius:0; background-color:#165A54; color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$row->new_dv->route_no}}" id="track_load" onclick="openModal()">Track</button>
-                                            <a href="{{ route('pre.pdf', ['id' => $row->id]) }}" style="background-color:green; border-radius:0; color:white; width:50px;" target="_blank" type="button" class="btn btn-xs">Print</a>
-                                            <a href="{{ route('pre.image', ['id' => $row->id]) }}" style="background-color:blue; border-radius:0; color:white; width:55px;" target="_blank" type="button" class="btn btn-xs">Image</a>    
+                                            <button type="button" class="btn btn-xs" style="border-radius:0; background-color:#165A54; color:white;" data-toggle="modal" href="#iframeModal" data-routeId="{{$row->new_dv->route_no}}" id="track_load" onclick="openModal()">
+                                                <i class="fa fa-search-location"></i> Track
+                                            </button>
+                                            <a href="{{ route('pre.pdf', ['id' => $row->id]) }}" style="background-color:green; border-radius:0; color:white; width:70px;" target="_blank" type="button" class="btn btn-xs">
+                                                <i class="fa fa-print"></i> Print
+                                            </a>
+                                            <a href="{{ route('pre.image', ['id' => $row->id]) }}" style="background-color:blue; border-radius:0; color:white; width:70px;" target="_blank" type="button" class="btn btn-xs">
+                                                <i class="fa fa-image"></i> Image
+                                            </a>    
                                         @else
                                             <a data-toggle="modal" style="border-radius:0; margin-left:5px" title="Create Pre-DV (v2)" data-backdrop="static" href="#view_v2" onclick="viewV1({{ $row->id }})" class="text-danger"><i>dv is not yet created</i></a>
                                         @endif
@@ -648,6 +656,10 @@
     });
     $('#fac_select').select2();
     $('#by_select').select2();
+    
+    $('#by_select, #fac_select').on('change', function(){
+        $('#filt_dv').trigger('click');
+    });
 
     $('#dates_filter').daterangepicker();
 
@@ -657,10 +669,6 @@
 
     $('.user').on('click', function(){
         $('#by_div').css('display', 'block');
-    });
-
-    $('.filter').on('click', function(){
-        $('#filt_dv').css('display', 'block');
     });
 
     $('#filt_dv').on('click', function(){

@@ -50,7 +50,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="sample" tabindex="-1" role="dialog" aria-hidden="true" style="background: transparent; border: none;">
     <div class="modal-dialog" role="document" style="background: transparent; border: none;">
         <div class="modal-content" style="background: transparent; border: none;">
@@ -61,8 +60,6 @@
         </div>
     </div>
 </div>
-
-
 <div class="modal fade" id="upload_files" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -88,29 +85,35 @@
 
 @endsection
 @section('js')
-    <script>
+<script>
 
-       function image(path) {
-            $('#sample_modal').html('<img src="{{ url('storage/app/') }}/' + path + '" alt="Image" class="img-fluid mb-2" style="width: 100%;">');
+    function image(path) {
+        $('#sample_modal').html('<img src="{{ url('storage/app/') }}/' + path + '" alt="Image" class="img-fluid mb-2" style="width: 100%;">');
+    }
+
+    $('#sample').on('hide.bs.modal', function () {
+        $(this).add($(this).find('input, select, textarea, button')).blur();
+    });
+
+    $('#sample').on('hidden.bs.modal', function () {
+        $('#sample_modal').empty(); 
+    });
+
+    function deleteImage(id){
+        var answer = confirm('Are you sure you wanted to remove this image?');
+        if(answer){
+            var url = "{{ url('/fundsources/remove').'/' }}"+id;
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function(result) {
+                    Lobibox.notify('success', {
+                        msg: 'Image successfully removed!'
+                    });
+                    location.reload();
+                }
+            });
         }
-
-        function deleteImage(id){
-            var answer = confirm('Are you sure you wanted to remove this image?');
-            if(answer){
-                var url = "{{ url('/fundsources/remove').'/' }}"+id;
-                $.ajax({
-                    url: url,
-                    type: 'GET',
-                    success: function(result) {
-                        Lobibox.notify('success', {
-                            msg: 'Image successfully removed!'
-                        });
-                        location.reload();
-                    }
-                });
-            }
-        }
-
-    </script>
-    
+    }
+</script>
 @endsection
