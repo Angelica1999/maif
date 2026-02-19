@@ -23,7 +23,7 @@
                 <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th></th>
+                        <th style="min-width:120px"></th>
                         <th>Name</th>
                         <th>Address</th>
                         <th>Official Email</th>
@@ -34,7 +34,9 @@
                     @foreach($results as $facility)
                         <tr>
                             <td class="td">
-                                <button class="btn btn-sm btn-warning" style="color:white; border-radius:0px" onclick="released({{ $facility->id }})">Release</button>
+                                <button class="btn btn-sm btn-warning" onclick="released({{ $facility->id }})">
+                                    <i class="fa fa-paper-plane"></i> Release
+                                </button>
                             </td>
                             <td class="td" style="width:300px">{{ $facility->name }}</td>
                             <td class="td">{{ $facility->address }}</td>

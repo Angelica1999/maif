@@ -129,8 +129,8 @@ Route::get('/group', [App\Http\Controllers\HomeController::class, 'group'])->nam
 Route::get('/group/patients/list/{group_id}', [App\Http\Controllers\HomeController::class, 'getPatientGroup'])->name('group.patients');
 Route::match(['get', 'post'],'/proponent/report/{pro_group}', [App\Http\Controllers\HomeController::class, 'getProponentReport'])->name('proponent.report');
 Route::match(['get', 'post'],'/facility/report/{facility_id}', [App\Http\Controllers\HomeController::class, 'getFacilityReport'])->name('facility.report');
-Route::get('/report/proponent', [App\Http\Controllers\HomeController::class, 'report'])->name('report');
-Route::get('/report/facility', [App\Http\Controllers\HomeController::class, 'reportFacility'])->name('report.facility');
+Route::get('/report-proponents', [App\Http\Controllers\HomeController::class, 'report'])->name('report');
+Route::get('/report-facilities', [App\Http\Controllers\HomeController::class, 'reportFacility'])->name('report.facility');
 Route::match(['get', 'post'],'patient/mails', [App\Http\Controllers\PrintController::class, 'sendMultiple'])->name('sent.mails');
 Route::match(['get', 'post'],'patient/{patient_id}', [App\Http\Controllers\HomeController::class, 'getPatient'])->name('get.patient');
 Route::match(['get', 'post'],'group/patient/{facility_id}/{proponent_id}', [App\Http\Controllers\HomeController::class, 'getPatients'])->name('get.patients');

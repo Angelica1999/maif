@@ -23,8 +23,6 @@
             <p class="card-description">
                 MAIF-IPP
             </p>
-            <!-- <a href="{{route('report')}}" style="height:30px; background-color:teal; color:white;" type="button" class="btn btn-xs">Proponent</a>
-            <a href="" style="height:30px; background-color: #228B22; color:white;" type="button" class="btn btn-xs">Facility</a> -->
             @if(count($facilities) > 0)
                 <div class="row">
                     @foreach($facilities as $facility)
@@ -33,7 +31,9 @@
                                 <div class="card-body">
                                     <div style ="display:flex; justify-content:space-between;">
                                         <h4 class="card-title" style=" text-align:left;">{{ $facility->name }}</h4>
-                                        <a href="{{ route('facility.report', ['facility_id' => $facility->id]) }}" style="height:30px; background-color:#1D4646; color:white" type="button" class="btn btn-sm">View</a>
+                                        <a href="{{ route('facility.report', ['facility_id' => $facility->id]) }}" style="height:30px; background-color:#1D4646; color:white" type="button" class="btn btn-sm">
+                                            <i class="fa fa-eye"></i> View
+                                        </a>
                                     </div>
                                 </div>
                             </div>

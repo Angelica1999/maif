@@ -1161,7 +1161,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('report.facility') }}">
+                                <a class="nav-link" href="#">
                                     <span class="menu-icon">
                                         <img src="\maif\public\images\fc_re_16.png">
                                     </span>

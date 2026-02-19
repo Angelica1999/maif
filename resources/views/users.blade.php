@@ -1,6 +1,10 @@
 @extends('layouts.app')
 @section('content')
-
+<style>
+    .select2-container .select2-selection--single {
+        height: 42px;
+    }
+</style>
 @if (session('error'))
     <div class="alert alert-danger">
         {{ session('error') }}
@@ -10,16 +14,28 @@
     <div class="card">
         <div class="card-body">
             <form method="GET" action="">
-                <div class="input-group float-right w-50" style="min-width: 600px;">
-                    <input type="text" class="form-control" name="keyword" placeholder="Search(Name)..." value="{{ $keyword }}">
+                <div class="input-group float-right w-50" style="min-width: 300px;">
+                    <input type="text" class="form-control" name="keyword" placeholder="..." value="{{ $keyword }}">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
+                        <select id="account" class="form-control account" name="account_type" onchange="this.form.submit()">
+                            <option></option>
+                            <option value="all">All</option>
+                            @foreach($type as $row)
+                                <option value="{{ $row }}" {{ $row == $account_type ? 'selected': '' }}>
+                                    {{ 
+                                        $row == 1 ? 'Proponent' : 
+                                        ($row == 2 ? 'Facility' : 'MPU') 
+                                    }}
+                                </option>
+                            @endforeach
+                        </select>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
                         <button type="button" href="#add_user" id="crt_pnt" data-backdrop="static" data-toggle="modal" class="btn btn-success btn-md"><img src="\maif\public\images\icons8_create_16.png">Create</button>
                     </div>
                 </div>
             </form>
-            <h4 class="card-title">ACTIVE ONLINE USERS</h4>
+            <h4 class="card-title">ONLINE USERS</h4>
             <p class="card-description">
                 MAIF-IPP
             </p>
@@ -33,20 +49,7 @@
                             <th style="min-width:110px;">@sortablelink('birthdate', 'Birthdate')
                             <th style="min-width:100px;">@sortablelink('user_type', 'Type')
                             <th style="width:200px;">
-                                <form method="GET" action="">
-                                    <select id="account" class="form-control account" name="account_type" style="text-align:center" onchange="this.form.submit()">
-                                        <option></option>
-                                        <option value="all">All</option>
-                                        @foreach($type as $row)
-                                            <option value="{{ $row }}" {{ $row == $account_type ? 'selected': '' }}>
-                                                {{ 
-                                                    $row == 1 ? 'Proponent' : 
-                                                    ($row == 2 ? 'Facility' : 'MPU') 
-                                                }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </form>
+                                Account
                             </th>
                             <th>@sortablelink('email', 'Email')
                             <th style="min-width:120px;">@sortablelink('contact_no', 'Contact No')
@@ -57,15 +60,15 @@
                         @if(isset($users) && $users->count() > 0)
                             @foreach($users as $row)
                                 <tr>
-                                    <td>
+                                    <td style="width:5%">
                                         @if($row->status == 1)
                                             <i class="typcn typcn-media-record menu-icon text-danger"></i>
                                         @else
                                             <i class="typcn typcn-media-record menu-icon text-success"></i>
                                         @endif
                                     </td>
-                                    <td>{{ $row->fname }}</td>
-                                    <td>{{ $row->lname }}</td>
+                                    <td>{{ ucwords(strtolower($row->fname)) }}</td>
+                                    <td>{{ ucwords(strtolower($row->lname)) }}</td>
                                     <td>{{ date('F j, Y', strtotime($row->birthdate)) }} </td>
                                     <td style="max-width:100px; text-align:left">
                                         {{ 
@@ -75,20 +78,28 @@
                                     </td>
                                     <td>
                                         {{ 
-                                            $row->user_type == 1 ? $row->proponent->proponent : 
+                                            $row->user_type == 1 ? ucwords(strtolower($row->proponent->proponent)) : 
                                             ($row->user_type == 2 ? $row->facility->name : 'MPU') 
                                         }}
                                     </td>
-                                    <td style="max-width:120px;">{{$row->email}}</td>
-                                    <td style="width:150px">{{ $row->contact_no }}</td>
-                                    <td >
-                                        <a href="{{ route('view.account', ['id' => $row->id]) }}" target="_blank" type="button" class="btn btn-xs btn-info" style="border-radius:0px">View Account</a>
-                                        <a href="{{ route('reset.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-warning" style="border-radius:0px">Reset</a>
+                                    <td style="max-width:120px;">{{ strtolower($row->email) }}</td>
+                                    <td style="width:150px">{{ '0'.$row->contact_no }}</td>
+                                    <td style="width:20%">
                                         @if($row->status == 1)
-                                            <a href="{{ route('activate.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-success" style="border-radius:0px">Activate</a>
+                                            <a href="{{ route('activate.user', ['id' => $row->id]) }}" type="button" class="btn btn-sm btn-outline-success" style="width:100px">
+                                                <i class="fa fa-check"></i> Activate
+                                            </a>
                                         @else
-                                            <a href="{{ route('deactivate.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-danger" style="border-radius:0px; color:white">Deactivate</a>
+                                            <a href="{{ route('deactivate.user', ['id' => $row->id]) }}" type="button" class="btn btn-sm btn-outline-danger" style="width:100px">
+                                                <i class="fa fa-ban"></i> Deactivate
+                                            </a>
                                         @endif
+                                        <a href="{{ route('view.account', ['id' => $row->id]) }}" target="_blank" type="button" class="btn btn-sm btn-outline-info" style=" width:70px">
+                                            <i class="fa fa-eye"></i> View
+                                        </a>
+                                        <a href="{{ route('reset.user', ['id' => $row->id]) }}" type="button" class="btn btn-sm btn-outline-warning" style="width:100px">
+                                            <i class="fa fa-undo"></i> Reset
+                                        </a> 
                                     </td>
                                 </tr>
                             @endforeach
@@ -201,7 +212,7 @@
     <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
     <script>
         $('#account').select2({
-            placeholder:'Account'
+            placeholder:'Account Type'
         });
         function cancel(id){
             $('#user_cancel').modal('show');

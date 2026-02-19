@@ -81,11 +81,16 @@
                                 <tr>
                                     <td>
                                         @if($item->remarks == 2)
-                                            <button onclick="returnTrans({{ $item->id }})" href="#return" style="border-radius:0; color:white" data-toggle="modal" data-backdrop="static" type="button" class="btn btn-warning btn-xs">Return</button>
-                                            <button onclick="accept({{ $item->id }})" style="border-radius:0; color:white" type="button" class="btn btn-success btn-xs">Accept</button>
+                                            <button onclick="returnTrans({{ $item->id }})" href="#return" style="color:white; width:90px" data-toggle="modal" data-backdrop="static" type="button" class="btn btn-warning btn-sm">
+                                                <i class="fa fa-undo"></i> Return
+                                            </button>
+                                            <button onclick="accept({{ $item->id }})" style="color:white;  width:90px" type="button" class="btn btn-success btn-sm">
+                                                <i class="fa fa-check"></i> Accept
+                                            </button>
                                         @else
-                                            <!-- <i class="text-danger">this transmittal is not yet received</i> -->
-                                            <a onclick="receive('{{ $item->id }}')" style="border-radius:0; color:white" type="button" class="btn btn-success btn-xs">Receive</a>
+                                            <a onclick="receive('{{ $item->id }}')" style="color:white; width:90px" type="button" class="btn btn-info btn-sm">
+                                                <i class="fa fa-inbox"></i> Receive
+                                            </a>
                                         @endif
                                     </td>
                                     <td><a onclick="displaySum({{ $item->id }}, {{ $item->remarks }})" href="#summary_display" data-toggle="modal" data-backdrop="static">{{ $item->control_no }}</a></td>
@@ -102,7 +107,7 @@
                                     <td>{{ date('F j, Y', strtotime($item->prepared_date)) }}</td>
                                     <td>{{ number_format($item->total, 2, '.', ',') }}</td>
                                     <td>{{ date('F j, Y', strtotime($item->created_at)) }}</td>
-                                    <td>{{ $item->user->fname .' '.$item->user->lname }}</td>
+                                    <td>{{ ucwords(strtolower($item->user->fname .' '.$item->user->lname)) }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

@@ -1,5 +1,10 @@
 @extends('layouts.app')
 @section('content')
+<style>
+    .select2-container .select2-selection--single {
+        height: 42px;
+    }
+</style>
 @if (session('error'))
     <div class="alert alert-danger">
         {{ session('error') }}
@@ -10,9 +15,21 @@
         <div class="card-body">
             <form method="GET" action="">
                 <div class="input-group float-right w-50" style="min-width: 600px;">
-                    <input type="text" class="form-control" name="keyword" placeholder="Search..." value="{{ $keyword }}">
+                    <input type="text" class="form-control" name="keyword" placeholder="..." value="{{ $keyword }}">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
+                        <select id="account" class="form-control account" name="account_type" style="text-align:center" onchange="this.form.submit()">
+                            <option></option>
+                            <option value="all">All</option>
+                            @foreach($type as $row)
+                                <option value="{{ $row }}" {{ $row == $account_type ? 'selected': '' }}>
+                                    {{ 
+                                        $row == 1 ? 'Proponent' : 
+                                        ($row == 2 ? 'Facility' : 'MPU') 
+                                    }}
+                                </option>
+                            @endforeach
+                        </select>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
                     </div>
                 </div>
@@ -29,22 +46,7 @@
                             <th style="min-width:120px;">@sortablelink('lname', 'Last Name')
                             <th style="min-width:120px;">@sortablelink('birthdate', 'Birthdate')
                             <th>@sortablelink('user_type', 'Type')
-                            <th>
-                                <form method="GET" action="">
-                                    <select id="account" class="form-control account" name="account_type" style="text-align:center" onchange="this.form.submit()">
-                                        <option></option>
-                                        <option value="all">All</option>
-                                        @foreach($type as $row)
-                                            <option value="{{ $row }}" {{ $row == $account_type ? 'selected': '' }}>
-                                                {{ 
-                                                    $row == 1 ? 'Proponent' : 
-                                                    ($row == 2 ? 'Facility' : 'MPU') 
-                                                }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </form>
-                            </th>
+                            <th>Account</th>
                             <th>@sortablelink('email', 'Email')
                             <th style="min-width:120px;">@sortablelink('contact_no', 'Contact No')
                             <th></th>
@@ -55,8 +57,8 @@
 
                             @foreach($registrations as $row)
                                 <tr>
-                                    <td class="td">{{ $row->fname }}</td>
-                                    <td class="td">{{ $row->lname }}</td>
+                                    <td class="td">{{ ucwords(strtolower($row->fname)) }}</td>
+                                    <td class="td">{{ ucwords(strtolower($row->lname)) }}</td>
                                     <td>{{ date('F j, Y', strtotime($row->birthdate)) }} </td>
                                     <td class="td">
                                         {{ 
@@ -66,15 +68,19 @@
                                     </td>
                                     <td class="td">
                                         {{ 
-                                            $row->user_type == 1 ? $row->proponent->proponent : 
+                                            $row->user_type == 1 ? ucwords(strtolower($row->proponent->proponent)) : 
                                             ($row->user_type == 2 ? $row->facility->name : 'MPU') 
                                         }}
                                     </td>
-                                    <td class="td">{{$row->email}}</td>
-                                    <td>{{ $row->contact_no }}</td>
+                                    <td class="td">{{ strtolower($row->email) }}</td>
+                                    <td>{{ '0'.$row->contact_no }}</td>
                                     <td class="td">
-                                        <a href="{{ route('verify.user', ['id' => $row->id]) }}" type="button" class="btn btn-xs btn-info" style="color:white; width:80px;border:0px">Verify</a>
-                                        <button type="button" href="#user_cancel" style="width:80px; color:white; border:0px" data-toggle="modal" data-backdrop="static" class="btn btn-xs btn-warning" onclick="cancel({{$row->id}})">Cancel</button>
+                                        <a href="{{ route('verify.user', ['id' => $row->id]) }}" type="button" class="btn btn-sm btn-outline-info" style="width:80px;">
+                                            <i class="fa fa-check"></i> Verify
+                                        </a>
+                                        <button type="button" href="#user_cancel" style="width:80px;" data-toggle="modal" data-backdrop="static" class="btn btn-sm btn-outline-warning" onclick="cancel({{ $row->id }})">
+                                            <i class="fa fa-times"></i> Cancel
+                                        </button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -118,7 +124,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="add_user" tabindex="-1" role="dialog" aria-hidden="true" style="opacity:1">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -185,15 +190,15 @@
 </div>
 @endsection
 @section('js')
-    <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
-    <script>
-        $('#account').select2({
-            tags:true,
-            placeholder:'Account'
-        });
-        function cancel(id){
-            $('#user_cancel').modal('show');
-            $('#cancel_user').attr('action', '{{ route("cancel.user", [":id"]) }}'.replace(':id', id));
-        }
-    </script>
+<script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
+<script>
+    $('#account').select2({
+        tags:true,
+        placeholder:'Account Type'
+    });
+    function cancel(id){
+        $('#user_cancel').modal('show');
+        $('#cancel_user').attr('action', '{{ route("cancel.user", [":id"]) }}'.replace(':id', id));
+    }
+</script>
 @endsection

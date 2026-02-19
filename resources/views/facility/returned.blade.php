@@ -58,7 +58,9 @@
                                 <tr>
                                     <td>
                                         @if($item->remarks != null)
-                                            <button onclick="checkRemarks({{ $item->id }})" href="#return" style="border-radius:0; color:white" data-toggle="modal" data-backdrop="static" type="button" class="btn btn-info btn-xs">Remarks</button>
+                                            <button onclick="checkRemarks({{ $item->id }})" href="#return" style="color:white" data-toggle="modal" data-backdrop="static" type="button" class="btn btn-info btn-sm">
+                                                <i class="fa fa-eye"></i> View Remarks
+                                            </button>
                                         @else
                                             <i class="text-danger">this transmittal is not yet received</i>
                                         @endif
@@ -68,7 +70,7 @@
                                     <td>{{ date('F j, Y', strtotime($item->prepared_date)) }}</td>
                                     <td>{{ number_format($item->total, 2, '.', ',') }}</td>
                                     <td>{{ date('F j, Y', strtotime($item->created_at)) }}</td>
-                                    <td>{{ $item->user->fname .' '.$item->user->lname }}</td>
+                                    <td>{{ ucwords(strtolower($item->user->fname .' '.$item->user->lname)) }}</td>
                                     <td>
                                         @if($item->status != 3 && $item->status != 1)
                                             <button style="border-radius:0px; color:white" onclick="sendTrans({{ $item->id }})" class="btn btn-sm btn-info">

@@ -54,7 +54,12 @@ class UserController extends Controller{
         }else if($req->keyword){
             $users->where(function ($query) use ($req) {
                 $query->where('lname', 'LIKE', "%{$req->keyword}%")
-                      ->orWhere('fname', 'LIKE', "%{$req->keyword}%");
+                    ->orWhere('fname', 'LIKE', "%{$req->keyword}%")
+                    ->orWhereHas('facility', function ($subquery) use ($req) {
+                    $subquery->where('name', 'LIKE', "%$req->keyword%");
+                })->orWhereHas('proponent', function ($subquery) use ($req) {
+                    $subquery->where('proponent', 'LIKE', "%$req->keyword%");
+                });
             });
         }
 
@@ -84,7 +89,12 @@ class UserController extends Controller{
         }else if($req->keyword){
             $registration->where(function ($query) use ($req) {
                 $query->where('lname', 'LIKE', "%{$req->keyword}%")
-                      ->orWhere('fname', 'LIKE', "%{$req->keyword}%");
+                    ->orWhere('fname', 'LIKE', "%{$req->keyword}%")
+                    ->orWhereHas('facility', function ($subquery) use ($req) {
+                    $subquery->where('name', 'LIKE', "%$req->keyword%");
+                })->orWhereHas('proponent', function ($subquery) use ($req) {
+                    $subquery->where('proponent', 'LIKE', "%$req->keyword%");
+                });
             });
         }
 
@@ -97,7 +107,7 @@ class UserController extends Controller{
                 $registration->where('user_type', 3);
             }
         }
-// return $req->account_type;
+
         return view('user_activation',[
             'registrations' => $registration->orderBy('id', 'desc')->paginate(50),
             'keyword' => $req->keyword,
