@@ -66,8 +66,7 @@ class FURController extends Controller
             $month = $request->month;
             $year = $request->year;
             $facility_id = $request->facility_id;
-
-            $monthNumber = date('m', strtotime($month));
+            $monthNumber = str_pad($month, 2, '0', STR_PAD_LEFT);
             $data = AnnexB::whereMonth('month_year', $monthNumber)
                 ->whereYear('month_year', $year)
                 ->where('facility_id', $facility_id)
@@ -77,6 +76,7 @@ class FURController extends Controller
                 ]);
 
             if ($request->data_type) {
+
                 $type = $request->data_type;
             
                 if ($type == 3) {
@@ -105,14 +105,12 @@ class FURController extends Controller
             }
 
             if($keyword){
-
                 $data->whereHas('patient', function ($query) use ($keyword) {
                     $query->where('lname', 'LIKE', "%{$keyword}%")
                         ->orWhere('fname', 'LIKE', "%{$keyword}%")
                         ->orWhere('mname', 'LIKE', "%{$keyword}%");
                 });
             }
-
             return view('facility.annex_b_view',[
                 'data' => $data->paginate(50),
                 'keyword' => $keyword,
@@ -1625,7 +1623,7 @@ class FURController extends Controller
             $year = $request->year;
             $facility_id = $request->facility_id;
 
-            $monthNumber = date('m', strtotime($month));
+            $monthNumber = str_pad($month, 2, '0', STR_PAD_LEFT);
             $data = AnnexB::whereMonth('month_year', $monthNumber)
                 ->whereYear('month_year', $year)
                 ->where('facility_id', $facility_id)
@@ -1696,6 +1694,7 @@ class FURController extends Controller
         $year = $request->year ?? now()->year;
 
         $data = AnnexB::join('transmittal_patients', 'annex_b.patient_id', '=', 'transmittal_patients.patient_id')
+            ->where('annex_b.status', 2)
             ->whereYear('annex_b.month_year', $year)
             ->groupByRaw('MONTH(annex_b.month_year)')
             ->selectRaw('
@@ -1729,7 +1728,7 @@ class FURController extends Controller
             ]
         ];
 
-        $ids = AnnexB::whereNotIn('status', [0, 3])
+        $ids = AnnexB::where('status', 2)
             ->distinct()
             ->pluck('facility_id')
             ->toArray();   
@@ -1809,6 +1808,7 @@ class FURController extends Controller
                 $number = $number + 9;
                 $facility_id = $id;
                 $data = AnnexB::join('transmittal_patients', 'annex_b.patient_id', '=', 'transmittal_patients.patient_id')
+                    ->where('annex_b.status', 2)
                     ->where('annex_b.facility_id', $facility_id)
                     ->whereYear('annex_b.month_year', $year)
                     ->groupByRaw('MONTH(annex_b.month_year)')
@@ -2041,12 +2041,11 @@ class FURController extends Controller
 
     public function consoB(Request $request){
 
-        $data = AnnexB::whereNotIn('status', [0,3])
+        $data = AnnexB::where('status', 2)
             ->with([
                 'trans',
                 'patient'
             ]);
-
         if($request->excel){
             [$year, $month] = explode('-', $request->date_selection);
 
@@ -2351,7 +2350,7 @@ class FURController extends Controller
     
         //service-ward
         $data = AnnexB::whereMonth('month_year', $month)
-            ->whereNotIn('status', [0,3])
+            ->where('status', 2)
             ->whereYear('month_year', $year)
             ->where('excess', 1)->where('opd', 0)
             ->with([
@@ -2659,7 +2658,7 @@ class FURController extends Controller
         $sheet->getStyle($range)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle($range)->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
 
-        $data2 = AnnexB::whereNotIn('status', [0,3])
+        $data2 = AnnexB::where('status', 2)
             ->whereMonth('month_year', $month)
             ->whereYear('month_year', $year)
             ->where('excess', '!=', 1)->where('opd', 0)
@@ -2899,7 +2898,7 @@ class FURController extends Controller
         $sheet->setCellValue("P" . ($number2 + 3), 'B');
         $sheet->getStyle("P" . ($number2 + 3))->getFont()->setBold(true)->setSize(9);
 
-        $data3 = AnnexB::whereNotIn('status', [0,3])
+        $data3 = AnnexB::where('status', 2)
             ->whereMonth('month_year', $month)
             ->whereYear('month_year', $year)
             ->where('opd', 1)

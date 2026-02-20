@@ -1140,84 +1140,82 @@
                     </ul>
                 </li>
             </ul>
-            @if($id == "2760")
-            <!-- Report -->
-                <ul class="nav flex-column" style=" margin-bottom: 0;">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <span class="menu-icon">
-                                <img src="\maif\public\images\report_16.png">
-                            </span>
-                            <span class="menu-title">FUR</span>
-                            <span class="dropdown-icon">▼</span>
-                        </a>
-                        <ul class="nav flex-column sub-menu">
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">
-                                    <span class="menu-icon">
-                                        <img src="\maif\public\images\pre_re_16.png">
-                                    </span>
-                                    <span class="menu-title">Government</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">
-                                    <span class="menu-icon">
-                                        <img src="\maif\public\images\fc_re_16.png">
-                                    </span>
-                                    <span class="menu-title">Private</span>
-                                    <span class="dropdown-icon">▶</span>
-                                </a>
-                                <ul class="nav flex-column sub-menu">
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{{ route('fur.submission') }}">
-                                            <span class="menu-icon">
-                                                <img src="\maif\public\images\pre_re_16.png">
-                                            </span>
-                                            <span class="menu-title">Submission</span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{{ route('fur.facilities') }}">
-                                            <span class="menu-icon">
-                                                <img src="\maif\public\images\fc_re_16.png">
-                                            </span>
-                                            <span class="menu-title">Facilities</span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#">
-                                            <span class="menu-icon">
-                                                <img src="\maif\public\images\saa_re_16.png">
-                                            </span>
-                                            <span class="menu-title">Consolidated</span>
-                                            <span class="dropdown-icon">▶</span>
-                                        </a>
-                                        <ul class="nav flex-column sub-menu">
-                                            <li class="nav-item">
-                                                <a class="nav-link" href="{{ route('fur.consolidated_a') }}">
-                                                    <span class="menu-icon">
-                                                        <img src="\maif\public\images\pre_re_16.png">
-                                                    </span>
-                                                    <span class="menu-title">Annex A</span>
-                                                </a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" href="{{ route('fur.consolidated_b') }}">
-                                                    <span class="menu-icon">
-                                                        <img src="\maif\public\images\fc_re_16.png">
-                                                    </span>
-                                                    <span class="menu-title">Annex B</span>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            @endif
+            <!-- FUR -->
+            <ul class="nav flex-column" style=" margin-bottom: 0;">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        <span class="menu-icon">
+                            <img src="\maif\public\images\report_16.png">
+                        </span>
+                        <span class="menu-title">FUR</span>
+                        <span class="dropdown-icon">▼</span>
+                    </a>
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <span class="menu-icon">
+                                    <img src="\maif\public\images\pre_re_16.png">
+                                </span>
+                                <span class="menu-title">Government</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <span class="menu-icon">
+                                    <img src="\maif\public\images\fc_re_16.png">
+                                </span>
+                                <span class="menu-title">Private</span>
+                                <span class="dropdown-icon">▶</span>
+                            </a>
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('fur.submission') }}">
+                                        <span class="menu-icon">
+                                            <img src="\maif\public\images\pre_re_16.png">
+                                        </span>
+                                        <span class="menu-title">Submission</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('fur.facilities') }}">
+                                        <span class="menu-icon">
+                                            <img src="\maif\public\images\fc_re_16.png">
+                                        </span>
+                                        <span class="menu-title">Facilities</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">
+                                        <span class="menu-icon">
+                                            <img src="\maif\public\images\saa_re_16.png">
+                                        </span>
+                                        <span class="menu-title">Consolidated</span>
+                                        <span class="dropdown-icon">▶</span>
+                                    </a>
+                                    <ul class="nav flex-column sub-menu">
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{{ route('fur.consolidated_a') }}">
+                                                <span class="menu-icon">
+                                                    <img src="\maif\public\images\pre_re_16.png">
+                                                </span>
+                                                <span class="menu-title">Annex A</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{{ route('fur.consolidated_b') }}">
+                                                <span class="menu-icon">
+                                                    <img src="\maif\public\images\fc_re_16.png">
+                                                </span>
+                                                <span class="menu-title">Annex B</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
             <!-- Logbook -->
             <ul class="nav flex-column" style="margin-bottom: 0;">
                 <li class="nav-item">

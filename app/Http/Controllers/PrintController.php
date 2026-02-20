@@ -88,11 +88,6 @@ class PrintController extends Controller
 
         $mpdf->WriteHTML($html);
         return $mpdf->Output('document.pdf', 'I');
-        
-        // $options = [];
-    
-        // $pdf = PDF::loadView('maif.print_patient', $data, $options);
-        // return $pdf->stream('patient.pdf');
     }
 
     public function sendPatientPdf($patientId) {

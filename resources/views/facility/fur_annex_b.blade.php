@@ -118,50 +118,54 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($data as $row)
-                            <tr>
-                                <td>
-                                    <a href="{{ route('fur.submission', [
-                                            'month' => $row->month,
-                                            'year' => $row->year,
-                                            'facility_id' => $row->facility_id
-                                        ]) }}"
-                                        class="btn btn-xs btn-info"
-                                        style="color:white; font-size:11px;">
-                                        <i class="fa fa-eye"></i> View
-                                    </a>
-                                    <a href="{{
-                                        route('annex_b.excel', [
-                                                'id' => $row->facility_id,
+                        @if(count($data) > 0)
+                            @foreach($data as $row)
+                                <tr>
+                                    <td>
+                                        <a href="{{ route('fur.submission', [
                                                 'month' => $row->month,
-                                                'year' => $row->year
-                                            ])
-                                        }}"
-                                        class="btn btn-xs btn-excel"
-                                        style="color:white; font-size:11px; display:inline-block;">
-                                        <i class="fa fa-file-excel"></i> Excel
-                                    </a>
-                                    @if($row->status == 1)
-                                        <button data-month="{{ $row->month }}" data-year="{{ $row->year }}" data-id="{{ $row->facility_id }}"
-                                            class="btn btn-xs btn-success accept" style="color:white; font-size:11px; display:inline-block;">
-                                            <i class="fa fa-thumbs-up"></i>  Accept
-                                        </button>
-                                    @elseif($row->status == 2)
-                                        <button data-month="{{ $row->month }}" data-year="{{ $row->year }}" data-id="{{ $row->facility_id }}"
-                                            class="btn btn-xs btn-danger return" style="color:white; font-size:11px; display:inline-block;">
-                                            <i class="fa fa-undo"></i>  Return
-                                        </button>
-                                    @endif
-                                </td>
-                                <td style="text-align:left">{{ $row->name }}</td>
-                                <!-- 0-pending/1-submitted/2-accepted/3-returned -->
-                                <td>{{ \Carbon\Carbon::create()->month($row->month)->format('F'). ' '.$row->year }}</td>
-                                <td style="text-align:right">{{ $row->patients }}</td>
-                                <td style="text-align:right">{{ number_format($row->total, 2,'.',',') }}</td>
-                                <td style="text-align:center">{{ $row->status == 1 ? 'Pending' : ($row->status == 2 ? 'Submitted' : 'Returned') }}</td>
-                                <td>{{ $row->remarks }}</td>
-                            </tr> 
-                        @endforeach       
+                                                'year' => $row->year,
+                                                'facility_id' => $row->facility_id
+                                            ]) }}"
+                                            class="btn btn-xs btn-info"
+                                            style="color:white; font-size:11px;">
+                                            <i class="fa fa-eye"></i> View
+                                        </a>
+                                        <a href="{{
+                                            route('annex_b.excel', [
+                                                    'id' => $row->facility_id,
+                                                    'month' => $row->month,
+                                                    'year' => $row->year
+                                                ])
+                                            }}"
+                                            class="btn btn-xs btn-excel"
+                                            style="color:white; font-size:11px; display:inline-block;">
+                                            <i class="fa fa-file-excel"></i> Excel
+                                        </a>
+                                        @if($row->status == 1)
+                                            <button data-month="{{ $row->month }}" data-year="{{ $row->year }}" data-id="{{ $row->facility_id }}"
+                                                class="btn btn-xs btn-success accept" style="color:white; font-size:11px; display:inline-block;">
+                                                <i class="fa fa-thumbs-up"></i>  Accept
+                                            </button>
+                                        @elseif($row->status == 2)
+                                            <button data-month="{{ $row->month }}" data-year="{{ $row->year }}" data-id="{{ $row->facility_id }}"
+                                                class="btn btn-xs btn-danger return" style="color:white; font-size:11px; display:inline-block;">
+                                                <i class="fa fa-undo"></i>  Return
+                                            </button>
+                                        @endif
+                                    </td>
+                                    <td style="text-align:left">{{ $row->name }}</td>
+                                    <!-- 0-pending/1-submitted/2-accepted/3-returned -->
+                                    <td>{{ \Carbon\Carbon::create()->month($row->month)->format('F'). ' '.$row->year }}</td>
+                                    <td style="text-align:right">{{ $row->patients }}</td>
+                                    <td style="text-align:right">{{ number_format($row->total, 2,'.',',') }}</td>
+                                    <td style="text-align:center">{{ $row->status == 1 ? 'Pending' : ($row->status == 2 ? 'Submitted' : 'Returned') }}</td>
+                                    <td>{{ $row->remarks }}</td>
+                                </tr> 
+                            @endforeach       
+                        @else
+                            <tr><td style="color:#850000; background-color:#ffcccc; border-color:#ffb8b8;" colspan="7">No data Found</td></tr>
+                        @endif
                     </tbody>
                 </table>
             </div>
