@@ -178,7 +178,6 @@ class UserController extends Controller{
     }
 
     public function save(){
-        // $registration = OnlineUser::where('id', 1)->first();
         $user = new OnlineUser();
             $user->fname = 'Oronan';
             $user->lname = 'Angel';

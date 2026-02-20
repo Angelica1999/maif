@@ -53,7 +53,6 @@ Route::get('fetch/fundsource/{facility_id}', [App\Http\Controllers\DvController:
 Route::get('fetch_dv/update/{dv_id}', [App\Http\Controllers\DvController::class, 'updateDV'])->name('update.dv');
 Route::match(['get', 'post'],'/dv/update/save', [App\Http\Controllers\DvController::class, 'saveUpdateDV'])->name('dv.update.save');
 Route::post('/patient/create/save', [App\Http\Controllers\HomeController::class, 'createPatientSave'])->name('patient.create.save');
-Route::get('/patient/edit/{patient_id}', [App\Http\Controllers\HomeController::class, 'editPatient'])->name('patient.edit');
 Route::post('/patient/update/{id}', [App\Http\Controllers\HomeController::class, 'updatePatient'])->name('patient.update');
 Route::get('/patient/remove/{id}', [App\Http\Controllers\HomeController::class, 'removePatient'])->name('patient.remove');
 Route::get('/patient/{id}', [App\Http\Controllers\HomeController::class, 'fetchPatient'])->name('patient.fetch');
