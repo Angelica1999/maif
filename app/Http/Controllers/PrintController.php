@@ -136,11 +136,6 @@ class PrintController extends Controller
                             $pat->sent_type = 3;
                             $pat->save();
 
-                            // Patients::where('id', $id)->update([
-                            //     'fc_status' => 'referred',
-                            //     'sent_type' => 3    
-                            // ]); 
-
                             $pat = Patients::with('proponentData:id,proponent')->where('id', $id)->first();
 
                             if(!ctype_digit($pat->created_by)){
@@ -176,10 +171,11 @@ class PrintController extends Controller
         $saa = explode(',', $dv->fundsource_id);
         $saa = str_replace(['[', ']', '"'],'',$saa);
         $fund_source = [];
+
         foreach($saa as $id){
             $fund_source []= Fundsource::where('id', $id)->with('image')->first();
         }
-        // return $fund_source;
+
         if(!$dv){
             return redirect()->route('Home.index')->with('error', 'Patient not found.');
         }
@@ -224,10 +220,6 @@ class PrintController extends Controller
         $mpdf->WriteHTML($html);
         $output = $mpdf->Output('dv.pdf', 'I');
         return $output;
-    
-        // $pdf = PDF::loadView('dv.dv_pdf', $data);
-        // $pdf->setPaper('Folio');
-        // return $pdf->stream('dv.pdf');
     }
 
     public function dv2Pdf($route_no) {
@@ -375,7 +367,6 @@ class PrintController extends Controller
             $y += $boxHeight + 5;
             $filename = $dv2[0]->facility.' - '.number_format(str_replace(',','',$total), 2, '.', ',').' - '.$route_no . '.png';
             header('Content-Type: image/jpeg');
-            // header('Content-Disposition: attachment; filename="'. $filename.'"');
 
             imagejpeg($image);
             imagedestroy($image);
@@ -484,11 +475,6 @@ class PrintController extends Controller
                     }
                 ])->first();
             $extension = PreDVExtension::where('pre_dv_id', $pre_dv->id)->pluck('id');
-            // $saas = PreDVSAA::whereIn('predv_extension_id', $extension)->with(
-            //     ['saa'=> function ($query){
-            //         $query->with('image');
-            //     }]
-            // )->get();
             $saas = PreDVSAA::whereIn('predv_extension_id', $extension)
             ->with('saa:id,saa')
             ->get()
@@ -496,10 +482,8 @@ class PrintController extends Controller
                 return [(stripos($item->saa->saa ?? '', 'conap') === 0) ? 0 : 1, $item->saa->saa ?? ''];
             })->values(); 
         
-
             $info = AddFacilityInfo::where('facility_id', $pre_dv->facility_id)->first();
             $controls = PreDVControl::whereIn('predv_extension_id', $extension)->get();  
-            // return $saas;
             $i = 0;   
             $control = '';   
 
@@ -535,11 +519,9 @@ class PrintController extends Controller
                 'total_count' => count($grouped)
             ];
 
-            // Determine which view to use based on grouped count
             $file = (count($grouped) > 16) ? 'pre_dv.new_pdf1' : 'pre_dv.new_pdf';
             $html = view($file, $data)->render();
 
-            // Create the PDF
             $mpdf = new Mpdf([
                 'format' => 'Folio',
                 'strictVariables' => false,
@@ -547,12 +529,10 @@ class PrintController extends Controller
             ]);
             $mpdf->WriteHTML($html);
 
-            // Output the PDF
             $pdf_output = $mpdf->Output($new->route_no.'.pdf', 'I');
 
-            // Delete the image after PDF generation
             if (file_exists($image_path)) {
-                unlink($image_path); // Delete the file
+                unlink($image_path); 
             }
 
             return $pdf_output;
@@ -645,7 +625,6 @@ class PrintController extends Controller
         $pdfPath = storage_path("app/new_dv.pdf");
         $pdf->save($pdfPath);
     
-        // $imageDir = storage_path('app/pre_dv'); 
         $imageDir = 'C:/Apache24/htdocs/guaranteeletter/storage/app/pre_dv';
 
         if (!file_exists($imageDir)) {
@@ -658,7 +637,6 @@ class PrintController extends Controller
         exec($command, $output, $returnVar);
     
         $filePath = "{$imageDir}/{$imageName}";
-        // return $filePath;
     }
 
     public function preImage($id) {
@@ -702,16 +680,13 @@ class PrintController extends Controller
                 $width += $controlsCount * 20 + $saasCount * 5;
             }
 
-            // $height = $height + + ($allCount > 20 ? $allCount * 1.5 : 0);
-
             $pdf = PDF::loadView('pre_dv.pre_pdf', $data);
-            // $pdf->setPaper('Folio');
             $pdf->setPaper([0, 0, 595.28, $height]); 
 
             $pdfPath = storage_path("app/new_dv.pdf");
             $pdf->save($pdfPath);
 
-            $imagePath = storage_path('app/new_dv'); // Directory to save individual images
+            $imagePath = storage_path('app/new_dv'); 
             $pdftoppmPath = 'C:\\poppler-24.07.0\\Library\\bin\\pdftoppm.exe';
             $command = "{$pdftoppmPath} -png -f 1 -l 1 {$pdfPath} " . escapeshellarg($imagePath) . " 2>&1";
 
@@ -736,29 +711,22 @@ class PrintController extends Controller
     }
 
     public function roImage(){
-        set_time_limit(0);  // No time limit, will run indefinitely (or until the task finishes)
+        set_time_limit(0);  
         $funds = Fundsource_Files::get();
         foreach ($funds as $row) {
-            // Get the original image path
             $imagePath = storage_path('app/' . $row->path);
-            // Set the rotated image path, preserving the original filename
             $rotatedImagePath = storage_path('app/rotate/' . $row->path);
         
-            // Ensure the directory for rotated images exists
             if (!file_exists(storage_path('app/rotate'))) {
                 mkdir(storage_path('app/rotate'), 0777, true);
             }
         
-            // Open the image from the uploads directory
             $image = imagecreatefromjpeg($imagePath);
         
-            // Rotate the image 270 degrees
             $rotatedImage = imagerotate($image, 270, 0);
         
-            // Save the rotated image to the rotate directory
             imagejpeg($rotatedImage, $rotatedImagePath);
         
-            // Free memory
             imagedestroy($image);
             imagedestroy($rotatedImage);
         }
@@ -767,7 +735,7 @@ class PrintController extends Controller
 
     public function sampleMe($id) {
         $this->genPreImage($id);
-        set_time_limit(0);  // No time limit, will run indefinitely (or until the task finishes)
+        set_time_limit(0);  
        
         $new = NewDV::where('predv_id', $id)->first();
         if($new){
@@ -798,7 +766,6 @@ class PrintController extends Controller
 
             $info = AddFacilityInfo::where('facility_id', $pre_dv->facility_id)->first();
             $controls = PreDVControl::whereIn('predv_extension_id', $extension)->get();  
-            // return $saas;
             $i = 0;   
             $control = '';   
 
@@ -830,7 +797,6 @@ class PrintController extends Controller
                 'route_no' => $new->route_no,
                 'total_count' => count($grouped)
             ];
-            // Determine which view to use based on grouped count
             $pdf = PDF::loadView('pre_dv.new_pdf1', $data);
 
             $pdf->setPaper('Folio');
@@ -921,29 +887,20 @@ class PrintController extends Controller
         ]);
     }
 
-    /**
-     * Download/view a document
-     */
     public function downloadLDDAP($filename)
     {
         $dir = 'C:/Apache24/htdocs/guaranteeletter/storage/app/LDDAP/';
         
-        // Security: Prevent directory traversal
         $filename = basename($filename);
         $filePath = $dir . $filename;
 
-        // Check if file exists
         if (!file_exists($filePath)) {
             abort(404, 'File not found');
         }
 
-        // Return file response
         return response()->file($filePath);
     }
 
-    /**
-     * Delete a document
-     */
     public function deleteLDDAP($filename)
     {
         try {
@@ -973,9 +930,6 @@ class PrintController extends Controller
         }
     }
 
-    /**
-     * Helper: Format bytes to human readable
-     */
     private function formatBytes($bytes, $precision = 2)
     {
         $units = ['B', 'KB', 'MB', 'GB'];

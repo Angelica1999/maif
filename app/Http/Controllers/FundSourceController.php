@@ -59,7 +59,6 @@ class FundSourceController extends Controller
                 $fundsourceAllocated = round($fundsourceAllocated, 2);
                 return $totalProponentFunds > $fundsourceAllocated;
             })->pluck('id');
-            // return $result;
         }
         
         $fundsources = Fundsource::              
@@ -114,7 +113,7 @@ class FundSourceController extends Controller
                                     $query->whereIn('facility_id', $f_list)
                                         ->orWhere(function ($query) use ($f_list) {
                                             foreach ($f_list as $value) {
-                                                $stringValue = (string) $value; // Convert $value to string
+                                                $stringValue = (string) $value;
                                                 $query->orWhereJsonContains('facility_id', $stringValue);
                                             }
                                         });
@@ -124,7 +123,7 @@ class FundSourceController extends Controller
                                     $query->whereIn('facility_id', $f_list)
                                         ->orWhere(function ($query) use ($f_list) {
                                             foreach ($f_list as $value) {
-                                                $stringValue = (string) $value; // Convert $value to string
+                                                $stringValue = (string) $value; 
                                                 $query->orWhereJsonContains('facility_id', $stringValue);
                                             }
                                         });
@@ -143,7 +142,7 @@ class FundSourceController extends Controller
                             $query->whereIn('facility_id', $f_list)
                                 ->orWhere(function ($query) use ($f_list) {
                                     foreach ($f_list as $value) {
-                                        $stringValue = (string) $value; // Convert $value to string
+                                        $stringValue = (string) $value; 
                                         $query->orWhereJsonContains('facility_id', $stringValue);
                                     }
                                 });
@@ -326,7 +325,6 @@ class FundSourceController extends Controller
         $proponent = Proponent::where('fundsource_id', $fundsource->id)->where('proponent_code',  $request->proponent_code)->first();
 
         if($proponent){
-            // return $proponent;
         }else{
             $check = Proponent::where('proponent_code', $request->proponent_code)->first();
             $proponent = new Proponent();
@@ -385,35 +383,6 @@ class FundSourceController extends Controller
             'proponent_spec' => $specificProponent,
         ]);
     }
-
-    // public function createBDowns($fundsourceId){
-
-    //     $fundsource = Fundsource::where('id', $fundsourceId)-> with([
-    //         'proponents' => function ($query) {
-    //             $query->with('proponentInfo');}
-    //         ])->get();
-
-    //     $randomBytes = random_bytes(16); 
-    //     $proponents = Proponent::select( DB::raw('MAX(id) as id'), DB::raw('MAX(proponent) as proponent'),
-    //             DB::raw('MAX(proponent_code) as proponent_code'))
-    //         ->groupBy('proponent')
-    //         ->get(); 
-    //     $proponent_info  =   ProponentInfo::where('fundsource_id', $fundsourceId)->get();             
-    //     $sum = $proponent_info->sum(function ($info) {
-    //                 return (float) str_replace(',', '', $info->alocated_funds);
-    //             });
-                 
-    //     return view('fundsource.breakdowns', [
-    //         'fundsource' => $fundsource,
-    //         'pro_count' => $proponent_info->count(),
-    //         'facilities' => Facility::get(),
-    //         'proponents' => $proponents,
-    //         'uniqueCode' => bin2hex($randomBytes),
-    //         'sum' => $sum,
-    //         'util' => Utilization::where('fundsource_id', $fundsourceId)->where('status', 0)->get()
-    //     ]);
-
-    // }
 
     public function createBDowns($fundsourceId){
         $fundsource = Fundsource::where('id', $fundsourceId)->get();
@@ -511,7 +480,7 @@ class FundSourceController extends Controller
                 }else{
                     $proponentId = $pro_exists->id;
                 }
-                // $info = ProponentInfo::where('proponent_id', $proponentId)->where('facility_id', $breakdown['facility_id'])->where('fundsource_id', $breakdown['fundsource_id'])->first();
+
                 if( $breakdown['info_id'] !== "0" && $breakdown['info_id'] !== "undefined" ){
                     
                     $info = ProponentInfo::where('id',  $breakdown['info_id'])->first();
@@ -521,7 +490,6 @@ class FundSourceController extends Controller
                         $info->main_proponent = (int) $breakdown['proponent_main'];
                         $info->proponent_id = $proponentId;
                         $info->alocated_funds = $breakdown['alocated_funds'];
-                        // if((double)str_replace(',','',$get_fundsource->alocated_funds) >= 1000000){
                         $info->admin_cost =number_format( (double)str_replace(',','',$breakdown['alocated_funds']) * ($get_fundsource->cost_value/100) , 2,'.', ',');
                         $rem =  (double)str_replace(',','',$breakdown['alocated_funds']) - (double)str_replace(',','', $info->admin_cost);
                         $info->remaining_balance = $rem;
@@ -669,7 +637,6 @@ class FundSourceController extends Controller
         if($identifier == "new_fac"){
             $fund = Fundsource::where('id', $request->input('to_saa'))->first();
             $proponent = Proponent::where('id', $request->input('to_proponent'))->first();
-            // $pro_exists = Proponent::where('fundsource_id', $request->input('to_saa'))->first();
             $pro_exists = Proponent::where('fundsource_id', $request->input('to_saa'))->where('proponent', $proponent->proponent)->first();
 
             if($pro_exists == null || $pro_exists == ""){
@@ -684,8 +651,8 @@ class FundSourceController extends Controller
                 $proponent_id = $new_pro->id;
             }else{
                 $proponent_id = $pro_exists->id;
-
             }
+            
             $to = new ProponentInfo();
             $to->alocated_funds = $request->input('to_amount');
             $to->remaining_balance = $request->input('to_amount');
@@ -843,31 +810,17 @@ class FundSourceController extends Controller
         if(count($sl) != 0) {
             $included_ids[] = 775; // add 775 if 851 exists
         }
-        // $info_sum = ProponentInfo::whereIn('proponent_id', $proponent_ids)
-        //     ->selectRaw('SUM(CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(10,2)) - CAST(REPLACE(admin_cost, ",", "") AS DECIMAL(10,2))) as total_amount')
-        //     ->value('total_amount');
-        $saaa = ProponentInfo::whereIn('proponent_id', $proponent_ids)
-        ->where(function ($query) use ($included_ids) {
-            foreach ($included_ids as $id) {
-                $query->orWhere('facility_id', $id) // Match facility_id as integer
-                    ->orWhereJsonContains('facility_id', (string) $id); // Match facility_id in JSON array
-            }
-        })->get();
+
         $info_sum = ProponentInfo::whereIn('proponent_id', $proponent_ids)
             ->where(function ($query) use ($included_ids) {
                 foreach ($included_ids as $id) {
-                    $query->orWhere('facility_id', $id) // Match facility_id as integer
-                        ->orWhereJsonContains('facility_id', (string) $id); // Match facility_id in JSON array
+                    $query->orWhere('facility_id', $id) 
+                        ->orWhereJsonContains('facility_id', (string) $id);
                 }
             })
             ->selectRaw('SUM(CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(10,2)) - CAST(REPLACE(admin_cost, ",", "") AS DECIMAL(10,2))) as total_amount')
             ->value('total_amount');
         $pat_sum = Patients::whereIn('proponent_id', $proponent_ids)
-            // ->where(function ($query) {
-            //     $query->where('expired', '!=', 1)
-            //         ->orWhereNull('expired')
-            //         ->orWhere('expired', 0); // Include NULL values
-            // })
             ->sum(DB::raw("
                 IFNULL(actual_amount, CAST(REPLACE(guaranteed_amount, ',', '') AS DECIMAL(20, 2)))
             ")); 
@@ -910,29 +863,6 @@ class FundSourceController extends Controller
             'fundsource:id,saa'
         ])->sum('amount');
 
-        $dv3_sumsd = Dv3Fundsource::whereIn('info_id', $info)
-        // ->where('facility_id')
-        ->with([
-            'dv3' => function ($query){
-                $query->with([
-                    'facility:id,name',
-                    'user:userid,fname,lname'
-                ]);
-            },
-            'fundsource:id,saa'
-        ])->sum('amount');
-
-        // $dv3_sum = Dv3Fundsource::whereIn('info_id', $info)
-        //     ->with([
-        //         'dv3' => function ($query){
-        //             $query->with([
-        //                 'facility:id,name',
-        //                 'user:userid,fname,lname'
-        //             ]);
-        //         },
-        //         'fundsource:id,saa'
-        //     ])->sum('amount');
-
         $dv1 = Utilization::whereIn('proponent_id', $proponent_ids)
             ->where('status', 0)
             ->where('facility_id', 837)
@@ -962,8 +892,6 @@ class FundSourceController extends Controller
             $sampp = 2;
         }
 
-      
-        // $balance = ($info_sum + $supplemental) - ($subtracted + $pat_sum) ;
         $timestamp = str_replace('.', '', microtime(true));
         $random = mt_rand(100, 999);
 
@@ -979,7 +907,6 @@ class FundSourceController extends Controller
             'supplemental' => $supplemental,
             'subtracted' => $subtracted,
             'disbursement' => count($sl) != 0 ? $dv3_sum + $dv_sum : $dv_sum ,
-            // 'disbursement' => $dv_sum,
             'gl_sum' => round($pat_sum, 2),
             'dv3'=> $dv3_sum
         ];
@@ -1146,353 +1073,6 @@ class FundSourceController extends Controller
 
     public function forPatientCode($proponent_id, $facility_id) {
 
-        // $overall = $this->overallBalance1($proponent_id);
-        // $included = $this->forPatientCode1($proponent_id, $facility_id);
-        // $firstKey = $overall->keys()->first();
-        // $sub = $overall[$firstKey]['sub'];
-        // $supp = $overall[$firstKey]['supp'];
-        // $first_bal = $overall[$firstKey]['rem'];
-        // $sec_bal = $included['balance'];
-        // $patient_code = $included['patient_code'];
-
-        // $included_ids = IncludedFacility::pluck('facility_id')->toArray();
-        // $user = Auth::user();
-        // $proponent= Proponent::where('id', $proponent_id)->first();
-        // $proponent_ids= Proponent::where('proponent', $proponent->proponent)->pluck('id')->toArray();
-
-        // $main_balance = 0;
-        // $excess_balance = 0;
-        // $used_info = [];
-        // $main_facility = [];
-        // $rem_facility = [];
-
-        // //for selected facility
-
-        // $selected_patients = Patients::whereIn('proponent_id', $proponent_ids)->where('facility_id', $facility_id)->get();
-        // $selected_total = $selected_patients->sum(function ($patient) {
-        //     $amount = $patient->actual_amount ?? $patient->guaranteed_amount;
-        //     return floatval(str_replace(',', '', $amount));
-        // });
-        
-        // $selected_info = ProponentInfo::whereIn('proponent_id', $proponent_ids)
-        //     ->where(function($query) use ($facility_id) {
-        //         $query->where('facility_id', $facility_id)
-        //             ->orWhereJsonContains('facility_id', (string) $facility_id);
-        //     })
-        //     ->get();
-
-        // $selected_info_amount = $selected_info->sum(function($item) {
-        //     $amount = floatval(str_replace(',', '', $item->alocated_funds ?? 0)) 
-        //                 - floatval(str_replace(',', '', $item->admin_cost ?? 0));
-        //     return floatval($amount);
-        // });
-
-        // $facility_allocated = $selected_info->sum(function($item) {
-        //     $amount = floatval(str_replace(',', '', $item->alocated_funds ?? 0));
-        //     return floatval($amount);
-        // });
-
-        // $facility_admin = $selected_info->sum(function($item) {
-        //     $amount = floatval(str_replace(',', '', $item->admin_cost ?? 0));
-        //     return floatval($amount);
-        // });
-
-        // $selected_util_sum = Utilization::whereIn('proponentinfo_id', $selected_info->pluck('id')->toArray())
-        //     ->where('status', 0)
-        //     ->where(function ($query) {
-        //         $query->whereHas('dv', function ($q) {
-        //             $q->whereColumn('div_id', 'route_no')
-        //             ->where('facility_id', 837);
-        //         })->orWhereHas('newDv', function ($q) {
-        //             $q->whereColumn('div_id', 'route_no')
-        //             ->where('facility_id', 837);
-        //         })->orWhereHas('dv3', function ($q) {
-        //             $q->whereColumn('div_id', 'route_no');
-        //         });
-        //     })
-        //     // ->get();
-        //     ->sum(DB::raw('CAST(NULLIF(REPLACE(COALESCE(utilize_amount, "0"), ",", ""), "") AS DECIMAL(20,2))'));
-        //     $check_all = 0 ;
-        // $overall_selected_usage = $selected_util_sum + $selected_total;
-        // $cut = 0;
-
-        // $rem_all_fac = [];
-
-        // if($overall_selected_usage > $selected_info_amount){
-        //     $excess_balance = $excess_balance + ($overall_selected_usage - $selected_info_amount);
-        // }else{
-        //     $main_balance = $selected_info_amount - $overall_selected_usage;
-        //     $cut =  $selected_info_amount - $overall_selected_usage;
-        //     if($selected_info){
-        //         $selected_facility = array_unique(array_map(fn($id) => is_array(json_decode($id, true)) ? json_decode($id, true)[0] : $id, $selected_info->pluck('facility_id')->toArray()));
-        //         $rem_all_fac[] = [
-        //             "amount" => $main_balance,
-        //             "facilities" => Facility::whereIn("id", $selected_facility)->pluck("name")->toArray()
-        //         ];
-        //         $main_facility[] =  [
-        //             "amount" => $main_balance,
-        //             "facilities" => Facility::whereIn("id", $selected_facility)->pluck("name")->toArray()
-        //         ];
-        //     }else{
-        //         $main_facility[] =  [
-        //             "amount" => 0,
-        //             "facilities" => ["No Allocation"]
-        //         ];
-        //     }
-        // }
-
-        // $used_info[] = $selected_info->pluck('id')->toArray();
-        // $used_info = Arr::flatten($used_info);
-        // $check_all=    $check_all + $overall_selected_usage;
-        
-        // //other facility same proponent
-
-        // $other_facility = Patients::whereNotIn('id', $selected_patients->pluck('id')->toArray())
-        //     ->whereIn('proponent_id', $proponent_ids)
-        //     ->select('facility_id')
-        //     ->selectRaw("
-        //         SUM(
-        //             IFNULL(
-        //                 CAST(REPLACE(actual_amount, ',', '') AS DECIMAL(20, 2)),
-        //                 CAST(REPLACE(guaranteed_amount, ',', '') AS DECIMAL(20, 2))
-        //             )
-        //         ) AS total_amount
-        //     ")
-        //     ->groupBy('facility_id')
-        //     ->get();
-
-        // foreach($other_facility as $other){
-            
-        //     $used_info = Arr::flatten($used_info);
-
-        //     $other_id = $other->facility_id;
-        //     $patient_amount = $other->total_amount;
-
-        //     $other_info = ProponentInfo::whereIn('proponent_id', $proponent_ids)
-        //         ->whereNotIn('id', $used_info)
-        //         ->where(function($query) use ($other_id) {
-        //             $query->where('facility_id', $other_id)
-        //                 ->orWhereJsonContains('facility_id', (string) $other_id);
-        //         })
-        //         ->get();
-
-        //     $other_amount = $other_info->sum(function($item) {
-        //         $amount = floatval(str_replace(',', '', $item->alocated_funds ?? 0)) 
-        //                 - floatval(str_replace(',', '', $item->admin_cost ?? 0));
-        //         return floatval($amount);
-        //     });
-
-        //     $other_util_sum = Utilization::whereIn('proponentinfo_id', $other_info->pluck('id')->toArray())
-        //         ->whereNotIn('proponentinfo_id', $used_info)
-        //         ->where('status', 0)
-        //         ->where(function ($query) {
-        //             $query->whereHas('dv', function ($q) {
-        //                 $q->whereColumn('div_id', 'route_no')
-        //                 ->where('facility_id', 837);
-        //             })->orWhereHas('newDv', function ($q) {
-        //                 $q->whereColumn('div_id', 'route_no')
-        //                 ->where('facility_id', 837);
-        //             })->orWhereHas('dv3', function ($q) {
-        //                 $q->whereColumn('div_id', 'route_no');
-        //             });
-        //         })
-        //         ->sum(DB::raw('CAST(NULLIF(REPLACE(COALESCE(utilize_amount, "0"), ",", ""), "") AS DECIMAL(20,2))'));
-
-        //     $overall_other_usage = $patient_amount +  $other_util_sum;
-        //     $check_all=$check_all + $overall_other_usage;
-
-        //     if($overall_other_usage > $other_amount){
-        //         $excess_balance = $excess_balance + $overall_other_usage - $other_amount;
-        //     }else{
-        //         $cut = $cut + $other_amount - $overall_other_usage;
-        //         if($other_info){
-        //             $other_facility = array_unique(array_map(fn($id) => is_array(json_decode($id, true)) ? json_decode($id, true)[0] : $id, $other_info->pluck('facility_id')->toArray()));
-        //             $rem_all_fac[] = [
-        //                 "amount" => $other_amount - $overall_other_usage,
-        //                 "facilities" => Facility::whereIn("id", $other_facility)->pluck("name")->toArray()
-        //             ];
-        //         }
-        //     }
-        //     $used_info[] = $other_info->pluck('id')->toArray();
-        // }
-        
-        // //cvchd
-        // $used_info = Arr::flatten($used_info);
-        // $cvchd_id = 702;
-        // $cvchd_info = ProponentInfo::whereIn('proponent_id', $proponent_ids)
-        //     ->whereNotIn('id', $used_info)
-        //     ->where(function($query) use ($cvchd_id) {
-        //         $query->where('facility_id', $cvchd_id)
-        //             ->orWhereJsonContains('facility_id', (string) $cvchd_id);
-        //     })
-        //     ->get();
-
-        // $cvchd_amount = $cvchd_info->sum(function ($item) {
-        //     $amount = floatval(str_replace(',', '', $item->alocated_funds ?? 0)) 
-        //                 - floatval(str_replace(',', '', $item->admin_cost ?? 0));
-        //     return floatval($amount);
-        // });
-
-        // $cvchd_funds = $cvchd_info->sum(function ($item) {
-        //     $amount = floatval(str_replace(',', '', $item->alocated_funds ?? 0));
-        //     return floatval($amount);
-        // });
-
-        // $cvchd_admin = $cvchd_info->sum(function ($item) {
-        //     $amount = floatval(str_replace(',', '', $item->admin_cost ?? 0));
-        //     return floatval($amount);
-        // });
-        
-        // $cvchd_util_sum = Utilization::whereIn('proponentinfo_id', $cvchd_info->pluck('id')->toArray())
-        //     ->whereNotIn('proponentinfo_id', $used_info)
-        //     ->where('status', 0)
-        //     ->where(function ($query) {
-        //         $query->whereHas('dv', function ($q) {
-        //             $q->whereColumn('div_id', 'route_no')
-        //             ->where('facility_id', 837);
-        //         })->orWhereHas('newDv', function ($q) {
-        //             $q->whereColumn('div_id', 'route_no')
-        //             ->where('facility_id', 837);
-        //         })->orWhereHas('dv3', function ($q) {
-        //             $q->whereColumn('div_id', 'route_no');
-        //         });
-        //     })
-        //     ->sum(DB::raw('CAST(NULLIF(REPLACE(COALESCE(utilize_amount, "0"), ",", ""), "") AS DECIMAL(20,2))'));
-        
-        // $check_all=$check_all + $cvchd_util_sum;
-
-        // $rem_balance = $cvchd_amount - $excess_balance;
-
-        // $used_info[] = $cvchd_info->pluck('id')->toArray();
-
-        // //excluded
-        // $used_info = Arr::flatten($used_info);
-
-        // $excluded_info = ProponentInfo::whereIn('proponent_id', $proponent_ids)->whereNotIn('id', $used_info)->get();
-        // $excluded_amount = $excluded_info->sum(function ($item) {
-        //     $amount = floatval(str_replace(',', '', $item->alocated_funds ?? 0)) 
-        //                 - floatval(str_replace(',', '', $item->admin_cost ?? 0));
-        //     return floatval($amount);
-        // });
-
-        // $excluded_util = Utilization::whereIn('proponentinfo_id', $excluded_info->pluck('id'))
-        //     ->whereNotIn('proponentinfo_id', $used_info)
-        //     ->where('status', 0)
-        //     ->where(function ($query) {
-
-        //         $query->whereHas('dv', function ($q) {
-        //             $q->whereColumn('div_id', 'route_no')
-        //             ->where('facility_id', 837);
-        //         })
-
-        //         ->orWhereHas('newDv', function ($q) {
-        //             $q->whereColumn('div_id', 'route_no')
-        //             ->where('facility_id', 837);
-        //         })
-
-        //         ->orWhereHas('dv3', function ($q) {
-        //             $q->whereColumn('div_id', 'route_no');
-        //         });
-
-        //     })
-        //     ->select(
-        //         'proponentinfo_id',
-        //         DB::raw('SUM(CAST(NULLIF(REPLACE(COALESCE(utilize_amount, "0"), ",", ""), "") AS DECIMAL(20,2))) as total_util')
-        //     )
-        //     ->groupBy('proponentinfo_id')
-        //     ->pluck('total_util', 'proponentinfo_id');
-
-        // foreach ($excluded_info as $excluded) {
-        //     $ex_util_sum = $excluded_util[$excluded->id] ?? 0;
-
-        //     $ex_amount = floatval(str_replace(',', '', $excluded->alocated_funds ?? 0)) 
-        //             - floatval(str_replace(',', '', $excluded->admin_cost ?? 0));
-
-        //     if ($ex_amount > $ex_util_sum) {
-        //         $fac_ids = json_decode($excluded->facility_id, true);
-        //         $fac_ids = is_array($fac_ids) ? $fac_ids : [$excluded->facility_id];
-        //         $facilities = Facility::whereIn('id', $fac_ids)->pluck('name')->toArray();
-
-        //         $rem_all_fac[] = [
-        //             "amount" => $ex_amount - $ex_util_sum,
-        //             "facilities" => $facilities
-        //         ];
-        //     }
-        // }
-
-        // $excluded_util_sum = Utilization::whereIn('proponentinfo_id', $excluded_info->pluck('id')->toArray())
-        //     ->whereNotIn('proponentinfo_id', $used_info)
-        //     ->where('status', 0)
-        //     ->where(function ($query) {
-        //         $query->whereHas('dv', function ($q) {
-        //             $q->whereColumn('div_id', 'route_no')
-        //                 ->where('facility_id', 837);
-        //         })->orWhereHas('newDv', function ($q) {
-        //             $q->whereColumn('div_id', 'route_no')
-        //             ->where('facility_id', 837);
-        //         })->orWhereHas('dv3', function ($q) {
-        //             $q->whereColumn('div_id', 'route_no');
-        //         })
-        //         ;
-        //     })
-        //     ->sum(DB::raw('CAST(NULLIF(REPLACE(COALESCE(utilize_amount, "0"), ",", ""), "") AS DECIMAL(20,2))'));
-
-        // $check_all = $check_all+$excluded_util_sum;
-
-        // $excluded_excess = 0;
-        // if($excluded_util_sum > $excluded_amount){
-        //     $excluded_excess = $excluded_util_sum - $excluded_amount;
-        // }
-         
-        // $cvchd_overall_balance = ($cvchd_amount + $supp) - ($sub + $excluded_excess + $excess_balance + $cvchd_util_sum);
-
-        // if($cvchd_overall_balance > 0){
-        //     $rem_all_fac[] = [
-        //             "amount" => $cvchd_overall_balance,
-        //             "facilities" => Facility::whereIn("id", [702])->pluck("name")->toArray()
-        //         ];
-        // }
-
-        // $used_info[] = $excluded_info->pluck('id')->toArray();
-        // $used_info = Arr::flatten($used_info);
-        // $fourth_rem = 0;
-        // $check_rem = 0;
-        // if($cvchd_overall_balance <=0 ){
-        //     $fourth_rem = $main_balance;
-        // }else{
-        //     $fourth_rem = $cvchd_overall_balance + $main_balance;
-        //     $check_rem = 1;
-        // }
-        // // return $main_balance;
-        // // return $included;
-        // return [
-        //     'cvchd' => $cvchd_amount,
-        //     'excess' => $excess_balance,
-        //     'cvchd_util' => $cvchd_util_sum,
-        //     'cut' => $cut,
-        //     'excluded' => $excluded_amount,
-        //     'excluded_util' => $excluded_util_sum,
-        //     'first_rem' => $first_bal,
-        //     'second_rem' => $sec_bal,
-        //     'third_rem' => ($cvchd_amount - ($excess_balance + $cvchd_util_sum + $sub)) + $supp + $main_balance,
-        //     'rem_all_fac' => $rem_all_fac,
-        //     'fourth_rem' => $fourth_rem,
-        //     'selected_info' => $selected_info,
-        //     'selected_fund' => $facility_allocated,
-        //     'selected_cost' => $facility_admin,
-        //     'selected_gl' => $selected_total,
-        //     'selected_dv' => $selected_util_sum,
-        //     'check_rem' => $check_rem,
-        //     'main_balance' => $main_balance,
-        //     'cvchd_funds' => $cvchd_funds,  
-        //     'cvchd_admin' => $cvchd_admin,
-        //     'cvchd_usage' => $excluded_excess + $excess_balance + $cvchd_util_sum,
-        //     'cvchd_overall_balance' => $cvchd_overall_balance,
-        //     'supp' => $supp,
-        //     'sub' => $sub,
-        //     'patient_code' => $patient_code
-        // ];
-
         $overall = $this->overallBalance1($proponent_id);
         $included = $this->forPatientCode1($proponent_id, $facility_id);
         $firstKey = $overall->keys()->first();
@@ -1572,7 +1152,6 @@ class FundSourceController extends Controller
                     $q->whereColumn('div_id', 'route_no');
                 });
             })
-            // ->get();
             ->sum(DB::raw('CAST(NULLIF(REPLACE(COALESCE(utilize_amount, "0"), ",", ""), "") AS DECIMAL(20,2))'));
         $check_all = 0 ;
         $overall_selected_usage = $selected_util_sum + $selected_total;
@@ -1698,7 +1277,6 @@ class FundSourceController extends Controller
 
             if($other_fc){
                 $overall_other_usage = $patient_amount +  $other_util_sum - $other_usage + $other_to_usage;
-                // $additional_cvchd_usage = $additional_cvchd_usage + $other_usage;
                 $additional_cvchd_usage = $additional_cvchd_usage;
             }else{
                 $overall_other_usage = $patient_amount +  $other_util_sum;
@@ -1764,8 +1342,6 @@ class FundSourceController extends Controller
                 });
             })
             ->sum(DB::raw('CAST(NULLIF(REPLACE(COALESCE(utilize_amount, "0"), ",", ""), "") AS DECIMAL(20,2))'));
-
-        // $cvchd_util_sum = $cvchd_util_sum + $usage_amount + $additional_cvchd_usage;
 
         $usage_cvchd_amount = UsageTransfer::whereJsonContains('facility_id', "702")->whereNotIn('id', $usage_ids)->where('proponent', $proponent->proponent)->sum('amount');
 
@@ -1883,10 +1459,7 @@ class FundSourceController extends Controller
             $fourth_rem = $cvchd_overall_balance + $main_balance;
             $check_rem = 1;
         }
-        // return $main_balance;
-        // return $included;
 
-        
         return [
             'cvchd' => $cvchd_amount,
             'excess' => $excess_balance,
@@ -1915,160 +1488,6 @@ class FundSourceController extends Controller
             'patient_code' => $patient_code
         ];
     }
-
-    
-
-    // public function forPatientCode($proponent_id, $facility_id) {
-    //     $included_ids = IncludedFacility::pluck('facility_id')->toArray();
-       
-
-    //     $user = Auth::user();
-    //     $proponent= Proponent::where('id', $proponent_id)->first();
-    //     $proponent_ids= Proponent::where('proponent', $proponent->proponent)->pluck('id')->toArray();
-    //     $sl = ProponentInfo::whereIn('proponent_id', $proponent_ids)->where('facility_id', 'LIKE', "%851%")->get();
-    //     if(count($sl) != 0) {
-    //         $included_ids[] = 775; // add 775 if 851 exists
-    //     }
-    //     // $info_sum = ProponentInfo::whereIn('proponent_id', $proponent_ids)
-    //     //     ->selectRaw('SUM(CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(10,2)) - CAST(REPLACE(admin_cost, ",", "") AS DECIMAL(10,2))) as total_amount')
-    //     //     ->value('total_amount');
-    //     $saaa = ProponentInfo::whereIn('proponent_id', $proponent_ids)
-    //     ->where(function ($query) use ($included_ids) {
-    //         foreach ($included_ids as $id) {
-    //             $query->orWhere('facility_id', $id) // Match facility_id as integer
-    //                 ->orWhereJsonContains('facility_id', (string) $id); // Match facility_id in JSON array
-    //         }
-    //     })->get();
-    //     $info_sum = ProponentInfo::whereIn('proponent_id', $proponent_ids)
-    //         ->where(function ($query) use ($included_ids) {
-    //             foreach ($included_ids as $id) {
-    //                 $query->orWhere('facility_id', $id) // Match facility_id as integer
-    //                     ->orWhereJsonContains('facility_id', (string) $id); // Match facility_id in JSON array
-    //             }
-    //         })
-    //         ->selectRaw('SUM(CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(10,2)) - CAST(REPLACE(admin_cost, ",", "") AS DECIMAL(10,2))) as total_amount')
-    //         ->value('total_amount');
-    //     $pat_sum = Patients::whereIn('proponent_id', $proponent_ids)
-    //         ->where(function ($query) {
-    //             $query->where('expired', '!=', 1)
-    //                 ->orWhereNull('expired')
-    //                 ->orWhere('expired', 0); // Include NULL values
-    //         })
-    //         ->sum(DB::raw("
-    //             IFNULL(actual_amount, CAST(REPLACE(guaranteed_amount, ',', '') AS DECIMAL(20, 2)))
-    //         ")); 
-    //     $supplemental = SupplementalFunds::where('proponent',  $proponent->proponent)
-    //         ->sum(DB::raw("
-    //             CAST(REPLACE(IFNULL(amount, '0'), ',', '') AS DECIMAL(20, 2))
-    //         "));
-
-    //     $subtracted = DB::table('subtracted_funds')
-    //         ->where('proponent',  $proponent->proponent)
-    //         ->sum(DB::raw("
-    //             CAST(REPLACE(IFNULL(amount, '0'), ',', '') AS DECIMAL(20, 2))
-    //         "));   
-    //     $info = ProponentInfo::whereIn('proponent_id', $proponent_ids)->pluck('id')->toArray();
-
-    //     $info = ProponentInfo::whereIn('proponent_id', $proponent_ids)
-    //         ->where(function ($query) use ($included_ids) {
-    //             $query->whereIn('facility_id', $included_ids);
-    //             foreach ($included_ids as $id) {
-    //                 $query->orWhereJsonContains('facility_id', (string) $id);
-    //             }
-    //         })
-    //         ->where(function ($query) {
-    //             $query->where('facility_id', '!=', 702);
-    //             $query->whereNot(function ($sub) {
-    //                 $sub->whereJsonContains('facility_id', '702');
-    //             });
-    //         })
-    //         ->pluck('id')
-    //         ->toArray();
-
-    //     $dv3_sum = Dv3Fundsource::whereIn('info_id', $info)
-    //     ->with([
-    //         'dv3' => function ($query){
-    //             $query->with([
-    //                 'facility:id,name',
-    //                 'user:userid,fname,lname'
-    //             ]);
-    //         },
-    //         'fundsource:id,saa'
-    //     ])->sum('amount');
-
-    //     $dv3_sumsd = Dv3Fundsource::whereIn('info_id', $info)
-    //     // ->where('facility_id')
-    //     ->with([
-    //         'dv3' => function ($query){
-    //             $query->with([
-    //                 'facility:id,name',
-    //                 'user:userid,fname,lname'
-    //             ]);
-    //         },
-    //         'fundsource:id,saa'
-    //     ])->sum('amount');
-
-    //     // $dv3_sum = Dv3Fundsource::whereIn('info_id', $info)
-    //     //     ->with([
-    //     //         'dv3' => function ($query){
-    //     //             $query->with([
-    //     //                 'facility:id,name',
-    //     //                 'user:userid,fname,lname'
-    //     //             ]);
-    //     //         },
-    //     //         'fundsource:id,saa'
-    //     //     ])->sum('amount');
-
-    //     $dv1 = Utilization::whereIn('proponent_id', $proponent_ids)
-    //         ->where('status', 0)
-    //         ->where('facility_id', 837)
-    //         ->where(function ($query) {
-    //             $query->whereHas('dv', function ($query) {
-    //                 $query->whereColumn('div_id', 'route_no');
-    //             })->orWhereHas('newDv', function ($query) {
-    //                 $query->whereColumn('div_id', 'route_no');
-    //             });
-    //         })
-    //         ->with([
-    //             'fundSourcedata:id,saa',
-    //             'user:userid,fname,lname',
-    //         ])
-    //         ->orderBy('id', 'desc')
-    //         ->get();
-
-    //     $dv_sum = $dv1->sum(function ($item) {
-    //         return floatval(str_replace(',', '', $item->utilize_amount));
-    //     });
-        
-    //     if (count($sl) != 0) {
-    //         $balance = ($info_sum + $supplemental) - ($subtracted + $dv3_sum + $dv_sum + $pat_sum) ;
-    //         $sampp = $dv3_sum;
-    //     }else{
-    //         $balance = ($info_sum + $supplemental) - ($subtracted + $pat_sum + $dv_sum) ;
-    //         $sampp = 2;
-    //     }
-
-      
-    //     // $balance = ($info_sum + $supplemental) - ($subtracted + $pat_sum) ;
-
-    //     $facility = Facility::find($facility_id);
-    //     $patient_code = $proponent->proponent_code.'-'.$this->getAcronym($facility->name).date('YmdHis').$user->id;
-    //     $total = ProponentInfo::whereIn('proponent_id', $proponent_ids)
-    //             ->sum(DB::raw('CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(10,2)) - CAST(REPLACE(admin_cost, ",", "") AS DECIMAL(10,2))'));
-
-    //     return [
-    //         'patient_code' => $patient_code,
-    //         'balance' => round($balance, 2),
-    //         'total_funds' => $info_sum,
-    //         'supplemental' => $supplemental,
-    //         'subtracted' => $subtracted,
-    //         'disbursement' => count($sl) != 0 ? $dv3_sum + $dv_sum : $dv_sum ,
-    //         // 'disbursement' => $dv_sum,
-    //         'gl_sum' => round($pat_sum, 2),
-    //         'dv3'=> $dv3_sum,
-    //         'overall_balance' => $this->overallBalance($proponent_id)
-    //     ];
-    // }
     
     private function overallBalance($id){
         $keyword = $id ? $id : 0;
@@ -2489,32 +1908,12 @@ class FundSourceController extends Controller
         $sheet->getRowDimension(3)->setRowHeight(50); 
 
         $data = [];
-        // $filename = $title.'.xls';
-        // header("Content-Type: application/xls");
-        // header("Content-Disposition: attachment; filename=$filename");
-        // header("Pragma: no-cache");
-        // header("Expires: 0");
-        // $table_body = "<tr>
-        //         <th>Proponent</th>
-        //         <th>Proponent Code</th>
-        //     </tr>";
-
-
         foreach($proponents as $row){
-            // $table_body .= "<tr>
-            //     <td style='vertical-align:top;'>$row->proponent</td>
-            //     <td style='vertical-align:top;'>$row->proponent_code</td>
-            // </tr>";
             $data [] = [
                 $row->proponent,
                 $row->proponent_code
             ];
         }
-        // $display =
-        //     '<h1>'.$title.'</h1>'.
-        //     '<table cellspacing="1" cellpadding="5" border="1">'.$table_body.'</table>';
-
-        // return $display;
 
         $sheet->fromArray($data, null, 'B4');
 

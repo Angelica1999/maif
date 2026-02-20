@@ -138,13 +138,13 @@ class FacilityController extends Controller
 
         $response = Http::get('http://cvchd7.com/iMkiW5YcHA6D9Gd7BuTteeQPVx4a1UxK');
         set_time_limit(0);
-        if ($response->successful()) { // Check if the request was successful
+        if ($response->successful()) { 
             Facility::truncate();
-            $facilities = $response->json(); // Get the response as an array
+            $facilities = $response->json(); 
         
             foreach ($facilities as $fac) {
                 $f = new Facility();
-                $f->fill($fac); // Use the array directly
+                $f->fill($fac); 
                 $f->save();
             }
         }
@@ -171,14 +171,13 @@ class FacilityController extends Controller
                 $query->with('facility1:id,name,address');
             },
         ])->orderBy('id', 'desc')->paginate(50);
-        // return $bills;
+        
         return view('facility.bills',[
             'results' => $bills
         ]);
     }
 
     public function viewBills($id){
-        // $data = Bills::where('id', $id)->with('extension')->first();
         $data = Bills::with([
             'extension' => function ($query){
                 $query->with('proponent');
@@ -347,7 +346,6 @@ class FacilityController extends Controller
     }
 
     public function getTrans($id){
-        // $response = Http::get('http://localhost/guaranteeletter/transmittal/summary/'.$id);
         $token = $this->getToken();
 
         if ($token != 1) {
@@ -358,7 +356,6 @@ class FacilityController extends Controller
             return "Authentication failed.";
         }
 
-        // $response = Http::get('http://192.168.110.7/guaranteeletter/transmittal/summary/'.$id);
         return $response;
     }
 
@@ -405,8 +402,6 @@ class FacilityController extends Controller
                 $log->control_no = $item;
                 $log->save();
                 
-                // Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$trans->id.'/'.Auth::user()->userid.'/received');
-                // Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$trans->id.'/'.Auth::user()->userid.'/received');
                 $token = $this->getToken();
 
                 if ($token != 1) {
@@ -422,8 +417,7 @@ class FacilityController extends Controller
     }
 
     public function references($type, $id){
-        // $response = Http::get('http://192.168.110.7/guaranteeletter/transmittal/references/'.$id);
-        // $response = Http::get('http://localhost/guaranteeletter/transmittal/references/'.$id);
+
         $token = $this->getToken();
         if ($token != 1) {
             $response = Http::withHeaders([
@@ -432,6 +426,7 @@ class FacilityController extends Controller
         } else {
             return "Authentication failed.";
         }
+
         $randomBytes = random_bytes(16); 
         return view('facility.return_facility',[
             'references' => $response->json(),
@@ -450,8 +445,7 @@ class FacilityController extends Controller
             $return->returned_by = Auth::user()->userid;
             $return->save();
         }
-        // $reponse = Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$req->id.'/'.Auth::user()->userid.'/returned');
-        // $reponse = Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$req->id.'/'.Auth::user()->userid.'/returned');
+
         $token = $this->getToken();
         if ($token != 1) {
             $response = Http::withHeaders([
@@ -576,8 +570,7 @@ class FacilityController extends Controller
     }
 
     public function returnedDetails($id){
-        // return Http::get('http://localhost/guaranteeletter/transmittal/return-remarks/'.$id);
-        // return Http::get('http://192.168.110.7/guaranteeletter/transmittal/return-remarks/'.$id);
+        
         $token = $this->getToken();
         if ($token != 1) {
             $response = Http::withHeaders([
@@ -591,9 +584,8 @@ class FacilityController extends Controller
 
     public function acceptTrans($id){
         Transmittal::where('id', $id)->update(['status' => 5, 'remarks' => 5]);
-        // $reponse = Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$id.'/'.Auth::user()->userid.'/accept');
-        // $reponse = Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$id.'/'.Auth::user()->userid.'/accept');
         $token = $this->getToken();
+        
         if ($token != 1) {
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token
@@ -715,10 +707,7 @@ class FacilityController extends Controller
     }
 
     public function transDetails($id, $facility_id){
-        // $reponse = Http::get('http://localhost/guaranteeletter/transmittal/details/'.$id.'/'.$facility_id);
-        // $reponse = Http::get('http://192.168.110.7/guaranteeletter/transmittal/details/'.$id.'/'.$facility_id);
         $token = $this->getToken();
-        // return $token;
         if ($token != 1) {
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $token
@@ -770,8 +759,6 @@ class FacilityController extends Controller
         $trans->remarks = 2;
         $trans->save();
 
-        // Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$trans->id.'/'.Auth::user()->userid.'/received');
-        // Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$trans->id.'/'.Auth::user()->userid.'/received');
         $token = $this->getToken();
         if ($token != 1) {
             $response = Http::withHeaders([
@@ -833,47 +820,46 @@ class FacilityController extends Controller
 
     }
 
-        public function sendHold(Request $req){
-            $facilities = AddFacilityInfo::select('id','facility_id')->with('facility:id,name')
-                ->whereNotNull('sent_status');
-            // return $facilities->get();
-            $on_hold = Facility::with('addFacilityInfo')
-                ->whereRelation('addFacilityInfo', 'sent_status', null)
-                ->orderBy('name', 'asc')
-                ->select('id', 'name')
-                ->get();
-            
-            if ($req->viewAll) {
-                $req->keyword = '';
-            } else if ($req->keyword) {
-                $facilities->where(function($query) use ($req) {
-                    $query->where('name', 'LIKE', "%{$req->keyword}%");
-                });
-            }
-
-            return view('facility.facility_hold_send', [
-                'facilities' => $facilities->paginate(50),
-                'keyword' => $req->keyword,
-                'hold' => $on_hold
-            ]);
+    public function sendHold(Request $req){
+        $facilities = AddFacilityInfo::select('id','facility_id')->with('facility:id,name')
+            ->whereNotNull('sent_status');
+        $on_hold = Facility::with('addFacilityInfo')
+            ->whereRelation('addFacilityInfo', 'sent_status', null)
+            ->orderBy('name', 'asc')
+            ->select('id', 'name')
+            ->get();
+        
+        if ($req->viewAll) {
+            $req->keyword = '';
+        } else if ($req->keyword) {
+            $facilities->where(function($query) use ($req) {
+                $query->where('name', 'LIKE', "%{$req->keyword}%");
+            });
         }
 
-        public function holdSendFacility(Request $req){
-            if($req->facility_id){
-                foreach($req->facility_id as $id){
-                    $info = AddFacilityInfo::where('facility_id', $id)->first();
-                    if($info){
-                        $info->sent_status = 1;
-                        $info->save();
-                    }else{
-                        $new_info = new AddFacilityInfo();
-                        $new_info->facility_id = $id;
-                        $new_info->sent_status = 1;
-                        $new_info->created_by = Auth::user()->userid;
-                        $new_info->save();
-                    }
+        return view('facility.facility_hold_send', [
+            'facilities' => $facilities->paginate(50),
+            'keyword' => $req->keyword,
+            'hold' => $on_hold
+        ]);
+    }
+
+    public function holdSendFacility(Request $req){
+        if($req->facility_id){
+            foreach($req->facility_id as $id){
+                $info = AddFacilityInfo::where('facility_id', $id)->first();
+                if($info){
+                    $info->sent_status = 1;
+                    $info->save();
+                }else{
+                    $new_info = new AddFacilityInfo();
+                    $new_info->facility_id = $id;
+                    $new_info->sent_status = 1;
+                    $new_info->created_by = Auth::user()->userid;
+                    $new_info->save();
                 }
-                return redirect()->back();
             }
+            return redirect()->back();
         }
+    }
 }

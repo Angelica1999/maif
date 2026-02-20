@@ -256,15 +256,6 @@ class DvController extends Controller
                     ->whereYear('created_at', '>=', $currentYear - 1);
             })
             ->get();
-
-        // $info = ProponentInfo::with('facility', 'fundsource', 'proponent')
-        //     ->where(function ($query) use ($request) {
-        //         $query->whereJsonContains('proponent_info.facility_id', '702')
-        //             ->orWhereJsonContains('proponent_info.facility_id', [$request->facility_id]);
-        //     })
-        //     ->orWhereIn('proponent_info.facility_id', [$request->facility_id, '702'])
-        //     ->get();
-        // return count($info);
                     
         $facility = Facility::where('id', $request->facility_id)->first();
         return response()->json(['info' => $info, 'facility' => $facility]);
@@ -309,7 +300,6 @@ class DvController extends Controller
 
         foreach($routes as $index => $route_no){
 
-            // return $route;
             $user = DB::connection('dohdtr')
                         ->table('users')
                         ->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
@@ -384,10 +374,7 @@ class DvController extends Controller
             if($dv3){
                 $dv3->status = 1;
                 $dv3->save();
-            }else{
-            //    NewDV::where('route_no', $route_no)->update(['status' =>]);
             }
-
         }
 
         return redirect()->back()->with('releaseAdded', true);
@@ -454,7 +441,6 @@ class DvController extends Controller
 
         if($dv) {
             
-            // Utilization::where('div_id', $dv->route_no)->update(['status'=>1]);
             $dv->modified_by = Auth::user()->userid;
             $dv->dv_no = $request->input('dv_no');
             $saa = explode(',', $dv->fundsource_id);
@@ -476,9 +462,8 @@ class DvController extends Controller
                 Utilization::where('div_id', $dv->route_no)->where('proponentinfo_id', $p_if->id)->update(['status' => 1]);
                 $get = Utilization::where('div_id', $dv->route_no)->where('proponentinfo_id', $p_if->id)->orderBy('id', 'desc')->first();
                 $all = Utilization::where('proponentinfo_id', $p_if->id)->where('id', '>', $get->id)->orderBy('id', 'asc')->get();
-                // return $get;
+
                 foreach($all as $row){
-                    // return (float)str_replace(',','',$row->beginning_balance) + (float)str_replace(',','',$amount[$index]);
                     $row->beginning_balance = (float)str_replace(',','',$row->beginning_balance) + (float)str_replace(',','',$amount[$index]);
                     $row->save();
                 }
@@ -491,7 +476,6 @@ class DvController extends Controller
 
             $utilization = Utilization::where('div_id', $dv->route_no)->get();
             $util = $utilization->sortByDesc('id')->first();
-            // $get_util = $util->where('id', '>', $util->id)->get();
             $get_util = Utilization::where('id', '>',  $util->id)->where('proponentinfo_id', $util->proponentinfo_id)->get();
             $bal =  $util->beginning_balance;
             if($get_util){
@@ -503,7 +487,6 @@ class DvController extends Controller
                         $u->beginning_balance = $bal;
                         $bal = $u->beginning_balance;
                     }
-                    // return $u;
                     $u->save();
                 }
             }
@@ -532,7 +515,6 @@ class DvController extends Controller
             $request->input('fundsource_id_3'),
             ], function($value){return $value !==0 && $value!==null;}));
 
-            // return $saaNumbers;
         $dv->fundsource_id = json_encode($saaNumbers);
         $dv->amount1 = $request->input('amount1');
         $dv->amount2 = $request->input('amount2');
@@ -589,7 +571,6 @@ class DvController extends Controller
 
         }
        
-
         if ($dv->fundsource_id) {
             $saaNumbersArray= array_map('intval', json_decode($dv->fundsource_id));
             $id = array_values(array_filter([
@@ -599,7 +580,6 @@ class DvController extends Controller
             ], function ($value) {
                 return $value !== '0';
             }));
-            // return $proponent_id;
 
                 foreach ($saaNumbersArray as $index=>$saa) {
 
@@ -646,31 +626,6 @@ class DvController extends Controller
             
             return response()->json(['dv' =>$dv,'proponentInfo' => $proponentInfo]);
         }
-
-        
-        // if($dv){
-        //     $all_saa = array_map('intval', json_decode($dv->fundsource_id));
-        //     $all_proponent = array_map('intval', json_decode($dv->proponent_id));
-        //     $all_fac = array_map('intval', json_decode($dv->facility_used));
-
-        //     $fund_source = Fundsource::whereIn('id', $all_saa)->get();
-        //     $proponent = Proponent::whereIn('id', $all_proponent)->get();
-        //     $facilities = Facility::whereIn('id', $all_fac)->get();
-
-        //     $orderMapping = array_flip($all_saa);
-        //     $fund_source = $fund_source->sortBy(function ($item) use ($orderMapping) {
-        //         return $orderMapping[$item->id];
-        //     })->values();
-
-        //     $orderProponent = array_flip($all_proponent);
-        //     $proponent = $proponent->sortBy(function ($item) use ($orderProponent) {
-        //         return $orderProponent[$item->id];
-        //     })->values();
-                        
-        //     $facility = Facility::where('id', $dv->facility_id)->first();
-        
-        // }
-        // return response()->json(['dv' =>$dv,'fund_source' => $fund_source,'facility' => $facility, 'facilities' => $facilities,'proponent' => $proponent]);
     }
 
     function getSections($id){
@@ -680,7 +635,6 @@ class DvController extends Controller
 
     function obligate(Request $request){
         $dv= Dv::where('id', $request->input('dv_id'))->first();
-        // return $dv;
         if($dv){
             $saa= array_map('intval', json_decode($dv->fundsource_id));
             $proponent= array_map('intval', json_decode($dv->proponent_id));
@@ -693,7 +647,6 @@ class DvController extends Controller
 
                 $utilization = Utilization::where('div_id', $dv->route_no)->where('fundsource_id', $saa_list)
                     ->where('proponent_id', $proponent[$index])->where('status', 0)->orderBy('id', 'desc')->first();
-                    //->whereNull('obligated')
                 if($utilization != null){
 
                     if($utilization->obligated == 1){
@@ -731,17 +684,6 @@ class DvController extends Controller
             $dv->paid = 1;
             $dv->paid_by = Auth::user()->userid;
             $dv->save();
-
-            // $response = Http::withoutVerifying()->get('https://mis.cvchd7.com/dts/document/paid/'. $dv->route_no . '/' .Auth::user()->userid);
-            // if($response){
-            //     if($response == '0'){
-            //         return redirect()->back()->with(
-            //             'pay_dv', true        
-            //             );
-            //     }
-            // }else{
-            //  return redirect()->back()->with(['pay_dv' => true]);
-            // }
         }
         return redirect()->back()->with('pay_dv', true);
     }
@@ -751,13 +693,10 @@ class DvController extends Controller
         if($dv){
             $dv->dv_no = $request->input('dv_no');
             $dv->save();
-
-            // $response = Http::withoutVerifying()->get('https://mis.cvchd7.com/dts/document/dv_no/' . $dv->dv_no . '/' . $dv->route_no . '/' .Auth::user()->userid);
         
-                $response = Http::withoutVerifying()->get('http://192.168.110.17/dts/document/dv_no/' . $dv->dv_no . '/' . $dv->route_no . '/' .Auth::user()->userid);
+            $response = Http::withoutVerifying()->get('http://192.168.110.17/dts/document/dv_no/' . $dv->dv_no . '/' . $dv->route_no . '/' .Auth::user()->userid);
 
             if($response){
-                // $res = $response;
                 if($response == "0"){
 
                     return redirect()->back()->with(
@@ -775,25 +714,24 @@ class DvController extends Controller
 
     function facilityGet(Request $request){
   
-          ProponentInfo::where('fundsource_id', $request->fundsource_id)->get();
-          $proponentInfo = ProponentInfo::with('facility')
-                         ->where('fundsource_id', $request->fundsource_id)
-                         ->get();
-                   
-         return $proponentInfo;
-      }
+        $proponentInfo = ProponentInfo::with('facility')
+            ->where('fundsource_id', $request->fundsource_id)
+            ->get();
+                
+        return $proponentInfo;
+    }
 
-      function dvfacility(Request $request){
-         $proponentInfo = ProponentInfo::with('facility')
-         ->where('facility_id',  $request->facility_id)->first();
-        // return $proponentInfo;
-         if($proponentInfo){
-           $facilityAddress = $proponentInfo->facility->address;
-           return response()->json(['facilityAddress' => $facilityAddress]);
-         }else{
-          return "facility not found";
-         }
-      }
+    function dvfacility(Request $request){
+        $proponentInfo = ProponentInfo::with('facility')
+            ->where('facility_id',  $request->facility_id)->first();
+
+        if($proponentInfo){
+            $facilityAddress = $proponentInfo->facility->address;
+            return response()->json(['facilityAddress' => $facilityAddress]);
+        }else{
+            return "facility not found";
+        }
+    }
 
     public function getFund (Request $request) {
         $facilityId = ProponentInfo::with([
@@ -825,9 +763,8 @@ class DvController extends Controller
     
     public function getAlocated(Request $request){
         $allocatedFunds = ProponentInfo::where('facility_id', $request->facilityId)
-       // ->where('fundsource_id', $request->fund_source)
-        ->select('alocated_funds','fundsource_id', 'id', 'remaining_balance', 'proponent_id', 'facility_id')
-        ->get();
+            ->select('alocated_funds','fundsource_id', 'id', 'remaining_balance', 'proponent_id', 'facility_id')
+            ->get();
         return response()->json(['allocated_funds' => $allocatedFunds]);
     }
 
@@ -844,13 +781,11 @@ class DvController extends Controller
 
     public function removeDv($route_no){
         $dv = Dv::where('route_no', $route_no)->first();
-        // $amount_list = 
         $int_list = array_map('intval', json_decode($dv->info_id));
         $string_list = implode(',', $int_list);
         $info_list = ProponentInfo::whereIn('id', $int_list)->orderByRaw("FIELD(id, $string_list)")->get();
-        $amount_list = array_values(array_filter([$dv->amount1, !Empty($dv->amount2)?$dv->amount2 : 0,  
-                        !Empty($dv->amount3)?$dv->amount3: 0], function($value){ return $value !== 0 && $value!== null;}));
-                        // return $info_list;
+        $amount_list = array_values(array_filter([$dv->amount1, !Empty($dv->amount2) ? $dv->amount2 : 0,  
+            !Empty($dv->amount3) ? $dv->amount3: 0], function($value){ return $value !== 0 && $value !== null;}));
 
         foreach($info_list as $index => $info){
             $rem = (double) str_replace(',','',$info->remaining_balance) + (double) str_replace(',','', $amount_list[$index]);

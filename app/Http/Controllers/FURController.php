@@ -235,7 +235,6 @@ class FURController extends Controller
         $sheet->setCellValue('C4', $facility);
         $sheet->setCellValue('B5', 'Region:');
         $sheet->setCellValue('C5', 'VII');
-        // $sheet->getStyle($sheet->calculateWorksheetDimension())->getFont()->setSize(12);
 
         $range = "B9:H9"; 
         $sheet->getStyle($range)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_MEDIUM);
@@ -1584,7 +1583,6 @@ class FURController extends Controller
     }
 
     public function fcAnnex(Request $request, $id, $year){
-        // $year = $request->year ? $request->year : now()->year; 
 
         $data = AnnexB::join('transmittal_patients', 'annex_b.patient_id', '=', 'transmittal_patients.patient_id')
             ->join('facility', 'annex_b.facility_id', '=', 'facility.id')
