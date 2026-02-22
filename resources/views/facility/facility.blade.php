@@ -22,46 +22,46 @@
                 MAIF-IPP
             </p>
             @if(isset($results) && $results->count() > 0)
-            <div class="table-responsive">
-                <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Address</th>
-                        <th>Official Email</th>
-                        <th style="min-width:200px">Additional Email(s)</th>
-                        <th>VAT</th>
-                        <th>EWT</th>
-                        <th style="min-width:100px;">EWT PF</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($results as $facility)
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                    <thead>
                         <tr>
-                            <td class="td">
-                                <a href="{{ route('facility.edit', ['main_id' => $facility->id]) }}" 
-                                    data-target="#update_facility" 
-                                    type="button" 
-                                    onclick="updateFacility(this)" 
-                                    data-backdrop="static" 
-                                    data-toggle="modal" 
-                                    data-main-id="{{ $facility->id }}"
-                                    data-name="{{ $facility->name }}">{{ $facility->name }}</a>
-                            </td>
-                            <td class="td">{{ $facility->address }}</td>
-                            <td class="td">{{ $facility->AddFacilityInfo->official_mail ?? '' }}</td>
-                            <td class="td">{{ $facility->AddFacilityInfo->cc ?? '' }}</td>
-                            <td class="td">{{ floor($facility->AddFacilityInfo?->vat ?? 0) }}</td>
-                            <td class="td">{{ floor($facility->AddFacilityInfo?->Ewt ?? 0) }}</td>
-                            <td class="td">{{ floor($facility->AddFacilityInfo?->ewt_pf ?? 0) }}</td>
+                            <th>Name</th>
+                            <th>Address</th>
+                            <th>Official Email</th>
+                            <th style="min-width:200px">Additional Email(s)</th>
+                            <th>VAT</th>
+                            <th>EWT</th>
+                            <th style="min-width:100px;">EWT PF</th>
                         </tr>
-                    @endforeach
-                </tbody>
-                </table>
-            </div>
+                    </thead>
+                    <tbody>
+                        @foreach($results as $facility)
+                            <tr>
+                                <td class="td">
+                                    <a href="{{ route('facility.edit', ['main_id' => $facility->id]) }}" 
+                                        data-target="#update_facility" 
+                                        type="button" 
+                                        onclick="updateFacility(this)" 
+                                        data-backdrop="static" 
+                                        data-toggle="modal" 
+                                        data-main-id="{{ $facility->id }}"
+                                        data-name="{{ $facility->name }}">{{ $facility->name }}</a>
+                                </td>
+                                <td class="td">{{ $facility->address }}</td>
+                                <td class="td">{{ $facility->AddFacilityInfo->official_mail ?? '' }}</td>
+                                <td class="td">{{ $facility->AddFacilityInfo->cc ?? '' }}</td>
+                                <td class="td">{{ floor($facility->AddFacilityInfo?->vat ?? 0) }}</td>
+                                <td class="td">{{ floor($facility->AddFacilityInfo?->Ewt ?? 0) }}</td>
+                                <td class="td">{{ floor($facility->AddFacilityInfo?->ewt_pf ?? 0) }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                    </table>
+                </div>
             @else
                 <div class="alert alert-danger" role="alert" style="width: 100%;">
-                <i class="typcn typcn-times menu-icon"></i>
+                    <i class="typcn typcn-times menu-icon"></i>
                     <strong>No facility found!</strong>
                 </div>
             @endif
@@ -78,7 +78,7 @@
                 <h5 class="text-success modal-title" id="exampleModalLabel"></h5>
             </div>
             <div class="modal_body">
-            <input type="hidden" id="main_id" name="main_id" value="">
+                <input type="hidden" id="main_id" name="main_id" value="">
             </div>
         </div>
     </div>
@@ -87,6 +87,11 @@
 @endsection
 @section('js')
 <script>
+    
+    $('#update_facility').on('hide.bs.modal', function () {
+        $(this).find('input, select, textarea, button').blur();
+    });
+    
     @if(session('facility_save'))
             <?php session()->forget('facility_save'); ?>
             Lobibox.notify('success', {

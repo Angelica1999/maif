@@ -377,12 +377,14 @@ class FacilityController extends Controller
             $logbook->whereIn('received_by', $request->received);
         }
 
+        $selected = $request->received ?? [];
+
         return view('maif.logbook',[
             'logbook' => $logbook->orderBy('id', 'desc')->paginate(30),
             'control_no' => $trans,
             'keyword' => $keyword,
             'list' => $group,
-            'selected' => !$request->viewAll ? $request->received : []
+            'selected' => !$request->viewAll ? $selected: []
         ]);
     }
 

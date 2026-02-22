@@ -20,7 +20,7 @@ use Illuminate\Http\Request;
 |routesAdminController
 */
 
-Route::get('/', function () {
+Route::match(['get', 'post'],'/', function () {
     return view('welcome');
 });
 

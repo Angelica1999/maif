@@ -88,6 +88,9 @@
 @endsection
 @section('js')
 <script>
+    $('#facility_included').on('hide.bs.modal', function () {
+        $(this).find('input, select, textarea, button').blur();
+    });
     function released(id){
         Swal.fire({
             title: 'Release proponent',
@@ -103,7 +106,6 @@
                     location.reload();
                 })
                 .fail(function(jqXHR, textStatus, errorThrown) {
-                    // Handle error response
                     console.error('Error:', textStatus, errorThrown);
                     Swal.fire('Error!', 'An error occurred while processing your request.', 'error');
                 });

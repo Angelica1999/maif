@@ -195,11 +195,13 @@
         </div>
     </div>
 </div>
-
 @endsection
 @section('js')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    $('#summary_display, #return, #trans_tracking, #trans_remarks').on('hide.bs.modal', function () {
+        $(this).find('input, select, textarea, button').blur();
+    });
     $(document).ready(function() {
         $('.fa-sort').hide();
         $('#facility_filter').select2({

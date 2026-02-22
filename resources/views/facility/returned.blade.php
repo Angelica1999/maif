@@ -105,7 +105,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="summary_display" role="dialog" style="overflow-y:scroll;">
     <div class="modal-dialog modal-lg" role="document" style="width:900px">
         <div class="modal-content" style="border-radius:0px">
@@ -123,7 +122,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="trans_tracking" role="dialog" style="overflow-y:scroll;">
     <div class="modal-dialog modal-lg" role="document" style="width:300px; height:500px">
         <div class="modal-content" style="border-radius:0px">
@@ -135,7 +133,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="return" role="dialog" style="overflow-y:scroll;">
     <div class="modal-dialog modal-md" role="document">
         <div class="modal-content" style="border-radius:0px">
@@ -149,13 +146,14 @@
         </div>
     </div>
 </div>
-
 @endsection
 @section('js')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-
-$(document).ready(function() {
+    $('#summary_display, #return, #trans_tracking').on('hide.bs.modal', function () {
+        $(this).find('input, select, textarea, button').blur();
+    });
+    $(document).ready(function() {
         $('.fa-sort').hide();
         $('#facility_filter').select2({
             placeholder: 'Facility',

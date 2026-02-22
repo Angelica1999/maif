@@ -309,6 +309,10 @@
 <script src="{{ asset('admin/vendors/daterangepicker-master/moment.min.js?v=1') }}"></script>
 <script src="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.js?v=1') }}"></script>
 <script>
+    $('#create_predv, #update_predv, #view_v2, #releaseTo').on('hide.bs.modal', function () {
+        $(this).find('input, select, textarea, button').blur();
+        console.log('sample');
+    });
     $('#docViewerModal').hide();
     var btn_val = 0;
 

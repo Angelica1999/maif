@@ -209,14 +209,17 @@
 </div>
 @endsection
 @section('js')
-    <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
-    <script>
-        $('#account').select2({
-            placeholder:'Account Type'
-        });
-        function cancel(id){
-            $('#user_cancel').modal('show');
-            $('#cancel_user').attr('action', '{{ route("cancel.user", [":id"]) }}'.replace(':id', id));
-        }
-    </script>
+<script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
+<script>
+    $('#add_user, #add_user').on('hide.bs.modal', function () {
+        $(this).find('input, select, textarea, button').blur();
+    });
+    $('#account').select2({
+        placeholder:'Account Type'
+    });
+    function cancel(id){
+        $('#user_cancel').modal('show');
+        $('#cancel_user').attr('action', '{{ route("cancel.user", [":id"]) }}'.replace(':id', id));
+    }
+</script>
 @endsection

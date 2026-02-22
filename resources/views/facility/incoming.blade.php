@@ -180,7 +180,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="logbook" tabindex="-1" role="dialog" aria-hidden="true" style="opacity:1">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -228,13 +227,14 @@
         </div>
     </div>
 </div>
-
 @endsection
 @section('js')
 <script src="{{ asset('admin/vendors/sweetalert2/sweetalert2.js?v=1') }}"></script>
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
-
 <script>
+    $('#logbook, #summary_display, #return, #trans_tracking').on('hide.bs.modal', function () {
+        $(this).find('input, select, textarea, button').blur();
+    });
     $(document).ready(function() {
         $('.fa-sort').hide();
         $('#facility_filter').select2({

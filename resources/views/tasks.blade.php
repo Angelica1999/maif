@@ -1,7 +1,5 @@
 @extends('layouts.app')
-
 @section('content')
-
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
@@ -24,9 +22,9 @@
                         <div class="col-md-3  ">
                         <div class="form-group">
                             @if($row->status == 0)
-                                <textarea name="note" class="form-control" rows="10" style="color:blue; resize: vertical;" onclick="displayNote({{$row->id}})" readonly>{{$row->notes}}</textarea>
+                                <textarea name="note" class="form-control" rows="10" style="color:blue; resize: vertical;" onclick="displayNote({{ $row->id }})" readonly>{{ $row->notes }}</textarea>
                             @else
-                                <textarea name="note" class="form-control" rows="10" style="color:green; resize: vertical;" onclick="displayNote({{$row->id}})" readonly>{{$row->notes}}</textarea>
+                                <textarea name="note" class="form-control" rows="10" style="color:green; resize: vertical;" onclick="displayNote({{ $row->id }})" readonly>{{ $row->notes }}</textarea>
                             @endif
                         </div>
                         </div>
@@ -38,14 +36,13 @@
                     <strong>No notes found!</strong>
                 </div>
             @endif
-            
             <div class="pl-5 pr-5 mt-5">
                 {!! $notes->appends(request()->query())->links('pagination::bootstrap-5') !!}  
             </div>
         </div>
     </div>
 </div>
-<div class="modal fade" id="update_note" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" data-backdrop="static" id="update_note" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-md" role="document">
         <div class="modal-content">
             <form action="{{ route('update.note') }}" method="POST" style="background-color: #fff3cd;">
@@ -76,19 +73,22 @@
     </div>
 </div>
 @endsection
-
 @section('js')
-    <script>
-        function displayNote(id){
-            $('#update_note').modal('show');
-            var data = @json($all);
-            data = data.filter(item=>item.id == id);
-            $('#id').val(id);
-            $('.note_text').val(data[0].notes);
+<script>
+    $('#update_note').on('hide.bs.modal', function () {
+        $(this).find('input, select, textarea, button').blur();
+    });
+    
+    function displayNote(id){
+        $('#update_note').modal('show');
+        var data = @json($all);
+        data = data.filter(item=>item.id == id);
+        $('#id').val(id);
+        $('.note_text').val(data[0].notes);
 
-        }
-        $('.btn-danger').on('click', function(){
-            window.location.href = "notepad/remove/" + $('#id').val();
-        });
-    </script>
+    }
+    $('.btn-danger').on('click', function(){
+        window.location.href = "notepad/remove/" + $('#id').val();
+    });
+</script>
 @endsection

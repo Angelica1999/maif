@@ -138,11 +138,22 @@
         transition: max-height 0.3s ease, background 0.2s ease;
     }
 
-    .maif-sidebar .nav-item:hover > .sub-menu,
+    /* .maif-sidebar .nav-item:hover > .sub-menu,
     .maif-sidebar .nav-item:focus-within > .sub-menu {
         max-height: 1000px;
         background: rgba(0,0,0,0.2);
         transition-delay: 0s;
+    } */
+
+    .maif-sidebar .nav-item > .sub-menu {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+
+    .maif-sidebar .nav-item:focus-within > .sub-menu {
+        max-height: 1000px;
+        background: rgba(0,0,0,0.2);
     }
 
     .maif-sidebar .sub-menu {

@@ -16,7 +16,7 @@
                     <input type="text" class="form-control" name="keyword" placeholder="Control No" value="{{ $keyword }}">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button> 
-                        <select id="receiver" class="form-control receiver" name="received[]" style="text-align:center; border:none" multiple onchange="this.form.submit()">
+                        <select id="receiver" class="form-control receiver" name="received[]" style="text-align:center; border:none; display:none" multiple onchange="this.form.submit()">
                             <option></option>
                             <option value="all">All</option>
                             @foreach($list as $row)
@@ -74,6 +74,7 @@
 @endsection
 @section('js')
 <script>
+    $('#receiver').css('display', 'block');
     $('#receiver').select2({
         placeholder: "RECEIVED BY", 
         allowClear: true           
