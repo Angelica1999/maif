@@ -108,8 +108,8 @@
                 <table class="table table-striped" id="patient_table">
                     <thead>
                         <tr>
-                            <th width="19%">Action</th>
-                            <th width="21%">Facility</th>
+                            <th width="21%">Action</th>
+                            <th width="19%">Facility</th>
                             <th width="10%">Month Year</th>
                             <th width="12%">Total Number of Patients Served</th>
                             <th width="16%">Total Actual Approved Assistance through MAIPP (Utilized Amount)</th>
@@ -147,12 +147,11 @@
                                                 class="btn btn-xs btn-success accept" style="color:white; font-size:11px; display:inline-block;">
                                                 <i class="fa fa-thumbs-up"></i>  Accept
                                             </button>
-                                        @elseif($row->status == 2)
-                                            <button data-month="{{ $row->month }}" data-year="{{ $row->year }}" data-id="{{ $row->facility_id }}"
-                                                class="btn btn-xs btn-danger return" style="color:white; font-size:11px; display:inline-block;">
-                                                <i class="fa fa-undo"></i>  Return
-                                            </button>
                                         @endif
+                                        <button data-month="{{ $row->month }}" data-year="{{ $row->year }}" data-id="{{ $row->facility_id }}"
+                                            class="btn btn-xs btn-danger return" style="color:white; font-size:11px; display:inline-block;">
+                                            <i class="fa fa-undo"></i> Return
+                                        </button>
                                     </td>
                                     <td style="text-align:left">{{ $row->name }}</td>
                                     <!-- 0-pending/1-submitted/2-accepted/3-returned -->

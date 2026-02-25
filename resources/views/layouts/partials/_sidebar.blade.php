@@ -87,11 +87,11 @@
         padding-left: 18px;
     }
     
-    .maif-sidebar .nav-link.active {
+    /* .maif-sidebar .nav-link.active {
         background: rgba(52, 152, 219, 0.2);
         color: white;
         border-left: 3px solid #3498db;
-    }
+    } */
     
     .maif-sidebar .menu-icon {
         width: 20px;
@@ -131,12 +131,12 @@
         transform: rotate(180deg);
     }
     
-    .maif-sidebar .sub-menu {
+    /* .maif-sidebar .sub-menu {
         max-height: 0;
         overflow: hidden;
         background: transparent; 
         transition: max-height 0.3s ease, background 0.2s ease;
-    }
+    } */
 
     /* .maif-sidebar .nav-item:hover > .sub-menu,
     .maif-sidebar .nav-item:focus-within > .sub-menu {
@@ -365,13 +365,13 @@
         }
     }
     
-    .maif-sidebar .modal-header {
-        padding: 20px;
+    /* .maif-sidebar .modal-header {
+        padding: 10px;
         background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
         border-bottom: 1px solid var(--border-color);
     }
-    
-    .maif-sidebar .modal-title {
+     */
+    /* .maif-sidebar .modal-title {
         display: flex;
         align-items: center;
         gap: 12px;
@@ -379,7 +379,7 @@
         font-size: 18px;
         font-weight: 600;
         margin: 0;
-    }
+    } */
     
     .maif-sidebar .modal-body {
         padding: 20px;
@@ -387,7 +387,7 @@
     
     .maif-sidebar .form-group textarea {
         width: 100%;
-        height: 120px;
+        height: 150px;
         padding: 15px;
         border: 2px solid var(--border-color);
         border-radius: 8px;
@@ -451,7 +451,7 @@
         @if($joinedData->section == 6)
             <ul class="nav flex-column" style="margin-bottom: 0;">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\funds_16.png">
                         </span>
@@ -487,7 +487,7 @@
                 </li>
                 <!-- DV (1) Section -->
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\dv_16.png">
                         </span>
@@ -515,7 +515,7 @@
                 </li>
                 <!-- DV (3) Section -->
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\dv3_16.png">
                         </span>
@@ -543,7 +543,7 @@
                 </li>
                 <!-- DV (new) Section -->
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\new_16.png">
                         </span>
@@ -641,7 +641,7 @@
             <!-- Proponents -->
             <ul class="nav flex-column" style=" margin-bottom: 0;">
                 <li class="nav-item">
-                    <a class="nav-link" href="#" >
+                    <a class="nav-link" href="javascript:void(0)" >
                         <span class="menu-icon">
                             <img src="\maif\public\images\user_account_16.png">
                         </span>
@@ -663,7 +663,7 @@
             <!-- Patients Section -->
             <ul class="nav flex-column" style="margin-bottom: 0;">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\patients_16.png">
                         </span>
@@ -673,7 +673,7 @@
                     <ul class="nav flex-column sub-menu">
                         <!-- MPU Submenu -->
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="javascript:void(0)">
                                 <span class="menu-icon">
                                     <img src="\maif\public\images\patients_16.png">
                                 </span>
@@ -734,7 +734,7 @@
             <!-- Disbursement Voucher -->
             <ul class="nav flex-column" style=" margin-bottom: 0;">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\dv_16.png">
                         </span>    
@@ -772,7 +772,7 @@
             <!-- DV (new) -->
             <ul class="nav flex-column" style=" margin-bottom: 0;">
                 <li class="nav-item">
-                    <a class="nav-link" href="#" >
+                    <a class="nav-link" href="javascript:void(0)" >
                         <span class="menu-icon">
                             <img src="\maif\public\images\new_16.png">
                         </span> 
@@ -810,7 +810,7 @@
             <!-- Transmittal -->
             <ul class="nav flex-column" style=" margin-bottom: 0;">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\transaction_16.png">
                         </span> 
@@ -849,7 +849,7 @@
             @if( $id == 2760 || $id == 2680 || $id == 1721|| $id == "0881")
                 <ul class="nav flex-column" style=" margin-bottom: 0;">
                     <li class="nav-item">
-                        <a class="nav-link" href="#" >
+                        <a class="nav-link" href="javascript:void(0)">
                             <span class="menu-icon">
                                 <img src="\maif\public\images\user_account_16.png">
                             </span>
@@ -874,7 +874,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
+                                <a class="nav-link" href="javascript:void(0)">
                                     <span class="menu-icon">
                                         <img src="\maif\public\images\proponents_16.png">
                                     </span>
@@ -910,7 +910,7 @@
                             </li>
                             <!-- ABC -->
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
+                                <a class="nav-link" href="javascript:void(0)">
                                     <span class="menu-icon">
                                         <img src="\maif\public\images\proponents_16.png">
                                     </span>
@@ -927,7 +927,7 @@
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="#">
+                                        <a class="nav-link" href="javascript:void(0)">
                                             <span class="menu-icon">
                                                 <img src="\maif\public\images\dv_16.png">
                                             </span>
@@ -954,7 +954,7 @@
                                         </ul>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="#">
+                                        <a class="nav-link" href="javascript:void(0)">
                                             <span class="menu-icon">
                                                 <img src="\maif\public\images\dv3_16.png">
                                             </span>
@@ -981,7 +981,7 @@
                                         </ul>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="#">
+                                        <a class="nav-link" href="javascript:void(0)">
                                             <span class="menu-icon">
                                                 <img src="\maif\public\images\new_16.png">
                                             </span>
@@ -1010,7 +1010,7 @@
                                 </ul>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">
+                                <a class="nav-link" href="javascript:void(0)">
                                     <span class="menu-icon">
                                         <img src="\maif\public\images\proponents_16.png">
                                     </span>
@@ -1019,7 +1019,7 @@
                                 </a>
                                 <ul class="nav flex-column sub-menu">
                                     <li class="nav-item">
-                                        <a class="nav-link" href="#">
+                                        <a class="nav-link" href="javascript:void(0)">
                                             <span class="menu-icon">
                                                 <img src="\maif\public\images\dv_16.png">
                                             </span>
@@ -1054,7 +1054,7 @@
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="#">
+                                        <a class="nav-link" href="javascript:void(0)">
                                             <span class="menu-icon">
                                                 <img src="\maif\public\images\dv3_16.png">
                                             </span>
@@ -1081,7 +1081,7 @@
                                         </ul>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="#">
+                                        <a class="nav-link" href="javascript:void(0)">
                                             <span class="menu-icon">
                                                 <img src="\maif\public\images\new_16.png">
                                             </span>
@@ -1116,7 +1116,7 @@
             <!-- Report -->
             <ul class="nav flex-column" style=" margin-bottom: 0;">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\report_16.png">
                         </span>
@@ -1154,7 +1154,7 @@
             <!-- FUR -->
             <ul class="nav flex-column" style=" margin-bottom: 0;">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\report_16.png">
                         </span>
@@ -1163,7 +1163,7 @@
                     </a>
                     <ul class="nav flex-column sub-menu">
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="javascript:void(0)">
                                 <span class="menu-icon">
                                     <img src="\maif\public\images\pre_re_16.png">
                                 </span>
@@ -1171,7 +1171,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="javascript:void(0)">
                                 <span class="menu-icon">
                                     <img src="\maif\public\images\fc_re_16.png">
                                 </span>
@@ -1196,7 +1196,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#">
+                                    <a class="nav-link" href="javascript:void(0)">
                                         <span class="menu-icon">
                                             <img src="\maif\public\images\saa_re_16.png">
                                         </span>
@@ -1265,7 +1265,7 @@
             <!-- DV Section for specific users -->
             <ul class="nav flex-column" style="margin-bottom: 0;">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\dv_16.png">
                         </span>
@@ -1305,7 +1305,7 @@
             <!-- Cashier Section -->
             <ul class="nav flex-column" style="margin-bottom: 0;">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\dv_16.png">
                         </span>
@@ -1340,7 +1340,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\dv3_16.png">
                         </span>
@@ -1368,7 +1368,7 @@
                 </li>
                 <!-- DV (new) Section -->
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\new_16.png">
                         </span>
@@ -1433,16 +1433,16 @@
     <!-- Modal -->
     <div class="modal" id="new_note">
         <div class="modal-content">
-            <form action="{{ route('save.note') }}" method="POST">
+            <form action="{{ route('save.note') }}" method="POST" style="background-color: #fff3cd;">
                 @csrf
                 <div class="modal-header">
-                    <h4 class="modal-title">
-                        <span>📝</span>
-                        Create New Note
+                    <h4 class="text-success d-flex align-items-center">
+                        <i style="font-size:30px" class="typcn typcn-document-text menu-icon mr-2"></i>
+                        New Note
                     </h4>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
+                    <div class="form-group" style="margin-bottom:0px">
                         <textarea name="notes" placeholder="Enter your note here..." required></textarea>
                     </div>
                 </div>
@@ -1473,15 +1473,4 @@
             hideModal();
         }
     });
-    
-    // document.querySelectorAll('.nav-link').forEach(link => {
-    //     const dropdownIcon = link.querySelector('.dropdown-icon');
-    //     if (dropdownIcon) {
-    //         link.addEventListener('click', function(e) {
-    //             if (this.nextElementSibling && this.nextElementSibling.classList.contains('sub-menu')) {
-    //                 dropdownIcon.classList.toggle('rotated');
-    //             }
-    //         });
-    //     }
-    // });
 </script>

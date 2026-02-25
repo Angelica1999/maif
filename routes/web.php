@@ -41,7 +41,8 @@ Route::get('/get-municipalities/{type}', [App\Http\Controllers\HomeController::c
 Route::get('/get-barangay/{type}', [App\Http\Controllers\HomeController::class, 'getBarangay'])->name('get.barangay');
 Route::get('/get-created_at/{type}', [App\Http\Controllers\HomeController::class, 'getCreatedAt'])->name('get.created_at');
 Route::get('/get-created_by/{type}', [App\Http\Controllers\HomeController::class, 'getCreatedBy'])->name('get.created_by');
-Route::get('/facilities', [App\Http\Controllers\FacilityController::class, 'index'])->name('facility');
+Route::get('/facility-lists', [App\Http\Controllers\FacilityController::class, 'index'])->name('facility');
+Route::post('/facility/new', [App\Http\Controllers\FacilityController::class, 'newFacility'])->name('new.facility');
 Route::get('facility/edit/{main_id}', [App\Http\Controllers\FacilityController::class, 'facilityEdit'])->name('facility.edit');
 Route::post('facility/update', [App\Http\Controllers\FacilityController::class, 'facilityUpdate'])->name('facility.update');
 Route::get('facility/vatEwt', [App\Http\Controllers\FacilityController::class, 'getVatEwt']);

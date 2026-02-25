@@ -36,7 +36,7 @@ class FURController extends Controller
         $data = AnnexB::join('transmittal_patients', 'annex_b.patient_id', '=', 'transmittal_patients.patient_id')
             ->join('facility', 'annex_b.facility_id', '=', 'facility.id')
             ->where('annex_b.status', '!=', 0)
-            ->groupByRaw('YEAR(annex_b.month_year), MONTH(annex_b.month_year)')
+            ->groupByRaw('YEAR(annex_b.month_year), MONTH(annex_b.month_year), annex_b.facility_id')
             ->selectRaw('
                 YEAR(annex_b.month_year) as year,
                 MONTH(annex_b.month_year) as month,
@@ -48,7 +48,6 @@ class FURController extends Controller
                 SUM(transmittal_patients.total) as total,
                 MAX(annex_b.updated_at) as last_update
             ');
-
         if($request->viewAll){
             $request->year = '';
             $request->type = '';
@@ -68,13 +67,14 @@ class FURController extends Controller
             $facility_id = $request->facility_id;
             $monthNumber = str_pad($month, 2, '0', STR_PAD_LEFT);
             $data = AnnexB::whereMonth('month_year', $monthNumber)
+                ->where('status', '!=', 0)
                 ->whereYear('month_year', $year)
                 ->where('facility_id', $facility_id)
                 ->with([
                     'trans',
                     'patient'
                 ]);
-
+            
             if ($request->data_type) {
 
                 $type = $request->data_type;
@@ -88,12 +88,12 @@ class FURController extends Controller
                 } elseif ($type == 2) { 
 
                     $data->where(function ($q) {
-                        $q->where('excess', '!=', 1)->where('opd', 0);
+                        $q->where('excess', '<', 1)->where('opd', 0);
                     });
                 }elseif ($type == 1) {
 
                     $data->where(function ($q) {
-                        $q->where('excess', 1)->where('opd', 0);
+                        $q->where('excess', '>=', 1)->where('opd', 0);
                     });
                 }
             }        
@@ -111,6 +111,7 @@ class FURController extends Controller
                         ->orWhere('mname', 'LIKE', "%{$keyword}%");
                 });
             }
+            
             return view('facility.annex_b_view',[
                 'data' => $data->paginate(50),
                 'keyword' => $keyword,
@@ -699,13 +700,11 @@ class FURController extends Controller
         $data = AnnexB::whereMonth('month_year', $month)
             ->whereYear('month_year', $year)
             ->where('facility_id', $id)
-            ->where('excess', 1)->where('opd', 0)
+            ->where('excess','>=', 1)->where('opd', 0)
             ->with([
                 'trans',
                 'patient'
             ])->get();
-
-
 
         $pfee_service = 0;
         $hbill_service = 0;
@@ -1004,7 +1003,7 @@ class FURController extends Controller
         $data2 = AnnexB::whereMonth('month_year', $month)
             ->whereYear('month_year', $year)
             ->where('facility_id', $id)
-            ->where('excess', '!=', 1)->where('opd', 0)
+            ->where('excess', '<', 1)->where('opd', 0)
             ->with([
                 'trans',
                 'patient'
@@ -1642,12 +1641,12 @@ class FURController extends Controller
                 } elseif ($type == 2) { 
 
                     $data->where(function ($q) {
-                        $q->where('excess', '!=', 1)->where('opd', 0);
+                        $q->where('excess', '<', 1)->where('opd', 0);
                     });
                 }elseif ($type == 1) {
 
                     $data->where(function ($q) {
-                        $q->where('excess', 1)->where('opd', 0);
+                        $q->where('excess', '>=', 1)->where('opd', 0);
                     });
                 }
             }        
@@ -2350,13 +2349,11 @@ class FURController extends Controller
         $data = AnnexB::whereMonth('month_year', $month)
             ->where('status', 2)
             ->whereYear('month_year', $year)
-            ->where('excess', 1)->where('opd', 0)
+            ->where('excess','>=', 1)->where('opd', 0)
             ->with([
                 'trans',
                 'patient'
             ])->get();
-
-
 
         $pfee_service = 0;
         $hbill_service = 0;
@@ -2659,7 +2656,7 @@ class FURController extends Controller
         $data2 = AnnexB::where('status', 2)
             ->whereMonth('month_year', $month)
             ->whereYear('month_year', $year)
-            ->where('excess', '!=', 1)->where('opd', 0)
+            ->where('excess', '<', 1)->where('opd', 0)
             ->with([
                 'trans',
                 'patient'
@@ -3129,5 +3126,4 @@ class FURController extends Controller
         return $xlsData;
         exit;    
     }
-
 }

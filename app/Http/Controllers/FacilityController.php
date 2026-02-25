@@ -95,8 +95,40 @@ class FacilityController extends Controller
     
         return view('facility.edit', $data);
     }
+
+    public function newFacility(Request $request){
+
+        $facility = new Facility();
+        $facility->name = $request->facility;
+        $facility->address = $request->address;
+        $facility->abbr = "";
+        $facility->brgy = 0;
+        $facility->muncity = 0;
+        $facility->province = 0;
+        $facility->contact = "";
+        $facility->email = "";
+        $facility->status = 0;
+        $facility->save();
+
+        $facility_info = new AddFacilityInfo();
+        $facility_info->facility_id = $facility->id;
+        $facility_info->social_worker = $request->social_worker;
+        $facility_info->social_worker_email = $request->social_worker_email;
+        $facility_info->social_worker_contact = $request->social_worker_contact;
+        $facility_info->finance_officer = $request->finance_officer;
+        $facility_info->finance_officer_email = $request->finance_officer_email;
+        $facility_info->finance_officer_contact = $request->finance_officer_contact;
+        $facility_info->official_mail = $request->official_mail;
+        $facility_info->cc = $request->cc;
+        $facility_info->vat = $request->vat;
+        $facility_info->Ewt = $request->Ewt;
+        $facility_info->ewt_pf = $request->ewt_pf;
+        $facility_info->save();  
+
+        return redirect()->back()->with('new_facility', true);
+    }
     
-     public function facilityUpdate(Request $request)
+    public function facilityUpdate(Request $request)
      {
     
         $main_id = $request->input('main_id');    

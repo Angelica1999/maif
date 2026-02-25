@@ -284,6 +284,12 @@
 				msg: 'Successfully updated facility list!'
 			});
 		@endif
+		@if(session('new_facility'))
+			<?php session()->forget('new_facility'); ?>
+			Lobibox.notify('success', {
+				msg: 'New facility was successfully added!'
+			});
+		@endif
 		@if(session('update_proponent'))
 			<?php session()->forget('update_proponent'); ?>
 			Lobibox.notify('success', {
