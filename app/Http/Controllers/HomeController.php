@@ -1093,7 +1093,6 @@ class HomeController extends Controller
 
     private function getFilterData($request, $filter_type)
     {
-        // Cache these static lookups
         $provinces = cache()->remember('all_provinces', 3600, fn() => 
             Province::select('id', 'description')->get()
         );
@@ -1564,14 +1563,6 @@ class HomeController extends Controller
     }
 
     public function reportFacility(Request $request){
-        // $facilities = ProponentInfo::groupBy('facility_id')
-        //     ->select(DB::raw('MAX(facility_id) as facility_id'))
-        //     ->with(['facility' => function ($query) use ($request) {
-        //         if (!$request->viewAll && $request->keyword) {
-        //             $query->where('name', 'LIKE', "%$request->keyword%");
-        //         }
-        //     }])
-        //     ->paginate(15);
         $facilities = Facility::when(!$request->viewAll && $request->keyword, function ($query) use ($request) {
             $query->where('name', 'LIKE', "%$request->keyword%");
         })
@@ -1601,26 +1592,7 @@ class HomeController extends Controller
             ->get();
         $proponent = Proponent::where('pro_group', $pro_group)->first();
 
-        // excel file before
         $title = $proponent->proponent;
-        // $filename = $title.'.xls';
-        // header("Content-Type: application/xls");
-        // header("Content-Disposition: attachment; filename=$filename");
-        // header("Pragma: no-cache");
-        // header("Expires: 0");
-        // $table_body = "<tr>
-        //         <th>Route No</th>
-        //         <th>SAA</th>
-        //         <th>Facility</th>
-        //         <th>Allocation</th>
-        //         <th>Utilize Amount</th>
-        //         <th>Percentage</th>
-        //         <th>Discount</th>
-        //         <th>Balance</th>
-        //         <th>Patients</th>
-        //         <th>Created On</th>
-        //     </tr>";
-
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -1857,8 +1829,6 @@ class HomeController extends Controller
                             $rem_disp = number_format($rem_bal, 2);
                             $discount_all = 0;
                             $string_patient = '';
-                            // $saaString = str_replace('<br>', "\n", $saaString);
-                            // $all_amount = str_replace('<br>', "\n", $all_amount);
 
                         }
 
@@ -1874,33 +1844,12 @@ class HomeController extends Controller
                             $string_patient,
                             $created_on
                         ];
-                        // $table_body .= "<tr>
-                        //     <td style='vertical-align:top;'>$row->route_no</td>
-                        //     <td style='vertical-align:top;'>$saaString</td>
-                        //     <td style='vertical-align:top;'>$facility</td>
-                        //     <td style='vertical-align:top;'>$al_disp</td>
-                        //     <td style='vertical-align:top;'>$all_amount</td>
-                        //     <td style='vertical-align:top;'>$percentage %</td>
-                        //     <td style='vertical-align:top;'>$discount_all</td>
-                        //     <td style='vertical-align:top;'>$rem_disp</td>
-                        //     <td style='vertical-align:top;'>$string_patient</td>
-                        //     <td style='vertical-align:top;'>$created_on</td>
-                        // </tr>";
                         $allocation_funds = $rem_bal;
                     }
                 }
             }
-        }else{
-            // $table_body .= "<tr>
-            //     <td colspan=6 style='vertical-align:top;'>No Data Available</td>
-            // </tr>";
         }
-        // $display =
-        //     '<h1>'.$title.'</h1>'.
-        //     '<table cellspacing="1" cellpadding="5" border="1">'.$table_body.'</table>';
 
-        // return $display;
-        // return $data;
         $sheet->fromArray($data, null, 'B4');
         $sheet->getStyle('E4:F' . (count($data) + 3))
             ->getNumberFormat()->setFormatCode('#,##0.00');
@@ -1932,8 +1881,8 @@ class HomeController extends Controller
 
         $sheet->getStyle('J4:K' . (count($data) + 3))
             ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
-            
-        // Output preparation
+
+            // Output preparation
         ob_start();
         $writer = new Xlsx($spreadsheet);
         $writer->save('php://output');
@@ -1941,8 +1890,8 @@ class HomeController extends Controller
         ob_end_clean();
 
         // Filename
-        $filename = $title . date('Ymd') . '.xlsx';
-
+        $filename = $this->getAcronym($title) . date('Ymd') . '.xlsx';
+        
         // Set headers
         header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         header("Content-Disposition: attachment; filename=$filename");
@@ -1959,19 +1908,6 @@ class HomeController extends Controller
                     ->orWhereJsonContains('facility_id', $facility_id)
                     ->with('facilitydata:id,name', 'fundSourcedata', 'proponentdata:id,proponent')->where('status', '<>', '1')->get();
         $title = Facility::where('id', $facility_id)->value('name');
-        // $filename = $title.'.xls';
-        // header("Content-Type: application/xls");
-        // header("Content-Disposition: attachment; filename=$filename");
-        // header("Pragma: no-cache");
-        // header("Expires: 0");
-        // $table_body = "<tr>
-        //         <th>Fundsource</th>
-        //         <th>Proponent</th>
-        //         <th>Utilize Amount</th>
-        //         <th>Discount</th>
-        //         <th>Remarks</th>
-        //         <th>Created On</th>
-        //     </tr>";
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -2041,7 +1977,6 @@ class HomeController extends Controller
         if($utilize){
             foreach($utilize as $row){
                 $created_on = date('F j, Y', strtotime($row->created_at));
-                // return $row->created_at;
                 $saa = $row->fundSourcedata->saa;
                 $proponent = $row->proponentdata ? $row->proponentdata->proponent :'';
                 $discount = $row->discount;
@@ -2097,14 +2032,6 @@ class HomeController extends Controller
                     }
                     $remarks = 'transferred from '.$pro_name.' - '.$transfer->from_fundsource->saa.' - '. $facility_n;
                 }
-                // $table_body .= "<tr>
-                //     <td style='vertical-align:top;'>$saa</td>
-                //     <td style='vertical-align:top;'>$proponent</td>
-                //     <td style='vertical-align:top;'>$utilize</td>
-                //     <td style='vertical-align:top;'>$discount</td>
-                //     <td style='vertical-align:top;'>$remarks</td>
-                //     <td style='vertical-align:top;'>$created_on</td>
-                //     </tr>";
                 $data[]=[
                     $saa,
                     $proponent,
@@ -2162,12 +2089,6 @@ class HomeController extends Controller
         // Output the file
         return $xlsData;
         exit;
-        
-        // $display =
-        //     '<h1>'.$title.'</h1>'.
-        //     '<table cellspacing="1" cellpadding="5" border="1">'.$table_body.'</table>';
-
-        // return $display;
     }
 
     public function updateAmount($patientId, $amount){
@@ -2188,7 +2109,6 @@ class HomeController extends Controller
             }
             $patient->actual_amount = $newAmount;
             $patient->save();
-            // session()->flash('actual_amount', true);
         }
     }
     
@@ -2311,12 +2231,6 @@ class HomeController extends Controller
             }
         }
 
-        // if($patientCount>0){
-        //     session()->flash('patient_exist', $patientCount);
-        // }else{
-        //     session()->flash('patient_save', true);
-        // }
-
         $util = new ProponentUtilizationV1();
         $util->patient_id = $patient->id;
         $util->proponent_id = $patient->proponent_id;
@@ -2352,40 +2266,6 @@ class HomeController extends Controller
         return [
             'patient' => $patient
         ];        
-    }
-
-    //sir jondy unused
-    public function editPatient(Request $request) {
-        $patient =  Patients::where('id',$request->patient_id)
-                        ->with(
-                            [
-                                'muncity' => function ($query) {
-                                    $query->select(
-                                        'id',
-                                        'description'
-                                    );
-                                },
-                                'barangay' => function ($query) {
-                                    $query->select(
-                                        'id',
-                                        'description'
-                                    );
-                                },
-                                'fundsource',
-                            ])->orderBy('updated_at', 'desc')
-                        ->first();
-
-        $municipal = Muncity::select('id', 'description')->get();
-        $barangay = Barangay::select('id', 'description')->get();
-        return view('maif.update_patient',[
-            'provinces' => Province::get(),
-            'fundsources' => Fundsource::get(),
-            'proponents' => Proponent::get(),
-            'facility' => Facility::get(),
-            'patient' => $patient,
-            'municipal' => $municipal,
-            'barangay' => $barangay,
-        ]);
     }
 
     public function mailHistory($id){
@@ -2441,7 +2321,6 @@ class HomeController extends Controller
         $patient->province_id = $request->input('province_id');
         $patient->muncity_id  = $request->input('muncity_id');
         $patient->barangay_id = $request->input('barangay_id');
-        // $patient->fundsource_id = $request->input('fundsource_id');
         $patient->proponent_id = $request->input('proponent_id');
         $patient->facility_id = $request->input('facility_id');
         $patient->patient_code = $request->input('patient_code');
@@ -2461,7 +2340,6 @@ class HomeController extends Controller
         DB::commit();
 
         if($val == 1){
-            // return Patients::where('id', $patient->id)->first();
             return redirect()->route('patient.sendpdf', ['patientid' => $patient->id]);
         }
 

@@ -47,7 +47,6 @@ class PusherController extends Controller{
           'title' => $request->note,
           'author' => Auth::user()->lname.', '.Auth::user()->fname
         ];
-      // event(new PostNotif($data));
       return redirect()->back()->with('note', true);
     }
 

@@ -32,11 +32,6 @@ class DashboardController extends Controller{
             IFNULL(SUM(CASE WHEN obligated IS NULL AND paid IS NULL THEN CAST(REPLACE(utilize_amount, ",", "") AS DECIMAL(10,2)) ELSE 0 END), 0) as total_pending
         ')
         ->first();  
-        
-        // if(Auth::user()->userid == "2760"){
-        //     return $utilization;
-        // }
-
 
         $total_amount = $funds->total_amount ?? 0;
         $total_cost = $funds->total_cost ?? 0;
@@ -44,7 +39,7 @@ class DashboardController extends Controller{
         $remaining_balance = $total_amount - $total_cost - $total_utilization;
         $utilization_rate = $total_utilization / ($total_amount - $total_cost) * 100;
 
-        if($req->stat){ // 
+        if($req->stat){ 
             $dateRange = explode(' - ', $req->status_filtered);
             $start_date = date('Y-m-d', strtotime($dateRange[0]));
             $end_date = date('Y-m-d', strtotime($dateRange[1]));
@@ -57,8 +52,6 @@ class DashboardController extends Controller{
                 IFNULL(SUM(CASE WHEN obligated IS NULL AND paid IS NULL THEN CAST(REPLACE(utilize_amount, ",", "") AS DECIMAL(10,2)) ELSE 0 END), 0) as total_pending
             ')
             ->first();
-            // $utilization->whereBetween('created_at', [$start_date, $end_date . ' 23:59:59']);
-            // return $utilization;
         }
 
         $total_utilization1 = $utilization->total_utilize ?? 0;
@@ -198,5 +191,4 @@ class DashboardController extends Controller{
             'year' => $year
         ]);
     }
-
 }

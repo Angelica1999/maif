@@ -165,7 +165,9 @@
                                     <div class="card-body">
                                         <div style="justify-content: space-between; flex-wrap: wrap; align-items: center;">
                                             <b><h3><a href="" data-toggle="modal" class="text-success" onclick="disUtil('{{ $row['proponent']['proponent'] }}')">{{ $row['proponent']['proponent'] }}</a></h3></b>
-                                            <a href="#modified_funds" data-toggle="modal" class="btn btn-sm update_saa" style="min-width:110px;height:30px; cursor: pointer; text-align:center; color:white; background-color:#417524; border-radius:0;" onclick="addBalance('{{ $row['proponent']['proponent'] }}')">Manage Funds</a>                                      
+                                            <a href="#modified_funds" data-toggle="modal" class="btn btn-sm update_saa" style="min-width:110px;height:30px; cursor: pointer; text-align:center; color:white; background-color:#417524; border-radius:0;" onclick="addBalance('{{ $row['proponent']['proponent'] }}')">
+                                                <i class="fa fa-coins"></i> Manage Funds
+                                            </a>                                      
                                         </div>
                                         <div style="overflow-x: auto; width: 100%; margin-top: 10px;">
                                             <table class="table-reponsive" style="border-collapse: collapse; width: 90%; margin: 0; padding: 0; margin-left:5%; font-size:12px">

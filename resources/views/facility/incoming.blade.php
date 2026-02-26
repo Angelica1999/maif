@@ -32,7 +32,7 @@
         <div class="card-body">
             <form method="GET" action="">
                 <div class="input-group float-right w-50" style="min-width: 600px;">
-                    <input type="text" class="form-control" name="keyword" placeholder="" value="">
+                    <input type="text" class="form-control" name="keyword" placeholder="Control No." value="{{ $keyword }}">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
@@ -81,11 +81,16 @@
                                 <tr>
                                     <td>
                                         @if($item->remarks == 2)
-                                            <button onclick="returnTrans({{ $item->id }})" href="#return" style="border-radius:0; color:white" data-toggle="modal" data-backdrop="static" type="button" class="btn btn-warning btn-xs">Return</button>
-                                            <button onclick="accept({{ $item->id }})" style="border-radius:0; color:white" type="button" class="btn btn-success btn-xs">Accept</button>
+                                            <button onclick="returnTrans({{ $item->id }})" href="#return" style="color:white; width:90px" data-toggle="modal" data-backdrop="static" type="button" class="btn btn-warning btn-sm">
+                                                <i class="fa fa-undo"></i> Return
+                                            </button>
+                                            <button onclick="accept({{ $item->id }})" style="color:white;  width:90px" type="button" class="btn btn-success btn-sm">
+                                                <i class="fa fa-check"></i> Accept
+                                            </button>
                                         @else
-                                            <!-- <i class="text-danger">this transmittal is not yet received</i> -->
-                                            <a onclick="receive('{{ $item->id }}')" style="border-radius:0; color:white" type="button" class="btn btn-success btn-xs">Receive</a>
+                                            <a onclick="receive('{{ $item->id }}')" style="color:white; width:90px" type="button" class="btn btn-info btn-sm">
+                                                <i class="fa fa-inbox"></i> Receive
+                                            </a>
                                         @endif
                                     </td>
                                     <td><a onclick="displaySum({{ $item->id }}, {{ $item->remarks }})" href="#summary_display" data-toggle="modal" data-backdrop="static">{{ $item->control_no }}</a></td>
@@ -102,7 +107,7 @@
                                     <td>{{ date('F j, Y', strtotime($item->prepared_date)) }}</td>
                                     <td>{{ number_format($item->total, 2, '.', ',') }}</td>
                                     <td>{{ date('F j, Y', strtotime($item->created_at)) }}</td>
-                                    <td>{{ $item->user->fname .' '.$item->user->lname }}</td>
+                                    <td>{{ ucwords(strtolower($item->user->fname .' '.$item->user->lname)) }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -175,7 +180,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal fade" id="logbook" tabindex="-1" role="dialog" aria-hidden="true" style="opacity:1">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -223,13 +227,14 @@
         </div>
     </div>
 </div>
-
 @endsection
 @section('js')
 <script src="{{ asset('admin/vendors/sweetalert2/sweetalert2.js?v=1') }}"></script>
 <script src="{{ asset('admin/js/select2.js?v=').date('His') }}"></script>
-
 <script>
+    $('#logbook, #summary_display, #return, #trans_tracking').on('hide.bs.modal', function () {
+        $(this).find('input, select, textarea, button').blur();
+    });
     $(document).ready(function() {
         $('.fa-sort').hide();
         $('#facility_filter').select2({

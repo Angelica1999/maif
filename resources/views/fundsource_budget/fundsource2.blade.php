@@ -42,11 +42,17 @@
                                         </tr>
                                         <tr>
                                             <td>
-                                                <button style="border-radius:0px; border:1px solid blue; width:110px;" class="btn btn-sm btn-outline-info" onclick="budgetCost({{ $fund->id }}, '{{ $fund->saa }}')">Budget Cost</button>
-                                                <button style="width:110px; border-radius:0; border:1px solid teal" id="track" data-fundsource-id="{{  $fund->id }}" data-target="#track_details" onclick="track_details(event)" class='btn btn-sm btn-outline-success track_details'>Tracking</button>
+                                                <br>
+                                                <button style="border-radius:0px; border:1px solid blue; width:145px;" class="btn btn-sm btn-outline-info" onclick="budgetCost({{ $fund->id }}, '{{ $fund->saa }}')">
+                                                    <i class="fa fa-money-bill-wave"></i> Budget Cost
+                                                </button>
+                                                <button style="width:145px; border-radius:0; border:1px solid teal" id="track" data-fundsource-id="{{  $fund->id }}" data-target="#track_details" onclick="track_details(event)" class='btn btn-sm btn-outline-success track_details'>
+                                                    <i class="fa fa-search-location"></i> Tracking
+                                                </button>
                                             </td>
                                         </tr>
                                     </table>
+                                    <br>
                                     <div style="display: flex; justify-content: space-between; align-items: center;">
                                         <table style="border-collapse: collapse; width: 100%; margin-top: 5px; font-size:12px">
                                             <?php
@@ -85,39 +91,17 @@
                                             </tr>
                                             <tr>
                                                 <td colspan="3" style="width:50%; padding: 5px;">
-                                                    <button class="btn btn-sm btn-info" href="#budget_funds" onclick="fundsTracking({{ $fund->id }})" data-toggle="modal" style="border-radius: 0; flex: 1; width:110px;">&nbsp;&nbsp;Breakdowns of Funds&nbsp;</button>
-                                                    <button class="btn btn-sm btn-success" href="" onclick="budgetTracking('{{ $fund->saa }}',{{ $fund->id }}, {{ !Empty($fund->admin_cost) ? floatval(str_replace(',', '',$fund->admin_cost)): 0 }}, {{ !Empty($fund->budget_cost) ? floatval(str_replace(',', '',$fund->budget_cost)): 0 }})" data-toggle="modal" style="border-radius: 0; flex: 1; width:110px;">Breakdowns of Charges</button>
+                                                    <br>
+                                                    <button class="btn btn-sm btn-info" href="#budget_funds" onclick="fundsTracking({{ $fund->id }})" data-toggle="modal" style="border-radius: 0; flex: 1; width:145px;">
+                                                        <i class="fa fa-wallet"></i> &nbsp;&nbsp;Breakdowns of Funds&nbsp;
+                                                    </button>
+                                                    <button class="btn btn-sm btn-success" href="" onclick="budgetTracking('{{ $fund->saa }}',{{ $fund->id }}, {{ !Empty($fund->admin_cost) ? floatval(str_replace(',', '',$fund->admin_cost)): 0 }}, {{ !Empty($fund->budget_cost) ? floatval(str_replace(',', '',$fund->budget_cost)): 0 }})" data-toggle="modal" style="border-radius: 0; flex: 1; width:145px;">
+                                                        <i class="fa fa-file-invoice-dollar"></i> Breakdowns of Charges
+                                                    </button>
                                                 </td>
                                               
                                             </tr>
                                         </table>
-                                        <!-- <div style="width:70%;">
-
-                                            <ul class="list-arrow mt-3" style="list-style: none; padding: 0; margin: 0;">
-                                                <?php
-                                                    $allocated = !Empty($fund->proponentInfo[0]->total_allocated_funds) ? $fund->proponentInfo[0]->total_allocated_funds : 0;
-                                                    $admin_cost = !Empty($fund->proponentInfo[0]->total_admin_cost) ? $fund->proponentInfo[0]->total_admin_cost : 0;
-                                                    $utilized = !Empty($fund->utilization[0]->total_bbudget_utilize) ? $fund->utilization[0]->total_bbudget_utilize : 0;
-                                                    $deduction = (isset($fund->a_cost) && count($fund->a_cost) > 0) ? $fund->a_cost[0]->total_admin_cost : 0;
-                                                ?>
-                                                <li><span class="ml-3">Allocated Funds: <strong class="text-info">{{ number_format(floatval(str_replace(',', '',$allocated)), 2, '.', ',') }}</strong></span></li>
-                                                <li onclick="costTracking({{ $fund->id }})">
-                                                    <span class="ml-3" title="Click to see admin cost tracking!">Admin Cost Balance: <strong class="text-info">{{ number_format(floatval(str_replace(',', '',$admin_cost + $fund->budget_cost - $deduction)), 2, '.', ',') }}
-                                                    </strong></span>
-                                                </li>    
-                                                <li>
-                                                    <span class="ml-3">Remaining Balance: 
-                                                        <strong class="{{ $fund->remaining_balance == 0 ? 'text-danger' : 'text-info' }}">
-                                                            {{ number_format(floatval(str_replace(',', '', $allocated - ($utilized + $admin_cost))), 2, '.', ',') }}
-                                                        </strong>
-                                                    </span>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <div style="display: flex; gap: 5px;">
-                                            <button class="btn btn-sm btn-info" href="#budget_funds" onclick="fundsTracking({{ $fund->id }})" data-toggle="modal" style="border-radius: 0; flex: 1;">&nbsp;&nbsp;Breakdowns of Funds&nbsp;</button>
-                                            <button class="btn btn-sm btn-success" href="" onclick="budgetTracking('{{ $fund->saa }}',{{ $fund->id }}, {{ !Empty($fund->admin_cost) ? floatval(str_replace(',', '',$fund->admin_cost)): 0 }}, {{ !Empty($fund->budget_cost) ? floatval(str_replace(',', '',$fund->budget_cost)): 0 }})" data-toggle="modal" style="border-radius: 0; flex: 1;">Breakdowns of Charges</button>
-                                        </div> -->
                                     </div>
                                 </div>
                             </div>
@@ -136,7 +120,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="create_fundsource2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="create_fundsource2" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -177,7 +161,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="update_fundsource" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="update_fundsource" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -523,16 +507,24 @@
         });
     }
 
+    $('#budget_track2').on('hide.bs.modal', function () {
+        $(this).find('input, select, textarea, button').blur();
+    });
+
+    $('#budget_funds').on('hide.bs.modal', function () {
+        $(this).find('input, select, textarea, button').blur();
+    });
+
     var saa_id;
 
-    function budgetTracking(fundsource, id, amount, budget_amount){
+    function budgetTracking(fundsource, id, amount, budget_amount) {
         saa_id = id;
         saa = fundsource;
 
         $('#budget_track_body').empty();
-        $.get("{{ url('budget/fundsource').'/' }}"+saa_id, function(result){
+        $.get("{{ url('budget/fundsource').'/' }}" + saa_id, function(result) {
 
-            if(result == 'No data available!' && amount == 0 && budget_amount == 0){
+            if (result == 'No data available!' && amount == 0 && budget_amount == 0) {
                 $('#budget_track2').modal('hide');
                 Swal.fire({
                     title: "No Data Found",
@@ -541,18 +533,17 @@
                     timer: 1000,
                     timerProgressBar: true,
                 });
-            }else{
+            } else {
                 gen();
                 $('#budget_track_body').html(result);
-                $('#budget_track2').css('display', 'block');
                 $('#budget_track2').modal('show');
-                $('.modal-backdrop').addClass("fade show");
             }
         });
-        if(amount + budget_amount == 0){
-            $('.add_cost').css('display', 'none');
-        }else{
-            $('.add_cost').css('display', 'block');
+
+        if (amount + budget_amount == 0) {
+            $('.add_cost').hide();
+        } else {
+            $('.add_cost').show();
         }
     }
 

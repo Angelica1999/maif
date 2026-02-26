@@ -179,24 +179,10 @@ class PreDvController extends Controller
             })
             ->count();
 
-
-            
-        // $pre_dv_ids = $pre_dv->pluck('id')->toArray();
-        // $totalControls = PreDVControl::whereIn('predv_extension_id',
-        //     PreDVExtension::whereIn('pre_dv_id', $pre_dv_ids)->pluck('id')
-        // )->count();
-        
-        // $totalControls = $pre_dv->get()->sum(function ($preDv) {
-        //     return $preDv->extension->sum(function ($extension) {
-        //         return $extension->controls->count();
-        //     });
-        // });
-
         $total = $pre_dv->take(1)->count();        
         $grand_amount = $pre_dv->sum('grand_total');
         $grand_fee = $pre_dv->sum('prof_fee');
         $pre_dv = $pre_dv->orderBy('id', 'desc')->paginate(20);
-        // return $pre_dv;
 
         $pre_ids = PreDv::pluck('facility_id')->unique()->values()->toArray();
         $user_ids = PreDv::pluck('created_by')->unique()->values()->toArray();
@@ -256,7 +242,6 @@ class PreDvController extends Controller
         $saas = Fundsource::get();
         $proponents = Proponent::select('proponent')->groupBy('proponent')->get();
         $facilities = Facility::get();
-
         if($request->viewAll){
             $request->keyword = '';
             $request->f_id = '';
@@ -438,7 +423,6 @@ class PreDvController extends Controller
             ]
         );
 
-        // return $pre_dv;
         $saas = Fundsource::get();
         $proponents = Proponent::select('proponent')->groupBy('proponent')->get();
         $facilities = Facility::get();
@@ -489,7 +473,6 @@ class PreDvController extends Controller
         $pre_dv = PreDV::where('id', $id)->with('facility')->first();
         $new_dv = NewDV::where('predv_id', $id)->with('dts')->first();
         $ors = Utilization::where('div_id', $new_dv->route_no)->pluck('ors_no')->filter()->unique()->implode(', ');
-        // return $ors;
         $extension = PreDVExtension::where('pre_dv_id', $pre_dv->id)->pluck('id');
         $saas = PreDVSAA::whereIn('predv_extension_id', $extension)->with('saa:id,saa')->get();
         $info = AddFacilityInfo::where('facility_id', $pre_dv->facility_id)->first();
@@ -546,7 +529,7 @@ class PreDvController extends Controller
                 }
             ]
         )->first();
-        // return $pre_dv;
+
         if ($pre_dv) {
             return view('pre_dv.v1_view', [
                 'result' => $pre_dv
@@ -579,7 +562,6 @@ class PreDvController extends Controller
         }
 
         $new_dv = NewDV::where('predv_id', $id)->first();
-        // return $new_dv;
         $extension = PreDVExtension::where('pre_dv_id', $pre_dv->id)->pluck('id');
         $saas = PreDVSAA::whereIn('predv_extension_id', $extension)->with('saa:id,saa')->get();
         $info = AddFacilityInfo::where('facility_id', $pre_dv->facility_id)->first();
@@ -720,7 +702,6 @@ class PreDvController extends Controller
 
     public function savePreDV(Request $request)
     {
-        // return 1;
 
         DB::beginTransaction();
 
@@ -1258,7 +1239,7 @@ class PreDvController extends Controller
         $trans_ids = array_map('intval', explode(',', $pre->trans_id));
 
         $existing = NewDV::where('predv_id', $id)->first();
-        // return $pre;
+
         if ($existing) {
 
             $existing->date = $request->date;
@@ -1352,9 +1333,9 @@ class PreDvController extends Controller
                     'route_no' => $updated_route,
                     'remarks' => 6
                 ]);
-                // Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/dv');
-                // Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/dv');
+
                 $token = $this->getToken();
+
                 if ($token != 1) {
                     $response = Http::withHeaders([
                         'Authorization' => 'Bearer ' . $token
@@ -1466,9 +1447,6 @@ class PreDvController extends Controller
                     'remarks' => 7
                 ]);
 
-                // Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/obligate');
-                // Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/obligate');
-
                 $token = $this->getToken();
                 if ($token != 1) {
                     $response = Http::withHeaders([
@@ -1501,8 +1479,6 @@ class PreDvController extends Controller
                     'remarks' => 8
                 ]);
 
-                // Http::get('http://localhost/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/paid');
-                // Http::get('http://192.168.110.7/guaranteeletter/transmittal/returned/'.$pre->trans_id.'/'.Auth::user()->userid.'/paid');
                 $token = $this->getToken();
                 if ($token != 1) {
                     $response = Http::withHeaders([
@@ -1528,12 +1504,10 @@ class PreDvController extends Controller
     }
 
     public function check(){
-        // return 12;
         $utils = Utilization::whereIn('div_id', ['2024-303798','2024-303788','2024-303779','2024-303748', '2024-303718','2024-303514','2024-303453',
         '2024-303433', '2024-303398','2024-304064', '2024-304058', '2024-303839', '2024-303808', '2024-303802',
         '2024-303390', '2024-302977'])->get();
         
-        // return $utils;
         foreach($utils as $row){
             $row->delete();
             // $info = ProponentInfo::where('id', $row->proponentinfo_id)->first();
@@ -1558,7 +1532,6 @@ class PreDvController extends Controller
             // ->whereYear('created_at', $currentYear)
             ->whereYear('created_at', '>=', $currentYear - 1)
             ->get();
-        // ->orWhereRaw('CAST(REPLACE(remaining_balance, ",", "") AS DECIMAL(15,2)) > 0')
     
         $facility = Facility::where('id', $request->facility_id)->first();
         return response()->json([

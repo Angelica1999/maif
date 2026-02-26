@@ -59,7 +59,6 @@
         </div>
     </div>
 </div>
-
 <!--end-->
 <div class="modal fade" id="hold_pro" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-sm" role="document">
@@ -90,6 +89,9 @@
 @endsection 
 @section('js')
 <script>
+    $('#hold_pro').on('hide.bs.modal', function () {
+        $(this).find('input, select, textarea, button').blur();
+    });
     $('#proponent_id').select2();
     function resumed(code){
         Swal.fire({
