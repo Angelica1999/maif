@@ -1849,6 +1849,7 @@ class HomeController extends Controller
                 }
             }
         }
+
         $sheet->fromArray($data, null, 'B4');
         $sheet->getStyle('E4:F' . (count($data) + 3))
             ->getNumberFormat()->setFormatCode('#,##0.00');
@@ -1880,8 +1881,8 @@ class HomeController extends Controller
 
         $sheet->getStyle('J4:K' . (count($data) + 3))
             ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
-            
-        // Output preparation
+
+            // Output preparation
         ob_start();
         $writer = new Xlsx($spreadsheet);
         $writer->save('php://output');
@@ -1889,8 +1890,8 @@ class HomeController extends Controller
         ob_end_clean();
 
         // Filename
-        $filename = $title . date('Ymd') . '.xlsx';
-
+        $filename = $this->getAcronym($title) . date('Ymd') . '.xlsx';
+        
         // Set headers
         header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         header("Content-Disposition: attachment; filename=$filename");

@@ -866,8 +866,10 @@ class FacilityController extends Controller
         if ($req->viewAll) {
             $req->keyword = '';
         } else if ($req->keyword) {
-            $facilities->where(function($query) use ($req) {
-                $query->where('name', 'LIKE', "%{$req->keyword}%");
+            $facilities->where(function ($query) use ($req) {
+                $query->whereHas('facility', function ($subquery) use ($req) {
+                    $subquery->where('name', 'LIKE', "%$req->keyword%");
+                });
             });
         }
 

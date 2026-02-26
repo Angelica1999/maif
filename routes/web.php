@@ -262,7 +262,7 @@ Route::get('/logbook', [App\Http\Controllers\FacilityController::class, 'logbook
 Route::post('logbook/save', [App\Http\Controllers\FacilityController::class, 'logbookSave'])->name('logbook.save');
 Route::get('/transmittal/references/{type}/{id}', [App\Http\Controllers\FacilityController::class, 'references'])->name('references');
 Route::post('/transmittal/return', [App\Http\Controllers\FacilityController::class, 'returnTrans'])->name('transmittal.return');
-Route::get('/returned', [App\Http\Controllers\FacilityController::class, 'returned'])->name('returned');
+Route::get('/returned-transmittal', [App\Http\Controllers\FacilityController::class, 'returned'])->name('returned');
 Route::get('/returned/details/{id}', [App\Http\Controllers\FacilityController::class, 'returnedDetails'])->name('returned.details');
 Route::get('/transmittal/accept/{id}', [App\Http\Controllers\FacilityController::class, 'acceptTrans'])->name('transmittal.accept');
 Route::get('/accepted', [App\Http\Controllers\FacilityController::class, 'accepted'])->name('accepted');

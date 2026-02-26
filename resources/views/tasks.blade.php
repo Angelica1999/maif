@@ -42,7 +42,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" data-backdrop="static" id="update_note" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" data-backdrop="static" id="update_note" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-md" role="document">
         <div class="modal-content">
             <form action="{{ route('update.note') }}" method="POST" style="background-color: #fff3cd;">

@@ -586,7 +586,7 @@
             <!-- Fundsource -->
             <ul class="nav flex-column" style="margin-bottom: 0;">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('fundsource') }}">
+                    <a class="nav-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\funds_16.png">
                         </span>

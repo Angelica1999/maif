@@ -43,28 +43,28 @@ class DV3Controller extends Controller
                 }
             });
         $dv3 = Dv3::              
-                with([
-                    'extension' => function ($query) {
-                        $query->with([
-                            'proponentInfo' => function ($query) {
-                                $query->with('proponent', 'fundsource');
-                            }
-                        ]);
-                    },
-                    'facility' => function ($query) {
-                        $query->select(
-                            'id',
-                            'name'
-                        );
-                    },
-                    'user' => function ($query) {
-                        $query->select(
-                            'userid',
-                            'fname',
-                            'lname'
-                        );
-                    }
-                ]);
+            with([
+                'extension' => function ($query) {
+                    $query->with([
+                        'proponentInfo' => function ($query) {
+                            $query->with('proponent', 'fundsource');
+                        }
+                    ]);
+                },
+                'facility' => function ($query) {
+                    $query->select(
+                        'id',
+                        'name'
+                    );
+                },
+                'user' => function ($query) {
+                    $query->select(
+                        'userid',
+                        'fname',
+                        'lname'
+                    );
+                }
+            ]);
 
         if($request->gen_key){
             $dateRange = explode(' - ', $filter_date);

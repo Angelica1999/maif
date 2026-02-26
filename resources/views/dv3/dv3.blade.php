@@ -188,7 +188,7 @@
                                                 $doc_id= 0;
                                             }
                                         ?>
-                                        <a data-dvId="{{$row->id}}" href="#create_dv3" onclick="updateDv3('{{$row->route_no}}')" style="border-radius:0; background-color:teal; color:white;width:100px;" type="button" class="btn btn-xs" data-backdrop="static" data-toggle="modal">
+                                        <a data-dvId="{{$row->id}}" href="#create_dv3" onclick="updateDv3('{{ $row->route_no }}')" style="border-radius:0; background-color:teal; color:white;width:100px;" type="button" class="btn btn-xs" data-backdrop="static" data-toggle="modal">
                                             <i class="fa fa-eye"></i> {{ $row->route_no }}
                                         </a>
                                         @if(Auth::user()->userid != 1027 && Auth::user()->userid != 2660)
@@ -204,7 +204,7 @@
                                             </a>
                                         </td>
                                         <td style="padding: 5;">
-                                            <a href="#dv_history" onclick="getHistory('{{$row->route_no}}')" style="border-radius:0; background-color:#0D98BA; color:white; width:90px;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">
+                                            <a href="#dv_history" onclick="getHistory('{{ $row->route_no }}')" style="border-radius:0; background-color:#0D98BA; color:white; width:90px;" data-backdrop="static" data-toggle="modal" type="button" class="btn btn-xs">
                                                 <i class="fa fa-history"></i> Edit History
                                             </a>
                                         </td>
@@ -275,7 +275,6 @@
                                     </div>
                                 </td>
                             </tr>
-                            
                         @endif
                     </tbody>
                     </table>
@@ -289,7 +288,7 @@
 <div class="modal fade" id="create_dv3" role="dialog" style="overflow-y:scroll;">
     <input type="hidden" class="identifier" id="identifier" value="none">
     <div class="modal-dialog modal-lg" role="document" style="width:900px">
-    <div class="modal-content">
+        <div class="modal-content">
             <div class="modal-header" style="background-color:#17c964;padding:15px; color:white">
                 <h4 class="modal-title"><i class="fa fa-plus" style="margin-right:auto;"></i> Disbursement Voucher (v3)</h4>
                 <button type="button" class="close" id="exit" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" style="color:white;">&times;</span></button>
@@ -322,7 +321,27 @@
 <script src="{{ asset('admin/vendors/daterangepicker-master/moment.min.js?v=1') }}"></script>
 <script src="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.js?v=1') }}"></script>                                        
 <script>
+
+    $('#filter_dv3, #create_dv3').on('hide.bs.modal', function () {
+        $(this).find('input, select, textarea, button').blur();
+    });
+    
+    function getHistory(route_no){
+        $('.modal-body').html(loading);
+        var url = "{{ url('/dv/history').'/' }}"+route_no;
+        setTimeout(function(){
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function(result) {
+                    $('.modal-body').html(result);
+                }
+            });
+        },1000);
+    }
+
     $('#docViewerModal').hide();
+    
     function toggleRemarks(link) {
         const container = link.closest('.remarks-container');
         const preview = container.querySelector('.text-preview');

@@ -39,7 +39,7 @@
             @else
                 <div class="alert alert-danger" role="alert" style="width: 100%;">
                 <i class="typcn typcn-times menu-icon"></i>
-                    <strong>No facility being hold found!</strong>
+                    <strong>No facility records on hold were identified.</strong>
                 </div>
             @endif
             
