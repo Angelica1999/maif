@@ -34,18 +34,15 @@
     }
 
 </style>
-<div id="docViewerModal" class="doc-viewer-modal" style="display:none">
+<div id="lddap_modal" class="doc-viewer-modal">
     <span class="doc-viewer-close" onclick="closeDocViewer()">&times;</span>
-    <button class="doc-viewer-delete" title="Delete document (Del key)">
-            <i class="fas fa-trash-alt"></i> Delete
-        </button>
     <div class="doc-viewer-container">
         <div class="doc-viewer-nav doc-viewer-prev" onclick="changeDocument(-1)">
             <i class="fas fa-chevron-left"></i>
         </div>
         <div class="doc-viewer-content" id="docViewerContent">
             <div class="doc-viewer-loading">
-                <i class="fas fa-spinner"></i>
+                <i class="fa fa-spinner fa-spin"></i>
             </div>
         </div>
         <div class="doc-viewer-nav doc-viewer-next" onclick="changeDocument(1)">
@@ -112,7 +109,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="budget_track2" role="dialog" tabindex="-1">
+<div class="modal fade" id="budget_track2" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content" style="border-radius:0px;">
             <div class="modal-header" style="text-align:center">
@@ -183,7 +180,7 @@
     </div>
 </div>
 <!--end-->
-<div class="modal" id="iframeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal" id="iframeModal" tabindex="-1" role="dialog"  aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -200,7 +197,7 @@
     </div>
 </div>
 <!--end-->
-<div class="modal fade" id="i_frame" tabindex="-2" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" >
+<div class="modal fade" id="i_frame" tabindex="-2" role="dialog" aria-hidden="true" >
     <div class="modal-dialog modal-lg " role="document" style="max-width:1000px">
         <div class="modal-content">
             <div class="modal-header" >
@@ -213,7 +210,7 @@
     </div>
 </div>
 <!--end-->
-<div class="modal fade" id="create_fundsource2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="create_fundsource2" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -331,7 +328,7 @@
     </div>
 </div>
 <!--end-->
-<div class="modal fade" id="releaseTo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="releaseTo" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content"> 
             <form action="{{route('document.release')}}" method="POST">

@@ -68,9 +68,11 @@
                     </div>
                 </div>
             </form>
-</div>
-            <!-- <a href="{{route('report')}}" style="height:30px; background-color:teal; color:white;" type="button" class="btn btn-xs">Proponent</a>
-            <a href="{{route('report.facility')}}" style="height:30px; background-color: #228B22; color:white;" type="button" class="btn btn-xs">Facility</a> -->
+            <h4 class="card-title">GENERATE REPORT: PROPONENT</h4>
+            <p class="card-description">
+                MAIF-IPP
+            </p>
+           
             @if(isset($proponents) && $proponents->count() > 0)
                 <div class="row" style="margin-top: 20px;">
                     @foreach($proponents as $proponent)
@@ -79,7 +81,9 @@
                                 <div class="card-body">
                                     <div style ="display:flex; justify-content:space-between;">
                                         <h4 class="card-title" style=" text-align:left;">{{ $proponent->proponent }}</h4>
-                                        <a href="{{ route('proponent.report', ['pro_group' => $proponent->pro_group]) }}" style="height:30px;  background-color:#1D4646; color:white" type="button" class="btn btn-sm">View</a>
+                                        <a href="{{ route('proponent.report', ['pro_group' => $proponent->pro_group]) }}" style="height:30px; background-color:#1D4646; color:white" type="button" class="btn btn-sm">
+                                            <i class="fa fa-eye"></i> View
+                                        </a>
                                     </div>
                                 </div>
                             </div>

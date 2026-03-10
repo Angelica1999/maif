@@ -1,9 +1,5 @@
 <style>
-    
-    /* Profile section */
     .maif-sidebar .sidebar-profile {
-        /* padding: 24px 20px;
-        background: rgba(255,255,255,0.05); */
         border-bottom: 1px solid rgba(255,255,255,0.1);
         display: flex;
         align-items: center;
@@ -43,7 +39,6 @@
         font-weight: 400;
     }
     
-    /* Menu sections */
     .maif-sidebar .sidebar-menu-title {
         color: rgba(255,255,255,0.5);
         font-size: 11px;
@@ -61,13 +56,10 @@
     }
     
     .maif-sidebar .nav-item {
-        /* position: relative; */
         margin-bottom: 2px;
-        /* border-radius: 6px; */
         overflow: hidden;
     }
     
-    /* Navigation links */
     .maif-sidebar .nav-link {
         display: flex;
         align-items: center;
@@ -79,18 +71,15 @@
         user-select: none;
         position: relative;
         background: transparent;
+        /* iOS fix: make sure touch events register */
+        -webkit-tap-highlight-color: rgba(255,255,255,0.1);
+        touch-action: manipulation;
     }
     
     .maif-sidebar .nav-link:hover {
         background: rgba(255,255,255,0.08);
         color: white;
         padding-left: 18px;
-    }
-    
-    .maif-sidebar .nav-link.active {
-        background: rgba(52, 152, 219, 0.2);
-        color: white;
-        border-left: 3px solid #3498db;
     }
     
     .maif-sidebar .menu-icon {
@@ -101,18 +90,21 @@
         align-items: center;
         justify-content: center;
         filter: brightness(0.9);
+        pointer-events: none;
     }
     
     .maif-sidebar .menu-icon img {
         width: 16px;
         height: 16px;
         object-fit: contain;
+        pointer-events: none;
     }
     
     .maif-sidebar .menu-title {
         flex: 1;
         font-size: 14px;
         font-weight: 500;
+        pointer-events: none;
     }
     
     .maif-sidebar .dropdown-icon {
@@ -125,28 +117,22 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        pointer-events: none;
     }
     
     .maif-sidebar .dropdown-icon.rotated {
         transform: rotate(180deg);
     }
-    
-    .maif-sidebar .sub-menu {
+
+    .maif-sidebar .nav-item > .sub-menu {
         max-height: 0;
         overflow: hidden;
-        background: transparent; 
-        transition: max-height 0.3s ease, background 0.2s ease;
+        transition: max-height 0.35s ease;
     }
 
-    .maif-sidebar .nav-item:hover > .sub-menu,
-    .maif-sidebar .nav-item:focus-within > .sub-menu {
-        max-height: 1000px;
+    .maif-sidebar .nav-item.open > .sub-menu {
+        max-height: 2000px;
         background: rgba(0,0,0,0.2);
-        transition-delay: 0s;
-    }
-
-    .maif-sidebar .sub-menu {
-        transition-delay: 1s; 
     }
 
     .maif-sidebar .sub-menu .nav-link {
@@ -165,7 +151,6 @@
         font-size: 13px;
     }
     
-    /* Badges */
     .maif-sidebar .badge {
         font-size: 0.75rem;
         padding: 0.2rem 0.5rem;
@@ -190,7 +175,6 @@
         color: #2c3e50;
     }
     
-    /* Notes section */
     .maif-sidebar .notes-header {
         display: flex;
         align-items: center;
@@ -222,6 +206,8 @@
         font-size: 16px;
         font-weight: bold;
         transition: all 0.2s ease;
+        -webkit-tap-highlight-color: rgba(52,152,219,0.3);
+        touch-action: manipulation;
     }
     
     .add-note-btn:hover {
@@ -243,7 +229,6 @@
         margin-right: 15px;
     }
     
-    /* Note items */
     .maif-sidebar .sidebar-note {
         margin: 10px 15px;
         padding: 14px;
@@ -308,7 +293,6 @@
         transform: translateY(-1px);
     }
 
-    /* Modal */
     .maif-sidebar .modal {
         display: none;
         position: fixed;
@@ -321,6 +305,7 @@
         align-items: center;
         justify-content: center;
         backdrop-filter: blur(3px);
+        -webkit-backdrop-filter: blur(3px);
     }
     
     .maif-sidebar .modal.show {
@@ -354,29 +339,13 @@
         }
     }
     
-    .maif-sidebar .modal-header {
-        padding: 20px;
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        border-bottom: 1px solid var(--border-color);
-    }
-    
-    .maif-sidebar .modal-title {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        color: var(--text-dark);
-        font-size: 18px;
-        font-weight: 600;
-        margin: 0;
-    }
-    
     .maif-sidebar .modal-body {
         padding: 20px;
     }
     
     .maif-sidebar .form-group textarea {
         width: 100%;
-        height: 120px;
+        height: 150px;
         padding: 15px;
         border: 2px solid var(--border-color);
         border-radius: 8px;
@@ -392,7 +361,6 @@
         box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
     }
 
-    /* Scrollbar styling */
     .maif-sidebar .sidebar::-webkit-scrollbar {
         width: 6px;
     }
@@ -410,7 +378,6 @@
         background: rgba(255,255,255,0.3);
     }
 
-    /* Divider */
     .maif-sidebar .nav-divider {
         height: 1px;
         background: rgba(255,255,255,0.1);
@@ -439,8 +406,8 @@
         </li>
         @if($joinedData->section == 6)
             <ul class="nav flex-column" style="margin-bottom: 0;">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
+                <li class="nav-item has-submenu">
+                    <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\funds_16.png">
                         </span>
@@ -475,8 +442,8 @@
                     </ul>
                 </li>
                 <!-- DV (1) Section -->
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
+                <li class="nav-item has-submenu">
+                    <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\dv_16.png">
                         </span>
@@ -503,8 +470,8 @@
                     </ul>
                 </li>
                 <!-- DV (3) Section -->
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
+                <li class="nav-item has-submenu">
+                    <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\dv3_16.png">
                         </span>
@@ -531,8 +498,8 @@
                     </ul>
                 </li>
                 <!-- DV (new) Section -->
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
+                <li class="nav-item has-submenu">
+                    <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\new_16.png">
                         </span>
@@ -574,8 +541,8 @@
             </ul>
             <!-- Fundsource -->
             <ul class="nav flex-column" style="margin-bottom: 0;">
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('fundsource') }}">
+                <li class="nav-item has-submenu">
+                    <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\funds_16.png">
                         </span>
@@ -583,7 +550,6 @@
                         <span class="dropdown-icon">▼</span>
                     </a>
                     <ul class="nav flex-column sub-menu">
-                        <!-- Sub-items -->
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('fundsource') }}">
                                 <span class="menu-icon">
@@ -628,9 +594,9 @@
                 </li>
             </ul>
             <!-- Proponents -->
-            <ul class="nav flex-column" style=" margin-bottom: 0;">
-                <li class="nav-item">
-                    <a class="nav-link" href="#" >
+            <ul class="nav flex-column" style="margin-bottom: 0;">
+                <li class="nav-item has-submenu">
+                    <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\user_account_16.png">
                         </span>
@@ -651,8 +617,8 @@
             </ul>
             <!-- Patients Section -->
             <ul class="nav flex-column" style="margin-bottom: 0;">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
+                <li class="nav-item has-submenu">
+                    <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\patients_16.png">
                         </span>
@@ -661,8 +627,8 @@
                     </a>
                     <ul class="nav flex-column sub-menu">
                         <!-- MPU Submenu -->
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
+                        <li class="nav-item has-submenu">
+                            <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
                                 <span class="menu-icon">
                                     <img src="\maif\public\images\patients_16.png">
                                 </span>
@@ -699,8 +665,6 @@
                                 </li>
                             </ul>
                         </li>
-                    </ul>
-                    <ul class="nav flex-column sub-menu">
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('patients') }}">
                                 <span class="menu-icon">
@@ -721,9 +685,9 @@
                 </li>
             </ul>
             <!-- Disbursement Voucher -->
-            <ul class="nav flex-column" style=" margin-bottom: 0;">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
+            <ul class="nav flex-column" style="margin-bottom: 0;">
+                <li class="nav-item has-submenu">
+                    <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\dv_16.png">
                         </span>    
@@ -759,9 +723,9 @@
                 </li>
             </ul>
             <!-- DV (new) -->
-            <ul class="nav flex-column" style=" margin-bottom: 0;">
-                <li class="nav-item">
-                    <a class="nav-link" href="#" >
+            <ul class="nav flex-column" style="margin-bottom: 0;">
+                <li class="nav-item has-submenu">
+                    <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\new_16.png">
                         </span> 
@@ -797,9 +761,9 @@
                 </li>
             </ul>
             <!-- Transmittal -->
-            <ul class="nav flex-column" style=" margin-bottom: 0;">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
+            <ul class="nav flex-column" style="margin-bottom: 0;">
+                <li class="nav-item has-submenu">
+                    <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\transaction_16.png">
                         </span> 
@@ -836,9 +800,9 @@
             </ul>
             <!-- Accounts (if condition) -->
             @if( $id == 2760 || $id == 2680 || $id == 1721|| $id == "0881")
-                <ul class="nav flex-column" style=" margin-bottom: 0;">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" >
+                <ul class="nav flex-column" style="margin-bottom: 0;">
+                    <li class="nav-item has-submenu">
+                        <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
                             <span class="menu-icon">
                                 <img src="\maif\public\images\user_account_16.png">
                             </span>
@@ -862,8 +826,8 @@
                                     <span class="menu-title">Activation</span>
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">
+                            <li class="nav-item has-submenu">
+                                <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
                                     <span class="menu-icon">
                                         <img src="\maif\public\images\proponents_16.png">
                                     </span>
@@ -897,9 +861,9 @@
                                     <span class="menu-title">Facilities</span>
                                 </a>
                             </li>
-                            <!-- ABC -->
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">
+                            <!-- ABC - BUDGET -->
+                            <li class="nav-item has-submenu">
+                                <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
                                     <span class="menu-icon">
                                         <img src="\maif\public\images\proponents_16.png">
                                     </span>
@@ -915,8 +879,8 @@
                                             <span class="menu-title">Summary</span>
                                         </a>
                                     </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#">
+                                    <li class="nav-item has-submenu">
+                                        <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
                                             <span class="menu-icon">
                                                 <img src="\maif\public\images\dv_16.png">
                                             </span>
@@ -942,8 +906,8 @@
                                             </li>
                                         </ul>
                                     </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#">
+                                    <li class="nav-item has-submenu">
+                                        <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
                                             <span class="menu-icon">
                                                 <img src="\maif\public\images\dv3_16.png">
                                             </span>
@@ -969,8 +933,8 @@
                                             </li>
                                         </ul>
                                     </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#">
+                                    <li class="nav-item has-submenu">
+                                        <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
                                             <span class="menu-icon">
                                                 <img src="\maif\public\images\new_16.png">
                                             </span>
@@ -998,8 +962,9 @@
                                     </li>
                                 </ul>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">
+                            <!-- ABC - CASHIER -->
+                            <li class="nav-item has-submenu">
+                                <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
                                     <span class="menu-icon">
                                         <img src="\maif\public\images\proponents_16.png">
                                     </span>
@@ -1007,8 +972,8 @@
                                     <span class="dropdown-icon">▶</span>
                                 </a>
                                 <ul class="nav flex-column sub-menu">
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#">
+                                    <li class="nav-item has-submenu">
+                                        <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
                                             <span class="menu-icon">
                                                 <img src="\maif\public\images\dv_16.png">
                                             </span>
@@ -1042,8 +1007,8 @@
                                             <span class="menu-title">DV(2)</span>
                                         </a>
                                     </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#">
+                                    <li class="nav-item has-submenu">
+                                        <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
                                             <span class="menu-icon">
                                                 <img src="\maif\public\images\dv3_16.png">
                                             </span>
@@ -1069,8 +1034,8 @@
                                             </li>
                                         </ul>
                                     </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#">
+                                    <li class="nav-item has-submenu">
+                                        <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
                                             <span class="menu-icon">
                                                 <img src="\maif\public\images\new_16.png">
                                             </span>
@@ -1103,9 +1068,9 @@
                 </ul>
             @endif
             <!-- Report -->
-            <ul class="nav flex-column" style=" margin-bottom: 0;">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
+            <ul class="nav flex-column" style="margin-bottom: 0;">
+                <li class="nav-item has-submenu">
+                    <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\report_16.png">
                         </span>
@@ -1140,84 +1105,82 @@
                     </ul>
                 </li>
             </ul>
-            @if($id == "2760")
-            <!-- Report -->
-                <ul class="nav flex-column" style=" margin-bottom: 0;">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <span class="menu-icon">
-                                <img src="\maif\public\images\report_16.png">
-                            </span>
-                            <span class="menu-title">FUR</span>
-                            <span class="dropdown-icon">▼</span>
-                        </a>
-                        <ul class="nav flex-column sub-menu">
-                            <li class="nav-item">
-                                <a class="nav-link" href="#">
-                                    <span class="menu-icon">
-                                        <img src="\maif\public\images\pre_re_16.png">
-                                    </span>
-                                    <span class="menu-title">Government</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('report.facility') }}">
-                                    <span class="menu-icon">
-                                        <img src="\maif\public\images\fc_re_16.png">
-                                    </span>
-                                    <span class="menu-title">Private</span>
-                                    <span class="dropdown-icon">▶</span>
-                                </a>
-                                <ul class="nav flex-column sub-menu">
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{{ route('fur.submission') }}">
-                                            <span class="menu-icon">
-                                                <img src="\maif\public\images\pre_re_16.png">
-                                            </span>
-                                            <span class="menu-title">Submission</span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{{ route('fur.facilities') }}">
-                                            <span class="menu-icon">
-                                                <img src="\maif\public\images\fc_re_16.png">
-                                            </span>
-                                            <span class="menu-title">Facilities</span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#">
-                                            <span class="menu-icon">
-                                                <img src="\maif\public\images\saa_re_16.png">
-                                            </span>
-                                            <span class="menu-title">Consolidated</span>
-                                            <span class="dropdown-icon">▶</span>
-                                        </a>
-                                        <ul class="nav flex-column sub-menu">
-                                            <li class="nav-item">
-                                                <a class="nav-link" href="{{ route('fur.consolidated_a') }}">
-                                                    <span class="menu-icon">
-                                                        <img src="\maif\public\images\pre_re_16.png">
-                                                    </span>
-                                                    <span class="menu-title">Annex A</span>
-                                                </a>
-                                            </li>
-                                            <li class="nav-item">
-                                                <a class="nav-link" href="{{ route('fur.consolidated_b') }}">
-                                                    <span class="menu-icon">
-                                                        <img src="\maif\public\images\fc_re_16.png">
-                                                    </span>
-                                                    <span class="menu-title">Annex B</span>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            @endif
+            <!-- FUR -->
+            <ul class="nav flex-column" style="margin-bottom: 0;">
+                <li class="nav-item has-submenu">
+                    <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
+                        <span class="menu-icon">
+                            <img src="\maif\public\images\report_16.png">
+                        </span>
+                        <span class="menu-title">FUR</span>
+                        <span class="dropdown-icon">▼</span>
+                    </a>
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item">
+                            <a class="nav-link" href="javascript:void(0)">
+                                <span class="menu-icon">
+                                    <img src="\maif\public\images\pre_re_16.png">
+                                </span>
+                                <span class="menu-title">Government</span>
+                            </a>
+                        </li>
+                        <li class="nav-item has-submenu">
+                            <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
+                                <span class="menu-icon">
+                                    <img src="\maif\public\images\fc_re_16.png">
+                                </span>
+                                <span class="menu-title">Private</span>
+                                <span class="dropdown-icon">▶</span>
+                            </a>
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('fur.submission') }}">
+                                        <span class="menu-icon">
+                                            <img src="\maif\public\images\pre_re_16.png">
+                                        </span>
+                                        <span class="menu-title">Submission</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('fur.facilities') }}">
+                                        <span class="menu-icon">
+                                            <img src="\maif\public\images\fc_re_16.png">
+                                        </span>
+                                        <span class="menu-title">Facilities</span>
+                                    </a>
+                                </li>
+                                <li class="nav-item has-submenu">
+                                    <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
+                                        <span class="menu-icon">
+                                            <img src="\maif\public\images\saa_re_16.png">
+                                        </span>
+                                        <span class="menu-title">Consolidated</span>
+                                        <span class="dropdown-icon">▶</span>
+                                    </a>
+                                    <ul class="nav flex-column sub-menu">
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{{ route('fur.consolidated_a') }}">
+                                                <span class="menu-icon">
+                                                    <img src="\maif\public\images\pre_re_16.png">
+                                                </span>
+                                                <span class="menu-title">Annex A</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="{{ route('fur.consolidated_b') }}">
+                                                <span class="menu-icon">
+                                                    <img src="\maif\public\images\fc_re_16.png">
+                                                </span>
+                                                <span class="menu-title">Annex B</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
             <!-- Logbook -->
             <ul class="nav flex-column" style="margin-bottom: 0;">
                 <li class="nav-item">
@@ -1255,8 +1218,8 @@
         @if(Auth::user()->userid == 1027 || Auth::user()->userid == 2660)
             <!-- DV Section for specific users -->
             <ul class="nav flex-column" style="margin-bottom: 0;">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
+                <li class="nav-item has-submenu">
+                    <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\dv_16.png">
                         </span>
@@ -1295,8 +1258,8 @@
         @if($joinedData->section == 7)
             <!-- Cashier Section -->
             <ul class="nav flex-column" style="margin-bottom: 0;">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
+                <li class="nav-item has-submenu">
+                    <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\dv_16.png">
                         </span>
@@ -1330,8 +1293,8 @@
                         <span class="menu-title">DV (v2)</span>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
+                <li class="nav-item has-submenu">
+                    <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\dv3_16.png">
                         </span>
@@ -1358,8 +1321,8 @@
                     </ul>
                 </li>
                 <!-- DV (new) Section -->
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
+                <li class="nav-item has-submenu">
+                    <a class="nav-link dropdown-toggle-link" href="javascript:void(0)">
                         <span class="menu-icon">
                             <img src="\maif\public\images\new_16.png">
                         </span>
@@ -1388,12 +1351,10 @@
             </ul>
         @endif
     </ul>
-    <!-- Notes Section -->
     <div class="notes-header">
         <span class="notes-header-title">Personal Notes</span>
-        <button class="add-note-btn" onclick="showModal()">+</button>
+        <button class="add-note-btn" onclick="showNoteModal()">+</button>
     </div>
-    
     <div class="notes-legend">
         <small>Status Legend:</small>
         <div>
@@ -1405,7 +1366,6 @@
             </span>
         </div>
     </div>
-
     @foreach($notes as $note)
         @if($note->status == 0)
             <div class="sidebar-note">
@@ -1424,21 +1384,21 @@
     <!-- Modal -->
     <div class="modal" id="new_note">
         <div class="modal-content">
-            <form action="{{ route('save.note') }}" method="POST">
+            <form action="{{ route('save.note') }}" method="POST" style="background-color: #fff3cd;">
                 @csrf
                 <div class="modal-header">
-                    <h4 class="modal-title">
-                        <span>📝</span>
-                        Create New Note
+                    <h4 class="text-success d-flex align-items-center">
+                        <i style="font-size:30px" class="typcn typcn-document-text menu-icon mr-2"></i>
+                        New Note
                     </h4>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
+                    <div class="form-group" style="margin-bottom:0px">
                         <textarea name="notes" placeholder="Enter your note here..." required></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" style="background-color:gray; color:white" onclick="hideModal()">
+                    <button type="button" class="btn btn-default" style="background-color:gray; color:white" onclick="hideNoteModal()">
                         Cancel
                     </button>
                     <button type="submit" class="btn btn-success">
@@ -1449,30 +1409,65 @@
         </div>
     </div>
 </nav>
+<script>
+    (function () {
+        'use strict';
 
-<script>    
-    function showModal() {
+        function initDropdowns() {
+            var toggleLinks = document.querySelectorAll('.maif-sidebar .dropdown-toggle-link');
+
+            toggleLinks.forEach(function (link) {
+                link.addEventListener('touchend', handleToggle, { passive: false });
+                link.addEventListener('click', handleToggle, false);
+            });
+        }
+
+        function handleToggle(e) {
+            if (e.type === 'touchend') {
+                e.preventDefault();
+            }
+            e.stopPropagation();
+
+            var parentLi = this.closest('.nav-item.has-submenu');
+            if (!parentLi) return;
+
+            var isOpen = parentLi.classList.contains('open');
+
+            var siblings = parentLi.parentElement
+                ? parentLi.parentElement.querySelectorAll(':scope > .nav-item.has-submenu.open')
+                : [];
+            siblings.forEach(function (sib) {
+                if (sib !== parentLi) {
+                    sib.classList.remove('open');
+                    var sibIcon = sib.querySelector(':scope > .dropdown-toggle-link .dropdown-icon');
+                    if (sibIcon) sibIcon.classList.remove('rotated');
+                }
+            });
+
+            parentLi.classList.toggle('open', !isOpen);
+
+            var icon = parentLi.querySelector(':scope > .dropdown-toggle-link .dropdown-icon');
+            if (icon) icon.classList.toggle('rotated', !isOpen);
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initDropdowns);
+        } else {
+            initDropdowns();
+        }
+    }());
+    
+    function showNoteModal() {
         document.getElementById('new_note').classList.add('show');
     }
-    
-    function hideModal() {
+
+    function hideNoteModal() {
         document.getElementById('new_note').classList.remove('show');
     }
-    
-    document.getElementById('new_note').addEventListener('click', function(e) {
+
+    document.getElementById('new_note').addEventListener('click', function (e) {
         if (e.target === this) {
-            hideModal();
+            hideNoteModal();
         }
     });
-    
-    // document.querySelectorAll('.nav-link').forEach(link => {
-    //     const dropdownIcon = link.querySelector('.dropdown-icon');
-    //     if (dropdownIcon) {
-    //         link.addEventListener('click', function(e) {
-    //             if (this.nextElementSibling && this.nextElementSibling.classList.contains('sub-menu')) {
-    //                 dropdownIcon.classList.toggle('rotated');
-    //             }
-    //         });
-    //     }
-    // });
 </script>

@@ -82,10 +82,9 @@
                     <div class="input-group">
                         <input type="text" id="yearPicker" name="year" value="{{ $year }}" readonly disabled>
                         <a href="{{ url('fur/annexA/excel/'.$id.'/'.$year, [], request()->isSecure()) }}"
-   class="btn"
-   style="background-color: teal; border-radius: 0px; color: white;">
-   EXCEL
-</a>
+                            class="btn" style="background-color: teal; border-radius: 0px; color: white;">
+                            EXCEL
+                        </a>
                         <!-- <a href="{{ route('annex_a.excel', ['id' => $id, 'year'=>$year]) }}" type="submit" value="excel" name="excel" class="btn" style="background-color: teal; border-radius: 0px; color: white;">EXCEL</a> -->
                     </div>
                 </form>

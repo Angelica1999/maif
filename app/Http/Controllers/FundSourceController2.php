@@ -45,10 +45,7 @@ class FundSourceController2 extends Controller{
         }
     }
 
-    public function fundSource2(Request $request) {
-        // if(Auth::user()->userid != 2163){
-        //     return "under development";
-        // }
+    public function fundSource2(Request $request){
         $section = DB::connection('dohdtr')
             ->table('users')
             ->leftJoin('dts.users', 'users.userid', '=', 'dts.users.username')
@@ -112,7 +109,7 @@ class FundSourceController2 extends Controller{
             }])
             ->paginate(15);
         } 
-        // return $fundsources;
+
         return view('fundsource_budget.fundsource2',[
             'fundsources' => $fundsources,
             'keyword' => $request->keyword,
@@ -244,30 +241,6 @@ class FundSourceController2 extends Controller{
 
 
     public function createfundSource2(Request $request){
-        // $funds = $request->input('allocated_funds');
-        // $saas = $request->input('saa');  
-        // $cost_value = $request->input('admin_cost');
-        // foreach($funds as $index => $fund){
-        //     $saa_ex = Fundsource::where('saa', $saas[$index])->first();
-
-        //     if($saa_ex){
-        //         session()->flash('saa_exist', true);
-        //     }else{
-        //         $fundsource = new Fundsource();
-        //         $fundsource->saa = $saas[$index];
-        //         $fundsource->alocated_funds = str_replace(',','',$fund);
-        //         $fundsource->cost_value = $cost_value[$index];
-
-        //         $admin_cost = (double) str_replace(',','',$fund) * ($cost_value[$index]/100);
-        //         $fundsource->admin_cost = $admin_cost;
-        //         $fundsource->remaining_balance = (double)str_replace(',','',$fund) - $admin_cost ;
-                
-        //         $fundsource->created_by = Auth::user()->userid;
-        //         $fundsource->save();
-        //         session()->flash('fundsource_save', true);
-        //     }
-        // }
-        // return redirect()->back();
 
         $data = $request->input('breakdowns');
 
@@ -331,10 +304,8 @@ class FundSourceController2 extends Controller{
 
         if($type == 'pending'){
             $result = Dv::whereNull('obligated')->with(['fundsource','facility', 'master'])->orderby('id', 'desc');
-          // $result = Dv::whereNull('obligated')->whereNotNull('dv_no')->where('dv_no', '!=', '')->with(['fundsource','facility', 'master'])->orderby('id', 'desc');
         }else if($type == 'obligated'){
             $result = Dv::whereNotNull('obligated')->with(['fundsource','facility', 'master'])->orderby('id', 'desc');
-          // $result = Dv::whereNotNull('obligated')->whereNotNull('dv_no')->with(['fundsource','facility', 'master'])->orderby('id', 'desc');
         }
 
         if($request->viewAll){
@@ -359,10 +330,8 @@ class FundSourceController2 extends Controller{
     public function cashierPending(Request $request, $type){
 
         if($type == 'pending'){
-            // $result = Dv::whereNotNull('obligated')->whereNotNull('dv_no')->whereNull('paid')->with(['fundsource','facility', 'master'])->orderby('id', 'desc');
             $result = Dv::whereNotNull('obligated')->whereNull('paid')->with(['fundsource','facility', 'master'])->orderby('id', 'desc');
         }else{
-            // $result = Dv::whereNotNull('obligated')->whereNotNull('dv_no')->whereNotNull('paid')->with(['fundsource','facility', 'master'])->orderby('id', 'desc');
             $result = Dv::whereNotNull('obligated')->whereNotNull('paid')->with(['fundsource','facility', 'master'])->orderby('id', 'desc');
         }
 
@@ -461,9 +430,7 @@ class FundSourceController2 extends Controller{
                     ])->where('status', 0)->get();
             $admin_c = AdminCostUtilization::with('fundSourcedata:id,saa')->where('fundsource_id', $saa->id)->get();
             $combi = $util->merge($admin_c);
-            $combi = $combi->sortByDesc('updated_at'); // Change to 'updated_by' if needed
-            // return $combi;
-                    // return $util;
+            $combi = $combi->sortByDesc('updated_at'); 
             $perPage = 10;
             $data = new LengthAwarePaginator(
                 $combi->forPage(LengthAwarePaginator::resolveCurrentPage(), $perPage),
@@ -473,17 +440,12 @@ class FundSourceController2 extends Controller{
                 ['path' => LengthAwarePaginator::resolveCurrentPath()]
             );
 
-
-            // if(count($combi) > 0){
-                return view('fundsource_budget.budget_tracking',[
-                    'result' => $data,
-                    'facilities' => Facility::get(),
-                    'last' => $combi->last(),
-                    'confirm' => 0
-                ]);
-            // }else{
-            //     return 'No data available!';
-            // }
+            return view('fundsource_budget.budget_tracking',[
+                'result' => $data,
+                'facilities' => Facility::get(),
+                'last' => $combi->last(),
+                'confirm' => 0
+            ]);
           
         }else{
             return 'No data found';
@@ -523,16 +485,6 @@ class FundSourceController2 extends Controller{
                 ->groupBy('fundsource_id');
             }])
             ->first();
-
-        // ->with(['proponentInfo' => function($query) {
-        //     $query->selectRaw('
-        //         fundsource_id, 
-        //         sum(CAST(REPLACE(alocated_funds, ",", "") AS DECIMAL(18, 2))) - sum(IFNULL(admin_cost, 0)) as total_allocated_funds,
-        //         sum(IFNULL(admin_cost, 0)) as total_admin_cost
-        //     ')
-        //     ->groupBy('fundsource_id'); 
-        // }
-        // return $saa;
         if($saa){
             $infos = ProponentInfo::where('fundsource_id', $saa->id)
                 ->with('proponent:id,proponent', 'main_pro:id,proponent')->get();
@@ -627,14 +579,6 @@ class FundSourceController2 extends Controller{
                 $direct = 'sd';
             }
 
-            // if ($request->ajax()) {
-            //     // Return only the updated table rows for AJAX requests
-            //     return response()->json([
-            //         'html' => view('fundsource_budget.confirmation_table_rows', ['data' => $util])->render()
-            //     ]);
-            // }
-    
-            // return $util->groupBy('fundsource_id');
             return view('fundsource_budget.confirmation',[
                 'facilities' =>Facility::get(),
                 'data' => $util->groupBy('fundsource_id'),
@@ -696,23 +640,6 @@ class FundSourceController2 extends Controller{
                     ]);
                 }
             ])->where('status', 0)->paginate(10);
-
-            // return $util;
-
-        // $admin_c = AdminCostUtilization::with('fundSourcedata:id,saa')->get();
-        // $combi = $util->merge($admin_c);
-        // $combi = $combi->sortByDesc('updated_at'); // Change to 'updated_by' if needed
-        // return $combi;
-                // return $util;
-        // $perPage = 10;
-        // $data = new LengthAwarePaginator(
-        //     $util->forPage(LengthAwarePaginator::resolveCurrentPage(), $perPage),
-        //     $combi->count(),
-        //     $perPage,
-        //     null,
-        //     ['path' => LengthAwarePaginator::resolveCurrentPath()]
-        // );
-
 
         if(count($util) > 0){
             return view('fundsource_budget.budget_tracking',[

@@ -1,5 +1,4 @@
 @extends('layouts.app_login')
-
 @section('content')
     <div class="text-center">
         <h3>MAIFIPP</h3>

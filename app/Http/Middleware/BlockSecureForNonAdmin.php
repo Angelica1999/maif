@@ -17,7 +17,7 @@ class BlockSecureForNonAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $allowed_users = [2760, 2680];
+        $allowed_users = [2760, 2680, 200200097];
 
         if (Auth::check() && !in_array(Auth::user()->userid, $allowed_users) && RequestFacade::secure()) {
             Auth::logout();

@@ -43,28 +43,28 @@ class DV3Controller extends Controller
                 }
             });
         $dv3 = Dv3::              
-                with([
-                    'extension' => function ($query) {
-                        $query->with([
-                            'proponentInfo' => function ($query) {
-                                $query->with('proponent', 'fundsource');
-                            }
-                        ]);
-                    },
-                    'facility' => function ($query) {
-                        $query->select(
-                            'id',
-                            'name'
-                        );
-                    },
-                    'user' => function ($query) {
-                        $query->select(
-                            'userid',
-                            'fname',
-                            'lname'
-                        );
-                    }
-                ]);
+            with([
+                'extension' => function ($query) {
+                    $query->with([
+                        'proponentInfo' => function ($query) {
+                            $query->with('proponent', 'fundsource');
+                        }
+                    ]);
+                },
+                'facility' => function ($query) {
+                    $query->select(
+                        'id',
+                        'name'
+                    );
+                },
+                'user' => function ($query) {
+                    $query->select(
+                        'userid',
+                        'fname',
+                        'lname'
+                    );
+                }
+            ]);
 
         if($request->gen_key){
             $dateRange = explode(' - ', $filter_date);
@@ -112,7 +112,6 @@ class DV3Controller extends Controller
             }
         }
 
-        //header sorting
         if ($sort = $request->sort) {
             if($sort == 'status'){
                 $dv3->orderBy('status', $request->input('order'));
@@ -160,7 +159,6 @@ class DV3Controller extends Controller
         $on =  Dv3::groupBy(DB::raw('DATE(created_at)'))->pluck(DB::raw('MAX(created_at)'));
         $by =  User::whereIn('userid', Dv3::pluck('created_by'))->select('userid', 'lname', 'fname')->get();
 
-        //header filtering 
         // if($request->filt3_dv){
             if($request->filter_rem3 != null){
                 $dv3->whereIn('remarks', explode(',', $request->filter_rem3));
@@ -253,8 +251,6 @@ class DV3Controller extends Controller
         
         $amount = $request->amount;
         $saa = $request->fundsource_id;
-        // $vat = $request->vat_amount;
-        // $ewt = $request->ewt_amount;
 
         foreach($request->info_id as $index => $id){
             
@@ -407,8 +403,6 @@ class DV3Controller extends Controller
         $userid = Auth::user()->userid;
         $amount = $request->amount;
         $saa = $request->fundsource_id;
-        // $vat = $request->vat_amount;
-        // $ewt = $request->ewt_amount;
       
         $dv3 = Dv3::where('route_no',$route_no)->with('extension')->first();
         foreach($dv3->extension as $item){
@@ -420,7 +414,6 @@ class DV3Controller extends Controller
             $all = Utilization::where('proponentinfo_id', $item->info_id)->where('id', '>', $get->id)->orderBy('id', 'asc')->get();
 
             foreach($all as $row){
-                // return str_replace(',','',$row->beginning_balance) + $item->amount;
                 $row->beginning_balance = str_replace(',','',$row->beginning_balance) + $item->amount;
                 $row->save();
             }
@@ -470,7 +463,6 @@ class DV3Controller extends Controller
             $dv3_funds->ewt = 0;
             $dv3_funds->save();
         }
-        // return $i;
 
         $desc = "Disbursement voucher for " . Facility::where('id', $request->dv3_facility)->value('name') . " amounting to Php " . number_format(str_replace(',', '', $request->total_amount), 2, '.', ',');
         $tracking = TrackingMaster::where('route_no', $route_no)->first();
@@ -501,12 +493,10 @@ class DV3Controller extends Controller
     }
 
     public function pendingDv3(Request $request, $type) { 
-        // Reset the keyword if 'viewAll' is passed
         if ($request->viewAll) {
             $request->keyword = '';
         }
     
-        // Common relationship structure
         $relations = [
             'extension' => function ($query) {
                 $query->with([
@@ -523,10 +513,8 @@ class DV3Controller extends Controller
             }
         ];
     
-        // Initialize the query builder
         $dv3 = Dv3::with($relations)->orderBy('created_at', 'desc');
     
-        // Apply conditions based on the $type
         if ($type == 'unsettled') {
             $dv3->whereNull('ors_no');
         } elseif ($type == 'processed') {
@@ -537,7 +525,6 @@ class DV3Controller extends Controller
             $dv3->whereNotNull('ors_no')->whereNotNull('paid_by');
         }
     
-        // Apply keyword filtering if provided
         if ($request->keyword) {
             $keyword = $request->keyword;
             $dv3->where(function ($query) use ($keyword) {
@@ -545,7 +532,6 @@ class DV3Controller extends Controller
                       ->orWhere('dv_no', 'LIKE', "%$keyword%");
             });
     
-            // If no records are found in Dv3, check NewDV table
             if ($dv3->count() == 0) {
                 $new = NewDV::where('route_no', 'LIKE', "%$keyword%")
                             ->orWhere('dv_no', 'LIKE', "%$keyword%")
@@ -560,10 +546,9 @@ class DV3Controller extends Controller
             }
         }
     
-        // Return the view with pagination, ensuring $type is passed properly
         return view('fundsource_budget.dv3_list', [
             'dv3' => $dv3->paginate(50),
-            'type' => $type,  // Ensures the original type is preserved
+            'type' => $type, 
             'keyword' => $request->keyword
         ]);
     }    
@@ -642,7 +627,6 @@ class DV3Controller extends Controller
 
     public function getFundsourceList($facility_id){
         $info = ProponentInfo::with('facility', 'fundsource', 'proponent')->get();
-        // return count($info);
         $facility = Facility::where('id', $facility_id)->first();
         return response()->json(['info' => $info, 'facility' => $facility]);
     }

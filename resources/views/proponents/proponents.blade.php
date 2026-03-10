@@ -69,9 +69,10 @@
                     </div>
                 </div>
             </form>
-</div>
-            <!-- <a href="{{route('report')}}" style="height:30px; background-color:teal; color:white;" type="button" class="btn btn-xs">Proponent</a>
-            <a href="{{route('report.facility')}}" style="height:30px; background-color: #228B22; color:white;" type="button" class="btn btn-xs">Facility</a> -->
+            <h4 class="card-title">PROPONENTS</h4>
+            <p class="card-description">
+                MAIF-IPP
+            </p>
             @if(isset($proponents) && $proponents->count() > 0)
                 <div class="row">
                     @foreach($proponents as $proponent)
@@ -94,7 +95,7 @@
                 </div>
             @else
                 <div class="alert alert-danger" role="alert" style="width: 100%;">
-                <i class="typcn typcn-times menu-icon"></i>
+                    <i class="typcn typcn-times menu-icon"></i>
                     <strong>No proponent found!</strong>
                 </div>
             @endif
@@ -105,8 +106,6 @@
         </div>
     </div>
 </div>
-
-<!--end-->
 <div class="modal fade" id="updateProponent" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content"> 
@@ -125,28 +124,29 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button style = "background-color:lightgray"  class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> Close</button>
+                    <button style="background-color:lightgray" class="btn btn-default" data-dismiss="modal"><i class="typcn typcn-times menu-icon"></i> Close</button>
                     <button type="submit" class="btn btn-success btn-submit" onclick=""><i style = "" class="typcn typcn-location-arrow menu-icon"></i> Update</button>
                 </div>
             </form>
         </div>
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-
-
 @endsection
-
 @section('js')
-    <script>
-        function putData(id){
-            var proponents = @json($all_proponents);
-            var proponent = proponents.find(item => item.id === id);
-            if(proponent){
-                $('#id').val(proponent.id);
-                $('#proponent').val(proponent.proponent);
-                $('#proponent_code').val(proponent.proponent_code);
-            }
+<script>
+    $('#updateProponent').on('hide.bs.modal', function () {
+        $(this).find('input, select, textarea, button').blur();
+    });
+
+    function putData(id){
+        var proponents = @json($all_proponents);
+        var proponent = proponents.find(item => item.id === id);
+        if(proponent){
+            $('#id').val(proponent.id);
+            $('#proponent').val(proponent.proponent);
+            $('#proponent_code').val(proponent.proponent_code);
         }
-        
-    </script>
+    }
+    
+</script>
 @endsection

@@ -79,8 +79,8 @@
                     <p class="card-description">MAIF-IPP</p>
                 </div>
             <form method="GET" action="">
-                <div class="input-group">
-                    <input type="text" class="form-control" name="keyword" placeholder="Search..." value="{{ $keyword }}">
+                <div class="input-group float-right w-50" style="min-width: 600px;">
+                    <input type="text" class="form-control" name="keyword" placeholder="Control No." value="{{ $keyword }}">
                     <div class="input-group-append">
                         <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
                         <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
@@ -95,7 +95,7 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th></th>
+                                <th style="min-width:120px;"></th>
                                 <th style="min-width:120px;">Control No @sortablelink('control', '⇅')</th>
                                 <th style="min-width:150px;">
                                     <select id="status_filter" class="select2" style="width: 100px; border: none; background: transparent; display:none" multiple>
@@ -120,13 +120,16 @@
                                 <th style="min-width:150px;">Total Amount @sortablelink('total', '⇅')</th>
                                 <th style="min-width:120px;">Created On @sortablelink('on', '⇅')</th>
                                 <th style="min-width:120px;">Created By @sortablelink('by', '⇅')</th>
+                                <th style="min-width:120px;">Accepted By</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($transmittal  as $item)
                                 <tr>
                                     <td>
-                                        <button onclick="disRem({{ $item->id }})" class="btn btn-sm btn-success" style="border-radius:0px" data-toggle="modal" href="#trans_remarks">Remarks</button>
+                                        <button onclick="disRem({{ $item->id }})" class="btn btn-sm btn-success" data-toggle="modal" href="#trans_remarks">
+                                            <i class="fa fa-upload"></i> Remarks
+                                        </button>
                                     </td>
                                     <td><a onclick="displaySum({{ $item->id }})" href="#summary_display" data-toggle="modal" data-backdrop="static">{{ $item->control_no }}</a></td>
                                     <td>
@@ -142,7 +145,8 @@
                                     <td>{{ date('F j, Y', strtotime($item->prepared_date)) }}</td>
                                     <td>{{ number_format($item->total, 2, '.', ',') }}</td>
                                     <td>{{ date('F j, Y', strtotime($item->created_at)) }}</td>
-                                    <td>{{ $item->user->fname .' '.$item->user->lname }}</td>
+                                    <td>{{ ucwords(strtolower($item->user->fname .' '.$item->user->lname)) }}</td>
+                                    <td>{{ $item->accepted ? ucwords(strtolower($item->accepted->fname .' '.$item->accepted->lname)) : '' }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -237,11 +241,13 @@
         </div>
     </div>
 </div>
-
 @endsection
 @section('js')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    $('#summary_display, #return, #trans_tracking, #trans_remarks').on('hide.bs.modal', function () {
+        $(this).find('input, select, textarea, button').blur();
+    });
     $(document).ready(function() {
         $('.fa-sort').hide();
         $('#facility_filter').select2({

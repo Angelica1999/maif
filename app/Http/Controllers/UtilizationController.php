@@ -36,8 +36,6 @@ class UtilizationController extends Controller{
    
     public function trackingBudget($fundsourceId, $type){
 
-        // $utilization = Utilization::whereNotNull('obligated')->where('fundsource_id', $fundsourceId)
-        //     ->with('proponentdata', 'fundSourcedata', 'facilitydata', 'user_budget')->orderBy('id', 'desc')->get();
         $utilization = Utilization::whereNotNull('obligated')
             ->where('fundsource_id', $fundsourceId)
             ->with('proponentdata', 'fundSourcedata', 'facilitydata', 'user_budget')

@@ -1,5 +1,5 @@
 <form id="contractForm" method="POST" action="{{ route('facility.update') }}">
-<input type="hidden" name="main_id" value="{{ $main_id }}">
+    <input type="hidden" name="main_id" value="{{ $main_id }}">
     <div class="modal-body">
         @csrf
         <div class="row">
@@ -58,8 +58,8 @@
                     <input type="number" class="form-control" id="ewt_pf" name="ewt_pf" value="{{ floor($facility->ewt_pf) }}" placeholder="Ewt" required step="any">
                 </div>
             </div>
-            <div class="col-md-12" style="border:1px solid green; width:90%">
-                <div class="col-md-12">
+            <div class="col-md-12">
+                <div class="col-md-12" style="border:1px solid green; padding:5px;">
                     <div class="form-group">
                         <br>
                         <label >Official Email</label>
@@ -73,10 +73,15 @@
                     </div>
                 </div>
             </div>
-      </div>       
-    <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="submit" id="updateButton" class="btn btn-primary">Update Facility</button>
+        </div>   
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                <i class="fa fa-times"></i>  Close
+            </button>
+            <button type="submit" id="updateButton" class="btn btn-primary">
+                <i class="fa fa-sync"></i> Update
+            </button>
+        </div>
     </div>
 </form>
 <script>
@@ -106,23 +111,22 @@
             }
         });
     });
+    document.addEventListener("DOMContentLoaded", function() {
+        var cintractForm = document.getElementById("contractForm")
+        var updateButton = document.getElementById("updateButton");
 
-document.addEventListener("DOMContentLoaded", function() {
-  var cintractForm = document.getElementById("contractForm")
-    var updateButton = document.getElementById("updateButton");
+        updateButton.addEventListener("click", function(){
+        updateButton.disabled = true;
 
-    updateButton.addEventListener("click", function(){
-       updateButton.disabled = true;
+        
+            var delay = 3000;
+            updateButton.innerText = "Submitting in 3 seconds...";
 
-     
-        var delay = 3000;
-        updateButton.innerText = "Submitting in 3 seconds...";
-
-      setTimeout(function () {
-        updateButton.disabled = false;
-        updateButton.innerText = "Update Facility";
-        contractForm.submit();
-      }, delay);
+        setTimeout(function () {
+            updateButton.disabled = false;
+            updateButton.innerText = "Update Facility";
+            contractForm.submit();
+        }, delay);
+        });
     });
-});
 </script>

@@ -54,7 +54,12 @@ class UserController extends Controller{
         }else if($req->keyword){
             $users->where(function ($query) use ($req) {
                 $query->where('lname', 'LIKE', "%{$req->keyword}%")
-                      ->orWhere('fname', 'LIKE', "%{$req->keyword}%");
+                    ->orWhere('fname', 'LIKE', "%{$req->keyword}%")
+                    ->orWhereHas('facility', function ($subquery) use ($req) {
+                    $subquery->where('name', 'LIKE', "%$req->keyword%");
+                })->orWhereHas('proponent', function ($subquery) use ($req) {
+                    $subquery->where('proponent', 'LIKE', "%$req->keyword%");
+                });
             });
         }
 
@@ -78,13 +83,17 @@ class UserController extends Controller{
 
     public function usersActivation(Request $req){
         $registration = Registration::with('facility','proponent')->sortable();
-      
         if($req->viewAll){
             $req->keyword = '';
         }else if($req->keyword){
             $registration->where(function ($query) use ($req) {
                 $query->where('lname', 'LIKE', "%{$req->keyword}%")
-                      ->orWhere('fname', 'LIKE', "%{$req->keyword}%");
+                    ->orWhere('fname', 'LIKE', "%{$req->keyword}%")
+                    ->orWhereHas('facility', function ($subquery) use ($req) {
+                    $subquery->where('name', 'LIKE', "%$req->keyword%");
+                })->orWhereHas('proponent', function ($subquery) use ($req) {
+                    $subquery->where('proponent', 'LIKE', "%$req->keyword%");
+                });
             });
         }
 
@@ -97,7 +106,7 @@ class UserController extends Controller{
                 $registration->where('user_type', 3);
             }
         }
-// return $req->account_type;
+
         return view('user_activation',[
             'registrations' => $registration->orderBy('id', 'desc')->paginate(50),
             'keyword' => $req->keyword,
@@ -114,6 +123,11 @@ class UserController extends Controller{
     public function activate($id){
         OnlineUser::where('id', $id)->update(['status' => 0]);
         return redirect()->back()->with('user_activation', true);
+    }
+
+    public function deleteUser($id){
+        OnlineUser::where('id', $id)->delete();
+        return redirect()->back()->with('user_deletion', true);
     }
 
     public function verifyuser($id)
@@ -168,7 +182,6 @@ class UserController extends Controller{
     }
 
     public function save(){
-        // $registration = OnlineUser::where('id', 1)->first();
         $user = new OnlineUser();
             $user->fname = 'Oronan';
             $user->lname = 'Angel';

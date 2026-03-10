@@ -59,7 +59,6 @@
          </div>
       </div>
    </div>
-
    <script src="{{ asset('admin/vendors/js/vendor.bundle.base.js') }}"></script>
    <script src="{{ asset('admin/js/off-canvas.js') }}"></script>
    <script src="{{ asset('admin/js/hoverable-collapse.js') }}"></script>
@@ -660,6 +659,12 @@
 				msg: 'Successfully updated facility list!'
 			});
 		@endif
+		@if(session('new_facility'))
+			<?php session()->forget('new_facility'); ?>
+			Lobibox.notify('success', {
+				msg: 'New facility was successfully added!'
+			});
+		@endif
 		@if(session('update_proponent'))
 			<?php session()->forget('update_proponent'); ?>
 			Lobibox.notify('success', {
@@ -838,6 +843,12 @@
 			<?php session()->forget('user_activation'); ?>
 			Lobibox.notify('success', {
 				msg: 'User activated!'
+			});
+		@endif
+		@if(session('user_deletion'))
+			<?php session()->forget('user_deletion'); ?>
+			Lobibox.notify('success', {
+				msg: 'User deleted!'
 			});
 		@endif
 		@if(session('transfer_funds'))

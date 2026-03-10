@@ -83,9 +83,7 @@ class ReportController extends Controller
             $remainingBalance = (float) str_replace(',', '', $row->remaining_balance);
             $adminCost = (float) str_replace(',', '', $row->admin_cost);
             
-            // $utilizationTotal = $row->utilizations->first()->totalAmount ?? 0;
             $totalWithAdmin = $allocatedFunds - $remainingBalance;
-            // $totalWithAdmin = $utilizationTotal + $adminCost;
             
             $utilizationRate = $allocatedFunds > 0 ? round(($totalWithAdmin / $allocatedFunds) * 100) : 0;
             

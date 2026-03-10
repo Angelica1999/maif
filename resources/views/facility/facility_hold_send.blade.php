@@ -85,7 +85,7 @@
             @else
                 <div class="alert alert-danger" role="alert" style="width: 100%;">
                 <i class="typcn typcn-times menu-icon"></i>
-                    <strong>No facility being hold found!</strong>
+                    <strong>No facility records on hold were identified.</strong>
                 </div>
             @endif
             
@@ -95,7 +95,6 @@
         </div>
     </div>
 </div>
-
 <!--end-->
 <div class="modal fade" id="hold_facility" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-sm" role="document">
@@ -126,6 +125,9 @@
 @endsection 
 @section('js')
 <script>
+    $('#hold_facility').on('hide.bs.modal', function () {
+        $(this).find('input, select, textarea, button').blur();
+    });
     $('#facility_id').select2({
         placeholder: "Select Facility"
     });
