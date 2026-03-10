@@ -83,7 +83,6 @@ class UserController extends Controller{
 
     public function usersActivation(Request $req){
         $registration = Registration::with('facility','proponent')->sortable();
-      
         if($req->viewAll){
             $req->keyword = '';
         }else if($req->keyword){
@@ -124,6 +123,11 @@ class UserController extends Controller{
     public function activate($id){
         OnlineUser::where('id', $id)->update(['status' => 0]);
         return redirect()->back()->with('user_activation', true);
+    }
+
+    public function deleteUser($id){
+        OnlineUser::where('id', $id)->delete();
+        return redirect()->back()->with('user_deletion', true);
     }
 
     public function verifyuser($id)

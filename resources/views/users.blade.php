@@ -89,17 +89,20 @@
                                             <a href="{{ route('activate.user', ['id' => $row->id]) }}" type="button" class="btn btn-sm btn-outline-success" style="width:100px">
                                                 <i class="fa fa-check"></i> Activate
                                             </a>
+                                            <a href="{{ route('delete.user', ['id' => $row->id]) }}" type="button" class="btn btn-sm btn-outline-danger" style="width:100px">
+                                                <i class="fa fa-trash"></i> Delete
+                                            </a>
                                         @else
                                             <a href="{{ route('deactivate.user', ['id' => $row->id]) }}" type="button" class="btn btn-sm btn-outline-danger" style="width:100px">
                                                 <i class="fa fa-ban"></i> Deactivate
                                             </a>
+                                            <a href="{{ route('reset.user', ['id' => $row->id]) }}" type="button" class="btn btn-sm btn-outline-warning" style="width:100px">
+                                                <i class="fa fa-undo"></i> Reset
+                                            </a> 
+                                            <a href="{{ route('view.account', ['id' => $row->id]) }}" target="_blank" type="button" class="btn btn-sm btn-outline-info" style=" width:70px">
+                                                <i class="fa fa-eye"></i> View
+                                            </a>
                                         @endif
-                                        <a href="{{ route('view.account', ['id' => $row->id]) }}" target="_blank" type="button" class="btn btn-sm btn-outline-info" style=" width:70px">
-                                            <i class="fa fa-eye"></i> View
-                                        </a>
-                                        <a href="{{ route('reset.user', ['id' => $row->id]) }}" type="button" class="btn btn-sm btn-outline-warning" style="width:100px">
-                                            <i class="fa fa-undo"></i> Reset
-                                        </a> 
                                     </td>
                                 </tr>
                             @endforeach

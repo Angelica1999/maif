@@ -470,6 +470,12 @@
 				msg: 'User activated!'
 			});
 		@endif
+		@if(session('user_deletion'))
+			<?php session()->forget('user_deletion'); ?>
+			Lobibox.notify('success', {
+				msg: 'User deleted!'
+			});
+		@endif
 		@if(session('transfer_funds'))
 			<?php session()->forget('transfer_funds'); ?>
 			Lobibox.notify('success', {

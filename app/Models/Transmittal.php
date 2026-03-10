@@ -26,4 +26,8 @@ class Transmittal extends Model
     public function tracking(){
         return $this->hasMany(TransmittalTracking::class, 'transmittal_id', 'id');
     }
+
+    public function accepted(){
+        return $this->belongsTo(User::class, 'accepted_by', 'userid');
+    }
 }
