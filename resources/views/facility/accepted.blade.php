@@ -76,6 +76,7 @@
                                 <th style="min-width:150px;">Total Amount @sortablelink('total', '⇅')</th>
                                 <th style="min-width:120px;">Created On @sortablelink('on', '⇅')</th>
                                 <th style="min-width:120px;">Created By @sortablelink('by', '⇅')</th>
+                                <th style="min-width:120px;">Accepted By</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -101,6 +102,7 @@
                                     <td>{{ number_format($item->total, 2, '.', ',') }}</td>
                                     <td>{{ date('F j, Y', strtotime($item->created_at)) }}</td>
                                     <td>{{ ucwords(strtolower($item->user->fname .' '.$item->user->lname)) }}</td>
+                                    <td>{{ $item->accepted ? ucwords(strtolower($item->accepted->fname .' '.$item->accepted->lname)) : '' }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

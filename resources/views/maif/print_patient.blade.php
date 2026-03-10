@@ -49,19 +49,20 @@
         @foreach(range(1, 2) as $iteration)
             <table cellpadding="0" cellspacing="0" width="100%" style="border:0px">
                 <tr style="border:0px">
-                    <td width="15%" style="text-align: center; border-right:none">
+                    <td width="12%" style="text-align: center; border-right:none">
                         <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/doh-logo.png'))) }}" alt="Logo" width="50" height="50">
                     </td>
-                    <td width="72%" style="text-align:center; line-height:1.5">
+                    <td width="76%" style="text-align:center; line-height:1.5">
                             <p>Republic of the Philippines<br>
                                 Department of Health<br>
                                 <span class="col text-center" style="font-size: 12px"><strong>MAIFIP - Medical Assistance to Indigent and Financially - Incapacitated Patients</strong></span>
                             </p>
                     </td>
-                    <td width="10%" style="text-align: right; border-left:none;"></td>
+                    <td width="12%" style="text-align: center; border-left:none;">
+                        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/bagong_pilipinas.png'))) }}" alt="Logo" width="60" height="60">
+                    </td>
                 </tr>
             </table>
-
             <div class="form-group ml-1" style="margin-right:20px;">
                 <p class="date">{{ $patient['date_guarantee_letter'] ? \Carbon\Carbon::parse($patient->date_guarantee_letter)->format('jS F Y') : " " }}</p>
             </div>

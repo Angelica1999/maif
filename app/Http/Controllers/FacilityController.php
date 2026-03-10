@@ -617,7 +617,7 @@ class FacilityController extends Controller
     } 
 
     public function acceptTrans($id){
-        Transmittal::where('id', $id)->update(['status' => 5, 'remarks' => 5]);
+        Transmittal::where('id', $id)->update(['status' => 5, 'remarks' => 5, 'accepted_by' => Auth::user()->userid]);
         $token = $this->getToken();
         
         if ($token != 1) {
@@ -645,7 +645,8 @@ class FacilityController extends Controller
             ->with([
                 'user.facility' => function ($query) {
                     $query->select('id', 'name');
-                }
+                },
+                'accepted'
             ]);
             
         $facilityIds = (clone $transmittalQuery)

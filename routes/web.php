@@ -242,6 +242,7 @@ Route::get('/users/verified/{id}', [App\Http\Controllers\UserController::class, 
 Route::get('/users/reset/{id}', [App\Http\Controllers\UserController::class, 'reset'])->name('reset.user');
 Route::get('/users/deactivate/{id}', [App\Http\Controllers\UserController::class, 'deactivate'])->name('deactivate.user');
 Route::get('/users/activate/{id}', [App\Http\Controllers\UserController::class, 'activate'])->name('activate.user');
+Route::get('/users/delete/{id}', [App\Http\Controllers\UserController::class, 'deleteUser'])->name('delete.user');
 Route::get('/users/save', [App\Http\Controllers\UserController::class, 'save'])->name('save');
 Route::get('/users/view-account/{id}', [App\Http\Controllers\UserController::class, 'viewAccount'])->name('view.account');
 Route::match(['get', 'post'],'/users/cancel/{id}', [App\Http\Controllers\UserController::class, 'cancel'])->name('cancel.user');

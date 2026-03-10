@@ -5,18 +5,15 @@
         border-bottom:1px solid black
     }
 </style>
-<div id="docViewerModal" class="doc-viewer-modal" style="display:none">
+<div id="lddap_modal" class="doc-viewer-modal">
     <span class="doc-viewer-close" onclick="closeDocViewer()">&times;</span>
-    <button class="doc-viewer-delete" title="Delete document (Del key)">
-            <i class="fas fa-trash-alt"></i> Delete
-        </button>
     <div class="doc-viewer-container">
         <div class="doc-viewer-nav doc-viewer-prev" onclick="changeDocument(-1)">
             <i class="fas fa-chevron-left"></i>
         </div>
         <div class="doc-viewer-content" id="docViewerContent">
             <div class="doc-viewer-loading">
-                <i class="fas fa-spinner"></i>
+                <i class="fa fa-spinner fa-spin"></i>
             </div>
         </div>
         <div class="doc-viewer-nav doc-viewer-next" onclick="changeDocument(1)">

@@ -402,7 +402,6 @@ use App\Models\TrackingDetails;
 @section('js')
 <script src="{{ asset('admin/vendors/sweetalert2/sweetalert2.js?v=1') }}"></script>
 <script>
-    $('#docViewerModal').hide();
     var currentDocuments = [];
     var currentDocIndex = 0;
 
@@ -410,7 +409,7 @@ use App\Models\TrackingDetails;
         currentDocuments = documents;
         currentDocIndex = startIndex;
         
-        var modal = document.getElementById('docViewerModal');
+        var modal = document.getElementById('lddap_modal');
         modal.classList.add('active');
         
         displayDocument();
@@ -420,7 +419,7 @@ use App\Models\TrackingDetails;
     }
 
     function closeDocViewer() {
-        var modal = document.getElementById('docViewerModal');
+        var modal = document.getElementById('lddap_modal');
         modal.classList.remove('active');
         
         document.removeEventListener('keydown', handleKeyPress);
@@ -453,7 +452,6 @@ use App\Models\TrackingDetails;
             
         } else if (extension === 'pdf') {
             content.innerHTML = `<iframe src="${doc.url}"></iframe>`;
-            
         } else {
             showUnsupported(doc);
         }
@@ -627,28 +625,26 @@ use App\Models\TrackingDetails;
     var touchStartX = 0;
     var touchEndX = 0;
 
-    // document.getElementById('docViewerModal').addEventListener('touchstart', function(e) {
-    //     touchStartX = e.changedTouches[0].screenX;
-    // }, false);
-
-    document.getElementById('docViewerModal').addEventListener(
+    document.getElementById('lddap_modal').addEventListener(
         'touchstart',
         function (e) {
             touchStartX = e.changedTouches[0].screenX;
         },
-        { passive: true }
+        { passive: true }   
     );
 
-
-    // document.getElementById('docViewerModal').addEventListener('touchend', function(e) {
-    //     touchEndX = e.changedTouches[0].screenX;
-    //     handleSwipe();
-    // }, false);
-    document.getElementById('docViewerModal').addEventListener(
+    document.getElementById('lddap_modal').addEventListener(
         'touchend',
         function (e) {
             touchEndX = e.changedTouches[0].screenX;
             handleSwipe();
+        },
+        { passive: true }  
+    );
+
+    document.getElementById('lddap_modal').addEventListener(
+        'wheel',
+        function (e) {
         },
         { passive: true }
     );
