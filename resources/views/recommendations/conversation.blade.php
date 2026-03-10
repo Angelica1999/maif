@@ -1,0 +1,252 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="card-title mb-1">Conversation #{{ $recommendation->id }}</h4>
+                    <p class="card-description mb-0">
+                        {{ ucfirst($recommendation->type) }} - 
+                        <span class="badge bg-{{ $recommendation->status === 'approved' ? 'success' : ($recommendation->status === 'rejected' ? 'danger' : 'warning') }}">
+                            {{ ucfirst($recommendation->status) }}
+                        </span>
+                    </p>
+                </div>
+                <a href="{{ route('recommendations.view') }}" class="btn btn-outline-secondary btn-sm">
+                    ← Back to List
+                </a>
+            </div>
+
+            <div class="chat-container" id="chatContainer" style="max-height: 600px; overflow-y: auto; padding: 20px; background: #f8f9fa; border-radius: 8px; margin-bottom: 20px;">
+                <!-- Original Message -->
+                <div class="chat-message original-message mb-4">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="chat-avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" 
+                             style="width: 40px; height: 40px; font-weight: bold; background: #3f3f8f !important;">
+                            {{ substr($recommendation->user->fname ?? 'U', 0, 1) }}
+                        </div>
+                        <div class="ms-3">
+                            <strong>{{ $recommendation->user ? $recommendation->user->fname . ' ' . $recommendation->user->lname : 'You' }}</strong>
+                            <small class="text-muted ms-2">{{ $recommendation->created_at->format('M d, Y H:i') }}</small>
+                            @if($recommendation->evaluated_by && $recommendation->status !== 'pending')
+                                <span class="badge bg-secondary ms-2">Initially evaluated by: {{ $recommendation->evaluated_by }}</span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="chat-content p-3 rounded" style="background: white; margin-left: 50px; border-left: 4px solid #3f3f8f; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                        {{ $recommendation->recommendation }}
+                        @if($recommendation->remarks)
+                            <div class="mt-3 pt-2 border-top">
+                                <strong>Initial Remarks:</strong>
+                                <p class="mb-0 text-muted">{{ $recommendation->remarks }}</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Replies — FIX: use evaluated_by to distinguish admin vs user, not user_id -->
+                @foreach($recommendation->replies as $reply)
+                    @php $isAdmin = !empty($reply->evaluated_by); @endphp
+                    <div class="chat-message reply-message mb-4 {{ $isAdmin ? 'admin-reply' : 'user-reply' }}"
+                         data-reply-id="{{ $reply->id }}">
+                        <div class="d-flex align-items-center mb-2 {{ $isAdmin ? 'flex-row-reverse' : '' }}">
+                            <div class="chat-avatar {{ $isAdmin ? 'bg-success' : 'bg-info' }} text-white rounded-circle d-flex align-items-center justify-content-center" 
+                                 style="width: 40px; height: 40px; font-weight: bold; background: {{ $isAdmin ? '#28a745' : '#17a2b8' }} !important;">
+                                {{ $isAdmin ? 'A' : substr($reply->user->fname ?? 'U', 0, 1) }}
+                            </div>
+                            <div class="{{ $isAdmin ? 'me-3 text-end' : 'ms-3' }}">
+                                <strong>
+                                    @if($isAdmin)
+                                        Admin
+                                    @else
+                                        {{ $reply->user->fname ?? 'User' }} {{ $reply->user->lname ?? '' }}
+                                    @endif
+                                </strong>
+                                <small class="text-muted ms-2">{{ $reply->created_at->format('M d, Y H:i') }}</small>
+                                @if($isAdmin && $reply->evaluated_by)
+                                    <span class="badge bg-secondary ms-2">{{ $reply->evaluated_by }}</span>
+                                @endif
+                                @if(!$isAdmin)
+                                    <span class="badge bg-info ms-2">You</span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="chat-content p-3 rounded" 
+                             style="background: {{ $isAdmin ? '#f1f8e9' : '#e3f2fd' }}; 
+                                    margin-{{ $isAdmin ? 'right' : 'left' }}: 50px;
+                                    border-{{ $isAdmin ? 'right' : 'left' }}: 4px solid {{ $isAdmin ? '#4caf50' : '#2196f3' }};
+                                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                            {{ $reply->recommendation }}
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            <!-- Reply Form -->
+            @if($recommendation->status !== 'pending' || $recommendation->replies->isNotEmpty())
+                <div class="reply-form mt-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Reply to this conversation</h5>
+                            <p class="text-muted small mb-3">Replying as: <strong>{{ auth()->user()->fname }} {{ auth()->user()->lname }}</strong></p>
+                            <form id="replyForm">
+                                @csrf
+                                <div class="mb-3">
+                                    <textarea name="message" rows="3" class="form-control" 
+                                              placeholder="Type your reply here..." required id="replyMessage"></textarea>
+                                </div>
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-primary" id="submitReply">
+                                        <span id="submitBtnText">Send Reply</span>
+                                        <span id="submitBtnSpinner" class="spinner-border spinner-border-sm ms-1 d-none" role="status"></span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            @else
+                <div class="alert alert-warning mt-4">
+                    <i class="bi bi-info-circle"></i> You can only reply after admin has responded to your submission.
+                </div>
+            @endif
+        </div>
+    </div>
+</div>
+
+<style>
+.chat-container::-webkit-scrollbar { width: 8px; }
+.chat-container::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+.chat-container::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+.chat-container::-webkit-scrollbar-thumb:hover { background: #555; }
+.chat-message { animation: fadeIn 0.3s ease; }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const chatContainer = document.getElementById('chatContainer');
+    const replyForm     = document.getElementById('replyForm');
+    const messageTA     = document.getElementById('replyMessage');
+    const submitBtn     = document.getElementById('submitReply');
+    const submitText    = document.getElementById('submitBtnText');
+    const submitSpinner = document.getElementById('submitBtnSpinner');
+
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+
+    const renderedIds = new Set(
+        [...document.querySelectorAll('[data-reply-id]')].map(el => parseInt(el.dataset.replyId))
+    );
+
+    function appendReply(reply) {
+        if (renderedIds.has(reply.id)) return;
+        renderedIds.add(reply.id);
+
+        // FIX: use evaluated_by to determine admin, not user_id
+        const isAdmin     = !!reply.evaluated_by;
+        const initial     = isAdmin ? 'A' : (reply.user_fname ? reply.user_fname[0] : 'U');
+        const name        = isAdmin ? 'Admin' : `${reply.user_fname ?? ''} ${reply.user_lname ?? ''}`;
+        const bgColor     = isAdmin ? '#28a745' : '#17a2b8';
+        const avatarClass = isAdmin ? 'bg-success' : 'bg-info';
+        const bubbleBg    = isAdmin ? '#f1f8e9' : '#e3f2fd';
+        const borderColor = isAdmin ? '#4caf50' : '#2196f3';
+        const flexDir     = isAdmin ? 'flex-row-reverse' : '';
+        const marginSide  = isAdmin ? 'margin-right:50px;border-right' : 'margin-left:50px;border-left';
+        const textAlign   = isAdmin ? 'me-3 text-end' : 'ms-3';
+        const badge       = isAdmin
+            ? (reply.evaluated_by ? `<span class="badge bg-secondary ms-2">${reply.evaluated_by}</span>` : '')
+            : '<span class="badge bg-info ms-2">You</span>';
+        const text        = (reply.recommendation ?? '').replace(/\n/g, '<br>');
+
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `chat-message reply-message mb-4 ${isAdmin ? 'admin-reply' : 'user-reply'}`;
+        msgDiv.dataset.replyId = reply.id;
+        msgDiv.innerHTML = `
+            <div class="d-flex align-items-center mb-2 ${flexDir}">
+                <div class="chat-avatar ${avatarClass} text-white rounded-circle d-flex align-items-center justify-content-center"
+                     style="width:40px;height:40px;font-weight:bold;background:${bgColor} !important;">
+                    ${initial}
+                </div>
+                <div class="${textAlign}">
+                    <strong>${name}</strong>
+                    <small class="text-muted ms-2">${reply.created_at}</small>
+                    ${badge}
+                </div>
+            </div>
+            <div class="chat-content p-3 rounded"
+                 style="background:${bubbleBg};${marginSide}:4px solid ${borderColor};box-shadow:0 2px 4px rgba(0,0,0,0.05);">
+                ${text}
+            </div>
+        `;
+
+        chatContainer.appendChild(msgDiv);
+        chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: 'smooth' });
+    }
+
+    if (replyForm) {
+        replyForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            submitBtn.disabled = true;
+            submitText.textContent = 'Sending...';
+            submitSpinner.classList.remove('d-none');
+
+            fetch('{{ route("recommendations.reply.submit", $recommendation->id) }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: new FormData(replyForm)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    messageTA.value = '';
+                    appendReply({
+                        id:             data.reply.id,
+                        user_id:        data.reply.user_id,
+                        evaluated_by:   data.reply.evaluated_by,
+                        user_fname:     '{{ auth()->user()->fname }}',
+                        user_lname:     '{{ auth()->user()->lname }}',
+                        recommendation: data.reply.recommendation,
+                        created_at:     data.reply.created_at
+                    });
+                }
+            })
+            .catch(err => alert('Error sending reply. Please try again.'))
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitText.textContent = 'Send Reply';
+                submitSpinner.classList.add('d-none');
+            });
+        });
+    }
+
+    // FIX: Added X-CSRF-TOKEN to fix 401 + set interval to 1000ms
+    function poll() {
+        fetch('{{ route("recommendations.poll", $recommendation->id) }}', {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(res => res.json())
+        .then(data => { if (data.replies) data.replies.forEach(appendReply); })
+        .catch(() => {});
+    }
+
+    setInterval(poll, 1000);
+});
+</script>
+@endsection

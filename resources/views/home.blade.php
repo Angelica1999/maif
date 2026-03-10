@@ -268,10 +268,6 @@
                     </form>
                 </div>
             </div>
-            <h4 class="card-title">MANAGE PATIENT</h4>
-            <span class="card-description">
-                MAIF-IPP
-            </span>
 
             @if(count($patients) > 0)
                 <div class="scroll-container" >

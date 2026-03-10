@@ -30,10 +30,17 @@
 						<i class="typcn typcn-cog text-primary"></i>
 						Settings
 					</a>
-					<a class="dropdown-item">
-						<i class="typcn typcn-cog text-danger"></i>
-						Reco/Bugs
-					</a>
+					@if(Auth::check() && in_array(Auth::user()->userid, [2760, 2680]))
+						<a class="dropdown-item" href="{{ route('admin.reports.index') }}">
+							<i class="typcn typcn-thumbs-up text-warning"></i>
+							Reco/Bugs
+						</a>
+					@else
+						<a class="dropdown-item" href="{{ route('report.choose') }}">
+							<i class="typcn typcn-thumbs-up text-warning"></i>
+							Reco/Bugs
+						</a>
+					@endif
 					<a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
 						<i class="typcn typcn-power text-primary"></i>
 						Logout
