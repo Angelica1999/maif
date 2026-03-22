@@ -30,7 +30,7 @@
 						<i class="typcn typcn-cog text-primary"></i>
 						Settings
 					</a>
-					@if(Auth::check() && in_array(Auth::user()->userid, [2760, 2680]))
+					@if(Auth::check() && in_array(Auth::user()->userid, [2760]))
 						<a class="dropdown-item" href="{{ route('admin.reports.index') }}">
 							<i class="typcn typcn-thumbs-up text-warning"></i>
 							Reco/Bugs

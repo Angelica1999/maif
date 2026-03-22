@@ -9,8 +9,22 @@
                     <h4 class="card-title mb-1">Conversation #{{ $recommendation->id }}</h4>
                     <p class="card-description mb-0">
                         {{ ucfirst($recommendation->type) }} - 
-                        <span class="badge bg-{{ $recommendation->status === 'approved' ? 'success' : ($recommendation->status === 'rejected' ? 'danger' : 'warning') }}">
-                            {{ ucfirst($recommendation->status) }}
+                        @php
+                            $statusColor = match($recommendation->status) {
+                                'approved' => 'success',
+                                'in_progress' => 'info',
+                                'done' => 'primary',
+                                'rejected' => 'danger',
+                                default => 'warning'
+                            };
+                            $statusLabel = match($recommendation->status) {
+                                'in_progress' => 'In Progress',
+                                'done' => 'Done',
+                                default => ucfirst($recommendation->status)
+                            };
+                        @endphp
+                        <span class="badge bg-{{ $statusColor }}">
+                            {{ $statusLabel }}
                         </span>
                     </p>
                 </div>
@@ -46,7 +60,7 @@
                     </div>
                 </div>
 
-                <!-- Replies — FIX: use evaluated_by to distinguish admin vs user, not user_id -->
+                <!-- Replies -->
                 @foreach($recommendation->replies as $reply)
                     @php $isAdmin = !empty($reply->evaluated_by); @endphp
                     <div class="chat-message reply-message mb-4 {{ $isAdmin ? 'admin-reply' : 'user-reply' }}"
@@ -84,8 +98,8 @@
                 @endforeach
             </div>
 
-            <!-- Reply Form -->
-            @if($recommendation->status !== 'pending' || $recommendation->replies->isNotEmpty())
+            <!-- Reply Form - Only show for pending bugs -->
+            @if($recommendation->type === 'bug' && $recommendation->status === 'pending')
                 <div class="reply-form mt-4">
                     <div class="card">
                         <div class="card-body">
@@ -107,9 +121,28 @@
                         </div>
                     </div>
                 </div>
-            @else
-                <div class="alert alert-warning mt-4">
-                    <i class="bi bi-info-circle"></i> You can only reply after admin has responded to your submission.
+            @elseif($recommendation->type === 'bug' && $recommendation->status !== 'pending')
+                <!-- Show chat history but disable replies -->
+                <div class="alert alert-info mt-4">
+                    <i class="bi bi-info-circle"></i> This bug report is no longer pending. You can view the chat history but cannot send new replies.
+                </div>
+                
+                <!-- Optional: Show evaluation summary -->
+                <div class="card mt-3 bg-light">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">Evaluation Summary</h6>
+                        <p><strong>Status:</strong> <span class="badge bg-{{ $statusColor }}">{{ $statusLabel }}</span></p>
+                        @if($recommendation->evaluated_by)
+                            <p><strong>Evaluated by:</strong> {{ $recommendation->evaluated_by }}</p>
+                        @endif
+                        @if($recommendation->remarks)
+                            <p><strong>Remarks:</strong> {{ $recommendation->remarks }}</p>
+                        @endif
+                    </div>
+                </div>
+            @elseif($recommendation->type !== 'bug')
+                <div class="alert alert-info mt-4">
+                    <i class="bi bi-info-circle"></i> This is a {{ $recommendation->type }}. Chat is only available for bug reports.
                 </div>
             @endif
         </div>
@@ -148,7 +181,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (renderedIds.has(reply.id)) return;
         renderedIds.add(reply.id);
 
-        // FIX: use evaluated_by to determine admin, not user_id
         const isAdmin     = !!reply.evaluated_by;
         const initial     = isAdmin ? 'A' : (reply.user_fname ? reply.user_fname[0] : 'U');
         const name        = isAdmin ? 'Admin' : `${reply.user_fname ?? ''} ${reply.user_lname ?? ''}`;
@@ -232,7 +264,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // FIX: Added X-CSRF-TOKEN to fix 401 + set interval to 1000ms
+    // Poll for new messages - only if the report is still pending
+    @if($recommendation->type === 'bug' && $recommendation->status === 'pending')
     function poll() {
         fetch('{{ route("recommendations.poll", $recommendation->id) }}', {
             headers: {
@@ -247,6 +280,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     setInterval(poll, 1000);
+    @endif
 });
 </script>
 @endsection

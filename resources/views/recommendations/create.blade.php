@@ -7,28 +7,20 @@
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-
-            {{-- Page Header --}}
             <div class="mb-3">
                 <h4 class="card-title mb-1">Recommendations</h4>
                 <p class="card-description text-muted medium mb-0">MAIF-IPP</p>
             </div>
-
-            {{-- Flash Message --}}
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     {{ session('success') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             @endif
-
-            {{-- Form Card --}}
             <div class="rec-form-wrapper" style="justify-content: center;">
                 <div class="rec-form-card">
                     <form action="{{ route('recommendations.store') }}" method="POST">
                         @csrf
-
-                        {{-- Email --}}
                         <div class="rec-field-group">
                             <label class="rec-label">Email Address:</label>
                             <input
@@ -42,8 +34,6 @@
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>
-
-                        {{-- Recommendation --}}
                         <div class="rec-field-group">
                             <label class="rec-label">Recommendation:</label>
                             <textarea
@@ -56,8 +46,6 @@
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>
-
-                        {{-- Submit --}}
                         <div class="rec-submit-wrapper">
                             <button type="submit" class="rec-submit-btn">
                                 Submit Recommendation

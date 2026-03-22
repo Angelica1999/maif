@@ -11,8 +11,22 @@
                     </h4>
                     <p class="card-description mb-0">
                         #{{ $recommendation->id }} - {{ ucfirst($recommendation->type) }}
-                        <span class="badge bg-{{ $recommendation->status === 'approved' ? 'success' : ($recommendation->status === 'rejected' ? 'danger' : 'warning') }} ms-2">
-                            {{ ucfirst($recommendation->status) }}
+                        @php
+                            $statusColor = match($recommendation->status) {
+                                'approved' => 'success',
+                                'in_progress' => 'info',
+                                'done' => 'primary',
+                                'rejected' => 'danger',
+                                default => 'warning'
+                            };
+                            $statusLabel = match($recommendation->status) {
+                                'in_progress' => 'In Progress',
+                                'done' => 'Done',
+                                default => ucfirst($recommendation->status)
+                            };
+                        @endphp
+                        <span class="badge bg-{{ $statusColor }} ms-2">
+                            {{ $statusLabel }}
                         </span>
                         <span class="badge bg-info ms-1">{{ ucfirst($recommendation->type) }}</span>
                     </p>
@@ -49,7 +63,7 @@
                     </div>
                 </div>
 
-                <!-- Replies — FIX: use evaluated_by to distinguish admin vs user, not user_id -->
+                <!-- Replies -->
                 @foreach($recommendation->replies as $reply)
                     @php $isAdmin = !empty($reply->evaluated_by); @endphp
                     <div class="chat-message reply-message mb-4 {{ $isAdmin ? 'admin-reply' : 'user-reply' }}"
@@ -84,55 +98,80 @@
                 @endforeach
             </div>
 
-            <!-- Admin Reply Form -->
-            <div class="reply-form mt-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Reply as Admin</h5>
-                        <p class="text-muted small mb-3">
-                            Replying as: <strong>{{ auth()->user()->fname }} {{ auth()->user()->lname }}</strong><br>
-                            <small class="text-info">Note: Status will remain as <strong>{{ ucfirst($recommendation->status) }}</strong></small>
-                        </p>
+            <!-- Admin Reply Form - Only show for pending bugs -->
+            @if($recommendation->type === 'bug' && $recommendation->status === 'pending')
+                <div class="reply-form mt-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Reply as Admin</h5>
+                            <p class="text-muted small mb-3">
+                                Replying as: <strong>{{ auth()->user()->fname }} {{ auth()->user()->lname }}</strong><br>
+                                <small class="text-info">Note: Status will remain as <strong>Pending</strong></small>
+                            </p>
 
-                        @if(session('error'))
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                {{ session('error') }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        @endif
+                            @if(session('error'))
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    {{ session('error') }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            @endif
 
-                        @if(session('success'))
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                {{ session('success') }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        @endif
+                            @if(session('success'))
+                                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    {{ session('success') }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            @endif
 
-                        <form id="adminReplyForm" method="POST" action="{{ route('admin.reports.reply.submit', $recommendation->id) }}">
-                            @csrf
-                            <div class="mb-3">
-                                <textarea 
-                                    name="message" 
-                                    rows="3" 
-                                    class="form-control @error('message') is-invalid @enderror" 
-                                    placeholder="Type your reply here..." 
-                                    required
-                                    id="replyMessage"
-                                >{{ old('message') }}</textarea>
-                                @error('message')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="text-end">
-                                <button type="submit" class="btn btn-success" id="submitReply">
-                                    <span id="submitBtnText">Send Reply</span>
-                                    <span id="submitBtnSpinner" class="spinner-border spinner-border-sm ms-1 d-none" role="status"></span>
-                                </button>
-                            </div>
-                        </form>
+                            <form id="adminReplyForm" method="POST" action="{{ route('admin.reports.reply.submit', $recommendation->id) }}">
+                                @csrf
+                                <div class="mb-3">
+                                    <textarea 
+                                        name="message" 
+                                        rows="3" 
+                                        class="form-control @error('message') is-invalid @enderror" 
+                                        placeholder="Type your reply here..." 
+                                        required
+                                        id="replyMessage"
+                                    >{{ old('message') }}</textarea>
+                                    @error('message')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-success" id="submitReply">
+                                        <span id="submitBtnText">Send Reply</span>
+                                        <span id="submitBtnSpinner" class="spinner-border spinner-border-sm ms-1 d-none" role="status"></span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
+            @elseif($recommendation->type === 'bug' && $recommendation->status !== 'pending')
+                <!-- Show chat history but disable replies -->
+                <div class="alert alert-info mt-4">
+                    <i class="bi bi-info-circle"></i> This bug report is no longer pending. You can view the chat history but cannot send new replies.
+                </div>
+                
+                <!-- Optional: Show evaluation summary -->
+                <div class="card mt-3 bg-light">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">Evaluation Summary</h6>
+                        <p><strong>Status:</strong> <span class="badge bg-{{ $statusColor }}">{{ $statusLabel }}</span></p>
+                        @if($recommendation->evaluated_by)
+                            <p><strong>Evaluated by:</strong> {{ $recommendation->evaluated_by }}</p>
+                        @endif
+                        @if($recommendation->remarks)
+                            <p><strong>Remarks:</strong> {{ $recommendation->remarks }}</p>
+                        @endif
+                    </div>
+                </div>
+            @elseif($recommendation->type !== 'bug')
+                <div class="alert alert-info mt-4">
+                    <i class="bi bi-info-circle"></i> This is a {{ $recommendation->type }}. Chat is only available for bug reports.
+                </div>
+            @endif
         </div>
     </div>
 </div>
@@ -169,7 +208,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (renderedIds.has(reply.id)) return;
         renderedIds.add(reply.id);
 
-        // FIX: use evaluated_by to determine admin, not user_id
         const isAdmin     = !!reply.evaluated_by;
         const initial     = isAdmin ? reply.evaluated_by[0] : (reply.user_fname ? reply.user_fname[0] : 'U');
         const name        = isAdmin ? `Admin (${reply.evaluated_by})` : `${reply.user_fname ?? ''} ${reply.user_lname ?? ''}`;
@@ -208,52 +246,54 @@ document.addEventListener('DOMContentLoaded', function () {
         chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: 'smooth' });
     }
 
-    // Submit reply via AJAX
-    replyForm.addEventListener('submit', function (e) {
-        e.preventDefault();
+    // Submit reply via AJAX - only if form exists
+    if (replyForm) {
+        replyForm.addEventListener('submit', function (e) {
+            e.preventDefault();
 
-        submitBtn.disabled = true;
-        submitText.textContent = 'Sending...';
-        submitSpinner.classList.remove('d-none');
+            submitBtn.disabled = true;
+            submitText.textContent = 'Sending...';
+            submitSpinner.classList.remove('d-none');
 
-        fetch(replyForm.getAttribute('action'), {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: new FormData(replyForm)
-        })
-        .then(async res => {
-            const text = await res.text();
-            try { return JSON.parse(text); }
-            catch { throw new Error('Unexpected server response.'); }
-        })
-        .then(data => {
-            if (data.error) {
-                alert(typeof data.error === 'object' ? JSON.stringify(data.error) : data.error);
-            } else {
-                messageTA.value = '';
-                // Pass evaluated_by from server response so appendReply correctly marks it as admin
-                appendReply({
-                    id:             data.reply.id,
-                    user_id:        data.reply.user_id,
-                    evaluated_by:   data.reply.evaluated_by,
-                    recommendation: data.reply.recommendation,
-                    created_at:     data.reply.created_at
-                });
-            }
-        })
-        .catch(err => alert('Error: ' + err.message))
-        .finally(() => {
-            submitBtn.disabled = false;
-            submitText.textContent = 'Send Reply';
-            submitSpinner.classList.add('d-none');
+            fetch(replyForm.getAttribute('action'), {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: new FormData(replyForm)
+            })
+            .then(async res => {
+                const text = await res.text();
+                try { return JSON.parse(text); }
+                catch { throw new Error('Unexpected server response.'); }
+            })
+            .then(data => {
+                if (data.error) {
+                    alert(typeof data.error === 'object' ? JSON.stringify(data.error) : data.error);
+                } else {
+                    messageTA.value = '';
+                    appendReply({
+                        id:             data.reply.id,
+                        user_id:        data.reply.user_id,
+                        evaluated_by:   data.reply.evaluated_by,
+                        recommendation: data.reply.recommendation,
+                        created_at:     data.reply.created_at
+                    });
+                }
+            })
+            .catch(err => alert('Error: ' + err.message))
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitText.textContent = 'Send Reply';
+                submitSpinner.classList.add('d-none');
+            });
         });
-    });
+    }
 
-    // FIX: Added X-CSRF-TOKEN to fix 401 + set interval to 1000ms
+    // Poll for new messages - only if the report is still pending
+    @if($recommendation->type === 'bug' && $recommendation->status === 'pending')
     function poll() {
         fetch('{{ route("admin.reports.poll", $recommendation->id) }}', {
             headers: {
@@ -268,6 +308,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     setInterval(poll, 1000);
+    @endif
 });
 </script>
 @endsection

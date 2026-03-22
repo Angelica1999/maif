@@ -383,44 +383,33 @@ Route::get('/data-counts', function() {
     ]);
 });
 
-// Landing: choose bug or recommendation
 Route::get('/choose', fn () => view('recommendations.choose'))->name('report.choose');
 
-// Public: submit a bug
 Route::get('/bugs/create',  [App\Http\Controllers\RecommendationController::class, 'createBug'])->name('bugs.create');
 Route::post('/bugs',        [App\Http\Controllers\RecommendationController::class, 'storeBug'])->name('bugs.store');
 
-// Public: submit a recommendation
 Route::get('/recommendations/create', [App\Http\Controllers\RecommendationController::class, 'createRecommendation'])->name('recommendations.create');
 Route::post('/recommendations',       [App\Http\Controllers\RecommendationController::class, 'storeRecommendation'])->name('recommendations.store');
 
-// User: view their submissions
 Route::get('/recommendations/view', [App\Http\Controllers\RecommendationController::class, 'viewRecommendation'])->name('recommendations.view');
 
-// User: conversation and reply routes
 Route::get('/recommendations/{id}/conversation', [App\Http\Controllers\RecommendationController::class, 'viewConversation'])
     ->name('recommendations.conversation');
 Route::post('/recommendations/{id}/reply', [App\Http\Controllers\RecommendationController::class, 'submitReply'])
     ->name('recommendations.reply.submit');
 
-// ✅ NEW: User polling endpoint (called every 4s to check for new admin replies)
 Route::get('/recommendations/{id}/poll', [App\Http\Controllers\RecommendationController::class, 'conversationJson'])
     ->name('recommendations.poll');
 
-// Admin: manage all reports
 Route::middleware(['auth', 'block.secure.nonadmin'])->prefix('admin')->name('admin.')->group(function () {
-    // Report management
     Route::get('/reports', [App\Http\Controllers\RecommendationController::class, 'index'])->name('reports.index');
     Route::patch('/reports/{recommendation}/evaluate', [App\Http\Controllers\RecommendationController::class, 'evaluate'])->name('reports.evaluate');
-    Route::delete('reports/{id}', [App\Http\Controllers\RecommendationController::class, 'destroy'])->name('reports.destroy');
 
-    // Admin conversation routes
     Route::get('/reports/{id}/conversation', [App\Http\Controllers\RecommendationController::class, 'adminViewConversation'])
         ->name('reports.conversation');
     Route::post('/reports/{id}/reply', [App\Http\Controllers\RecommendationController::class, 'adminSubmitReply'])
         ->name('reports.reply.submit');
 
-    // ✅ NEW: Admin polling endpoint (called every 4s to check for new user replies)
     Route::get('/reports/{id}/poll', [App\Http\Controllers\RecommendationController::class, 'adminConversationJson'])
         ->name('reports.poll');
 });

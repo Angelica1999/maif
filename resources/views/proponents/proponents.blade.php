@@ -56,7 +56,7 @@
         <div class="card-body">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
                 <div class="mb-2 mb-md-0">
-                    <h4 class="card-title">FUNDSOURCE FILES</h4>
+                    <h4 class="card-title">PROPONENTS</h4>
                     <p class="card-description">MAIF-IPP</p>
                 </div>
             <form method="GET" action="">
@@ -69,10 +69,8 @@
                     </div>
                 </div>
             </form>
-            <h4 class="card-title">PROPONENTS</h4>
-            <p class="card-description">
-                MAIF-IPP
-            </p>
+</div>
+         
             @if(isset($proponents) && $proponents->count() > 0)
                 <div class="row">
                     @foreach($proponents as $proponent)

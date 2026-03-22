@@ -24,6 +24,8 @@
                             Filter:
                             <span id="selected-filter" class="ms-1 fw-normal">
                                 @if (request('filter') == 'approved') Approved
+                                @elseif(request('filter') == 'in_progress') In Progress
+                                @elseif(request('filter') == 'done') Done
                                 @elseif(request('filter') == 'pending') Pending
                                 @elseif(request('filter') == 'rejected') Rejected
                                 @elseif(request('filter') == 'recommendations') Recommendations
@@ -41,13 +43,23 @@
                             <li><hr class="dropdown-divider"></li>
                             <li><h6 class="dropdown-header">By Status</h6></li>
                             <li>
+                                <a class="dropdown-item {{ request('filter') == 'pending' ? 'active' : '' }}" href="{{ route('recommendations.view', ['filter' => 'pending']) }}">
+                                    <div class="d-flex align-items-center">Pending</div>
+                                </a>
+                            </li>
+                            <li>
                                 <a class="dropdown-item {{ request('filter') == 'approved' ? 'active' : '' }}" href="{{ route('recommendations.view', ['filter' => 'approved']) }}">
                                     <div class="d-flex align-items-center">Approved</div>
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item {{ request('filter') == 'pending' ? 'active' : '' }}" href="{{ route('recommendations.view', ['filter' => 'pending']) }}">
-                                    <div class="d-flex align-items-center">Pending</div>
+                                <a class="dropdown-item {{ request('filter') == 'in_progress' ? 'active' : '' }}" href="{{ route('recommendations.view', ['filter' => 'in_progress']) }}">
+                                    <div class="d-flex align-items-center">In Progress</div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item {{ request('filter') == 'done' ? 'active' : '' }}" href="{{ route('recommendations.view', ['filter' => 'done']) }}">
+                                    <div class="d-flex align-items-center">Done</div>
                                 </a>
                             </li>
                             <li>
@@ -81,6 +93,8 @@
                         Active Filter:
                         <strong class="ms-1">
                             @if (request('filter') == 'approved') Approved Items
+                            @elseif(request('filter') == 'in_progress') In Progress Items
+                            @elseif(request('filter') == 'done') Done Items
                             @elseif(request('filter') == 'pending') Pending Items
                             @elseif(request('filter') == 'rejected') Rejected Items
                             @elseif(request('filter') == 'recommendations') Recommendations Only
@@ -115,9 +129,11 @@
                     @foreach ($recommendations as $rec)
                         @php
                             $statusMap = [
-                                'approved' => ['label' => 'Approved', 'css' => 'trk-approved'],
-                                'pending'  => ['label' => 'Pending',  'css' => 'trk-pending'],
-                                'rejected' => ['label' => 'Rejected', 'css' => 'trk-rejected'],
+                                'approved'    => ['label' => 'Approved',     'css' => 'trk-approved'],
+                                'in_progress' => ['label' => 'In Progress',  'css' => 'trk-progress'],
+                                'done'        => ['label' => 'Done',         'css' => 'trk-done'],
+                                'pending'     => ['label' => 'Pending',      'css' => 'trk-pending'],
+                                'rejected'    => ['label' => 'Rejected',     'css' => 'trk-rejected'],
                             ];
                             $s = $statusMap[$rec->status] ?? $statusMap['pending'];
                             $isRec     = !isset($rec->type) || $rec->type !== 'bug';
@@ -127,15 +143,19 @@
                             $dateActioned = $rec->status !== 'pending' ? $rec->updated_at->format('M d, Y') : '';
 
                             $dateLabelMap = [
-                                'approved' => 'DATE APPROVED',
-                                'rejected' => 'DATE REJECTED',
-                                'pending'  => 'DATE SUBMITTED',
+                                'approved'    => 'DATE APPROVED',
+                                'in_progress' => 'LAST UPDATED',
+                                'done'        => 'DATE COMPLETED',
+                                'rejected'    => 'DATE REJECTED',
+                                'pending'     => 'DATE SUBMITTED',
                             ];
                             $dateLabel = $dateLabelMap[$rec->status] ?? 'LAST UPDATED';
                             $dateValue = $dateActioned ?: ($rec->status === 'pending' ? $rec->created_at->format('M d, Y') : '—');
-                            
-                            // Check if there are any replies
+
                             $hasReplies = $rec->replies()->count() > 0;
+                            $replyCount = $hasReplies ? $rec->replies()->count() : 0;
+                            
+                            $showChat = $rec->type === 'bug';
                         @endphp
 
                         <div class="trk-card"
@@ -189,11 +209,13 @@
                             <div class="trk-footer">
                                 <span class="trk-bottom-date">{{ $rec->created_at->format('M d, Y') }}</span>
                                 <div>
-                                    @if($rec->status !== 'pending')
-                                        <a href="{{ route('recommendations.conversation', $rec->id) }}" class="trk-reply-btn" 
-                                           style="background: #4CAF50; color: white; border: none; border-radius: 5px; padding: 4px 12px; font-size: 0.78rem; font-weight: 600; text-decoration: none; margin-right: 5px; display: inline-flex; align-items: center;">
-                                           
-                                            Chat @if($hasReplies)({{ $rec->replies()->count() }})@endif
+                                    @if($showChat)
+                                        <a href="{{ route('recommendations.conversation', $rec->id) }}"
+                                           class="trk-reply-btn {{ $hasReplies ? 'trk-reply-btn--active' : '' }}">
+                                            💬 Chat
+                                            @if($hasReplies)
+                                                <span class="trk-reply-count">{{ $replyCount }}</span>
+                                            @endif
                                         </a>
                                     @endif
                                     <button class="trk-view-btn" onclick="openModal(this)">View</button>
@@ -203,9 +225,8 @@
                     @endforeach
                 </div>
 
-                <div class="mt-4 d-flex justify-content-between align-items-center">
-                    <div class="text-muted small">Total: {{ $recommendations->total() }} items</div>
-                    <div>{{ $recommendations->withQueryString()->links('pagination::bootstrap-5') }}</div>
+              <div class="mt-3" id="pagination_links">
+                    {{ $recommendations->withQueryString()->links('pagination::bootstrap-5') }}
                 </div>
             @endif
 
@@ -300,9 +321,11 @@
     padding: 3px 12px; border-radius: 20px;
     font-size: 0.82rem; font-weight: 700;
 }
-.trk-approved { background: #e6f4ec; color: #1a8c4e; border: 1.5px solid #b5dfc8; }
-.trk-pending  { background: #fff5e0; color: #c07a00; border: 1.5px solid #f5d78a; }
-.trk-rejected { background: #fdeaea; color: #c0292b; border: 1.5px solid #f0b8b8; }
+.trk-approved { background: #e6f4ec; color: #659934; border: 1.5px solid #b5dfc8; }
+.trk-pending  { background: #f5eddb; color: #bda30f; border: 1.5px solid #ddc381; }
+.trk-rejected { background: #fce3e3; color: #f80e25; border: 1.5px solid #f0b8b8; }
+.trk-progress { background: #fcebd4; color: #e08309; border: 1.5px solid #d8b280; }
+.trk-done { background: #e6f4ec; color: #046424; border: 1.5px solid #8cb39a; }
 
 .trk-date-block { display: flex; flex-direction: column; align-items: flex-end; }
 .trk-date-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #aaa; line-height: 1.2; }
@@ -314,35 +337,56 @@
 .trk-awaiting    { font-size: 0.78rem; color: #aaa; font-style: italic; }
 
 .trk-type     { padding: 6px 14px 2px; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; }
-.trk-type-rec { color: #c07a00; }
-.trk-type-bug { color: #c0292b; }
+.trk-type-rec { color: #126ec5; }
+.trk-type-bug { color: #aa3a31; }
 
 .trk-footer { display: flex; align-items: center; justify-content: space-between; padding: 6px 14px 10px; }
 .trk-bottom-date { font-size: 0.75rem; color: #aaa; }
 .trk-view-btn {
-    background: #3f3f8f; color: #fff; border: none;
+    background: #007ba0; color: #fff; border: none;
     border-radius: 5px; padding: 4px 16px;
     font-size: 0.78rem; font-weight: 600; cursor: pointer;
     transition: background 0.15s, transform 0.1s;
 }
-.trk-view-btn:hover { background: #2e2e70; transform: translateY(-1px); }
+.trk-view-btn:hover { background: #277992; transform: translateY(-1px); }
 
 .trk-reply-btn {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
+    gap: 5px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 4px 12px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: none;
+    margin-right: 5px;
     transition: background 0.15s, transform 0.1s;
 }
 .trk-reply-btn:hover {
-    background: #3d8b40 !important;
+    background: #3d8b40;
     transform: translateY(-1px);
     color: white;
     text-decoration: none;
 }
+.trk-reply-btn--active {
+    background: #2e7d32;
+}
+.trk-reply-count {
+    background: rgba(255,255,255,0.3);
+    border-radius: 10px;
+    padding: 0 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    min-width: 18px;
+    text-align: center;
+}
 
 .type-icon { font-size: 1rem; line-height: 1; }
-.type-rec  { color: #c07a00; }
-.type-bug  { color: #c0292b; }
+.type-rec  { color: #126ec5; }
+.type-bug  { color: #aa3a31; }
 .dropdown-item.active { background-color: #f0f0ff; color: #3f3f8f; font-weight: 500; }
 .dropdown-header { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: #999; }
 .btn-outline-secondary { border-color: #d6d6d6; color: #555; padding: 0.5rem 1rem; font-size: 0.85rem; }
@@ -351,6 +395,7 @@
 .badge.bg-light { background-color: #f8f9fa !important; border: 1px solid #d6d6d6; font-weight: normal; font-size: 0.85rem; }
 .badge.bg-light a:hover { color: #c0292b !important; }
 
+/* Modal */
 .trk-modal-overlay {
     display: none; position: fixed; inset: 0;
     background: rgba(0,0,0,0.45); z-index: 9999;
@@ -439,7 +484,7 @@
 function openModal(btn) {
     var card = btn.closest('.trk-card');
 
-    document.getElementById('modal-id').textContent             = '' + card.dataset.id;
+    document.getElementById('modal-id').textContent             = '#' + card.dataset.id;
     document.getElementById('modal-date-submitted').textContent = card.dataset.dateSubmitted;
     document.getElementById('modal-message').textContent        = card.dataset.message;
 
@@ -490,9 +535,7 @@ function svgCheck() {
 }
 
 document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        closeModal();
-    }
+    if (e.key === 'Escape') closeModal();
 });
 </script>
 @endsection

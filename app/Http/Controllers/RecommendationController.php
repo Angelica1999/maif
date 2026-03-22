@@ -74,7 +74,7 @@ class RecommendationController extends Controller
             ->where('user_id', $currentId)
             ->whereNull('parent_id');
 
-        if (in_array($filter, ['approved', 'pending', 'rejected'])) {
+        if (in_array($filter, ['approved', 'pending', 'rejected', 'in_progress', 'done'])) {
             $query->where('status', $filter);
         }
 
@@ -120,7 +120,7 @@ class RecommendationController extends Controller
     public function evaluate(Request $request, Recommendation $recommendation)
     {
         $validated = $request->validate([
-            'status'  => 'required|in:pending,approved,rejected',
+            'status'  => 'required|in:approved,rejected,in_progress,done', // Removed pending
             'remarks' => 'nullable|string',
         ]);
 
@@ -188,6 +188,13 @@ class RecommendationController extends Controller
 
         $parent = Recommendation::findOrFail($id);
 
+        // Check if the parent is still pending - only pending bugs can have replies
+        if ($parent->status !== 'pending' || $parent->type !== 'bug') {
+            if ($request->wantsJson()) {
+                return response()->json(['error' => 'You can only reply to pending bug reports.'], 403);
+            }
+            return back()->with('error', 'You can only reply to pending bug reports.');
+        }
       
         if ($parent->user_id != (auth()->user()->userid ?? auth()->id())) {
             abort(403, 'Unauthorized action.');
@@ -274,6 +281,15 @@ class RecommendationController extends Controller
             ]);
 
             $parent    = Recommendation::findOrFail($id);
+
+            // Check if the parent is still pending - only pending bugs can have replies
+            if ($parent->status !== 'pending' || $parent->type !== 'bug') {
+                if ($request->wantsJson()) {
+                    return response()->json(['error' => 'You can only reply to pending bug reports.'], 403);
+                }
+                return back()->with('error', 'You can only reply to pending bug reports.');
+            }
+
             $adminName = auth()->user()->fname . ' ' . auth()->user()->lname;
 
           
@@ -331,16 +347,5 @@ class RecommendationController extends Controller
         }
 
         return view('recommendations.reply', compact('rec'));
-    }
-
-    public function destroy($id)
-    {
-        
-        $parent = Recommendation::findOrFail($id);
-        Recommendation::where('parent_id', $id)->delete();
-        $parent->delete();
-
-        return redirect()->route('admin.reports.index')
-            ->with('success', 'Record deleted successfully.');
     }
 }
