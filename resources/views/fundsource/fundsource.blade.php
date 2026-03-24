@@ -694,7 +694,7 @@
 
     function openModal(link) {
         var routeNo = $(link).data('routeid');
-        var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNo;
+        var src = "http://192.168.110.15/document/trackMaif/" + routeNo;
         var base_url = "{{ url('/') }}";
         $('.modal-body').append('<img class="loadingGif" src="' + base_url + '/public/images/loading.gif" alt="Loading..." style="display:block; margin:auto;">');
 

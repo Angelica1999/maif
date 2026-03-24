@@ -255,7 +255,7 @@ use App\Models\TrackingDetails;
 <script src="{{ asset('admin/vendors/daterangepicker-master/moment.min.js?v=1') }}"></script>
 <script src="{{ asset('admin/vendors/daterangepicker-master/daterangepicker.js?v=1') }}"></script>
 <script>
-    $('#docViewerModal').hide();
+    $('#lddap_modal').hide();
     var x_check = 0;
     function exclude_all(){
         
@@ -364,7 +364,7 @@ use App\Models\TrackingDetails;
 
     function openModal() {
         var routeNoo = event.target.getAttribute('data-routeId'); 
-        var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNoo;
+        var src = "http://192.168.110.15/document/trackMaif/" + routeNoo;
 
         var base_url = "{{ url('/') }}";
         $('.modal-body').append('<img class="loadingGif" src="' + base_url + '/public/images/loading.gif" alt="Loading..." style="display:block; margin:auto;">');

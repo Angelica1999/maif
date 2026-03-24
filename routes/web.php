@@ -259,6 +259,7 @@ Route::get('/patients/forward', [App\Http\Controllers\HomeController::class, 'ch
 Route::post('/mpu/activate', [App\Http\Controllers\UserController::class, 'mpu'])->name('mpu');
 Route::get('/incoming', [App\Http\Controllers\FacilityController::class, 'incoming'])->name('incoming');
 Route::get('/transmittal/{id}', [App\Http\Controllers\FacilityController::class, 'getTrans'])->name('transmittal.get');
+Route::get('/return-transmittal/{id}', [App\Http\Controllers\FacilityController::class, 'returnIn'])->name('transmittal.return');
 Route::get('/logbook', [App\Http\Controllers\FacilityController::class, 'logbook'])->name('logbook');
 Route::post('logbook/save', [App\Http\Controllers\FacilityController::class, 'logbookSave'])->name('logbook.save');
 Route::get('/transmittal/references/{type}/{id}', [App\Http\Controllers\FacilityController::class, 'references'])->name('references');

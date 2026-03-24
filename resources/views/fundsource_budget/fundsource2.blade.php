@@ -213,7 +213,7 @@
 <script src="{{ asset('admin/vendors/sweetalert2/sweetalert2.js?v=1') }}"></script>
 <script src="{{ asset('admin/vendors/x-editable/bootstrap-editable.min.js?v=1') }}"></script>
 <script>
-    $('#docViewerModal').hide();
+    $('#lddap_modal').hide();
     function costTracking(id){
         $('#cost_tracking').modal('show');
         $('.cost_main').html(loading);
@@ -648,7 +648,7 @@
 
     function openModal(link) {
         var routeNoo = $(link).data('routeid');
-        var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNoo;
+        var src = "http://192.168.110.15/document/trackMaif/" + routeNoo;
 
         $('.modal-body').append('<img class="loadingGif" src="public/images/loading.gif" alt="Loading..." style="display:block; margin:auto;">');
 

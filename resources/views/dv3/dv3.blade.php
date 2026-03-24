@@ -340,7 +340,7 @@
         },1000);
     }
 
-    $('#docViewerModal').hide();
+    $('#lddap_modal').hide();
     
     function toggleRemarks(link) {
         const container = link.closest('.remarks-container');
@@ -440,7 +440,7 @@
 
     function openModal() {
         var routeNoo = event.target.getAttribute('data-routeId'); 
-        var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNoo;
+        var src = "http://192.168.110.15/document/trackMaif/" + routeNoo;
 
         var base_url = "{{ url('/') }}";
         $('.modal-body').append('<img class="loadingGif" src="' + base_url + '/public/images/loading.gif" alt="Loading..." style="display:block; margin:auto;">');

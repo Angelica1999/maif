@@ -313,7 +313,7 @@
         $(this).find('input, select, textarea, button').blur();
         console.log('sample');
     });
-    $('#docViewerModal').hide();
+    $('#lddap_modal').hide();
     var btn_val = 0;
 
     $('.crt_btn').on('click', function(){
@@ -385,7 +385,7 @@
                 .join(' & ');
 
             var text_display;
-            if (optionData.facility !== null) {
+            if (optionData.facility != null) {
                 if (optionData.facility.id == facility_id) {
                     text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + facilityNames + ' - ' + rem_balance;
                 } else {
@@ -396,7 +396,11 @@
                 if (id.includes('702')) {
                     check_p = 0;
                 } else {
-                    check_p = 1;
+                    if(optionData.facility_id.includes(String(facility_id))){
+                        check_p = 0;
+                    }else{
+                        check_p = 1;
+                    }
                 }
                 text_display = optionData.fundsource.saa + ' - ' + optionData.proponent.proponent + ' - ' + facilityNames + ' - ' + rem_balance;
             }
@@ -754,7 +758,7 @@
 
     function openModal() {
         var routeNoo = event.target.getAttribute('data-routeId'); 
-        var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNoo;
+        var src = "http://192.168.110.15/document/trackMaif/" + routeNoo;
 
         var base_url = "{{ url('/') }}";
         $('.modal-body').append('<img class="loadingGif" src="' + base_url + '/public/images/loading.gif" alt="Loading..." style="display:block; margin:auto;">');
