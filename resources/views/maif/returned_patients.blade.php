@@ -147,6 +147,12 @@
                             </th>
                             <th style="min-width:120px; text-align:center;">
                                 <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <select class="form-control filter" style="display:none;" id="lname_select" name="lname_select" multiple></select>
+                                    @sortablelink('lname', '⇅')
+                                </div>
+                            </th>
+                            <th style="min-width:120px; text-align:center;">
+                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
                                     <select class="form-control filter" style="display:none;" id="fname_select" name="fname_select" multiple></select>
                                     @sortablelink('fname', '⇅')
                                 </div>
@@ -155,12 +161,6 @@
                                 <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
                                     <select class="form-control filter" style="display:none;" id="mname_select" name="mname_select" multiple></select>
                                     @sortablelink('mname', '⇅')
-                                </div>
-                            </th>
-                            <th style="min-width:120px; text-align:center;">
-                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                                    <select class="form-control filter" style="display:none;" id="lname_select" name="lname_select" multiple></select>
-                                    @sortablelink('lname', '⇅')
                                 </div>
                             </th>
                             <th style="min-width:120px; text-align:center;">
@@ -291,11 +291,11 @@
                                 <td>{{ date('F j, Y', strtotime($patient->date_guarantee_letter)) }}</td>
                                 <td class="td">
                                     <a href="#update_patient" onclick="editPatient('{{ $patient->id }}', '{{ $patient->facility_id && !in_array($patient->facility_id, $onhold_facs) ? 1 : 0 }}')" data-backdrop="static" data-toggle="modal">
-                                        {{ $patient->fname }}
+                                        {{ $patient->lname }}
                                     </a>
-                                </td>   
+                                </td>  
+                                <td class="td">{{ $patient->fname }}</td> 
                                 <td class="td">{{ $patient->mname }}</td>
-                                <td class="td">{{ $patient->lname }}</td>
                                 <td class="td">{{ $patient->facility->name }}</td>
                                 <td class="td">{{ $patient->proponentData ? $patient->proponentData->proponent : 'N/A' }}</td>
                                 <td class="td">{{ $patient->patient_code}}</td>
@@ -359,16 +359,17 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="fname">First Name</label>
-                                    <input type="text" class="form-control fname" style="width:220px;" id="fname" name="fname" oninput="this.value = this.value.toUpperCase()" placeholder="First Name" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
                                     <label for="lname">Last Name</label>
                                     <input type="text" class="form-control lname" style="width:220px;" id="lname" name="lname" placeholder="Last Name" oninput="this.value = this.value.toUpperCase()" required>
                                 </div>
                             </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fname">First Name</label>
+                                    <input type="text" class="form-control fname" style="width:220px;" id="fname" name="fname" oninput="this.value = this.value.toUpperCase()" placeholder="First Name" required>
+                                </div>
+                            </div>
+
                         </div>
                         <div class="row">
                             <div class="col-md-6">

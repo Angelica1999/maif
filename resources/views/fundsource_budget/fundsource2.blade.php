@@ -648,7 +648,7 @@
 
     function openModal(link) {
         var routeNoo = $(link).data('routeid');
-        var src = "http://192.168.110.15/document/trackMaif/" + routeNoo;
+        var src = "https://dts.cvchd7.com/document/trackMaif/" + routeNoo;
 
         $('.modal-body').append('<img class="loadingGif" src="public/images/loading.gif" alt="Loading..." style="display:block; margin:auto;">');
 
