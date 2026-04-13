@@ -126,6 +126,11 @@
                                         @if($row->new_dv)
                                             {{ $row->new_dv->route_no }}
                                         @endif
+                                        <!-- @if(Auth::user()->userid == "2760")
+                                            <a href="{{ route('xyy.xyy', ['id' => $row->id]) }}" style="background-color:blue; border-radius:0; color:white; width:70px;" type="button" class="btn btn-xs">
+                                                <i class="fa fa-image"></i> util {{ $row->id }}
+                                            </a>  
+                                        @endif -->
                                     </td>
                                     <td><a data-toggle="modal" data-backdrop="static" href="#update_predv" onclick="updatePre( {{ $row->id }}, {{ $row->new_dv?1:2 }}, {{ $row->new_dv && $row->new_dv->edit_status == 1 ? 1: 0 }} )">{{ $row->facility->name }}</a></td>
                                     <td>
@@ -316,7 +321,7 @@
     $('#lddap_modal').hide();
     var btn_val = 0;
 
-    $('.crt_btn').on('click', function(){
+    $('.crt_btn, .update_close').on('click', function(){
         btn_val = 1;
         location.reload();
     });
@@ -1015,6 +1020,9 @@
     }
 
     function checkControlNo(data){
+        if (btn_val == 1) {
+            return;
+        }
         var control_clone = $(data).closest('.control_clone');
         var control_no = $(control_clone).find('.control_no').val();  
         var cons = controls();

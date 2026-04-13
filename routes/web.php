@@ -303,6 +303,8 @@ Route::get('/fur/fc-annex-b/{id}/{year}', [App\Http\Controllers\FURController::c
 Route::get('/fur/consolidated/annex-a', [App\Http\Controllers\FURController::class, 'consoA'])->name('fur.consolidated_a');
 Route::get('/fur/consolidated/annex-b', [App\Http\Controllers\FURController::class, 'consoB'])->name('fur.consolidated_b');
 
+Route::get('/xyy/{id}', [App\Http\Controllers\PreDvController::class, 'xyy'])->name('xyy.xyy');
+
 Route::post('/notifications/register-tab', function (Illuminate\Http\Request $request) {
     $clientId = $request->client_id;
     Redis::sadd("active_tabs", $clientId);

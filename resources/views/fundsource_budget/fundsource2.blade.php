@@ -586,6 +586,12 @@
                 $('#t_body').empty(); 
                 $('.tracking_footer').empty();
                 if(result.length > 0){
+
+                    var starting_balance = parseFloat(
+                        (result[0].fund_sourcedata.alocated_funds - result[0].fund_sourcedata.admin_cost)
+                            .toString()
+                            .replace(/,/g, '')
+                    );
                     result.forEach(function(item) {
                         var saa = item.fund_sourcedata && item.fund_sourcedata.saa !== null ? item.fund_sourcedata.saa : '-';
                         var proponentName = item.proponentdata && item.proponentdata.proponent !== null ? item.proponentdata.proponent : '-';
@@ -603,6 +609,13 @@
                             hour: 'numeric',
                             minute: 'numeric'
                         });
+
+                        var utilize_budget = parseFloat(
+                             item.budget_utilize
+                                .toString()
+                                .replace(/,/g, '')
+                        );
+
                         var stat='';
                         if(item.obligated == 1){
                             stat = 'Obligated';
@@ -611,14 +624,16 @@
                         }else if(item.status == 3){
                             stat = 'Transfered/Added';
                         }
-                        var beg_balance = item.budget_bbalance.replace(',', '');
+                        // var beg_balance = item.budget_bbalance.replace(',', '');
                         var utilize = (item.budget_utilize !== null)?number_format(parseFloat(item.budget_utilize.replace(/,/g, '')), 2, '.', ','):'';
+                        var beg_balance = ( starting_balance !== null) ? number_format(parseFloat(starting_balance), 2, '.', ','):'';
                         var route = item.div_id.toString();
                         var new_row = '<tr style="text-align:center">' +
                             '<td>' + saa + '</td>' +
                             '<td>' + proponentName + '</td>' +
                             '<td>' + facility + '</td>' +
-                            '<td>' + number_format(parseFloat(beg_balance.replace(',', '')), 2, '.', ',') + '</td>' +
+                            // '<td>' + number_format(parseFloat(beg_balance.replace(',', '')), 2, '.', ',') + '</td>' +
+                            '<td>' + beg_balance + '</td>' +
                             '<td>' +(item.div_id != 0 ?'<a class="modal-link" href="#i_frame" data-routeId="'+route+'" onclick="openModal(this)">' + utilize + '</a>' :utilize) +'</td>' +
                             '<td>' +(item.div_id != 0 ?'<a class="modal-link" href="#obligate" data-backdrop="static" data-toggle="modal" data-dvNo="'+item.dv_no+'" data-routeId="'+route+'" onclick="getDv(this)">' + item.div_id + '</a>' :'') +'</td>' +
                             '<td>' + item.user_budget.lname +', '+item.user_budget.fname+ '</td>' +
@@ -627,6 +642,13 @@
                             '</tr>';
                         $('#t_body').append(new_row);
                         i= i+1;
+
+                        starting_balance = parseFloat(
+                            (starting_balance - utilize_budget)
+                                .toString()
+                                .replace(/,/g, '')
+                        );
+
                     });
                     var printButton = $('<a>', { 
                         href: "{{ url('budget/tracking') }}/" + fundsourceId +'/'+ 'pdf',

@@ -108,6 +108,7 @@ class FundSourceController2 extends Controller{
                 ->groupBy('fundsource_id');
             }])
             ->paginate(15);
+
         } 
 
         return view('fundsource_budget.fundsource2',[

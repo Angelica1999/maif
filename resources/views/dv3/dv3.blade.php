@@ -252,18 +252,18 @@
                                             Processed
                                         @endif
                                     </td>
-                                    <td>{{$row->facility->name}}</td>
-                                    <td>
+                                    <td>{{ $row->facility->name }}</td>
+                                    <td> 
                                         @foreach($row->extension as $item)
                                         <br>
-                                            {{$item->proponentInfo->fundsource->saa}}
+                                            {{ $item->proponentInfo->fundsource->saa }}
                                         @endforeach
                                     </td>
-                                    <td>{{$row->extension[0]->proponentInfo->proponent->proponent}}</td>
-                                    <td>{{date('F j, Y', strtotime($row->date))}}</td>
-                                    <td>{{number_format($row->total, 2, '.', ',')}}</td>
-                                    <td>{{date('F j, Y', strtotime($row->created_at))}}</td>
-                                    <td>{{$row->user->lname .', '. $row->user->fname}}</td>
+                                    <td>{{ count($row->extension) > 0 ? $row->extension[0]->proponentInfo->proponent->proponent : '' }}</td>
+                                    <td>{{ date('F j, Y', strtotime($row->date)) }}</td>
+                                    <td>{{ number_format($row->total, 2, '.', ',') }}</td>
+                                    <td>{{ date('F j, Y', strtotime($row->created_at)) }}</td>
+                                    <td>{{ $row->user->lname .', '. $row->user->fname }}</td>
                                 </tr>
                             @endforeach
                         @else

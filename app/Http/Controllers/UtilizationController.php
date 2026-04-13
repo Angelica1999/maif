@@ -30,7 +30,7 @@ class UtilizationController extends Controller{
                     'to_proponentInfo:id,proponent'
                 ]);
             }
-            ])->get(); 
+            ])->orderBy('created_at', 'asc')->get(); 
         return response()->json($utilization);
     }
    
@@ -38,9 +38,9 @@ class UtilizationController extends Controller{
 
         $utilization = Utilization::whereNotNull('obligated')
             ->where('fundsource_id', $fundsourceId)
-            ->with('proponentdata', 'fundSourcedata', 'facilitydata', 'user_budget')
-            ->orderByRaw("CAST(REPLACE(budget_bbalance, ',', '') AS DECIMAL(15,2)) DESC")
-            ->get();
+            ->with('proponentdata', 'fundSourcedata', 'facilitydata:id,name', 'user_budget')
+            // ->orderByRaw("CAST(REPLACE(budget_bbalance, ',', '') AS DECIMAL(15,2)) DESC")
+            ->orderBy('obligated_on', 'asc')->get();
 
         if($type == 'for_modal'){
             return $utilization;

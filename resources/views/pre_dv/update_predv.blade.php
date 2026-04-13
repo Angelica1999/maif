@@ -88,47 +88,41 @@
 (function() {
     'use strict';
     
-    // Initialize select2
     $('.select2').select2();
 
-    const facility_id = @json($result->facility->id);
-    const url = "{{ url('fetch/pre-dv/fundsource') }}/" + facility_id;
+    var facility_id = @json($result->facility->id);
+    var url = "{{ url('fetch/pre-dv/fundsource') }}/" + facility_id;
 
-    // Utility functions
-    const parseBalance = (balance) => parseFloat(balance.replace(/,/g, ''));
+    var parseBalance = (balance) => parseFloat(balance.replace(/,/g, ''));
     
-    const formatBalance = (balance) => parseBalance(balance).toLocaleString('en-US', { 
+    var formatBalance = (balance) => parseBalance(balance).toLocaleString('en-US', { 
         minimumFractionDigits: 2, 
         maximumFractionDigits: 2 
     });
 
-    const parseFacilityId = (id) => {
-        // Handle string (could be JSON string or single ID)
+    var parseFacilityId = (id) => {
         if (typeof id === 'string') {
             try {
-                const parsed = JSON.parse(id);
-                // If parsed result is array, return it; otherwise wrap it
+                var parsed = JSON.parse(id);
                 return Array.isArray(parsed) ? parsed : [parsed];
             } catch (e) {
-                // Not valid JSON, treat as single ID
                 return [id];
             }
         }
-        // Handle number
+
         if (typeof id === 'number') {
             return [String(id)];
         }
-        // Handle array
+
         if (Array.isArray(id)) {
             return id;
         }
-        // Handle null/undefined or other types
+
         return id ? [id] : [];
     };
 
-    const getFacilityNames = (facilityIds, facilitiesArray) => {
-        // Ensure we have an array to work with
-        const idsArray = Array.isArray(facilityIds) ? facilityIds : [facilityIds];
+    var getFacilityNames = (facilityIds, facilitiesArray) => {
+        var idsArray = Array.isArray(facilityIds) ? facilityIds : [facilityIds];
         
         return facilitiesArray
             .filter(f => idsArray.includes(String(f.id)))
@@ -136,13 +130,13 @@
             .join(' & ');
     };
 
-    const determineColor = (remBalanceNum, checkP, proponentName, proName) => {
+    var determineColor = (remBalanceNum, checkP, proponentName, proName) => {
         if (remBalanceNum <= 0) return 'red';
         if (checkP !== 1 && proponentName === proName) return '';
         return 'yellow';
     };
 
-    const createOptionObject = (optionData, text, color) => ({
+    var createOptionObject = (optionData, text, color) => ({
         value: optionData.fundsource_id,
         text: text,
         dataval: optionData.remaining_balance,
@@ -152,7 +146,7 @@
         d_color: color
     });
 
-    const buildOptionsHtml = (arr) => arr.map(o => 
+    var buildOptionsHtml = (arr) => arr.map(o => 
         `<option 
             value="${o.value}"
             data-color="${o.d_color}"
@@ -163,15 +157,15 @@
         >${o.text}</option>`
     ).join('');
 
-    const categorizeOptions = (optionData, proponentName, facilityId, facilitiesArray) => {
-        const categories = { first: [], sec: [], third: [], fourth: [], fifth: [], six: [] };
+    var categorizeOptions = (optionData, proponentName, facilityId, facilitiesArray) => {
+        var categories = { first: [], sec: [], third: [], fourth: [], fifth: [], six: [] };
         
         optionData.forEach(data => {
-            const proName = data.proponent.proponent;
-            const remBalance = formatBalance(data.remaining_balance);
-            const remBalanceNum = parseBalance(data.remaining_balance);
-            const facilityIds = parseFacilityId(data.facility_id);
-            const facilityNames = getFacilityNames(facilityIds, facilitiesArray);
+            var proName = data.proponent.proponent;
+            var remBalance = formatBalance(data.remaining_balance);
+            var remBalanceNum = parseBalance(data.remaining_balance);
+            var facilityIds = parseFacilityId(data.facility_id);
+            var facilityNames = getFacilityNames(facilityIds, facilitiesArray);
             
             let checkP = 0;
             if (data.facility !== null) {
@@ -180,12 +174,12 @@
                 checkP = data.facility_id.includes('702') ? 0 : 1;
             }
             
-            const textDisplay = `${data.fundsource.saa} - ${proName} - ${facilityNames} - ${remBalance}`;
-            const color = determineColor(remBalanceNum, checkP, proponentName, proName);
-            const obj = createOptionObject(data, textDisplay, color);
+            var textDisplay = `${data.fundsource.saa} - ${proName} - ${facilityNames} - ${remBalance}`;
+            var color = determineColor(remBalanceNum, checkP, proponentName, proName);
+            var obj = createOptionObject(data, textDisplay, color);
             
-            const isConap = data.fundsource.saa.includes('CONAP');
-            const isMatching = checkP !== 1 && proponentName === proName;
+            var isConap = data.fundsource.saa.includes('CONAP');
+            var isMatching = checkP !== 1 && proponentName === proName;
             
             if (remBalanceNum <= 0) {
                 categories[isConap ? 'fifth' : 'six'].push(obj);
@@ -201,20 +195,20 @@
         return categories;
     };
 
-    const initializeSaaSelects = ($proponentClone, categories) => {
-        const finalHtml = ['first', 'sec', 'third', 'fourth', 'fifth', 'six']
+    var initializeSaaSelects = ($proponentClone, categories) => {
+        var finalHtml = ['first', 'sec', 'third', 'fourth', 'fifth', 'six']
             .map(key => buildOptionsHtml(categories[key]))
             .join('');
         
         $proponentClone.find('.saa_id').each(function() {
-            const $select = $(this);
-            const rowId = $select.data('rowid');
-            const fundsourceRowId = $select.data('fundsourcerowid');
+            var $select = $(this);
+            var rowId = $select.data('rowid');
+            var fundsourceRowId = $select.data('fundsourcerowid');
 
             $select.html(`<option value="">SELECT SAA</option>${finalHtml}`);
             $select.select2({
                 templateResult: function(data) {
-                    const color = $(data.element).data('color');
+                    var color = $(data.element).data('color');
                     if (color === 'red') return $('<span style="color:red;">' + data.text + '</span>');
                     if (color === 'yellow') return $('<span style="color:#DAA520;">' + data.text + '</span>');
                     return data.text;
@@ -222,21 +216,14 @@
                 placeholder: "Select SAA"
             });
             
-            // Pre-select matching option
-
             if (fundsourceRowId && rowId) {
                 $select.find('option').each(function() {
                     if ($(this).val() == fundsourceRowId && 
                     $(this).attr('dataproponentinfo_id') == rowId) {
-                        // Set the value on the underlying select
-                        $select.val(fundsourceRowId);
-
-                        // Manually update just the display text
-                        var selectedText = $select.find('option:selected').text();
-                        $select.next('.select2-container').find('.select2-selection__rendered').text(selectedText);
-                        // $select.val(fundsourceRowId).triggerHandler('change');
-                        // $select.val(fundsourceRowId).trigger('change');
-                        return false;
+                        $select.find('option').prop('selected', false);
+                        $(this).prop('selected', true);
+                        $select.trigger('change');
+                        return false; 
                     }       
                 });
             }
@@ -245,16 +232,15 @@
         });
     };
 
-    // Main function to fetch and populate fundsource data
     $.get(url, function(result) {
-        const dataResult = result.info;
-        const facilitiesArray = Array.isArray(result.facilities) ? result.facilities : [];
+        var dataResult = result.info;
+        var facilitiesArray = Array.isArray(result.facilities) ? result.facilities : [];
         
         $('.proponent_clone').each(function() {
-            const $proponentClone = $(this);
-            const proponentName = $proponentClone.find('.proponent').val();
+            var $proponentClone = $(this);
+            var proponentName = $proponentClone.find('.proponent').val();
             
-            const categories = categorizeOptions(dataResult, proponentName, facility_id, facilitiesArray);
+            var categories = categorizeOptions(dataResult, proponentName, facility_id, facilitiesArray);
             initializeSaaSelects($proponentClone, categories);
         });
     }).fail(function(error) {
