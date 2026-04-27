@@ -263,63 +263,42 @@
                         <tbody id="list_body">
                             @if(count($data) > 0)
                                 @foreach($data as $row)
-                                    @php
-                                        $fullName = $row->patient->lname . ', ' . $row->patient->fname;
-                                        if($row->patient->mname && $row->patient->mname != 'N/A') {
-                                            $fullName .= ' ' . $row->patient->mname;
-                                        }
-                                        $transTotal = $row->trans?->final_bill ?? 0;
-                                        $senior = $row->senior ?? 0;
-                                        $phic = $row->phic ?? 0;
-                                        $pcso = $row->pcso ?? 0;
-                                        $dswd = $row->dswd ?? 0;
-                                        $o_amount = $row->o_amount ?? 0;
-                                        $approved_assistance = $row->trans?->total ?? 0;
-                                        $actual_charges = ($row->trans?->final_bill ?? 0 ) - ($senior + $phic + $pcso + $dswd + $o_amount);
-                                        $ratio = ($actual_charges > 0 && $approved_assistance > 0)
-                                            ? ($approved_assistance / $actual_charges) * 100
-                                            : 0;
-                                        $p_fee = $row->trans?->p_fee ?? 0;
-                                        $h_bill = $row->trans?->h_bill ?? 0;
-                                        $total = $row->trans?->total ?? 0;
-                                    @endphp
-
-                                    <tr data-id="{{ $row->id }}">
-                                        <td style="text-align: center;"><input type="checkbox" {{ $row->opd ? 'checked' : '' }} disabled></td>
-                                        <td>{{ $fullName }}</td>
-                                        <td>{{ $row->patient_code ?? '' }}</td>
-                                        <td>{{ $row->type }}</td>
-                                        <td id="trans_total">{{ number_format($transTotal, 2, '.', ',') }}</td>
-                                        <td @if($row->opd == 0)  @else style="background-color:lightgray" @endif id="senior" data-type="number">
-                                            {{ $row->opd == 0 ? number_format($senior, 2, '.', ',') : '' }}
+                                    <tr data-id="{{ $row[0] }}">
+                                        <td style="text-align: center;"><input type="checkbox" {{ $row[1] ? 'checked' : '' }} disabled></td>
+                                        <td>{{ $row[2] }}</td>
+                                        <td>{{ $row[3] }}</td>
+                                        <td id="type">{{ $row[4] }}</td>
+                                        <td id="trans_total">{{ number_format($row[5], 2, '.', ',') }}</td>
+                                        <td @if($row[1] == 0)  @else style="background-color:lightgray" @endif id="senior" data-type="number">
+                                            {{ $row[1] == 0 ? number_format($row[6], 2, '.', ',') : '' }}
                                         </td>
-                                        <td id="phic" data-type="number" @if($row->opd == 1) style="background-color:lightgray" @endif>
-                                            {{ $row->opd == 0 ? number_format($phic, 2, '.', ',') : '' }}
+                                        <td id="phic" data-type="number" @if($row[1] == 0 )  @else style="background-color:lightgray" @endif>
+                                            {{ $row[1] == 0 ? number_format($row[7], 2, '.', ',') : '' }}
                                         </td>
-                                        <td @if($row->opd == 1) style="background-color:lightgray" @endif id="pcso" data-type="number">
-                                            {{ $row->opd == 0 ? number_format($pcso, 2, '.', ',') : '' }}
+                                        <td @if($row[1] == 0 ) @else style="background-color:lightgray" @endif id="pcso" data-type="number">
+                                            {{ $row[1] == 0 ? number_format($row[8], 2, '.', ',') : '' }}
                                         </td>
-                                        <td @if($row->opd == 1) style="background-color:lightgray" @endif id="dswd" data-type="number">
-                                            {{ $row->opd == 0 ? number_format($dswd, 2, '.', ',') : '' }}
+                                        <td @if($row[1] == 0 ) @else style="background-color:lightgray" @endif id="dswd" data-type="number">
+                                            {{ $row[1] == 0 ? number_format($row[9], 2, '.', ',') : '' }}
                                         </td>
-                                        <td @if($row->opd == 1) style="background-color:lightgray" @endif id="o_amount" data-type="number">
-                                            {{ $row->opd == 0 ? number_format($o_amount, 2, '.', ',') : '' }}
+                                        <td @if($row[1] == 0 ) @else style="background-color:lightgray" @endif id="o_amount" data-type="number">
+                                            {{ $row[1] == 0 ? number_format($row[10], 2, '.', ',') : '' }}
                                         </td>
-                                        <td @if($row->opd == 1) style="background-color:lightgray" @endif id="others">
-                                            {{ $row->opd == 0 ? $row->others ?? '' : '' }}
+                                        <td @if($row[1] == 0 ) @else style="background-color:lightgray" @endif id="others">
+                                            {{ $row[1] == 0 ? $row[11] ?? '' : '' }}
                                         </td>
-                                        <td @if($row->opd == 1) style="background-color:lightgray" @endif id="actual_charges">
-                                            {{ $row->opd == 0 ? number_format($actual_charges, 2, '.', ',') : '' }}
+                                        <td @if($row[1] == 1) style="background-color:lightgray" @endif id="actual_charges">
+                                            {{ $row[1] == 0 ? number_format($row[12], 2, '.', ',') : '' }}
                                         </td>
-                                        <td @if($row->opd == 1) style="background-color:lightgray" @endif >
-                                            {{ $row->opd == 0 ? number_format($p_fee, 2, '.', ',') : '' }}
+                                        <td @if($row[1] == 1) style="background-color:lightgray" @endif >
+                                            {{ $row[1] == 0 ? number_format($row[13], 2, '.', ',') : '' }}
                                         </td>
-                                        <td @if($row->opd == 1) style="background-color:lightgray" @endif >
-                                            {{ $row->opd == 0 ? number_format($h_bill, 2, '.', ',') : '' }}
+                                        <td @if($row[1] == 1) style="background-color:lightgray" @endif >
+                                            {{ $row[1] == 0 ? number_format($row[14], 2, '.', ',') : '' }}
                                         </td>
-                                        <td id="approved_assistance">{{ number_format($total, 2, '.', ',') }}</td>
-                                        <td @if($row->opd == 1) style="background-color:lightgray" @endif id="ratio">
-                                            {{ $row->opd == 0 ? number_format($ratio, 2).'%' : '' }}
+                                        <td id="approved_assistance">{{ number_format($row[15], 2, '.', ',') }}</td>
+                                        <td @if($row[1] == 1) style="background-color:lightgray" @endif id="ratio">
+                                            {{ $row[1] == 0 ? $row[16] : '' }}
                                         </td>
                                     </tr>
                                 @endforeach
@@ -338,14 +317,9 @@
                 </button>
             </div>
             <div class="pl-5 pr-5 mt-5" id ="pagination_links">
-                {!! $data->appends(request()->query())->links('pagination::bootstrap-5') !!}
             </div>
         </div>
     </div>
-</div>
-<div class="save-notice" id="saveNotice">
-    <span>✓</span>
-    <span>Changes saved successfully!</span>
 </div>
 @endsection
 @section('js')

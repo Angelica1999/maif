@@ -73,13 +73,13 @@
         box-shadow: 0 0 3px green;
     }
     .select2-container--default .select2-selection--single {
-        border: 1px solid #009DD1;
+        border: 1px solid green;
         height: 42px;
     }
     .select2-container--default .select2-selection--single:focus,
     .select2-container--default.select2-container--open .select2-selection--single {
-        border-color: #00B4D8 !important;
-        box-shadow: 0 0 3px #00B4D8;
+        border-color: green !important;
+        box-shadow: 0 0 3px green;
     }
 
 </style>
@@ -100,7 +100,12 @@
                             <option value="2" {{ $type == 2 ? 'selected' :'' }}>Accepted</option>
                             <option value="3" {{ $type == 3 ? 'selected' :'' }}>Returned</option>
                         </select>
-                        <button class="btn btn-warning" name="viewAll" value="viewAll" style="border-radius:0px"><i class="fa fa-eye"></i> ViewAll</button>
+                        <select class="form-control" id="selected_facility" name="selected_facility">
+                            <option value=""></option>
+                            @foreach($facilities as $row)
+                                <option value="1" {{ $selected_facility == $row->id ? 'selected' :'' }}>{{ $row->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </form>
             </div>
@@ -120,47 +125,51 @@
                     <tbody>
                         @if(count($data) > 0)
                             @foreach($data as $row)
-                                <tr>
-                                    <td>
-                                        <a href="{{ route('fur.submission', [
-                                                'month' => $row->month,
-                                                'year' => $row->year,
-                                                'facility_id' => $row->facility_id
-                                            ]) }}"
-                                            class="btn btn-xs btn-info"
-                                            style="color:white; font-size:11px;">
-                                            <i class="fa fa-eye"></i> View
-                                        </a>
-                                        <a href="{{
-                                            route('annex_b.excel', [
-                                                    'id' => $row->facility_id,
-                                                    'month' => $row->month,
-                                                    'year' => $row->year
-                                                ])
-                                            }}"
-                                            class="btn btn-xs btn-excel"
-                                            style="color:white; font-size:11px; display:inline-block;">
-                                            <i class="fa fa-file-excel"></i> Excel
-                                        </a>
-                                        @if($row->status == 1)
-                                            <button data-month="{{ $row->month }}" data-year="{{ $row->year }}" data-id="{{ $row->facility_id }}"
-                                                class="btn btn-xs btn-success accept" style="color:white; font-size:11px; display:inline-block;">
-                                                <i class="fa fa-thumbs-up"></i>  Accept
-                                            </button>
-                                        @endif
-                                        <button data-month="{{ $row->month }}" data-year="{{ $row->year }}" data-id="{{ $row->facility_id }}"
-                                            class="btn btn-xs btn-danger return" style="color:white; font-size:11px; display:inline-block;">
-                                            <i class="fa fa-undo"></i> Return
-                                        </button>
-                                    </td>
-                                    <td style="text-align:left">{{ $row->name }}</td>
-                                    <!-- 0-pending/1-submitted/2-accepted/3-returned -->
-                                    <td>{{ \Carbon\Carbon::create()->month($row->month)->format('F'). ' '.$row->year }}</td>
-                                    <td style="text-align:right">{{ $row->patients }}</td>
-                                    <td style="text-align:right">{{ number_format($row->total, 2,'.',',') }}</td>
-                                    <td style="text-align:center">{{ $row->status == 1 ? 'Pending' : ($row->status == 2 ? 'Submitted' : 'Returned') }}</td>
-                                    <td>{{ $row->remarks }}</td>
-                                </tr> 
+                                @foreach($row['months'] as $row2)
+                                    @foreach($row2['facilities'] as $row3)
+                                        <tr>
+                                            <td>
+                                                <a href="{{ route('fur.submission', [
+                                                        'month' => $row2['month'],
+                                                        'year' => $row['year'],
+                                                        'facility_id' => $row3['facility_id']
+                                                    ]) }}"
+                                                    class="btn btn-xs btn-info"
+                                                    style="color:white; font-size:11px;">
+                                                    <i class="fa fa-eye"></i> View
+                                                </a>
+                                                <a href="{{
+                                                    route('annex_b.excel', [
+                                                            'id' => $row3['facility_id'],
+                                                            'month' => $row2['month'],
+                                                            'year' => $row['year']
+                                                        ])
+                                                    }}"
+                                                    class="btn btn-xs btn-excel"
+                                                    style="color:white; font-size:11px; display:inline-block;">
+                                                    <i class="fa fa-file-excel"></i> Excel
+                                                </a>
+                                                @if($row3['items'][0]->status == 1)
+                                                    <button data-month="{{ $row2['month'] }}" data-year="{{ $row['year'] }}" data-id="{{ $row3['facility_id'] }}"
+                                                        class="btn btn-xs btn-success accept" style="color:white; font-size:11px; display:inline-block;">
+                                                        <i class="fa fa-thumbs-up"></i>  Accept
+                                                    </button>
+                                                @endif
+                                                <button data-month="{{ $row2['month'] }}" data-year="{{ $row['year'] }}" data-id="{{ $row3['facility_id'] }}"
+                                                    class="btn btn-xs btn-danger return" style="color:white; font-size:11px; display:inline-block;">
+                                                    <i class="fa fa-undo"></i> Return
+                                                </button>
+                                            </td>
+                                            <td style="text-align:left">{{ $row3['facility_name']}}</td>
+                                            <!-- 0-pending/1-submitted/2-accepted/3-returned -->
+                                            <td>{{ \Carbon\Carbon::create()->month($row2['month'])->format('F'). ' '.$year }}</td>
+                                            <td style="text-align:right">{{ count($row3['items']) }}</td>
+                                            <td style="text-align:right">{{ number_format($row3['total'], 2,'.',',') }}</td>
+                                            <td style="text-align:center">{{ $row3['items'][0]->status == 1 ? 'Pending' : ($row3['items'][0]->status == 2 ? 'Submitted' : 'Returned') }}</td>
+                                            <td>{{ $row3['items'][0]->remarks }}</td>
+                                        </tr> 
+                                    @endforeach       
+                                @endforeach       
                             @endforeach       
                         @else
                             <tr><td style="color:#850000; background-color:#ffcccc; border-color:#ffb8b8;" colspan="7">No data Found</td></tr>
@@ -178,6 +187,12 @@
 <script>
     $('#type').select2({
         placeholder: 'All'
+    }).on('change', function(){
+        this.form.submit();
+    });
+
+    $('#selected_facility').select2({
+        placeholder: 'Facility'
     }).on('change', function(){
         this.form.submit();
     });

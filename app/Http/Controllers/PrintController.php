@@ -519,7 +519,7 @@ class PrintController extends Controller
                 'total_count' => count($grouped)
             ];
 
-            $file = (count($grouped) > 16) ? 'pre_dv.new_pdf1' : 'pre_dv.new_pdf';
+            $file = (count($grouped) > 37) ? 'pre_dv.new_pdf_2' : ((count($grouped) > 16) ? 'pre_dv.new_pdf1' : 'pre_dv.new_pdf');
             $html = view($file, $data)->render();
 
             $mpdf = new Mpdf([

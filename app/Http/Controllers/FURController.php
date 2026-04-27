@@ -31,34 +31,122 @@ class FURController extends Controller
     //
 
     public function incomingFUR(Request $request){
-        // $year = $request->year ? $request->year : now()->year; 
+        $year = $request->year ? $request->year : now()->year; 
+        $selected_facility = $request->selected_facility;
 
-        $data = AnnexB::join('transmittal_patients', 'annex_b.patient_id', '=', 'transmittal_patients.patient_id')
+        $query = AnnexB::join('transmittal_patients', 'annex_b.patient_id', '=', 'transmittal_patients.patient_id')
+            ->whereYear('annex_b.month_year', $year)
+            ->join('patients', 'annex_b.patient_id', '=', 'patients.id')
             ->join('facility', 'annex_b.facility_id', '=', 'facility.id')
-            ->where('annex_b.status', '!=', 0)
-            ->groupByRaw('YEAR(annex_b.month_year), MONTH(annex_b.month_year), annex_b.facility_id')
-            ->selectRaw('
-                YEAR(annex_b.month_year) as year,
-                MONTH(annex_b.month_year) as month,
-                MAX(annex_b.facility_id) as facility_id,
-                MAX(facility.name) as name,
-                MAX(annex_b.status) as status,
-                MAX(annex_b.remarks) as remarks,
-                COUNT(DISTINCT annex_b.patient_id) as patients,
-                SUM(transmittal_patients.total) as total,
-                MAX(annex_b.updated_at) as last_update
-            ');
-        if($request->viewAll){
-            $request->year = '';
-            $request->type = '';
+            ->where('annex_b.status', '!=', 0);
+
+        $facilities = Facility::whereIn('id', $query->get()->pluck('facility_id'))->select('id','name')->get();
+
+        if ($selected_facility) {
+            $query->where('annex_b.facility_id', $selected_facility);
         }
+
+        $data = $query
+            ->groupByRaw('
+                YEAR(annex_b.month_year),
+                MONTH(annex_b.month_year),
+                patients.fname,
+                patients.mname,
+                patients.lname,
+                annex_b.facility_id,
+                facility.name
+            ')
+            ->orderByRaw('YEAR(annex_b.month_year) DESC, MONTH(annex_b.month_year) ASC')
+            ->selectRaw('
+                annex_b.facility_id,
+                MAX(facility.name) as facility_name,
+                YEAR(annex_b.month_year)  as year,
+                MONTH(annex_b.month_year) as month,
+                patients.fname,
+                patients.mname,
+                patients.lname,
+                MAX(annex_b.status)  as status,
+                MAX(annex_b.remarks) as remarks,
+                SUM(transmittal_patients.total) as total
+            ')
+            ->get();
+            
+        $names = $data->map(fn($row) => [
+            'fname'       => $row->fname,
+            'mname'       => $row->mname,
+            'lname'       => $row->lname,
+            'facility_id' => $row->facility_id,
+        ])->unique(fn($n) => $n['fname'] . '|' . $n['mname'] . '|' . $n['lname'] . '|' . $n['facility_id']);
         
+        $matchingPatientIds = Patients::whereNotNull('transd_id')->where(function ($query) use ($names) {
+                foreach ($names as $name) {
+                    $query->orWhere(function ($q) use ($name) {
+                        $q->where('fname', $name['fname'])
+                        ->where('mname', $name['mname'])
+                        ->where('lname', $name['lname'])
+                        ->where('facility_id', $name['facility_id']);
+                    });
+                }
+            })
+            ->pluck('id');
+        
+        $allTransmittals = TransmittalPatients::whereIn('patient_id', $matchingPatientIds)
+            ->with('patient:id,fname,mname,lname,facility_id')
+            ->get()
+            ->groupBy(fn($t) =>
+                Carbon::parse($t->end)->year
+                . '|' . Carbon::parse($t->end)->month
+                . '|' . $t->patient->facility_id
+                . '|' . $t->patient->fname
+                . '|' . $t->patient->mname
+                . '|' . $t->patient->lname
+            );
+        
+        $result = $data
+            ->map(function ($row) use ($allTransmittals) {
+                $key = $row->year
+                    . '|' . $row->month
+                    . '|' . $row->facility_id
+                    . '|' . $row->fname
+                    . '|' . $row->mname
+                    . '|' . $row->lname;
+        
+                $matched = $allTransmittals->get($key);
+        
+                $row->merged_total    = $matched ? $matched->sum('total') : $row->total;
+                $row->merged_patients = $matched ? $matched->pluck('patient_id')->unique()->count() : $row->patients;
+        
+                return $row;
+            })
+            // Group by YEAR
+            ->groupBy('year')
+            ->map(fn($yearRows, $year) => [
+                'year'     => $year,
+                'total'    => $yearRows->sum('merged_total'),
+                'patients' => $yearRows->sum('merged_patients'),
+                // Group by MONTH
+                'months'   => $yearRows->groupBy('month')
+                    ->map(fn($monthRows, $month) => [
+                        'month'    => $month,
+                        'total'    => $monthRows->sum('merged_total'),
+                        'patients' => $monthRows->sum('merged_patients'),
+                        // Group by FACILITY
+                        'facilities' => $monthRows->groupBy('facility_id')
+                            ->map(fn($facRows, $facilityId) => [
+                                'facility_id'   => $facilityId,
+                                'facility_name' => $facRows->first()->facility_name,
+                                'total'         => $facRows->sum('merged_total'),
+                                'patients'      => $facRows->sum('merged_patients'),
+                                'items'         => $facRows->values(),
+                            ])
+                            ->values(),
+                    ])
+                    ->values(),
+            ])
+            ->values();
+
         if($request->type && $request->type != 'all'){
             $data->where('annex_b.status', $request->type);
-        }
-
-        if($request->year){
-            $data->whereYear('annex_b.month_year', $request->year);
         }
 
         if($request->facility_id){
@@ -74,10 +162,18 @@ class FURController extends Controller
                     'trans',
                     'patient'
                 ]);
-            
-            if ($request->data_type) {
+            $facility_name = Facility::where('id', $facility_id)->value('name');  
+            $keyword = $request->keyword;
+            $data_type = $request->data_type;
+    
+            if($request->viewAll){
+                $keyword = '';
+                $data_type = '';
+            }
 
-                $type = $request->data_type;
+            if ($data_type) {
+
+                $type = $data_type;
             
                 if ($type == 3) {
 
@@ -96,13 +192,7 @@ class FURController extends Controller
                         $q->where('excess', '>=', 1)->where('opd', 0);
                     });
                 }
-            }        
-                
-            $keyword = $request->keyword;
-
-            if($request->viewAll){
-                $keyword = '';
-            }
+            }     
 
             if($keyword){
                 $data->whereHas('patient', function ($query) use ($keyword) {
@@ -111,64 +201,169 @@ class FURController extends Controller
                         ->orWhere('mname', 'LIKE', "%{$keyword}%");
                 });
             }
+
+            $annexb1 = [];
+            foreach($data->get() as $index => $row){
+                $patient_list = Patients::where('facility_id', $row->patient->facility_id)->where('fname', $row->patient->fname)->where('lname',$row->patient->lname)
+                    ->where('mname', $row->patient->mname)->pluck('id')->toArray();
+                $trans = TransmittalPatients::whereIn('patient_id', $patient_list)->whereYear('end', $year)
+                    ->whereMonth('end', $month)->get();
+
+                $fullName = $row->patient->lname . ', ' . $row->patient->fname;
+
+                if($row->patient->mname && $row->patient->mname != 'N/A') {
+                    $fullName .= ' ' . $row->patient->mname;
+                }
+
+                $transTotal = $trans->sum('final_bill');
+                $senior = $row->senior ?? 0;
+                $phic = $row->phic ?? 0;
+                $pcso = $row->pcso ?? 0;
+                $dswd = $row->dswd ?? 0;
+                $o_amount = $row->o_amount ?? 0;
+                $approved_assistance = $trans->sum('total');
+                $actual_charges = $transTotal - ($senior + $phic + $pcso + $dswd + $o_amount);
+                $ratio = ($actual_charges > 0 && $approved_assistance > 0)
+                    ? ($approved_assistance / $actual_charges) * 100
+                    : 0;
+                $p_fee = $trans->sum('p_fee');
+                $h_bill = $trans->sum('h_bill');
+
+                $annexb1[] = [
+                    $row->patient->id, 
+                    $row->opd,
+                    $fullName,
+                    $row->patient->patient_code,
+                    $row->type,
+                    $transTotal,
+                    $senior,
+                    $phic,
+                    $pcso,
+                    $dswd,
+                    $o_amount,
+                    $row->others,
+                    $actual_charges,
+                    $p_fee == 0 ? '0.00' : $p_fee,
+                    $h_bill== 0 ? '0.00' : $h_bill, 
+                    $approved_assistance,
+                    number_format($ratio, 2, '.', ',') .'%',
+                ];
+            }
             
             return view('facility.annex_b_view',[
-                'data' => $data->paginate(50),
+                'data' => $annexb1,
                 'keyword' => $keyword,
-                'type' => $request->data_type,
+                'type' => $data_type,
                 'month' => $month,
                 'year' => $year,
-                'facility_id' => $facility_id
+                'facility_id' => $facility_id,
+                'facility_name' => $facility_name
             ]);
         }
-
+        
         return view('facility.fur_annex_b',[
-            'data' => $data->orderBy('year', 'asc')
-                ->orderBy('month', 'asc')
-                ->paginate(50),
+            'data' => $result,
             'type' => $request->type ?? '',
-            'year' => $request->year ?? '',
+            'year' => $year,
+            'facilities' => $facilities,
+            'selected_facility' => $selected_facility
         ]);
     }
-
     public function annexAExcel($id, $year){
 
         $facility_id = $id;
 
-        $data = AnnexB::join('transmittal_patients', 'annex_b.patient_id', '=', 'transmittal_patients.patient_id')
+        $data = AnnexB::with('patient:id,fname,lname,mname')
+            ->where('annex_b.status', 2)
             ->where('annex_b.facility_id', $facility_id)
+            ->join('transmittal_patients', 'annex_b.patient_id', '=', 'transmittal_patients.patient_id')
+            ->join('patients', 'annex_b.patient_id', '=', 'patients.id')
             ->whereYear('annex_b.month_year', $year)
-            ->groupByRaw('MONTH(annex_b.month_year)')
+            ->groupByRaw('MONTH(annex_b.month_year), patients.fname, patients.mname, patients.lname')
             ->selectRaw('
+                MAX(annex_b.patient_id) as patient_id,
                 MONTH(annex_b.month_year) as month,
+                patients.fname,
+                patients.mname,
+                patients.lname,
+                MAX(annex_b.status) as status,
+                MAX(annex_b.remarks) as remarks,
                 COUNT(DISTINCT annex_b.patient_id) as patients,
                 SUM(transmittal_patients.total) as total
             ')
             ->get();
 
-        $allMonths = [];
+        if(count($data) > 0){
+            $names = $data->map(fn($row) => [
+                'fname' => $row->fname,
+                'mname' => $row->mname,
+                'lname' => $row->lname,
+            ])->unique(fn($n) => $n['fname'] . '|' . $n['mname'] . '|' . $n['lname']);
 
-        for ($m = 1; $m <= 12; $m++) {
-            $monthData = $data->firstWhere('month', $m);
+            $matchingPatientIds = Patients::whereNotNull('transd_id')->where('facility_id', $facility_id)->where(function ($query) use ($names) {
+                    foreach ($names as $name) {
+                        $query->orWhere(function ($q) use ($name) {
+                            $q->where('fname', $name['fname'])
+                            ->where('mname', $name['mname'])
+                            ->where('lname', $name['lname']
+                            );
+                        });
+                    }
+                })->pluck('id');
 
-            $allMonths[] = [
-                'month' => Carbon::create()->month($m)->format('F'), 
-                'patients' => $monthData->patients ?? 0,
-                'total' => (float) ($monthData->total ?? 0)
+            $allTransmittals = TransmittalPatients::whereIn('patient_id', $matchingPatientIds)
+                ->whereYear('end', $year)
+                ->with('patient:id,fname,mname,lname')
+                ->get()
+                ->groupBy(fn($t) => 
+                    Carbon::parse($t->end)->month  
+                    . '|' . $t->patient->fname 
+                    . '|' . $t->patient->mname 
+                    . '|' . $t->patient->lname
+                );
+    
+            $allMonths = [];
+            for ($m = 1; $m <= 12; $m++) {
+                $monthData = $data->where('month', $m)->map(function ($row) use ($allTransmittals, $m) {
+                    $key     = $m . '|' . $row->fname . '|' . $row->mname . '|' . $row->lname;
+                    $matched = $allTransmittals->get($key);
+    
+                    $row->merged_total    = $matched ? $matched->sum('total') : $row->total;
+                    $row->merged_patients = $matched ? $matched->pluck('patient_id')->unique()->count() : $row->patients;
+                    $row->matched_ids     = $matched ? $matched->pluck('patient_id')->unique()->values() : collect();
+    
+                    return $row;
+                });
+    
+                $allMonths[] = [
+                    'status'   => $monthData->first()->status ?? 0,
+                    'remarks'  => $monthData->first()->remarks ?? '',
+                    'month'    => Carbon::create()->month($m)->format('F'),
+                    'patients' => $monthData->sum('patients') ?? 0,
+                    'total'    => (float) $monthData->sum('merged_total'),
+                ];
+            }
+    
+            $overallPatients = collect($allMonths)->sum('patients');
+            $overallTotal    = collect($allMonths)->sum('total');
+    
+            $result = [
+                'year' => $year,
+                'monthly' => $allMonths,
+                'overall' => [
+                    'patients' => $overallPatients,
+                    'total' => $overallTotal
+                ]
             ];
+        }else{
+            $result = array_map(fn($month) => [
+                'status'   => 0,
+                'remarks'  => '',
+                'month'    => $month,
+                'patients' => 0,
+                'total'    => 0,
+            ], ['January','February','March','April','May','June','July','August','September','October','November','December']);
         }
-
-        $overallPatients = collect($allMonths)->sum('patients');
-        $overallTotal    = collect($allMonths)->sum('total');
-
-        $result = [
-            'year' => $year,
-            'monthly' => $allMonths,
-            'overall' => [
-                'patients' => $overallPatients,
-                'total' => $overallTotal
-            ]
-        ];
 
         $facility = Facility::where('id', $facility_id)->value('name');
 
@@ -413,6 +608,289 @@ class FURController extends Controller
         return $xlsData;
         exit;
     }
+
+    // public function annexAExcel($id, $year){
+
+    //     $facility_id = $id;
+
+    //     $data = AnnexB::join('transmittal_patients', 'annex_b.patient_id', '=', 'transmittal_patients.patient_id')
+    //         ->where('annex_b.facility_id', $facility_id)
+    //         ->whereYear('annex_b.month_year', $year)
+    //         ->groupByRaw('MONTH(annex_b.month_year)')
+    //         ->selectRaw('
+    //             MONTH(annex_b.month_year) as month,
+    //             COUNT(DISTINCT annex_b.patient_id) as patients,
+    //             SUM(transmittal_patients.total) as total
+    //         ')
+    //         ->get();
+
+    //     $allMonths = [];
+
+    //     for ($m = 1; $m <= 12; $m++) {
+    //         $monthData = $data->firstWhere('month', $m);
+
+    //         $allMonths[] = [
+    //             'month' => Carbon::create()->month($m)->format('F'), 
+    //             'patients' => $monthData->patients ?? 0,
+    //             'total' => (float) ($monthData->total ?? 0)
+    //         ];
+    //     }
+
+    //     $overallPatients = collect($allMonths)->sum('patients');
+    //     $overallTotal    = collect($allMonths)->sum('total');
+
+    //     $result = [
+    //         'year' => $year,
+    //         'monthly' => $allMonths,
+    //         'overall' => [
+    //             'patients' => $overallPatients,
+    //             'total' => $overallTotal
+    //         ]
+    //     ];
+
+    //     $facility = Facility::where('id', $facility_id)->value('name');
+
+    //     $spreadsheet = new Spreadsheet();
+    //     $sheet = $spreadsheet->getActiveSheet();
+
+    //     $sheet->getColumnDimension('A')->setWidth(2);  
+    //     $sheet->getColumnDimension('B')->setWidth(40); 
+    //     $sheet->getColumnDimension('C')->setWidth(20); 
+    //     $sheet->getColumnDimension('D')->setWidth(20);
+    //     $sheet->getColumnDimension('E')->setWidth(20);
+    //     $sheet->getColumnDimension('F')->setWidth(20); 
+    //     $sheet->getColumnDimension('G')->setWidth(20); 
+    //     $sheet->getColumnDimension('H')->setWidth(20); 
+
+    //     $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+    //     $drawing->setName('DOH Logo');
+    //     $drawing->setDescription('Department of Health Logo');
+    //     $drawing->setPath(public_path('images/doh-logo.png')); 
+
+    //     $drawing->setWidth($drawing->getWidth() * 0.21);
+    //     $drawing->setHeight($drawing->getHeight() * 0.21);
+
+    //     $drawing->setCoordinates('B2');
+    //     $drawing->setOffsetX(5);  
+    //     $drawing->setOffsetY(10); 
+
+    //     $drawing->setWorksheet($sheet);
+
+    //     $richText = new RichText();
+
+    //     $normalText1 = $richText->createTextRun("Republic of the Philippines\nDepartment of Health\n");
+
+    //     $boldText = $richText->createTextRun("Medical Assistance to Indigent Patients (MAIP) Program - List of All Patients Served\n");
+    //     $boldText->getFont()->setBold(true); 
+
+    //     $italicText = $richText->createTextRun("As of ");
+    //     $italicText->getFont()->setItalic(true); 
+        
+    //     $underlinedDate = $richText->createTextRun($year);
+    //     $underlinedDate->getFont()->setUnderline(Font::UNDERLINE_SINGLE); 
+    //     $sheet->setCellValue('B2', $richText);
+
+    //     $sheet->mergeCells('B2:H2');
+    //     $sheet->getStyle('B2')->getAlignment()->setWrapText(true);
+    //     $sheet->getStyle('B2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+    //     $sheet->getStyle('B2')->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+    //     $sheet->getRowDimension(2)->setRowHeight(100); 
+
+    //     $sheet->getStyle('B31:H32')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+    //     $sheet->getStyle('B31:H32')->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+
+    //     $drawing1 = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+    //     $drawing1->setName('Malasakit Logo');
+    //     $drawing1->setDescription('MPU Logo');
+    //     $drawing1->setPath(public_path('images/malasakit.png')); 
+
+    //     $drawing1->setCoordinates('H2');
+    //     $drawing1->setOffsetX(5); 
+    //     $drawing1->setOffsetY(5); 
+
+    //     $drawing1->setWorksheet($sheet);
+
+    //     $sheet->setCellValue('B4', 'Name of Hospital:');
+    //     $sheet->setCellValue('C4', $facility);
+    //     $sheet->setCellValue('B5', 'Region:');
+    //     $sheet->setCellValue('C5', 'VII');
+
+    //     $range = "B9:H9"; 
+    //     $sheet->getStyle($range)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_MEDIUM);
+    //     $sheet->getStyle($range)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('B7B7B7');
+
+    //     $richText1 = new RichText();
+    //     $normalText = $richText1->createTextRun("SAA No. and Date of Issuance of SAA");
+    //     $normalText->getFont()->setBold(true); 
+    //     $sheet->setCellValue('B9', $richText1);
+    //     $sheet->getRowDimension(9)->setRowHeight(70); 
+    //     $sheet->getStyle('B9')->getAlignment()->setWrapText(true);
+    //     $sheet->getStyle('B9:H9')
+    //         ->getAlignment()
+    //         ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+    //         ->setVertical(Alignment::VERTICAL_CENTER);
+
+    //     $richText1 = new RichText();
+    //     $normalText = $richText1->createTextRun("Amount of SAA");
+    //     $normalText->getFont()->setBold(true); 
+    //     $sheet->setCellValue('C9', $richText1);
+    //     $sheet->getStyle('C9')->getAlignment()->setWrapText(true);
+
+    //     $richText1 = new RichText();
+    //     $normalText = $richText1->createTextRun("Total Fund Allocation");
+    //     $normalText->getFont()->setBold(true); 
+    //     $sheet->setCellValue('D9', $richText1);
+    //     $sheet->getStyle('D9')->getAlignment()->setWrapText(true);
+
+    //     $richText1 = new RichText();
+    //     $normalText = $richText1->createTextRun("Month Utilized");
+    //     $normalText->getFont()->setBold(true); 
+    //     $sheet->setCellValue('E9', $richText1);
+    //     $sheet->getStyle('E9')->getAlignment()->setWrapText(true);
+
+    //     $richText1 = new RichText();
+    //     $normalText = $richText1->createTextRun("Total Number of Patients Served");
+    //     $normalText->getFont()->setBold(true); 
+    //     $sheet->setCellValue('F9', $richText1);
+    //     $sheet->getStyle('F9')->getAlignment()->setWrapText(true);
+
+    //     $richText1 = new RichText();
+    //     $normalText = $richText1->createTextRun("Total Actual Approved Assistance through MAIPP (Utilized Amount)");
+    //     $normalText->getFont()->setBold(true); 
+    //     $sheet->setCellValue('G9', $richText1);
+    //     $sheet->getStyle('G9')->getAlignment()->setWrapText(true);
+
+    //     $richText1 = new RichText();
+    //     $normalText = $richText1->createTextRun("Balance");
+    //     $normalText->getFont()->setBold(true); 
+    //     $sheet->setCellValue('H9', $richText1);
+    //     $sheet->getStyle('H9')->getAlignment()->setWrapText(true);
+
+    //     $annexa1 = [];
+
+    //     foreach($result['monthly'] as $index=>$row){
+    //         $annexa1[] = [
+    //             '',
+    //             '',
+    //             '',
+    //             $row['month'],
+    //             $row['patients'],
+    //             $row['total'],
+    //             '',
+    //         ];
+    //     }
+
+    //     $startRow = 10; 
+    //     $sheet->fromArray($annexa1, null, "B" . $startRow);
+
+    //     $lastRow = $startRow + count($annexa1) - 1;
+
+    //     $sheet->getStyle('C10:D22')
+    //         ->getNumberFormat()->setFormatCode('#,##0.00');
+    //     $sheet->getStyle('G10:H22')
+    //         ->getNumberFormat()->setFormatCode('#,##0.00');
+
+    //     $styleArray = [
+    //         'borders' => [
+    //             'allBorders' => [
+    //                 'borderStyle' => Border::BORDER_THIN,
+    //             ],
+    //         ],
+    //         'alignment' => [
+    //             'horizontal' => Alignment::HORIZONTAL_CENTER,
+    //             'vertical' => Alignment::VERTICAL_CENTER,
+    //         ],
+    //     ];
+
+    //     $rangeV3 = "B$startRow:H$lastRow";
+    //     $sheet->getStyle($rangeV3)->applyFromArray($styleArray);
+
+    //     for ($row = $startRow; $row <= $lastRow; $row++) {
+    //         $mergeRange = "D10:D21";
+    //         $sheet->mergeCells($mergeRange);
+    //     }
+
+    //     $sheet->setCellValue("B22", "TOTAL");
+    //     $sheet->setCellValue("C22", '');
+    //     $sheet->setCellValue("D22", '');
+    //     $sheet->setCellValue("F22", $result['overall']['patients']);
+    //     $sheet->setCellValue("G22", $result['overall']['total']);
+    //     $sheet->setCellValue("H22", '');
+    //     $sheet->getStyle("C10:H22")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+    //     $sheet->getStyle("B10:B22")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+
+    //     $sheet->getStyle("C22")->getBorders()->getBottom()->setBorderStyle(Border::BORDER_DOUBLE);
+    //     $sheet->getStyle("F22:H22")->getBorders()->getBottom()->setBorderStyle(Border::BORDER_DOUBLE);
+
+    //     $sheet->setCellValue("B24", "Note:");
+    //     $sheet->getStyle("B24")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+
+    //     $sheet->mergeCells("D24:F24");
+    //     $sheet->setCellValue("D24", "*Put page numbers in the lower part of the file");
+    //     $sheet->getStyle("D24")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+    //     $sheet->setCellValue("D25", "*Affix initials per page of report except for the last page which includes complete signatories");
+    //     $sheet->getStyle("D25")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+
+    //     $sheet->setCellValue("B28", "Prepared by:");
+    //     $sheet->getStyle("B30")->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THIN);
+    //     $sheet->setCellValue("B31", "Signature Over Printed Name");
+    //     $richText3 = new RichText();
+    //     $normalText2 = $richText3->createTextRun("Designation");
+    //     $sheet->setCellValue("B32", $richText3);
+    //     $normalText2->getFont()->setBold(true);
+    //     $sheet->getStyle("B32", $richText3)->getAlignment()->setWrapText(true);
+    //     $sheet->setCellValue("B33", "Date:");
+
+    //     $sheet->mergeCells("D28:E28");
+    //     $sheet->setCellValue("D28", "Certified correct:");
+    //     $sheet->mergeCells("D30:E30");
+    //     $sheet->getStyle("D30:E30")->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THIN);
+    //     $sheet->mergeCells("D31:E31");
+    //     $sheet->setCellValue("D31", "Signature Over Printed Name");
+    //     $sheet->mergeCells("D32:E32");
+    //     $richText3 = new RichText();
+    //     $normalText2 = $richText3->createTextRun("Chief Accountant");
+    //     $sheet->setCellValue("D32", $richText3);
+    //     $normalText2->getFont()->setBold(true);
+    //     $sheet->getStyle("D32")->getAlignment()->setWrapText(true);
+    //     $sheet->mergeCells("D33:E33");
+    //     $sheet->setCellValue("D33", "Date:");
+
+    //     $sheet->mergeCells("G28:H28");
+    //     $sheet->setCellValue("G28", "Approved by:");
+    //     $sheet->mergeCells("G30:H30");
+    //     $sheet->getStyle("G30:H30")->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THIN);
+    //     $sheet->mergeCells("G31:H31");
+    //     $sheet->setCellValue("G31", "Signature Over Printed Name");
+    //     $sheet->mergeCells("G32:H32");
+    //     $richText3 = new RichText();
+    //     $normalText2 = $richText3->createTextRun("Medical Center Chief");
+    //     $sheet->setCellValue("G32", $richText3);
+    //     $normalText2->getFont()->setBold(true);
+    //     $sheet->getStyle("G32")->getAlignment()->setWrapText(true);
+    //     $sheet->mergeCells("G33:H33");
+    //     $sheet->setCellValue("G33", "Date:");
+        
+    //     // Output preparation
+    //     ob_start();
+    //     $writer = new Xlsx($spreadsheet);
+    //     $writer->save('php://output');
+    //     $xlsData = ob_get_contents();
+    //     ob_end_clean();
+
+    //     // Filename
+    //     $filename = 'Annex-A-'.$this->getAcronym($facility).'-'. $year . '.xlsx';
+
+    //     // Set headers
+    //     header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    //     header("Content-Disposition: attachment; filename=$filename");
+    //     header("Pragma: no-cache");
+    //     header("Expires: 0");
+        
+    //     // Output the file
+    //     return $xlsData;
+    //     exit;
+    // }
 
     private function getAcronym($str) {
         $words = explode(' ', $str); 
@@ -713,6 +1191,10 @@ class FURController extends Controller
         $annexb1 = [];
 
         foreach($data as $index => $row){
+            $patient_list = Patients::where('facility_id', $row->patient->facility_id)->where('fname', $row->patient->fname)->where('lname',$row->patient->lname)
+                ->where('mname', $row->patient->mname)->pluck('id')->toArray();
+            $trans = TransmittalPatients::whereIn('patient_id', $patient_list)->whereYear('end', $year)
+                ->whereMonth('end', $month)->get();
             
             $fullName = $row->patient->lname . ', ' . $row->patient->fname;
 
@@ -720,19 +1202,19 @@ class FURController extends Controller
                 $fullName .= ' ' . $row->patient->mname;
             }
 
-            $transTotal = $row->trans?->final_bill ?? 0;
+            $transTotal = $trans->sum('final_bill');
             $senior = $row->senior ?? 0;
             $phic = $row->phic ?? 0;
             $pcso = $row->pcso ?? 0;
             $dswd = $row->dswd ?? 0;
             $o_amount = $row->o_amount ?? 0;
-            $approved_assistance = $row->trans?->total ?? 0;
-            $actual_charges = ($row->trans?->final_bill ?? 0 ) - ($senior + $phic + $pcso + $dswd + $o_amount);
+            $approved_assistance = $trans->sum('total');
+            $actual_charges = ($transTotal ) - ($senior + $phic + $pcso + $dswd + $o_amount);
             $ratio = ($actual_charges > 0 && $approved_assistance > 0)
                 ? ($approved_assistance / $actual_charges) * 100
                 : 0;
-            $p_fee = $row->trans?->p_fee ?? 0;
-            $h_bill = $row->trans?->h_bill ?? 0;
+            $p_fee = $trans->sum('p_fee');
+            $h_bill = $trans->sum('h_bill');
 
             $pfee_service = $pfee_service + $p_fee;
             $hbill_service = $hbill_service + $h_bill;
@@ -751,10 +1233,10 @@ class FURController extends Controller
                 $o_amount,
                 $row->others,
                 $actual_charges,
-                $p_fee,
-                $h_bill, 
+                $p_fee == 0 ? '0.00' : $p_fee,
+                $h_bill== 0 ? '0.00' : $h_bill, 
                 $approved_assistance,
-                $ratio .'%',
+                number_format($ratio, 2, '.', ',') .'%',
             ];
         }
 
@@ -796,7 +1278,7 @@ class FURController extends Controller
                 $sheet->getStyle("F" . ($number - 3) . ":Q" . ($number - 3))
                 ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);  
 
-        $deduction = $data->sum('phic') + $data->sum('pcso') + $data->sum('dswd') + $data->sum('o_amount');
+        $deduction = $data->sum('senior') + $data->sum('phic') + $data->sum('pcso') + $data->sum('dswd') + $data->sum('o_amount');
         $actual = $total_actual_service - $deduction;
 
         $sheet->setCellValue("F" . ($number-3), $total_actual_service);
@@ -1016,6 +1498,11 @@ class FURController extends Controller
         $annexb2 = [];
                 
         foreach($data2 as $index => $row){
+
+            $patient_list = Patients::where('facility_id', $row->patient->facility_id)->where('fname', $row->patient->fname)->where('lname',$row->patient->lname)
+                ->where('mname', $row->patient->mname)->pluck('id')->toArray();
+            $trans = TransmittalPatients::whereIn('patient_id', $patient_list)->whereYear('end', $year)
+                ->whereMonth('end', $month)->get();
             
             $fullName = $row->patient->lname . ', ' . $row->patient->fname;
 
@@ -1023,19 +1510,19 @@ class FURController extends Controller
                 $fullName .= ' ' . $row->patient->mname;
             }
 
-            $transTotal = $row->trans?->final_bill ?? 0;
+            $transTotal = $trans->sum('final_bill');
             $senior = $row->senior ?? 0;
             $phic = $row->phic ?? 0;
             $pcso = $row->pcso ?? 0;
             $dswd = $row->dswd ?? 0;
             $o_amount = $row->o_amount ?? 0;
-            $approved_assistance = $row->trans?->total ?? 0;
-            $actual_charges = ($row->trans?->final_bill ?? 0 ) - ($senior + $phic + $pcso + $dswd + $o_amount);
+            $approved_assistance = $trans->sum('total');
+            $actual_charges = ($transTotal) - ($senior + $phic + $pcso + $dswd + $o_amount);
             $ratio = ($actual_charges > 0 && $approved_assistance > 0)
                 ? ($approved_assistance / $actual_charges) * 100
                 : 0;
-            $p_fee = $row->trans?->p_fee ?? 0;
-            $h_bill = $row->trans?->h_bill ?? 0;
+            $p_fee = $trans->sum('p_fee');
+            $h_bill = $trans->sum('h_bill');
 
             $pfee_payward = $pfee_payward + $p_fee;
             $hbill_payward = $hbill_payward + $h_bill;
@@ -1054,10 +1541,10 @@ class FURController extends Controller
                 $o_amount,
                 $row->others,
                 $actual_charges,
-                $p_fee,
-                $h_bill, 
+                $p_fee == 0 ? '0.00' : $p_fee,
+                $h_bill== 0 ? '0.00' : $h_bill, 
                 $approved_assistance,
-                $ratio .'%',
+                number_format($ratio, 2, '.', ',') .'%',
             ];
         }
 
@@ -1105,7 +1592,7 @@ class FURController extends Controller
 
         $sheet->getStyle("F" . ($set_data -2) . ":Q" . ($set_data - 2))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
-        $deduction = $data2->sum('phic') + $data2->sum('pcso') + $data2->sum('dswd') + $data2->sum('o_amount');
+        $deduction = $data2->sum('senior') + $data2->sum('phic') + $data2->sum('pcso') + $data2->sum('dswd') + $data2->sum('o_amount');
         $actual = $total_actual_payward - $deduction;
 
         $sheet->setCellValue("F" . ($set_data-2), $total_actual_payward);
@@ -1252,6 +1739,11 @@ class FURController extends Controller
         $annexb3 = [];
                 
         foreach($data3 as $index => $row){
+
+            $patient_list = Patients::where('facility_id', $row->patient->facility_id)->where('fname', $row->patient->fname)->where('lname',$row->patient->lname)
+                ->where('mname', $row->patient->mname)->pluck('id')->toArray();
+            $trans = TransmittalPatients::whereIn('patient_id', $patient_list)->whereYear('end', $year)
+                ->whereMonth('end', $month)->get();
             
             $fullName = $row->patient->lname . ', ' . $row->patient->fname;
 
@@ -1259,8 +1751,8 @@ class FURController extends Controller
                 $fullName .= ' ' . $row->patient->mname;
             }
 
-            $transTotal = $row->trans?->final_bill ?? 0;
-            $approved_assistance = $row->trans?->total ?? 0;
+            $transTotal = $trans->sum('final_bill');
+            $approved_assistance = $trans->sum('total');
             $p_fee = $row->trans?->p_fee ?? 0;
             $h_bill = $row->trans?->h_bill ?? 0;
 
@@ -1533,45 +2025,95 @@ class FURController extends Controller
     }
 
     public function annexAView(Request $request, $id, $year){
-    
         $facility_id = $id;
         $year = $year == '' ? now()->year : $year;
-        $data = AnnexB::join('transmittal_patients', 'annex_b.patient_id', '=', 'transmittal_patients.patient_id')
+
+        $data = AnnexB::with('patient:id,fname,lname,mname')
+            ->where('annex_b.status', 2)
+            ->join('transmittal_patients', 'annex_b.patient_id', '=', 'transmittal_patients.patient_id')
+            ->join('patients', 'annex_b.patient_id', '=', 'patients.id')
             ->where('annex_b.facility_id', $facility_id)
             ->whereYear('annex_b.month_year', $year)
-            ->groupByRaw('MONTH(annex_b.month_year)')
+            ->groupByRaw('MONTH(annex_b.month_year), patients.fname, patients.mname, patients.lname')
             ->selectRaw('
+                MAX(annex_b.patient_id) as patient_id,
                 MONTH(annex_b.month_year) as month,
+                patients.fname,
+                patients.mname,
+                patients.lname,
+                MAX(annex_b.status) as status,
+                MAX(annex_b.remarks) as remarks,
                 COUNT(DISTINCT annex_b.patient_id) as patients,
                 SUM(transmittal_patients.total) as total
             ')
             ->get();
 
-
-        $allMonths = [];
-
-        for ($m = 1; $m <= 12; $m++) {
-            $monthData = $data->firstWhere('month', $m);
-
-            $allMonths[] = [
-                'month' => Carbon::create()->month($m)->format('F'), 
-                'patients' => $monthData->patients ?? 0,
-                'total' => (float) ($monthData->total ?? 0)
-            ];
-        }
-
-        $overallPatients = collect($allMonths)->sum('patients');
-        $overallTotal    = collect($allMonths)->sum('total');
-
-        $result = [
-            'year' => $year,
-            'monthly' => $allMonths,
-            'overall' => [
-                'patients' => $overallPatients,
-                'total' => $overallTotal
-            ]
-        ];
+        if(count($data) > 0){
+            $names = $data->map(fn($row) => [
+                'fname' => $row->fname,
+                'mname' => $row->mname,
+                'lname' => $row->lname,
+            ])->unique(fn($n) => $n['fname'] . '|' . $n['mname'] . '|' . $n['lname']);
     
+            $matchingPatientIds = Patients::whereNotNull('transd_id')->where(function ($query) use ($names) {
+                    foreach ($names as $name) {
+                        $query->orWhere(function ($q) use ($name) {
+                            $q->where('fname', $name['fname'])
+                            ->where('mname', $name['mname'])
+                            ->where('lname', $name['lname']);
+                        });
+                    }
+                })
+                ->pluck('id');
+    
+            $allTransmittals = TransmittalPatients::whereIn('patient_id', $matchingPatientIds)
+                ->whereYear('end', $year)
+                ->with('patient:id,fname,mname,lname')
+                ->get()
+                ->groupBy(fn($t) => 
+                    Carbon::parse($t->end)->month  
+                    . '|' . $t->patient->fname 
+                    . '|' . $t->patient->mname 
+                    . '|' . $t->patient->lname
+                );
+    
+            $allMonths = [];
+            for ($m = 1; $m <= 12; $m++) {
+                $monthData = $data->where('month', $m)->map(function ($row) use ($allTransmittals, $m) {
+                    $key     = $m . '|' . $row->fname . '|' . $row->mname . '|' . $row->lname;
+                    $matched = $allTransmittals->get($key);
+    
+                    $row->merged_total    = $matched ? $matched->sum('total') : $row->total;
+                    $row->merged_patients = $matched ? $matched->pluck('patient_id')->unique()->count() : $row->patients;
+                    $row->matched_ids     = $matched ? $matched->pluck('patient_id')->unique()->values() : collect();
+    
+                    return $row;
+                });
+    
+                $allMonths[] = [
+                    'status'   => $monthData->first()->status ?? 0,
+                    'remarks'  => $monthData->first()->remarks ?? '',
+                    'month'    => Carbon::create()->month($m)->format('F'),
+                    'patients' => $monthData->sum('patients') ?? 0,
+                    'total'    => (float) $monthData->sum('merged_total'),
+                ];
+            }
+    
+            $overallPatients = collect($allMonths)->sum('patients');
+            $overallTotal    = collect($allMonths)->sum('total');
+    
+            $result = [
+                'year' => $year,
+                'monthly' => $allMonths,
+                'overall' => [
+                    'patients' => $overallPatients,
+                    'total' => $overallTotal
+                ]
+            ];
+        }else{
+            $result = [];
+        }
+        
         return view('facility.fur_annex_a',
             [
                 'data' => $result,
@@ -1584,32 +2126,112 @@ class FURController extends Controller
     public function fcAnnex(Request $request, $id, $year){
 
         $data = AnnexB::join('transmittal_patients', 'annex_b.patient_id', '=', 'transmittal_patients.patient_id')
-            ->join('facility', 'annex_b.facility_id', '=', 'facility.id')
-            ->where('annex_b.status', '!=', 0)
             ->where('annex_b.facility_id', $id)
-            ->groupByRaw('YEAR(annex_b.month_year), MONTH(annex_b.month_year)')
+            ->where('annex_b.status', 2)
+            ->whereYear('annex_b.month_year', $year)
+            ->join('patients', 'annex_b.patient_id', '=', 'patients.id')
+            ->join('facility', 'annex_b.facility_id', '=', 'facility.id')
+            // ->where('annex_b.status', '!=', 0)
+            ->groupByRaw('
+                YEAR(annex_b.month_year),
+                MONTH(annex_b.month_year),
+                patients.fname,
+                patients.mname,
+                patients.lname,
+                annex_b.facility_id,
+                facility.name
+            ')
+            ->orderByRaw('YEAR(annex_b.month_year) DESC, MONTH(annex_b.month_year) ASC')
             ->selectRaw('
-                YEAR(annex_b.month_year) as year,
+                annex_b.facility_id,
+                MAX(facility.name) as facility_name,
+                YEAR(annex_b.month_year)  as year,
                 MONTH(annex_b.month_year) as month,
-                MAX(annex_b.facility_id) as facility_id,
-                MAX(facility.name) as name,
-                MAX(annex_b.status) as status,
+                patients.fname,
+                patients.mname,
+                patients.lname,
+                MAX(annex_b.status)  as status,
                 MAX(annex_b.remarks) as remarks,
-                COUNT(DISTINCT annex_b.patient_id) as patients,
-                SUM(transmittal_patients.total) as total,
-                MAX(annex_b.updated_at) as last_update
-            ');
-
-        if($request->viewAll){
-            $year = '';
-            $type = '';
-        }
-
-        if($year){
-            $data = $data->when($year, function ($query) use ($year) {
-                $query->whereYear('month_year', $year);
-            });
-        }
+                SUM(transmittal_patients.total) as total
+            ')
+            ->get();
+        if(count($data) > 0){
+            $names = $data->map(fn($row) => [
+                'fname'       => $row->fname,
+                'mname'       => $row->mname,
+                'lname'       => $row->lname,
+                'facility_id' => $row->facility_id,
+            ])->unique(fn($n) => $n['fname'] . '|' . $n['mname'] . '|' . $n['lname'] . '|' . $n['facility_id']);
+            
+            $matchingPatientIds = Patients::whereNotNull('transd_id')->where(function ($query) use ($names) {
+                    foreach ($names as $name) {
+                        $query->orWhere(function ($q) use ($name) {
+                            $q->where('fname', $name['fname'])
+                            ->where('mname', $name['mname'])
+                            ->where('lname', $name['lname'])
+                            ->where('facility_id', $name['facility_id']);
+                        });
+                    }
+                })
+                ->pluck('id');
+            
+            $allTransmittals = TransmittalPatients::whereIn('patient_id', $matchingPatientIds)
+                ->with('patient:id,fname,mname,lname,facility_id')
+                ->get()
+                ->groupBy(fn($t) =>
+                    Carbon::parse($t->end)->year
+                    . '|' . Carbon::parse($t->end)->month
+                    . '|' . $t->patient->facility_id
+                    . '|' . $t->patient->fname
+                    . '|' . $t->patient->mname
+                    . '|' . $t->patient->lname
+                );
+            
+            $result = $data
+                ->map(function ($row) use ($allTransmittals) {
+                    $key = $row->year
+                        . '|' . $row->month
+                        . '|' . $row->facility_id
+                        . '|' . $row->fname
+                        . '|' . $row->mname
+                        . '|' . $row->lname;
+            
+                    $matched = $allTransmittals->get($key);
+            
+                    $row->merged_total    = $matched ? $matched->sum('total') : $row->total;
+                    $row->merged_patients = $matched ? $matched->pluck('patient_id')->unique()->count() : $row->patients;
+            
+                    return $row;
+                })
+                // Group by YEAR
+                ->groupBy('year')
+                ->map(fn($yearRows, $year) => [
+                    'year'     => $year,
+                    'total'    => $yearRows->sum('merged_total'),
+                    'patients' => $yearRows->sum('merged_patients'),
+                    // Group by MONTH
+                    'months'   => $yearRows->groupBy('month')
+                        ->map(fn($monthRows, $month) => [
+                            'month'    => $month,
+                            'total'    => $monthRows->sum('merged_total'),
+                            'patients' => $monthRows->sum('merged_patients'),
+                            // Group by FACILITY
+                            'facilities' => $monthRows->groupBy('facility_id')
+                                ->map(fn($facRows, $facilityId) => [
+                                    'facility_id'   => $facilityId,
+                                    'facility_name' => $facRows->first()->facility_name,
+                                    'total'         => $facRows->sum('merged_total'),
+                                    'patients'      => $facRows->sum('merged_patients'),
+                                    'items'         => $facRows->values(),
+                                ])
+                                ->values(),
+                        ])
+                        ->values(),
+                ])
+                ->values();
+        }else{
+            $result = [];
+        }   
         
         if($request->type && $request->type != 'all'){
             $data->where('annex_b.status', $request->type);
@@ -1628,7 +2250,6 @@ class FURController extends Controller
                     'trans',
                     'patient'
                 ]);
-
             if ($request->data_type) {
                 $type = $request->data_type;
             
@@ -1665,7 +2286,6 @@ class FURController extends Controller
                         ->orWhere('mname', 'LIKE', "%{$keyword}%");
                 });
             }
-
             return view('facility.annex_b_view',[
                 'data' => $data->paginate(50),
                 'keyword' => $keyword,
@@ -1676,9 +2296,7 @@ class FURController extends Controller
             ]);
         }
         return view('facility.fc_annex_b',[
-            'data' => $data->orderBy('year', 'asc')
-                ->orderBy('month', 'asc')
-                ->paginate(50),
+            'data' => $result,
             'type' => $request->type ?? '',
             'year' => $year,
             'id' => $id,
@@ -1687,43 +2305,137 @@ class FURController extends Controller
     }
 
     public function consoA(Request $request){
-        
+
         $year = $request->year ?? now()->year;
 
-        $data = AnnexB::join('transmittal_patients', 'annex_b.patient_id', '=', 'transmittal_patients.patient_id')
+        $data = AnnexB::with('patient:id,fname,lname,mname')
             ->where('annex_b.status', 2)
+            ->join('transmittal_patients', 'annex_b.patient_id', '=', 'transmittal_patients.patient_id')
+            ->join('patients', 'annex_b.patient_id', '=', 'patients.id')
             ->whereYear('annex_b.month_year', $year)
-            ->groupByRaw('MONTH(annex_b.month_year)')
+            ->groupByRaw('MONTH(annex_b.month_year), patients.fname, patients.mname, patients.lname')
             ->selectRaw('
+                MAX(annex_b.patient_id) as patient_id,
                 MONTH(annex_b.month_year) as month,
+                patients.fname,
+                patients.mname,
+                patients.lname,
+                MAX(annex_b.status) as status,
+                MAX(annex_b.remarks) as remarks,
                 COUNT(DISTINCT annex_b.patient_id) as patients,
                 SUM(transmittal_patients.total) as total
             ')
             ->get();
 
-        $allMonths = [];
-
-        for ($m = 1; $m <= 12; $m++) {
-            $monthData = $data->firstWhere('month', $m);
-
-            $allMonths[] = [
-                'month' => Carbon::create()->month($m)->format('F'), 
-                'patients' => $monthData->patients ?? 0,
-                'total' => (float) ($monthData->total ?? 0)
+        if(count($data) > 0){
+            $names = $data->map(fn($row) => [
+                'fname' => $row->fname,
+                'mname' => $row->mname,
+                'lname' => $row->lname,
+            ])->unique(fn($n) => $n['fname'] . '|' . $n['mname'] . '|' . $n['lname']);
+    
+            $matchingPatientIds = Patients::whereNotNull('transd_id')->where(function ($query) use ($names) {
+                    foreach ($names as $name) {
+                        $query->orWhere(function ($q) use ($name) {
+                            $q->where('fname', $name['fname'])
+                            ->where('mname', $name['mname'])
+                            ->where('lname', $name['lname']);
+                        });
+                    }
+                })
+                ->pluck('id');
+    
+            $allTransmittals = TransmittalPatients::whereIn('patient_id', $matchingPatientIds)
+                ->whereYear('end', $year)
+                ->with('patient:id,fname,mname,lname')
+                ->get()
+                ->groupBy(fn($t) => 
+                    Carbon::parse($t->end)->month  
+                    . '|' . $t->patient->fname 
+                    . '|' . $t->patient->mname 
+                    . '|' . $t->patient->lname
+                );
+    
+            $allMonths = [];
+            for ($m = 1; $m <= 12; $m++) {
+                $monthData = $data->where('month', $m)->map(function ($row) use ($allTransmittals, $m) {
+                    $key     = $m . '|' . $row->fname . '|' . $row->mname . '|' . $row->lname;
+                    $matched = $allTransmittals->get($key);
+    
+                    $row->merged_total    = $matched ? $matched->sum('total') : $row->total;
+                    $row->merged_patients = $matched ? $matched->pluck('patient_id')->unique()->count() : $row->patients;
+                    $row->matched_ids     = $matched ? $matched->pluck('patient_id')->unique()->values() : collect();
+    
+                    return $row;
+                });
+    
+                $allMonths[] = [
+                    'status'   => $monthData->first()->status ?? 0,
+                    'remarks'  => $monthData->first()->remarks ?? '',
+                    'month'    => Carbon::create()->month($m)->format('F'),
+                    'patients' => $monthData->sum('patients') ?? 0,
+                    'total'    => (float) $monthData->sum('merged_total'),
+                ];
+            }
+    
+            $overallPatients = collect($allMonths)->sum('patients');
+            $overallTotal    = collect($allMonths)->sum('total');
+    
+            $result = [
+                'year' => $year,
+                'monthly' => $allMonths,
+                'overall' => [
+                    'patients' => $overallPatients,
+                    'total' => $overallTotal
+                ]
             ];
+        }else{
+            $result = [];
         }
+        
+        // return view('facility.fur_annex_a',
+        //     [
+        //         'data' => $result,
+        //         'year' => $year,
+        //         'id' => $id
+        //     ]
+        // );
+        
+        // $year = $request->year ?? now()->year;
+        // $data = AnnexB::join('transmittal_patients', 'annex_b.patient_id', '=', 'transmittal_patients.patient_id')
+        //     ->where('annex_b.status', 2)
+        //     ->whereYear('annex_b.month_year', $year)
+        //     ->groupByRaw('MONTH(annex_b.month_year)')
+        //     ->selectRaw('
+        //         MONTH(annex_b.month_year) as month,
+        //         COUNT(DISTINCT annex_b.patient_id) as patients,
+        //         SUM(transmittal_patients.total) as total
+        //     ')
+        //     ->get();
 
-        $overallPatients = collect($allMonths)->sum('patients');
-        $overallTotal    = collect($allMonths)->sum('total');
+        // $allMonths = [];
 
-        $main_result = [
-            'year' => $year,
-            'monthly' => $allMonths,
-            'overall' => [
-                'patients' => $overallPatients,
-                'total' => $overallTotal
-            ]
-        ];
+        // for ($m = 1; $m <= 12; $m++) {
+        //     $monthData = $data->firstWhere('month', $m);
+
+        //     $allMonths[] = [
+        //         'month' => Carbon::create()->month($m)->format('F'), 
+        //         'patients' => $monthData->patients ?? 0,
+        //         'total' => (float) ($monthData->total ?? 0)
+        //     ];
+        // }
+
+        // $overallPatients = collect($allMonths)->sum('patients');
+        // $overallTotal    = collect($allMonths)->sum('total');
+
+        // $main_result = [
+        //     'year' => $year,
+        //     'monthly' => $allMonths,
+        //     'overall' => [
+        //         'patients' => $overallPatients,
+        //         'total' => $overallTotal
+        //     ]
+        // ];
 
         $ids = AnnexB::where('status', 2)
             ->distinct()
@@ -1800,47 +2512,100 @@ class FURController extends Controller
             $drawing1->setWorksheet($sheet);
 
             $number = 0;
-            foreach($ids as $id){
+            foreach($ids as $index=>$id){
                 
                 $number = $number + 9;
                 $facility_id = $id;
-                $data = AnnexB::join('transmittal_patients', 'annex_b.patient_id', '=', 'transmittal_patients.patient_id')
+
+                $data = AnnexB::with('patient:id,fname,lname,mname')
                     ->where('annex_b.status', 2)
                     ->where('annex_b.facility_id', $facility_id)
+                    ->join('transmittal_patients', 'annex_b.patient_id', '=', 'transmittal_patients.patient_id')
+                    ->join('patients', 'annex_b.patient_id', '=', 'patients.id')
                     ->whereYear('annex_b.month_year', $year)
-                    ->groupByRaw('MONTH(annex_b.month_year)')
+                    ->groupByRaw('MONTH(annex_b.month_year), patients.fname, patients.mname, patients.lname')
                     ->selectRaw('
+                        MAX(annex_b.patient_id) as patient_id,
                         MONTH(annex_b.month_year) as month,
+                        patients.fname,
+                        patients.mname,
+                        patients.lname,
+                        MAX(annex_b.status) as status,
+                        MAX(annex_b.remarks) as remarks,
                         COUNT(DISTINCT annex_b.patient_id) as patients,
                         SUM(transmittal_patients.total) as total
                     ')
                     ->get();
 
-                $facility = Facility::where('id', $id)->value('name');
-                $allMonths = [];
-    
-                for ($m = 1; $m <= 12; $m++) {
-                    $monthData = $data->firstWhere('month', $m);
-    
-                    $allMonths[] = [
-                        'month' => Carbon::create()->month($m)->format('F'), 
-                        'patients' => $monthData->patients ?? 0,
-                        'total' => (float) ($monthData->total ?? 0)
-                    ];
-                }
-    
-                $overallPatients = collect($allMonths)->sum('patients');
-                $overallTotal    = collect($allMonths)->sum('total');
-    
-                $result = [
-                    'year' => $year,
-                    'monthly' => $allMonths,
-                    'overall' => [
-                        'patients' => $overallPatients,
-                        'total' => $overallTotal
-                    ]
-                ];
+                if(count($data) > 0){
+                    $names = $data->map(fn($row) => [
+                        'fname' => $row->fname,
+                        'mname' => $row->mname,
+                        'lname' => $row->lname,
+                    ])->unique(fn($n) => $n['fname'] . '|' . $n['mname'] . '|' . $n['lname']);
 
+                    $matchingPatientIds = Patients::whereNotNull('transd_id')->where('facility_id', $facility_id)->where(function ($query) use ($names) {
+                            foreach ($names as $name) {
+                                $query->orWhere(function ($q) use ($name) {
+                                    $q->where('fname', $name['fname'])
+                                    ->where('mname', $name['mname'])
+                                    ->where('lname', $name['lname']
+                                    );
+                                });
+                            }
+                        })->pluck('id');
+
+                    $allTransmittals = TransmittalPatients::whereIn('patient_id', $matchingPatientIds)
+                        ->whereYear('end', $year)
+                        ->with('patient:id,fname,mname,lname')
+                        ->get()
+                        ->groupBy(fn($t) => 
+                            Carbon::parse($t->end)->month  
+                            . '|' . $t->patient->fname 
+                            . '|' . $t->patient->mname 
+                            . '|' . $t->patient->lname
+                        );
+            
+                    $allMonths = [];
+                    for ($m = 1; $m <= 12; $m++) {
+                        $monthData = $data->where('month', $m)->map(function ($row) use ($allTransmittals, $m) {
+                            $key     = $m . '|' . $row->fname . '|' . $row->mname . '|' . $row->lname;
+                            $matched = $allTransmittals->get($key);
+            
+                            $row->merged_total    = $matched ? $matched->sum('total') : $row->total;
+                            $row->merged_patients = $matched ? $matched->pluck('patient_id')->unique()->count() : $row->patients;
+                            $row->matched_ids     = $matched ? $matched->pluck('patient_id')->unique()->values() : collect();
+            
+                            return $row;
+                        });
+            
+                        $allMonths[] = [
+                            'status'   => $monthData->first()->status ?? 0,
+                            'remarks'  => $monthData->first()->remarks ?? '',
+                            'month'    => Carbon::create()->month($m)->format('F'),
+                            'patients' => $monthData->sum('patients') ?? 0,
+                            'total'    => (float) $monthData->sum('merged_total'),
+                        ];
+                    }
+            
+                    $overallPatients = collect($allMonths)->sum('patients');
+                    $overallTotal    = collect($allMonths)->sum('total');
+            
+                    $main_result = [
+                        'year' => $year,
+                        'monthly' => $allMonths,
+                        'overall' => [
+                            'patients' => $overallPatients,
+                            'total' => $overallTotal
+                        ]
+                    ];
+                }else{
+                    $main_result = [];
+                }
+                // if($index == 1){
+                //     return $main_result;
+                // }
+                $facility = Facility::where('id', $id)->value('name');
                 $headers = [
                     'A'.($number) => 'Name of Hospital',
                     'B'.($number) => 'Classification',
@@ -1884,14 +2649,24 @@ class FURController extends Controller
 
                 // Add monthly data (rows 10-21)
                 $startRow = $number + 1;
-                foreach($result['monthly'] as $index => $row) {
+                $default_month_value = array_map(fn($month) => [
+                    'status'   => 0,
+                    'remarks'  => '',
+                    'month'    => $month,
+                    'patients' => 0,
+                    'total'    => 0,
+                ], ['January','February','March','April','May','June','July','August','September','October','November','December']);
+                
+                $value = $main_result['monthly'] ?? $default_month_value;
+
+                foreach($value as $index => $row) {
                     $currentRow = $startRow + $index;
                     $sheet->setCellValue("F{$currentRow}", $row['month']);
                     $sheet->setCellValue("G{$currentRow}", $row['patients']);
                     $sheet->setCellValue("H{$currentRow}", $row['total']);
-                    $sheet->setCellValue("I{$currentRow}", '-'); 
+                    $sheet->setCellValue("I{$currentRow}", '-');
                 }
-
+        
                 // Total row
                 $sheet->setCellValue("A". ($number + 13), "TOTAL");
                 $sheet->setCellValue("F". ($number + 13), '');
@@ -1975,8 +2750,8 @@ class FURController extends Controller
             $rt->getFont()->setBold(true)->setName('Times New Roman')->setSize(10);
             $sheet->setCellValue('A'.$number + 1, $richText);
 
-            $sheet->setCellValue("G".($number + 1), $main_result['overall']['patients']); 
-            $sheet->setCellValue("H".($number + 1), $main_result['overall']['total']);
+            $sheet->setCellValue("G".($number + 1), $result['overall']['patients']); 
+            $sheet->setCellValue("H".($number + 1), $result['overall']['total']);
             $sheet->getStyle('G'.($number + 1).':H'.($number + 1))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
             $sheet->getStyle('H'.($number + 1).':H'. ($number + 1))->getNumberFormat()->setFormatCode('#,##0.00');
             $sheet->getStyle('G'.($number + 1).':G'. ($number + 1))->getNumberFormat()->setFormatCode('#,##0');
@@ -2030,7 +2805,7 @@ class FURController extends Controller
         }
 
         return view('facility.fur_consolidated_a',[
-            'data' => $main_result,
+            'data' => $result,
             'type' => $request->data_type,
             'year' => $year
         ]);
@@ -2038,53 +2813,105 @@ class FURController extends Controller
 
     public function consoB(Request $request){
 
-        $data = AnnexB::where('status', 2)
+        $current = date('Y-m');
+        $keyword        = $request->keyword;
+        $date_selection = $request->date_selection ? $request->date_selection : $current;
+        $data_type      = $request->data_type ? $request->data_type : '';
+        [$year, $month] = explode('-', $date_selection);
+
+        $data = AnnexB::whereMonth('month_year', $month)
+            ->whereYear('month_year', $year)
+            ->where('status', 2)
             ->with([
                 'trans',
                 'patient'
             ]);
+
         if($request->excel){
             [$year, $month] = explode('-', $request->date_selection);
 
             return $this->consoBExcel($month, $year);
-        }    
-
-        if ($request->date_selection) {
-            [$year, $month] = explode('-', $request->date_selection);
-        
-            $data->whereYear('month_year', $year)
-                ->whereMonth('month_year', $month);
         }
 
-        if ($request->data_type) {
-            $type = $request->data_type;
+        if ($data_type) {
+            $type = $data_type;
         
             if ($type == 1) {
-                $data->where('opd', '!=', 1);
-            } elseif ($type == 2) {
-                $data->where('opd', 1);
+
+                $data->where(function ($q) {
+                    $q->where('opd', 0);
+                });
+
+            } elseif ($type == 2) { 
+
+                $data->where(function ($q) {
+                    $q->where('opd', 1);
+                });
             }
         }        
-            
-        $keyword = $request->keyword;
-
-        if($request->viewAll){
-            $keyword = '';
-        }
 
         if($keyword){
-            $data->where(function ($query) use ($keyword) {
+
+            $data->whereHas('patient', function ($query) use ($keyword) {
                 $query->where('lname', 'LIKE', "%{$keyword}%")
-                      ->orWhere('fname', 'LIKE', "%{$keyword}%")
-                      ->orWhere('mname', 'LIKE', "%{$keyword}%");
+                    ->orWhere('fname', 'LIKE', "%{$keyword}%")
+                    ->orWhere('mname', 'LIKE', "%{$keyword}%");
             });
         }
-        
+
+        $annexb1 = [];
+        foreach($data->get() as $index => $row){
+            $patient_list = Patients::where('facility_id', $row->patient->facility_id)->where('fname', $row->patient->fname)->where('lname',$row->patient->lname)
+                ->where('mname', $row->patient->mname)->pluck('id')->toArray();
+            $trans = TransmittalPatients::whereIn('patient_id', $patient_list)->whereYear('end', $year)
+                ->whereMonth('end', $month)->get();
+
+            $fullName = $row->patient->lname . ', ' . $row->patient->fname;
+
+            if($row->patient->mname && $row->patient->mname != 'N/A') {
+                $fullName .= ' ' . $row->patient->mname;
+            }
+
+            $transTotal = $trans->sum('final_bill');
+            $senior = $row->senior ?? 0;
+            $phic = $row->phic ?? 0;
+            $pcso = $row->pcso ?? 0;
+            $dswd = $row->dswd ?? 0;
+            $o_amount = $row->o_amount ?? 0;
+            $approved_assistance = $trans->sum('total');
+            $actual_charges = $transTotal - ($senior + $phic + $pcso + $dswd + $o_amount);
+            $ratio = ($actual_charges > 0 && $approved_assistance > 0)
+                ? ($approved_assistance / $actual_charges) * 100
+                : 0;
+            $p_fee = $trans->sum('p_fee');
+            $h_bill = $trans->sum('h_bill');
+
+            $annexb1[] = [
+                $row->patient->id, 
+                $row->opd,
+                $fullName,
+                $row->patient->patient_code,
+                $row->type,
+                $transTotal,
+                $senior,
+                $phic,
+                $pcso,
+                $dswd,
+                $o_amount,
+                $row->others,
+                $actual_charges,
+                $p_fee == 0 ? '0.00' : $p_fee,
+                $h_bill== 0 ? '0.00' : $h_bill, 
+                $approved_assistance,
+                number_format($ratio, 2, '.', ',') .'%',
+            ];
+        }
+
         return view('facility.fur_consolidated_b',[
-            'data' => $data->paginate(50),
+            'data' => $annexb1,
             'keyword' => $keyword,
-            'date' => $request->date_selection,
-            'type' => $request->data_type
+            'date' => $date_selection,
+            'type' => $data_type
         ]);
     }
 
@@ -2363,25 +3190,30 @@ class FURController extends Controller
 
         foreach($data as $index => $row){
             
+            $patient_list = Patients::where('facility_id', $row->patient->facility_id)->where('fname', $row->patient->fname)->where('lname',$row->patient->lname)
+                ->where('mname', $row->patient->mname)->pluck('id')->toArray();
+            $trans = TransmittalPatients::whereIn('patient_id', $patient_list)->whereYear('end', $year)
+                ->whereMonth('end', $month)->get();
+
             $fullName = $row->patient->lname . ', ' . $row->patient->fname;
 
             if($row->patient->mname && $row->patient->mname != 'N/A') {
                 $fullName .= ' ' . $row->patient->mname;
             }
 
-            $transTotal = $row->trans?->final_bill ?? 0;
+            $transTotal = $trans->sum('final_bill');
             $senior = $row->senior ?? 0;
             $phic = $row->phic ?? 0;
             $pcso = $row->pcso ?? 0;
             $dswd = $row->dswd ?? 0;
             $o_amount = $row->o_amount ?? 0;
-            $approved_assistance = $row->trans?->total ?? 0;
-            $actual_charges = ($row->trans?->final_bill ?? 0 ) - ($senior + $phic + $pcso + $dswd + $o_amount);
+            $approved_assistance = $trans->sum('total');
+            $actual_charges = ($transTotal ) - ($senior + $phic + $pcso + $dswd + $o_amount);
             $ratio = ($actual_charges > 0 && $approved_assistance > 0)
                 ? ($approved_assistance / $actual_charges) * 100
                 : 0;
-            $p_fee = $row->trans?->p_fee ?? 0;
-            $h_bill = $row->trans?->h_bill ?? 0;
+            $p_fee = $trans->sum('p_fee');
+            $h_bill = $trans->sum('h_bill');
 
             $pfee_service = $pfee_service + $p_fee;
             $hbill_service = $hbill_service + $h_bill;
@@ -2400,10 +3232,10 @@ class FURController extends Controller
                 $o_amount,
                 $row->others,
                 $actual_charges,
-                $p_fee,
-                $h_bill, 
+                $p_fee == 0 ? '0.00' : $p_fee,
+                $h_bill== 0 ? '0.00' : $h_bill, 
                 $approved_assistance,
-                $ratio .'%',
+                number_format($ratio, 2, '.', ',') .'%',
             ];
         }
 
@@ -2449,7 +3281,7 @@ class FURController extends Controller
                 $sheet->getStyle("F" . ($number - 3) . ":Q" . ($number - 3))
                 ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);  
 
-        $deduction = $data->sum('phic') + $data->sum('pcso') + $data->sum('dswd') + $data->sum('o_amount');
+        $deduction = $data->sum('senior') + $data->sum('phic') + $data->sum('pcso') + $data->sum('dswd') + $data->sum('o_amount');
         $actual = $total_actual_service - $deduction;
 
         $sheet->setCellValue("F" . ($number-3), $total_actual_service);
@@ -2669,6 +3501,11 @@ class FURController extends Controller
         $annexb2 = [];
                 
         foreach($data2 as $index => $row){
+
+            $patient_list = Patients::where('facility_id', $row->patient->facility_id)->where('fname', $row->patient->fname)->where('lname',$row->patient->lname)
+                ->where('mname', $row->patient->mname)->pluck('id')->toArray();
+            $trans = TransmittalPatients::whereIn('patient_id', $patient_list)->whereYear('end', $year)
+                ->whereMonth('end', $month)->get();
             
             $fullName = $row->patient->lname . ', ' . $row->patient->fname;
 
@@ -2676,19 +3513,19 @@ class FURController extends Controller
                 $fullName .= ' ' . $row->patient->mname;
             }
 
-            $transTotal = $row->trans?->final_bill ?? 0;
+            $transTotal = $trans->sum('final_bill');
             $senior = $row->senior ?? 0;
             $phic = $row->phic ?? 0;
             $pcso = $row->pcso ?? 0;
             $dswd = $row->dswd ?? 0;
             $o_amount = $row->o_amount ?? 0;
-            $approved_assistance = $row->trans?->total ?? 0;
-            $actual_charges = ($row->trans?->final_bill ?? 0 ) - ($senior + $phic + $pcso + $dswd + $o_amount);
+            $approved_assistance = $trans->sum('total');
+            $actual_charges = ($transTotal) - ($senior + $phic + $pcso + $dswd + $o_amount);
             $ratio = ($actual_charges > 0 && $approved_assistance > 0)
                 ? ($approved_assistance / $actual_charges) * 100
                 : 0;
-            $p_fee = $row->trans?->p_fee ?? 0;
-            $h_bill = $row->trans?->h_bill ?? 0;
+            $p_fee = $trans->sum('p_fee');
+            $h_bill = $trans->sum('h_bill');
 
             $pfee_payward = $pfee_payward + $p_fee;
             $hbill_payward = $hbill_payward + $h_bill;
@@ -2707,10 +3544,10 @@ class FURController extends Controller
                 $o_amount,
                 $row->others,
                 $actual_charges,
-                $p_fee,
-                $h_bill, 
+                $p_fee == 0 ? '0.00' : $p_fee,
+                $h_bill== 0 ? '0.00' : $h_bill, 
                 $approved_assistance,
-                $ratio .'%',
+                number_format($ratio, 2, '.', ',') .'%',
             ];
         }
 
@@ -2762,7 +3599,7 @@ class FURController extends Controller
 
         $sheet->getStyle("F" . ($set_data -2) . ":Q" . ($set_data - 2))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
-        $deduction = $data2->sum('phic') + $data2->sum('pcso') + $data2->sum('dswd') + $data2->sum('o_amount');
+        $deduction = $data2->sum('senior') + $data2->sum('phic') + $data2->sum('pcso') + $data2->sum('dswd') + $data2->sum('o_amount');
         $actual = $total_actual_payward - $deduction;
 
         $sheet->setCellValue("F" . ($set_data-2), $total_actual_payward);
@@ -2909,6 +3746,11 @@ class FURController extends Controller
         $annexb3 = [];
                 
         foreach($data3 as $index => $row){
+
+            $patient_list = Patients::where('facility_id', $row->patient->facility_id)->where('fname', $row->patient->fname)->where('lname',$row->patient->lname)
+                ->where('mname', $row->patient->mname)->pluck('id')->toArray();
+            $trans = TransmittalPatients::whereIn('patient_id', $patient_list)->whereYear('end', $year)
+                ->whereMonth('end', $month)->get();
             
             $fullName = $row->patient->lname . ', ' . $row->patient->fname;
 
@@ -2916,8 +3758,8 @@ class FURController extends Controller
                 $fullName .= ' ' . $row->patient->mname;
             }
 
-            $transTotal = $row->trans?->final_bill ?? 0;
-            $approved_assistance = $row->trans?->total ?? 0;
+            $transTotal = $trans->sum('final_bill');
+            $approved_assistance = $trans->sum('total');
             $p_fee = $row->trans?->p_fee ?? 0;
             $h_bill = $row->trans?->h_bill ?? 0;
 
