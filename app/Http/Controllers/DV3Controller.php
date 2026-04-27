@@ -228,7 +228,7 @@ class DV3Controller extends Controller
         $dv3->status = 0;
         $dv3->save();
 
-        $desc = "Disbursement voucher for " . Facility::where('id', $request->dv3_facility)->value('name') . " amounting to Php " . number_format(str_replace(',', '', $request->total_amount), 2, '.', ',');
+        $desc = "Disbursement voucher for " . Facility::where('id', $request->dv3_facility)->value('name') . " amounting to Php " . number_format((float)str_replace(',', '', $request->total_amount), 2, '.', ',');
         
         $dts_user = DB::connection('dts')->select("SELECT id FROM users WHERE username = ? LIMIT 1",array($userid));
         $data = [$initial_route,"DV",$dv3->created_at,$dts_user[0]->id,0,  $desc, 0.00,"", "", "", "", "", "", "", "", "", "", "0000-00-00 00:00:00",

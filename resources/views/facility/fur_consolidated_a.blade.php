@@ -106,28 +106,34 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($data['monthly'] as $index => $item)
+                        @if(count($data) <= 0)
                             <tr>
-                                <td></td>
-                                <td></td>
-                                @if($index == 0)
-                                    <td rowspan="12"></td>
-                                @endif
-                                <td>{{ $item['month'] }}</td>
-                                <td style="text-align:right">{{ $item['patients'] }}</td>
-                                <td style="text-align:right">{{ number_format($item['total'],2,'.',',') }}</td>
-                                <td></td>
-                            </tr>        
-                        @endforeach
-                        <tr style="font-weight:bold;">
-                            <td style="font-size:20px">TOTAL</td>
-                            <td style="text-align:right; font-size:20px">-</td>
-                            <td style="text-align:right; font-size:20px">-</td>
-                            <td></td>
-                            <td style="text-align:right; font-size:20px">{{ $data['overall']['patients'] }}</td>
-                            <td style="text-align:right; font-size:20px">{{ number_format($data['overall']['total'],2,'.',',') }}</td>
-                            <td></td>
-                        </tr> 
+                                <td colspan="7" class="text-danger">No submission found!</td>
+                            </tr> 
+                        @else
+                            @foreach($data['monthly'] as $index => $item)
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    @if($index == 0)
+                                        <td rowspan="12"></td>
+                                    @endif
+                                    <td>{{ $item['month'] }}</td>
+                                    <td style="text-align:right">{{ $item['patients'] }}</td>
+                                    <td style="text-align:right">{{ number_format($item['total'],2,'.',',') }}</td>
+                                    <td></td>
+                                </tr>        
+                            @endforeach
+                                <tr style="font-weight:bold;">
+                                    <td style="font-size:20px">TOTAL</td>
+                                    <td style="text-align:right; font-size:20px">-</td>
+                                    <td style="text-align:right; font-size:20px">-</td>
+                                    <td></td>
+                                    <td style="text-align:right; font-size:20px">{{ $data['overall']['patients'] }}</td>
+                                    <td style="text-align:right; font-size:20px">{{ number_format($data['overall']['total'],2,'.',',') }}</td>
+                                    <td></td>
+                                </tr> 
+                        @endif
                     </tbody>
                 </table>
             </div>

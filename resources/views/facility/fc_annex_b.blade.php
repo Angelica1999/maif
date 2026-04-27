@@ -87,7 +87,6 @@
                     <input type="hidden" name="id" value="{{ $id }}">
                     <div class="input-group">
                         <input class="form-control year" style="border-color:green" type="text" placeholder="Year" id="yearPicker" name="year" value="{{ $year }}">
-                        <button class="btn btn-warning" name="viewAll" value="viewAll" style="border-radius:0px"><i class="fa fa-eye"></i> ViewAll</button>
                     </div>
                 </form>
             </div>
@@ -104,38 +103,48 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($data as $row)
+                        @if(count($data) <= 0)
                             <tr>
-                                <td>
-                                    <a href="{{ route('fur.submission', [
-                                            'month' => $row->month,
-                                            'year' => $row->year,
-                                            'facility_id' => $row->facility_id
-                                        ]) }}"
-                                        class="btn btn-xs btn-info"
-                                        style="color:white; font-size:11px;">
-                                        <i class="fa fa-eye"></i> View
-                                    </a>
-                                    <a href="{{
-                                        route('annex_b.excel', [
-                                                'id' => $row->facility_id,
-                                                'month' => $row->month,
-                                                'year' => $row->year
-                                            ])
-                                        }}"
-                                        class="btn btn-xs btn-excel"
-                                        style="color:white; font-size:11px; display:inline-block; background-color:green">
-                                        <i class="fa fa-file-excel"></i> Excel
-                                    </a>
-                                </td>
-                                <!-- 0-pending/1-submitted/2-accepted/3-returned -->
-                                <td>{{ \Carbon\Carbon::create()->month($row->month)->format('F'). ' '.$row->year }}</td>
-                                <td style="text-align:right">{{ $row->patients }}</td>
-                                <td style="text-align:right">{{ number_format($row->total, 2,'.',',') }}</td>
-                                <td style="text-align:left">{{ $row->status == 1 ? 'For Evaluation' : ($row->status == 2 ? 'Submitted' : ($row->status == 3 ? 'Returned' : '')) }}</td>
-                                <td style="text-align:left">{{ $row->remarks ?? ( $row->status == 2 ? 'To be reviewed' : ($row->status == 2 ? 'Accepted' : '')) }}</td>
+                                <td colspan="6" class="text-danger">No submission found!</td>
                             </tr> 
-                        @endforeach       
+                        @else
+                            @foreach($data as $row)
+                                @foreach($row['months'] as $row2)
+                                    @foreach($row2['facilities'] as $row3)
+                                        <tr>
+                                            <td>
+                                                <a href="{{ route('fur.submission', [
+                                                        'month' => $row2['month'],
+                                                        'year' => $row['year'],
+                                                        'facility_id' => $row3['facility_id']
+                                                    ]) }}"
+                                                    class="btn btn-xs btn-info"
+                                                    style="color:white; font-size:11px;">
+                                                    <i class="fa fa-eye"></i> View
+                                                </a>
+                                                <a href="{{
+                                                    route('annex_b.excel', [
+                                                            'id' => $row3['facility_id'],
+                                                            'month' => $row2['month'],
+                                                            'year' => $row['year']
+                                                        ])
+                                                    }}"
+                                                    class="btn btn-xs btn-excel"
+                                                    style="color:white; font-size:11px; display:inline-block;">
+                                                    <i class="fa fa-file-excel"></i> Excel
+                                                </a>
+                                            </td>
+                                            <!-- 0-pending/1-submitted/2-accepted/3-returned -->
+                                            <td>{{ \Carbon\Carbon::create()->month($row2['month'])->format('F'). ' '.$year }}</td>
+                                            <td style="text-align:right">{{ count($row3['items']) }}</td>
+                                            <td style="text-align:right">{{ number_format($row3['total'], 2,'.',',') }}</td>
+                                            <td style="text-align:center">{{ $row3['items'][0]->status == 1 ? 'Pending' : ($row3['items'][0]->status == 2 ? 'Submitted' : 'Returned') }}</td>
+                                            <td>{{ $row3['items'][0]->remarks }}</td>
+                                        </tr> 
+                                    @endforeach       
+                                @endforeach       
+                            @endforeach   
+                        @endif
                     </tbody>
                 </table>
             </div>

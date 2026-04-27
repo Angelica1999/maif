@@ -1053,6 +1053,49 @@ class PreDvController extends Controller
         }
     }
 
+    public function xyy($id){
+        $new_dv = NewDv::where('predv_id', $id)->first();
+        $ex = PreDVExtension::where('pre_dv_id', $id)->pluck('id')->toArray();
+        $ex_saa = PreDVSAA::whereIn('predv_extension_id', $ex)->get();
+        $util_1 = Utilization::where('div_id', $new_dv->route_no)->first();
+        $total = $ex_saa->count();
+
+        foreach($ex_saa as $index=>$saa){
+            if ($index == $total - 1) {
+                continue; // skip last item
+            }
+            $info = ProponentInfo::where('id', $saa->info_id)->first();
+            $util = new Utilization();
+            $util->proponent_id = $info->proponent_id;
+            $util->fundsource_id = $info->fundsource_id;
+            $util->proponentinfo_id = $info->id;
+            $util->div_id = $new_dv->route_no;
+            $util->beginning_balance = 0;
+            $util->utilize_amount = (float) str_replace(',', '', $saa->amount);
+            $util->discount = 0;
+            $util->created_by = $util_1->created_by;
+            $util->created_at = $util_1->created_at;
+            $util->updated_at = $util_1->updated_at;
+            $util->budget_bbalance = 0;
+            $util->budget_utilize = (float) str_replace(',', '', $saa->amount);
+            $util->obligated = $util_1->obligated;
+            $util->obligated_by = $util_1->obligated_by;
+            $util->obligated_on = $util_1->obligated_on;
+            $util->dv_no = $util_1->dv_no;
+            $util->paid = $util_1->paid;
+            $util->paid_by = $util_1->paid_by;
+            $util->paid_on = $util_1->paid_on;
+            $util->facility_used = $util_1->facility_used;
+            $util->uacs = $util_1->uacs;
+            $util->ors_no = $util_1->ors_no;
+            $util->status = $util_1->status;
+            $util->facility_id = $util_1->facility_id;
+            $util->save();
+        }
+
+        return 1;
+    }
+
     public function modifyPreDV(Request $request){
         try{
 
@@ -1065,6 +1108,7 @@ class PreDvController extends Controller
             $pre_dv = PreDV::where('id', $id)->first();
 
             $new_dv = NewDV::where('predv_id', $id)->first();
+            $utilization_here = Utilization::where('div_id', $new_dv->route_no)->delete();
 
             if ($pre_dv) {
                 $pre_dv->facility_id = $request->facility_id;
@@ -1118,7 +1162,7 @@ class PreDvController extends Controller
                         $pre_saa->amount = (float) str_replace(',', '', $saa['saa_amount']);
                         $pre_saa->save();
 
-                        $utilization_here = Utilization::where('div_id', $new_dv->route_no)->delete();
+                        // $utilization_here = Utilization::where('div_id', $new_dv->route_no)->delete();
 
                         $info = ProponentInfo::where('id', $saa['info_id'])->first();
                         if ($info) {

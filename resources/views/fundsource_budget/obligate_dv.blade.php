@@ -307,7 +307,7 @@
                             </tr>
                             <tr class="header">
                                 <td height=30px width =15%>Printed Name</td>
-                                <td width =38%><b>ANGIELINE T. ADLAON, CPA, MBA</td>
+                                <td width =38% s tyle="text-align:center"><b>SAMUEL B. GLOVA, CPA</td>
                                 <td height=30px width =15%>Printed Name</td>
                                 <td width =32%><b>JOSHUA G. BRILLANTES, MD, MPH, CESO IV/td>
                             </tr>
@@ -316,10 +316,10 @@
                                 <td width =38%>
                                     <table width=100% style="text-align:center" border=0>
                                         <tr>
-                                            <td  style="border-bottom: 1px solid black">Head, Accounting Section</td>
+                                            <td  style="border-bottom: 1px solid black">Accountant II</td>
                                         </tr>
                                         <tr>
-                                            <td>Head, Accounting Unit/Authorized Representative</td>
+                                            <td>Officer-in-Charge, Accounting Office</td>
                                         </tr>
                                     </table>
                                 </td>

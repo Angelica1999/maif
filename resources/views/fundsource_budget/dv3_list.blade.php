@@ -137,7 +137,7 @@
 <script>
 
     var doc_type = @json($type);
-    $('#docViewerModal').hide();
+    $('#lddap_modal').hide();
     $('.filter-division').select2();
     $('.filter-section').select2();
 
@@ -155,7 +155,7 @@
 
     function openModal() {
         var routeNoo = event.target.getAttribute('data-routeId'); 
-        var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNoo;
+        var src = "https://dts.cvchd7.com/document/trackMaif/" + routeNoo;
 
         var base_url = "{{ url('/') }}";
         $('.modal-body').append('<img class="loadingGif" src="' + base_url + '/public/images/loading.gif" alt="Loading..." style="display:block; margin:auto;">');

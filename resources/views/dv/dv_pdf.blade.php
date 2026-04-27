@@ -223,7 +223,7 @@
                         </tr>
                         <tr class="header" style="border: 1px solid black; border-top:0px;">
                             <td style="border-right:1px solid black; width:12%; padding:5px">Printed Name</td>
-                            <td style="border-right:1px solid black; width:38%; padding:5px"><b>ANGIELINE T. ADLAON, CPA, MBA</td>
+                            <td style="border-right:1px solid black; width:38%; padding:5px; text-align:center"><b>SAMUEL B. GLOVA, CPA</td>
                             <td style="border-right:1px solid black; width:12%; padding:5px">Printed Name</td>
                             <td style="border-right:1px solid black; width:38%; padding:5px"><b>JOSHUA G. BRILLANTES, MD, MPH, CESO IV</td>
                         </tr>
@@ -232,10 +232,10 @@
                             <td style="border-right:1px solid black; width:38%;">
                                 <table width=100% style="text-align:center" border=0>
                                     <tr>
-                                        <td style="border-bottom: 1px solid black">Head, Accounting Section</td>
+                                        <td style="border-bottom: 1px solid black">Accountant II</td>
                                     </tr>
                                     <tr>
-                                        <td>Head, Accounting Unit/Authorized Representative</td>
+                                        <td>Officer-in-Charge, Accounting Office</td>
                                     </tr>
                                 </table>
                             </td>

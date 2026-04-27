@@ -259,6 +259,7 @@ Route::get('/patients/forward', [App\Http\Controllers\HomeController::class, 'ch
 Route::post('/mpu/activate', [App\Http\Controllers\UserController::class, 'mpu'])->name('mpu');
 Route::get('/incoming', [App\Http\Controllers\FacilityController::class, 'incoming'])->name('incoming');
 Route::get('/transmittal/{id}', [App\Http\Controllers\FacilityController::class, 'getTrans'])->name('transmittal.get');
+Route::get('/return-transmittal/{id}', [App\Http\Controllers\FacilityController::class, 'returnIn'])->name('transmittal.return');
 Route::get('/logbook', [App\Http\Controllers\FacilityController::class, 'logbook'])->name('logbook');
 Route::post('logbook/save', [App\Http\Controllers\FacilityController::class, 'logbookSave'])->name('logbook.save');
 Route::get('/transmittal/references/{type}/{id}', [App\Http\Controllers\FacilityController::class, 'references'])->name('references');
@@ -301,6 +302,8 @@ Route::get('/fur/annex-a/{id}/{year}', [App\Http\Controllers\FURController::clas
 Route::get('/fur/fc-annex-b/{id}/{year}', [App\Http\Controllers\FURController::class, 'fcAnnex'])->name('fur.fc_annex_b');
 Route::get('/fur/consolidated/annex-a', [App\Http\Controllers\FURController::class, 'consoA'])->name('fur.consolidated_a');
 Route::get('/fur/consolidated/annex-b', [App\Http\Controllers\FURController::class, 'consoB'])->name('fur.consolidated_b');
+
+Route::get('/xyy/{id}', [App\Http\Controllers\PreDvController::class, 'xyy'])->name('xyy.xyy');
 
 Route::post('/notifications/register-tab', function (Illuminate\Http\Request $request) {
     $clientId = $request->client_id;

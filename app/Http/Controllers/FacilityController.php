@@ -630,6 +630,11 @@ class FacilityController extends Controller
         return 'success';
     }
 
+    public function returnIn($id){
+        Transmittal::where('id', $id)->update(['remarks' => 2, 'status'=> 1]);
+        return response()->json("success");
+    }
+
     public function accepted(Request $req)
     {
         $keyword = $req->has('viewAll') ? '' : $req->keyword;

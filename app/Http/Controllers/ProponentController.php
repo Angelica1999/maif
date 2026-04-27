@@ -1164,10 +1164,8 @@ class ProponentController extends Controller
         $writer->save('php://output');
         $xlsData = ob_get_contents();
         ob_end_clean();
-
         // Filename
-        $filename = $title . date('Ymd') . '.xlsx';
-
+        $filename = str_replace([' ', ','], '', $title . date('Ymd') . '.xlsx');
         // Set headers
         header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         header("Content-Disposition: attachment; filename=$filename");

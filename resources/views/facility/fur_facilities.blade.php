@@ -19,7 +19,7 @@
                     </div>
                 </div>
             </form>
-            <h4 class="card-title">FACILITIES w/ FUR</h4>
+            <h4 class="card-title">FACILITIES w/ ACCEPTED FUR</h4>
             <p class="card-description">
                 MAIF-IPP
             </p>

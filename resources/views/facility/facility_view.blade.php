@@ -91,7 +91,7 @@
                 </div>
             </div> 
             <div class="table-responsive mt-3" id="patient_table_container"> 
-                {{-- Initial content will be loaded here --}}
+                
             </div> 
         </div> 
     </div> 
@@ -100,7 +100,7 @@
 @section('js')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 <script>
-    
+    $('#patient_table_container').html(loading);
     setInterval(function() {
         if($('#yearPicker').length > 0){
             $('#yearPicker').datepicker({

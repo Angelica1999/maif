@@ -10,4 +10,8 @@ class TransmittalPatients extends Model
     use HasFactory;
 
     protected $table = 'transmittal_patients';
+
+    public function patient(){
+        return $this->belongsTo(Patients::class,'patient_id', 'id');
+    }
 }

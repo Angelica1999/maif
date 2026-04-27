@@ -578,7 +578,7 @@
 		// window.addEventListener('beforeunload', () => {
 		// 	navigator.sendBeacon(`/maif/notifications/unregister-tab?client_id=${CLIENT_ID}`);
 		// });
-		$('#docViewerModal').hide();
+		// $('#lddap_modal').hide();
 
 	</script>
    	@yield('js')

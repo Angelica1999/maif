@@ -252,18 +252,18 @@
                                             Processed
                                         @endif
                                     </td>
-                                    <td>{{$row->facility->name}}</td>
-                                    <td>
+                                    <td>{{ $row->facility->name }}</td>
+                                    <td> 
                                         @foreach($row->extension as $item)
                                         <br>
-                                            {{$item->proponentInfo->fundsource->saa}}
+                                            {{ $item->proponentInfo->fundsource->saa }}
                                         @endforeach
                                     </td>
-                                    <td>{{$row->extension[0]->proponentInfo->proponent->proponent}}</td>
-                                    <td>{{date('F j, Y', strtotime($row->date))}}</td>
-                                    <td>{{number_format($row->total, 2, '.', ',')}}</td>
-                                    <td>{{date('F j, Y', strtotime($row->created_at))}}</td>
-                                    <td>{{$row->user->lname .', '. $row->user->fname}}</td>
+                                    <td>{{ count($row->extension) > 0 ? $row->extension[0]->proponentInfo->proponent->proponent : '' }}</td>
+                                    <td>{{ date('F j, Y', strtotime($row->date)) }}</td>
+                                    <td>{{ number_format($row->total, 2, '.', ',') }}</td>
+                                    <td>{{ date('F j, Y', strtotime($row->created_at)) }}</td>
+                                    <td>{{ $row->user->lname .', '. $row->user->fname }}</td>
                                 </tr>
                             @endforeach
                         @else
@@ -340,7 +340,7 @@
         },1000);
     }
 
-    $('#docViewerModal').hide();
+    $('#lddap_modal').hide();
     
     function toggleRemarks(link) {
         const container = link.closest('.remarks-container');
@@ -440,7 +440,7 @@
 
     function openModal() {
         var routeNoo = event.target.getAttribute('data-routeId'); 
-        var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNoo;
+        var src = "https://dts.cvchd7.com/document/trackMaif/" + routeNoo;
 
         var base_url = "{{ url('/') }}";
         $('.modal-body').append('<img class="loadingGif" src="' + base_url + '/public/images/loading.gif" alt="Loading..." style="display:block; margin:auto;">');

@@ -133,7 +133,7 @@
                                                         @endif
                                                     </div>
                                                     <div class="d-flex justify-content-between align-items-center">
-                                                        @if( $proponentInfo->remaining_balance == 0)
+                                                        @if( $proponentInfo->remaining_balance <= 0)
                                                             <span class="ml-3">Remaining Balance &nbsp;: <strong class="text-danger">{{ number_format(floatval(str_replace(',', '', $proponentInfo->remaining_balance)), 2, '.', ',') }}</strong></span>
                                                         @else
                                                             <span class="ml-3">Remaining Balance &nbsp;: <strong class="text-info">{{ number_format(floatval(str_replace(',', '', $proponentInfo->remaining_balance)), 2, '.', ',') }}</strong></span>
@@ -694,7 +694,7 @@
 
     function openModal(link) {
         var routeNo = $(link).data('routeid');
-        var src = "http://192.168.110.17/dts/document/trackMaif/" + routeNo;
+        var src = "https://dts.cvchd7.com/document/trackMaif/" + routeNo;
         var base_url = "{{ url('/') }}";
         $('.modal-body').append('<img class="loadingGif" src="' + base_url + '/public/images/loading.gif" alt="Loading..." style="display:block; margin:auto;">');
 

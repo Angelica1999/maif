@@ -4,48 +4,19 @@
         <title>Disbursement Voucher</title>
         <!-- <link rel="stylesheet" href="{{ public_path('bootstrap.min.css') }}"> -->
         <style>
-            /* #cover {
-                background-image: url("{{realpath(__DIR__ . '/../../..').'/public/images/doh-logo.png'}}");
-                background-image-resize: 6;
-            } */
       
-          .header{
-            font-size: 11px;
-            font-weight: normal;
-            text-align:center;
-          }
-          table td{
-            font-size: 11px;
-          }
-          /* .box-container {
-            display: flex;
-          }
-          .box {
-              width: 10px;
-              height: 5px;
-              border: 1px solid black;
-              margin-left: 7px;
-              display: inline-block;
-              vertical-align: middle;
-              margin-top: 1px;
-              margin-bottom: 1px;
-              line-height:1;
-          }
-          .label {
-              font-size: 11px;
-              display: inline-block;
-              margin-right: 8px;
-              margin-left: 5px;
-              line-height: 1;
-          } */
-          /* .barcode-container {
-              position: absolute;
-              right: 0; 
-              top: 45%; 
-              transform: translateY(-50%) rotate(-90deg); 
-              transform-origin: right center; 
-              margin-top: 1px;
-          } */
+            .header{
+                font-size: 10px;
+                font-weight: normal;
+                text-align:center;
+            }
+            table td{
+                font-size: {{ $total_count >35 ? '10px' : ($total_count > 30 ? '10.4px' : '11px') }};
+            }
+            @page {
+                margin-bottom: -2in; 
+                margin-top: 0.2in; 
+            }
       </style>
     </head>
     <body>
@@ -56,32 +27,32 @@
                 <div style="page-break-inside: avoid;">
                     <table class="table" style="border-collapse:collapse; width: 100%; font-size:12px">
                         <tr style="border: 1px solid black;">
-                            <td width="23%" style="text-align: center; border-right:none; padding:5px"><img src="{{realpath(__DIR__ . '/../../..').'/public/images/doh-logo.png'}}" width="70"></td>
-                            <td width="54%" style="border-left:none; border-right:none; text-align:center; line-height:1.4">
-                                <div class="header" style="margin-top: 15px;">
+                            <td width="23%" style="text-align: center; border-right:none; padding:2px"><img src="{{realpath(__DIR__ . '/../../..').'/public/images/doh-logo.png'}}" width="50"></td>
+                            <td width="54%" style="border-left:none; border-right:none; text-align:center; line-height:1.4; {{ $total_count >35 ? '10px' : ($total_count > 30 ? '10.4px' : '11px') }}">
+                                <div class="header" style="margin-top: 5px;">
                                     <span>Republic of the Philippines</span> <br>
                                     <strong> DEPARTMENT OF HEALTH</strong> <br>
                                     <i>Central Visayas Center for Health Development</i><br>
                                 </div>
                             </td>
-                            <td width="23%" style="text-align: center; border-left:none;"><img src="{{realpath(__DIR__ . '/../../..').'/public/images/bagong_pilipinas.png'}}" width="70"></td>
+                            <td width="23%" style="text-align: center; border-left:none;"><img src="{{realpath(__DIR__ . '/../../..').'/public/images/bagong_pilipinas.png'}}" width="50"></td>
                         </tr>
                     </table>
                     <table class="table" style="border-collapse:collapse; width: 99.9%;">
                         <tr style="border: 1px solid black; border-top:0px;">
-                            <td style="text-align:center;font-size:14px; width:80%"> <strong>DISBURSEMENT VOUCHER</strong></td>
-                            <td style="width:20%; border-left:1px solid black; font-size:10px" >
+                            <td style="text-align:center; font-size:12px; width:80%"> <strong>DISBURSEMENT VOUCHER</strong></td>
+                            <td style="width:20%; border-left:1px solid black; font-size:10px;" >
                                 <b>
-                                    <span style="margin-bottom: 20px">Fund Cluster :</span><br>
-                                    <span style="margin-top: 20px">Date: {{ date('F j, Y', strtotime($result->date))}}</span><br>
-                                    <span>DV No. :</span>   
+                                    <span style="font-size:10px">Fund Cluster :</span><br>
+                                    <span style="font-size:10px">Date: {{ date('F j, Y', strtotime($result->date))}}</span><br>
+                                    <span style="font-size:10px">DV No. :</span>   
                                 </b>    
                             </td>
                         </tr>
                     </table>
                     <table class="table" style="border-collapse:collapse; width: 99.9%;">
                         <tr style="border: 1px solid black; border-top:0px;">
-                            <td style="width:10.5%; border-right:1px solid black"><b> Mode of Payment</td>
+                            <td style="width:15%; border-right:1px solid black"><b> Mode of Payment</td>
                             <td style="width:85%; border-left: 0;" >
                                 <div class="" style="margin-top:20px">
                                     &nbsp;&nbsp;&nbsp;
@@ -103,7 +74,7 @@
                     </table>
                     <table class="table" style="border-collapse:collapse; width: 99.9%;">
                         <tr style="border: 1px solid black; border-top:0px;">
-                            <td style="width:11.15%; border-right:1px solid black; padding:3px"><b> Payee</td>
+                            <td style="width:11.15%; border-right:1px solid black;"><b> Payee</td>
                             <td style="width:39.7%; border-left: 0; border-right:1px solid black"><b> {{$pre_dv->facility->name}}</td>
                             <td style="width:29%; border-right:1px solid black; vertical-align:top; " >
                                 <span style="vertical-align:top; " >Tin/Employee No. :</span>
@@ -115,13 +86,13 @@
                     </table>
                     <table class="table" style="border-collapse:collapse; width: 99.9%;">
                         <tr style="border: 1px solid black; border-top:0px;">                        
-                            <td style="width:11.25%; border-right:1px solid black; padding:4px"><b>Address</td>
+                            <td style="width:11.25%; border-right:1px solid black;"><b>Address</td>
                             <td style="width: 89.5%; border-left: 0 ;vertical-align:middle; "><b>{{$pre_dv->facility->address}}</td>
                         </tr>
                     </table>
                     <table class="table table-fixed" style="border-collapse:collapse; width: 99.9%; table-layout: fixed;">
                         <tr style="border: 1px solid black; border-top:0px; width:100%;">
-                            <td style="width:51%; border-right:1px solid black; text-align:center; padding:3px"> Particulars</td>
+                            <td style="width:51%; border-right:1px solid black; text-align:center;"> Particulars</td>
                             <td style="width:18%; border-right:1px solid black; text-align:center">Responsibility Center</td>
                             <td style="width:14%; border-right:1px solid black; text-align:center">MFO/PAP</td>
                             <td style="width:17%;">Amount</td>
@@ -132,75 +103,77 @@
                                 Assistance for Indigent Patient Program for {{$pre_dv->facility->name}}
                                 per billing statement dated {{date('F Y', strtotime($result->date_from))}} {{!Empty($result->date_to)?' - '.date('F Y', strtotime($result->date_to)):''}}
                                 in the amount of:</p>
-                                <table style="width: 100%; border-collapse: collapse; margin-top:5px;">
+                                <table style="width: 100%; border-collapse: collapse; margin-top:5px; line-height:1;">
                                     @foreach($fundsources as $index=> $fund_saa)
                                         <tr>
-                                            <td style="text-align: left; padding: 2px;">{{ $fund_saa['saa'] }}</td>
-                                            <td style="text-align: right;">{{ number_format(floatval(str_replace(',','',$fund_saa['amount'])), 2, '.', ',') }}</td>
+                                            <td style="text-align: left; padding: 0.5px; font-size:{{ $total_count >40 ? '8.5px' : ($total_count > 30 ? '9.5px' : '11px') }}">{{ $fund_saa['saa'] }}</td>
+                                            <td style="text-align: right; padding: 0.5px; font-size:{{ $total_count >40 ? '8.5px' : ($total_count > 30 ? '9.5px' : '11px') }}">{{ number_format(floatval(str_replace(',','',$fund_saa['amount'])), 2, '.', ',') }}</td>
                                         </tr>
                                     @endforeach
                                 </table>
                                 <table style="width: 100%; border-collapse: collapse; margin-top:5px;">
                                     <tr>
-                                        <td style="text-align: left; padding: 2px;font-weight:bold; width:80%">Total</td>
-                                        <td style="border-top:1px solid black;text-align: right; width:20%">{{ number_format($amount, 2, '.',',') }}</td>
+                                        <td style="text-align: left; padding: 1px;font-weight:bold; width:75%">Total</td>
+                                        <td style="border-top:1px solid black;text-align: right; width:25%">{{ number_format($amount, 2, '.',',') }}</td>
                                     </tr>
-                                </table> 
-                                <?php 
-                                    if ($pre_dv->prof_fee !== null) {
-                                        $data_vat = ($info->vat > 3) ? $pre_dv->prof_fee / 1.12 : $pre_dv->prof_fee;
-                                    } else {
-                                        $data_vat = ($info->vat > 3) ? $amount / 1.12 : $amount;
-                                    } 
-                                    
-                                    $r1d2 = $r1d3 = $r2d2 = $r2d3 = 0;
-                                    if($info->vat == 3){
-                                        $r1d2 = number_format($amount,2,'.',',');
-                                        $r1d3 = number_format($amount * $info->vat / 100,2,'.',',') ;
-                                        $r2d2 = number_format($pre_dv->prof_fee,2,'.',',');
-                                        $r2d3 = number_format(($pre_dv->prof_fee * $info->ewt_pf) / 100,2,'.',',');
-                                    }else if($info->vat == 5){
-                                        $r1d2 = number_format($data_vat,2,'.',',');
-                                        $r1d3 = number_format($data_vat * $info->vat / 100,2,'.',',');
-                                        $r2d2 = number_format(($pre_dv->prof_fee / 1.12 ),2,'.',',');
-                                        $r2d3 = number_format(($pre_dv->prof_fee / 1.12 * $info->ewt_pf) / 100,2,'.',',');
-                                    }
-                                    $r3d2 = number_format($amount - $pre_dv->prof_fee,2,'.',',');
-                                    $r3d3 = number_format((($amount - $pre_dv->prof_fee) * $info->Ewt )/ 100,2,'.',',');
-                                    $all_tax = number_format(str_replace(',','',$r1d3) + str_replace(',','',$r2d3) + str_replace(',','',$r3d3), 2,'.',','); 
-                                    $vat_ewt = number_format((($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100) + $data_vat * $info->vat / 100, 2,'.',',');
-                                    $date_valid = (strtotime($result->updated_at) < strtotime('2025-07-17')) ? 0 : 1;
-                                ?>
+                                </table>
+                                <?php
+                                   if ($pre_dv->prof_fee !== null) {
+                                       $data_vat = ($info->vat > 3) ? $pre_dv->prof_fee / 1.12 : $pre_dv->prof_fee;
+                                   } else {
+                                       $data_vat = ($info->vat > 3) ? $amount / 1.12 : $amount;
+                                   } 
+                                   
+                                   $r1d2 = $r1d3 = $r2d2 = $r2d3 = 0;
+                                   if($info->vat == 3){
+                                       $r1d2 = number_format($amount,2,'.',',');
+                                       $r1d3 = number_format($amount * $info->vat / 100,2,'.',',') ;
+                                       $r2d2 = number_format($pre_dv->prof_fee,2,'.',',');
+                                       $r2d3 = number_format(($pre_dv->prof_fee * $info->ewt_pf) / 100,2,'.',',');
+                                   }else if($info->vat == 5){
+                                       $r1d2 = number_format($data_vat,2,'.',',');
+                                       $r1d3 = number_format($data_vat * $info->vat / 100,2,'.',',');
+                                       $r2d2 = number_format(($pre_dv->prof_fee / 1.12 ),2,'.',',');
+                                       $r2d3 = number_format(($pre_dv->prof_fee / 1.12 * $info->ewt_pf) / 100,2,'.',',');
+                                   }
+                                   $r3d2 = number_format($amount - $pre_dv->prof_fee,2,'.',',');
+                                   $r3d3 = number_format((($amount - $pre_dv->prof_fee) * $info->Ewt )/ 100,2,'.',',');
+                                   
+                                   $all_tax = number_format(str_replace(',','',$r1d3) + str_replace(',','',$r2d3) + str_replace(',','',$r3d3), 2,'.',','); 
+
+                                   $vat_ewt = number_format((($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100) + $data_vat * $info->vat / 100, 2,'.',',');
+                                   $date_valid = (strtotime($result->updated_at) < strtotime('2025-07-17')) ? 0 : 1;
+                               ?>
                                 <table style="width: 100%; border-collapse: collapse; margin-top:5px;">
                                     @if($date_valid == 0)
-                                        <tr>
-                                            <td style="text-align: left;">{{ floor($info->vat) == 3 ? floor($info->vat) . '%' . ' ' . 'Percentage Tax' : floor($info->vat) . '%' . ' ' . 'VAT' }}</td>
-                                            <td style="text-align: right;">{{ number_format($data_vat,2,'.',',') }}</td>
-                                            <td style="text-align: right;">{{ number_format($data_vat * $info->vat / 100,2,'.',',') }}</td>
-                                        </tr>
-                                        <tr>
+                                            <tr>
+                                                <td style="text-align: left;">{{ floor($info->vat) == 3 ? floor($info->vat) . '%' . ' ' . 'Percentage Tax' : floor($info->vat) . '%' . ' ' . 'VAT' }}</td>
+                                                <td style="text-align: right;">{{ number_format($data_vat,2,'.',',') }}</td>
+                                                <td style="text-align: right;">{{ number_format($data_vat * $info->vat / 100,2,'.',',') }}</td>
+                                            </tr>
+                                            <tr>
                                             <td style="text-align: left;">{{ floor($info->Ewt).'%'.' '.'EWT' }}</td>
                                             <td style="text-align: right;">{{ floor($info->vat) == 3 ? number_format((($info->vat > 3)?$amount / 1.12 : $amount),2,'.',','): number_format((($info->vat > 3)?$amount / 1.12 : $amount),2,'.',',') }}</td>
                                             <td style="text-align: right;">{{ number_format((($info->vat > 3)? $amount / 1.12 * $info->Ewt / 100: $amount * $info->Ewt / 100),2,'.',',') }}</td>
-                                        </tr>
+                                            </tr>
                                     @else
                                         <tr>
-                                            <td style="text-align: left; width:60%">
+                                            <td style="text-align: left; width:60%; ">
                                                 {{ 
                                                     floor($info->vat) == 3 
                                                         ? floor($info->vat) . '%' . ' ' . 'Percentage Tax on Total Hospital Bill' 
                                                         : floor($info->vat) . '%' . ' ' . 'VAT on Professional Fee' 
                                                     }}
                                             </td>
-                                            <td style="text-align: right; width:20%">
+                                            <td style="text-align: right; width:20%; ">
                                                 {{ $r1d2 }}
                                             </td>
-                                            <td style="text-align: right; width:20%">
+                                            <td style="text-align: right; width:20%; ">
                                                 {{ $r1d3 }}
                                             </td> 
                                         </tr>
                                         <tr>
-                                            <td style="text-align: left;">
+                                            <td style="text-align: left; ">
                                                 {{ 
                                                     floor($info->vat) == 3 
                                                         ? floor($info->ewt_pf) . '%' . ' ' . 'EWT on Professional Fee' 
@@ -210,26 +183,25 @@
                                             <td style="text-align: right;">
                                                 {{ $r2d2 }}
                                             </td>
-                                            <td style="text-align: right;">
+                                            <td style="text-align: right; ">
                                                 {{ $r2d3 }}
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td style="text-align: left;">
+                                            <td style="text-align: left; ">
                                                 {{ 
                                                     floor($info->vat) == 3 
                                                         ? floor($info->Ewt) . '%' . ' ' . 'EWT on Hospital Fee' 
                                                         : floor($info->Ewt) . '%' . ' ' . 'EWT on Hospital Bills'
                                                     }} 
                                             </td>
-                                            <td style="text-align: right;">
+                                            <td style="text-align: right; ">
                                                 {{ $r3d2 }}
                                             </td>
-                                            <td style="text-align: right;">
+                                            <td style="text-align: right; ">
                                                 {{ $r3d3 }}
                                             </td>
                                         </tr>
-                                       
                                     @endif
                                 </table>
                                 <table style="width: 100%; border-collapse: collapse; margin-top:5px;">
@@ -238,7 +210,7 @@
                                     </tr>
                                     <tr>
                                         <td></td>
-                                        <td style="padding:3px"><b>Amount Due</b></td>
+                                        <td style="padding:1px"><b>Amount Due</b></td>
                                         <td></td>
                                     </tr>
                                 </table>
@@ -291,7 +263,7 @@
                     </table>
                     <table class="table" style="border-collapse:collapse; width: 100%; line-height:1">
                         <tr class="header" style="border: 1px solid black; border-top:0px;">
-                            <td style="border-right:1px solid black; width:50%; padding:3px">Account Title</td>
+                            <td style="border-right:1px solid black; width:50%;">Account Title</td>
                             <td style="width:20%; border-left: 0; vertical-align:top; border-right:1px solid black; " >Uacs Code</td>
                             <td style="width:15%; border-left: 0; border-right:1px solid black;" >Debit</td>
                             <td style="width:15%; border-left: 0; " >Credit</td>
@@ -323,45 +295,63 @@
                     </table>
                     <table class="table" style="border-collapse:collapse; width: 99.9%; line-height:1">
                         <tr style="border: 1px solid black; border-top:0px;">
-                            <td style="border-right:1px solid black; width:50%;  padding:1px"><strong>C. Certified:</strong></td>
+                            <td style="border-right:1px solid black; width:50%;"><strong>C. Certified:</strong></td>
                             <td><strong>D. Approved for Payment:</strong></td>
                         </tr>
                         <tr class="header" style="border: 1px solid black; border-top:0px;">
-                            <td style="border-right:1px solid black; width:50%;">
-                                <div style="margin-top:20px; line-height:1">
-                                    <img src="\maif\public\images\box_16.png">
-                                    <span>Cash Available</span><br>
-                                    <img src="\maif\public\images\box_16.png">
-                                    <span>Subject to Authority to Debit Account (when applicable)</span><br>
-                                    <img src="\maif\public\images\box_16.png">
-                                    <span>Supporting documents complete and amount claimed proper</span><br>
-                                </div>
+                            <td style="border-right:1px solid black; width:50%;padding:0px">
+                                <table style="width:100%; border-collapse:collapse;">
+                                    <tr>
+                                        <td style="font-size:10px;">
+                                            <label style="display:flex; align-items:center; font-weight:normal;">
+                                                <input type="checkbox" style="flex-shrink:0; margin:0; padding:0px">
+                                                <span>Cash Available</span>
+                                            </label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-size:10px;">
+                                            <label style="display:flex; align-items:center; font-weight:normal;">
+                                                <input type="checkbox" style="flex-shrink:0; margin:0; padding:0px">
+                                                <span>Subject to Authority to Debit Account (when applicable)</span>
+                                            </label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-size:10px;">
+                                            <label style="display:flex; align-items:center; font-weight:normal;">
+                                                <input type="checkbox" style="flex-shrink:0; margin:0; padding:0px">
+                                                <span>Supporting documents complete and amount claimed proper</span>
+                                            </label>
+                                        </td>
+                                    </tr>
+                                </table>
                             </td>
-                            <td></td>  
+                            <td></td>
                         </tr>
                     </table>
                     <table class="table" style="border-collapse:collapse; width: 100%;">
                         <tr class="header" style="border: 1px solid black; border-top:0px;">
-                            <td style="border-right:1px solid black; width:12%; padding:5px">Signature</td>
+                            <td style="border-right:1px solid black; width:12%;">Signature</td>
                             <td style="border-right:1px solid black; width:38.1%;"></td>
                             <td style="border-right:1px solid black; width:12%;">Signature</td>
                             <td style="border-right:1px solid black; width:38%;"></td> 
                         </tr>
                         <tr class="header" style="border: 1px solid black; border-top:0px;">
-                            <td style="border-right:1px solid black; width:12%; padding:4px">Printed Name</td>
-                            <td style="border-right:1px solid black; width:38%; text-align:center"><b>SAMUEL B. GLOVA, CPA</td>
+                            <td style="border-right:1px solid black; width:12%;">Printed Name</td>
+                            <td style="border-right:1px solid black; width:38%;  text-align:center"><b>SAMUEL B. GLOVA, CPA</td>
                             <td style="border-right:1px solid black; width:12%;">Printed Name</td>
                             <td style="border-right:1px solid black; width:38%;"><b>JOSHUA G. BRILLANTES, MD, MPH, CESO IV</td>
                         </tr>
                         <tr class="header" style="border: 1px solid black; border-top:0px;">
                             <td style="border-right:1px solid black; width:12%;">Position</td>
-                            <td style="border-right:1px solid black; width:38%;">
-                                <table width=100% style="text-align:center; line-height:1" border=0>
+                            <td style="border-right:1px solid black; width:38%; padding:0px;">
+                                <table width=100% style="text-align:center" border=0>
                                     <tr>
                                         <td style="border-bottom: 1px solid black">Accountant II</td>
                                     </tr>
                                     <tr>
-                                        <td>Officer-in-Charge, Accounting Office</td>
+                                        <td >Officer-in-Charge, Accounting Office</td>
                                     </tr>
                                 </table>
                             </td>
@@ -378,15 +368,15 @@
                             </td>
                         </tr>
                         <tr class="header" style="border: 1px solid black; border-top:0px;">
-                            <td style="border-right:1px solid black; width:12%; padding:5px">Date</td>
+                            <td style="border-right:1px solid black; width:12%;">Date</td>
                             <td style="border-right:1px solid black; width:38%;"></td>
                             <td style="border-right:1px solid black; width:12%;">Date</td>
                             <td style="border-right:1px solid black; width:38%;"></td>
                         </tr>
                     </table>
-                    <table class="table" style="border-collapse:collapse; width: 100%;">
+                    <table class="table" style="border-collapse:collapse; width: 100%; line-height:1">
                         <tr class="header" style="border: 1px solid black; border-top:0px;">  
-                            <td colspan="4" style="vertical-align:top; border-right:1px solid black; border-bottom:none; width:80%; padding:5px"><b>E. Receipt of Payment</b></td>
+                            <td colspan="4" style="vertical-align:top; border-right:1px solid black; border-bottom:none; width:80%;"><b>E. Receipt of Payment</b></td>
                             <td rowspan="2" style="vertical-align:top;width:20%;">JEV No.</td>
                         </tr>
                         <tr class="header" style="border: 1px solid black; border-top:0px;">
@@ -395,15 +385,15 @@
                             <td style="border-right:1px solid black; width:15%; vertical-align:top">Date:</td>
                             <td style="border-right:1px solid black; width:32%; vertical-align:top">Bank Name & Account Number:</td>
                         </tr>
-                        <tr class="header" style="border: 1px solid black; border-top:0px;">
-                            <td style="border-right:1px solid black; width:12%; padding:5px">Signature:</td>
+                        <tr class="header" style="border: 1px solid black; border-top:0px; line-height:1">
+                            <td style="border-right:1px solid black; width:12%;">Signature:</td>
                             <td style="border-right:1px solid black; width:25%;"></td>
                             <td style="border-right:1px solid black; width:15%; vertical-align:top">Date:</td>
                             <td style="border-right:1px solid black; width:32%; vertical-align:top">Printed Name:</td>
                             <td rowspan="2" style="vertical-align:top;">Date</td>
                         </tr>
                         <tr class="header" style="border: 1px solid black; border-top:0px;">
-                            <td colspan="4" width =31% style="vertical-align:top; padding:4px">Official Receipt No. & Date/Other Documents</td>
+                            <td colspan="4" width =31% style="vertical-align:top;">Official Receipt No. & Date/Other Documents</td>
                         </tr>
                     </table>        
                 </div>
@@ -423,15 +413,15 @@
                     {!! DNS1D::getBarcodeHTML($result->route_no, 'C39E', 1, 25) !!}
                 </div> -->
                 <div>
-                    <div class="barcode-container" style="position:absolute;text-align: center; margin-top: -400px; left: 0; margin-right: -720px;">
+                    <div class="barcode-container" style="position:absolute;text-align: center; margin-top: -500px; left: 0; margin-right: -765px;">
+                        <img src="data:image/png;base64,{{ $barcodePNG }}" alt="Barcode"
+                            style="transform: rotate(-90deg); writing-mode: vertical-lr; text-align:left;"/>
+                    </div>
+                    <div class="barcode-container" style="text-align: center; margin-top: -60px; position: absolute; left: 0; margin-right: -718px;">
                         <img src="{{ realpath(__DIR__ . '/../../..') . '/public/images/' . $route_no . '.png' }}" alt="Barcode"
                             style="transform: rotate(-90deg); writing-mode: vertical-lr; text-align:left;"/>
-                        <br><br>
                     </div>
-                    <div class="barcode-container" style="text-align: center; margin-top: -70px; position: absolute; left: 0; margin-right: -735px;">
-                        <img src="data:image/png;base64,{{ $barcodePNG }}" style="transform: rotate(-90deg); writing-mode: vertical-lr; text-align:left; margin-top:30px"/>
-                    </div>
-                </div>
+                </div> 
                 <!-- <div class="barcode-container" style="text-align: center;line-height:1">
                     <br style="line-height:1px">
                     <img src="data:image/png;base64,{{ $barcodePNG }}" alt="Barcode"style=""/>
@@ -461,8 +451,8 @@
                                 </td>
                             </tr>
                         </table> -->
-                        <div style="margin-left: 1px; margin-right: 1px; height:auto; text-align: center;">
-                            <div id="cover" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; height:98%;
+                        <div style="margin-left: 1px; margin-right: 1px; height:auto; text-align: center;margin-top:0px">
+                            <div id="cover" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; height:95%;
                                 background-image: url('{{ url('storage/app/rotate/' . $fund_saa['path']) }}');
                                 background-size: contain;
                                 background-repeat: no-repeat;
@@ -474,8 +464,12 @@
                 @endforeach
             @endif
             <!-- <div style="page-break-before: always;"></div>
-            <div style="width: 100%; text-align:center;margin-top:5px">
-                <h6><b>V1 - {{ $pre_dv->facility->name }}</b><h6>
+            <div style="width: 100%; text-align:center;">
+                @if($total_count > 30)
+                    <b style="font-size:14px">V1 - {{$pre_dv->facility->name}}</b>
+                @else
+                    <h6><b>V1 - {{$pre_dv->facility->name}}</b><h6>
+                @endif
             </div>
             <div style="width:100%; border:1px solid black; padding:10px">
                 @foreach($pre_dv->extension as $index => $row)
@@ -496,7 +490,7 @@
                         @endforeach
                     </table>  
                 @endforeach
-                <table class="table" style="width: 100%; margin-top:15px">
+                <table class="table" style="width: 100%; margin-top:10px">
                     <tr class="header" style="border: 1px solid black;text-align:center">  
                         <td style="vertical-align:top; border:none; width:30%; padding:4px; text-align:center"></td>
                         <td style="vertical-align:top; border:1px solid black; width:40%; padding:4px; text-align:center"><b>{{ number_format($pre_dv->grand_total,2,'.',',') }}</b></td>

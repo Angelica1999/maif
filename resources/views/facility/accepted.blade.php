@@ -86,6 +86,11 @@
                                         <button onclick="disRem({{ $item->id }})" class="btn btn-sm btn-success" data-toggle="modal" href="#trans_remarks">
                                             <i class="fa fa-upload"></i> Remarks
                                         </button>
+                                        @if(!$item->used)
+                                            <button onclick="returnTrans({{ $item->id }})" class="btn btn-sm btn-warning" title="Return to Incoming">
+                                                <i class="fa fa-arrow-left"></i> RTI
+                                            </button>
+                                        @endif
                                     </td>
                                     <td><a onclick="displaySum({{ $item->id }})" href="#summary_display" data-toggle="modal" data-backdrop="static">{{ $item->control_no }}</a></td>
                                     <td>
@@ -204,6 +209,45 @@
     $('#summary_display, #return, #trans_tracking, #trans_remarks').on('hide.bs.modal', function () {
         $(this).find('input, select, textarea, button').blur();
     });
+
+    function returnTrans(id){
+        Swal.fire({
+            title: 'Return this Transmittal to Incoming List',
+            text: "Are you sure you want to return this transmittal in the incoming list?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6', 
+            cancelButtonColor: '#d33',   
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`return-transmittal/${id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}' 
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    Swal.fire('Success!', 'This transmittal has been successfully returned to the incoming transmittal list.', 'success');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                })
+                .catch(error => {
+                    Swal.fire('Error!', 'There was an error submitting your data.', 'error');
+                });
+            }
+        });
+    }
+
     $(document).ready(function() {
         $('.fa-sort').hide();
         $('#facility_filter').select2({
