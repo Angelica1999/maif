@@ -185,6 +185,7 @@ Route::post('/proponent/supplemental-updated', [App\Http\Controllers\ProponentCo
 Route::post('/proponent/manage-funds', [App\Http\Controllers\ProponentController::class, 'manageFunds'])->name('manage.funds');
 Route::match(['get','post'],'/summary/excel_proponent', [App\Http\Controllers\ProponentController::class, 'excelPSummary'])->name('excel.proponent_summary');
 Route::get('/proponent/spec-allocations/{proponent}', [App\Http\Controllers\ProponentController::class, 'specAllocations'])->name('details.specific');
+Route::post('/manage/multiple_funds', [App\Http\Controllers\ProponentController::class, 'multiFunds'])->name('manage.multi_funds');
 
 Route::match(['get', 'post'],'/proponents/excel/', [App\Http\Controllers\FundSourceController::class, 'generateExcel'])->name('proponent.excel');
 Route::match(['get', 'post'],'/data/update/', [App\Http\Controllers\FacilityController::class, 'updateData'])->name('update.data');
@@ -302,6 +303,10 @@ Route::get('/fur/annex-a/{id}/{year}', [App\Http\Controllers\FURController::clas
 Route::get('/fur/fc-annex-b/{id}/{year}', [App\Http\Controllers\FURController::class, 'fcAnnex'])->name('fur.fc_annex_b');
 Route::get('/fur/consolidated/annex-a', [App\Http\Controllers\FURController::class, 'consoA'])->name('fur.consolidated_a');
 Route::get('/fur/consolidated/annex-b', [App\Http\Controllers\FURController::class, 'consoB'])->name('fur.consolidated_b');
+
+Route::get('/funds/adjustments', [App\Http\Controllers\ProponentController::class, 'adjustments'])->name('funds.adjustments');
+Route::post('/update_adjustments', [App\Http\Controllers\ProponentController::class, 'updateAdjustments'])->name('update.adjustments');
+Route::post('/update_remarks', [App\Http\Controllers\ProponentController::class, 'updateRemarks'])->name('update.remarks');
 
 Route::get('/xyy/{id}', [App\Http\Controllers\PreDvController::class, 'xyy'])->name('xyy.xyy');
 

@@ -63,10 +63,8 @@
                     </td>
                 </tr>
             </table>
-            <div class="form-group ml-1" style="margin-right:20px;">
-                <p class="date">{{ $patient['date_guarantee_letter'] ? \Carbon\Carbon::parse($patient->date_guarantee_letter)->format('jS F Y') : " " }}</p>
-            </div>
-            <p style="text-align:center; margin-top:1px" id="certificate"><strong>CERTIFICATION</strong></p>
+            <p class="date" style="margin-right:20px; margin-bottom:0px;">{{ $patient['date_guarantee_letter'] ? \Carbon\Carbon::parse($patient->date_guarantee_letter)->format('jS F Y') : " " }}</p>
+            <p style="text-align:center; margin-top:0px;" id="certificate"><strong>CERTIFICATION</strong></p>
             <div style="margin-left:20px; margin-right:20px">
                 @if($patient->barangay == null)
                     @if($patient->region == null)
@@ -93,7 +91,7 @@
                         </tr>
                     </tbody>
                 </table>
-                <p class="ml-3" ><strong>Total Amount:</strong>
+                <p class="ml-3" style="margin-bottom:0px;"><strong>Total Amount:</strong>
                     <span class="static-data"><strong>P {{ number_format((float)str_replace(',','',$patient->guaranteed_amount), 2, '.', ',') }}</strong></span>
                 </p>
                 <div class="row align-items-start ml-1"> 
