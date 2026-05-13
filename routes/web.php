@@ -307,6 +307,7 @@ Route::get('/fur/consolidated/annex-b', [App\Http\Controllers\FURController::cla
 Route::get('/funds/adjustments', [App\Http\Controllers\ProponentController::class, 'adjustments'])->name('funds.adjustments');
 Route::post('/update_adjustments', [App\Http\Controllers\ProponentController::class, 'updateAdjustments'])->name('update.adjustments');
 Route::post('/update_remarks', [App\Http\Controllers\ProponentController::class, 'updateRemarks'])->name('update.remarks');
+Route::post('/remove_adjusments', [App\Http\Controllers\ProponentController::class, 'removeAdjustments'])->name('remove.adjustments');
 
 Route::get('/xyy/{id}', [App\Http\Controllers\PreDvController::class, 'xyy'])->name('xyy.xyy');
 

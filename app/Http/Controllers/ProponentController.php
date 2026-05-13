@@ -993,6 +993,15 @@ class ProponentController extends Controller
         ]);
     }
 
+    public function removeAdjustments(Request $request){
+        if($request->type == "Supplemental"){
+            $supplemental = SupplementalFunds::where('id', $request->id)->delete();
+        }else if($request->type == "Subtracted"){
+            $subtracted = SubtractedFunds::where('id', $request->id)->delete();
+        }
+        return "success";
+    }
+
     public function updateRemarks(Request $request){
         if($request->type == "Supplemental"){
             $supplemental = SupplementalFunds::where('id', $request->id)->first();

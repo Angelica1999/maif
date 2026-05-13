@@ -66,6 +66,7 @@
                     <table class="table table-striped">
                     <thead>
                         <tr>
+                            <th style="width:20px"></th>
                             <th>Type</th>
                             <th>Proponent</th>
                             <th>Amount</th>
@@ -76,11 +77,16 @@
                     <tbody>
                         @foreach($results as $data)
                             <tr data-id="{{ $data->id }}" data-type="{{ $data->type }}">
-                               <td>{{ $data->type }}</td>
-                               <td>{{ $data->proponent }}</td>
-                               <td data-type="number" class="number-format" contenteditable="true">{{ number_format(str_replace('.','',$data->amount), 2,'.',',') }}</td>
-                               <td data-type="text" contenteditable="true">{{ $data->remarks }}</td>
-                               <td>{{ ucwords(strtolower($data->user->fname .' '.$data->user->lname)) }}</td>
+                                <td class="text-center">
+                                    <button class="remove_btn" style="border:none; background:#f8d7da;color:#b02a37;padding:6px 8px;border-radius:8px;cursor:pointer;">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </td>                               
+                                <td>{{ $data->type }}</td>
+                                <td>{{ $data->proponent }}</td>
+                                <td data-type="number" class="number-format" contenteditable="true">{{ number_format(str_replace('.','',$data->amount), 2,'.',',') }}</td>
+                                <td data-type="text" contenteditable="true">{{ $data->remarks }}</td>
+                                <td>{{ ucwords(strtolower($data->user->fname .' '.$data->user->lname)) }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -128,43 +134,132 @@
         e.preventDefault();
     });
 
+    $('.remove_btn').on('click', function () {
+
+        var element = this;
+        var row = element.closest('tr');
+        var rowId = row.getAttribute('data-id');
+        var type = row.getAttribute('data-type');
+
+        Swal.fire({
+            title: 'Remove adjustments?',
+            text: 'Do you want to remove this adjustments?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, remove it',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+
+            if (result.isConfirmed) {
+
+                $.ajax({
+                    url: "{{ route('remove.adjustments') }}",
+                    type: 'POST',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        id: rowId,
+                        type: type
+                    },
+                    success: function(res){
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Successfully Deleted',
+                            text: 'Adjustment has been removed.',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+
+                        $(row).fadeOut(300, function () {
+                            $(this).remove();
+                        });
+
+                    },
+                    error: function(err){
+                        console.log(err);
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Something went wrong.'
+                        });
+                    }
+                });
+
+            }
+        });
+    });
+
+    $(document).on('focus', '[data-type="number"]', function () {
+        $(this).data('old-value', $(this).text().trim());
+    });
+
+    $(document).on('focus', '[data-type="text"]', function () {
+        $(this).data('old-value', $(this).text().trim());
+    });
+
     $(document).on('blur', '[data-type="number"]', function() {
-        var raw = $(this).text().replace(/,/g, '').replace(/[^\d.]/g, '');
+
+        var element = this;
+
+        var oldValue = $(element).data('old-value');
+
+        var raw = $(element).text().replace(/,/g, '').replace(/[^\d.]/g, '');
         var num = parseFloat(raw);
+
         if (!isNaN(num)) {
-            $(this).text(new Intl.NumberFormat('en-US', {
+            $(element).text(new Intl.NumberFormat('en-US', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             }).format(num));
         } else {
-            $(this).text('0.00');
+            $(element).text('0.00');
+            num = 0;
         }
 
-        var row = this.closest('tr');
+        var row = element.closest('tr');
         var rowId = row.getAttribute('data-id');
         var type = row.getAttribute('data-type');
 
-        $.ajax({
-            url: "{{ route('update.adjustments') }}",
-            type: 'POST',
-            data: {
-                _token: $('meta[name="csrf-token"]').attr('content'),
-                id: rowId,
-                type: type,
-                amount: num
-            },
-            success: function(res){
-                showSaveNotice();
-            },
-            error: function(err){
-                console.log(err);
+        Swal.fire({
+            title: 'Save changes?',
+            text: 'Do you want to save this updated amount?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, save it',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+
+            if (result.isConfirmed) {
+
+                $.ajax({
+                    url: "{{ route('update.adjustments') }}",
+                    type: 'POST',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        id: rowId,
+                        type: type,
+                        amount: num
+                    },
+                    success: function(res){
+
+                        showSaveNotice();
+
+                        element.style.backgroundColor = '#d4edda';
+
+                        setTimeout(() => {
+                            element.style.backgroundColor = '';
+                        }, 1000);
+                    },
+                    error: function(err){
+                        console.log(err);
+                    }
+                });
+            }else{
+                $(element).text(oldValue);
             }
         });
-        
-        this.style.backgroundColor = '#d4edda';
-        setTimeout(() => {
-            this.style.backgroundColor = '';
-        }, 1000);
+
     });
 
     $(document).on('blur', '[data-type="text"]', function() {
@@ -172,28 +267,43 @@
         var row = this.closest('tr');
         var rowId = row.getAttribute('data-id');
         var type = row.getAttribute('data-type');
+        var oldValue = $(this).data('old-value');
 
-        $.ajax({
-            url: "{{ route('update.remarks') }}",
-            type: 'POST',
-            data: {
-                _token: $('meta[name="csrf-token"]').attr('content'),
-                id: rowId,
-                type: type,
-                remarks: $(this).text()
-            },
-            success: function(res){
-                showSaveNotice();
-            },
-            error: function(err){
-                console.log(err);
+        Swal.fire({
+            title: 'Save changes?',
+            text: 'Do you want to save this updated remarks?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, save it',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+
+            if (result.isConfirmed) {
+
+                $.ajax({
+                    url: "{{ route('update.remarks') }}",
+                    type: 'POST',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        id: rowId,
+                        type: type,
+                        remarks: $(this).text()
+                    },
+                    success: function(res){
+                        showSaveNotice();
+                    },
+                    error: function(err){
+                        console.log(err);
+                    }
+                });
+                this.style.backgroundColor = '#d4edda';
+                setTimeout(() => {
+                    this.style.backgroundColor = '';
+                }, 1000);
+            }else{
+                $(this).text(oldValue);
             }
         });
-        
-        this.style.backgroundColor = '#d4edda';
-        setTimeout(() => {
-            this.style.backgroundColor = '';
-        }, 1000);
     });
 
     function showSaveNotice() {
