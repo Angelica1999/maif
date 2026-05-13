@@ -897,6 +897,144 @@ class ProponentController extends Controller
 
         ]);
     }
+
+    public function multiFunds(Request $request){
+        $amount = $request->amount_mul;
+        $remarks = $request->remarks_mul;
+        $option = $request->option;
+        $proponents = Proponent::whereIn('id', $request->proponent_id)->get();
+
+        foreach($request->proponent_id as $index => $id){
+            if($option[$index] == 1){
+                $supplemental = new SupplementalFunds();
+                $supplemental->proponent = Proponent::where('id', $id)->value('proponent');
+                $supplemental->amount = (float) str_replace(',', '', $amount[$index]);
+                $supplemental->added_by = Auth::user()->userid;
+                $supplemental->remarks = $remarks[$index];
+                $supplemental->save();
+            }else{
+                $subtracted = new SubtractedFunds();
+                $subtracted->proponent = Proponent::where('id', $id)->value('proponent');
+                $subtracted->amount = (float) str_replace(',', '', $amount[$index]);
+                $subtracted->subtracted_by = Auth::user()->userid;
+                $subtracted->remarks = $remarks[$index];
+                $subtracted->save();
+            }
+        }
+        return redirect()->back()->with('manage_multiple', true);
+    }
+
+    public function adjustments(Request $request){
+        $data1 = SupplementalFunds::query()
+            ->when(!$request->viewAll && $request->keyword, function ($query) use ($request) {
+                $query->where(function ($q) use ($request) {
+                    $q->where('proponent', 'like', '%' . $request->keyword . '%')
+                        ->orWhere('amount', 'like', '%' . $request->keyword . '%')
+                        ->orWhere('remarks', 'like', '%' . $request->keyword . '%')
+                        ->orWhereIn('added_by', function ($sub) use ($request) {
+                            $sub->select('userid')
+                                ->from('dohdtr.users')  // fully qualified table name
+                                ->where(function($q) use ($request) {
+                                    $q->where('fname', 'like', '%' . $request->keyword . '%')
+                                    ->orWhere('lname', 'like', '%' . $request->keyword . '%')
+                                    ->orWhere('mname', 'like', '%' . $request->keyword . '%');
+                                });
+                        });
+                });
+            })
+            ->with('user:userid,fname,lname,mname')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(function ($item) {
+                $item->type = 'Supplemental';
+                return $item;
+            });
+
+        $data2 = SubtractedFunds::query()
+            ->when(!$request->viewAll && $request->keyword, function ($query) use ($request) {
+                $query->where(function ($q) use ($request) {
+                    $q->where('proponent', 'like', '%' . $request->keyword . '%')
+                        ->orWhere('amount', 'like', '%' . $request->keyword . '%')
+                        ->orWhere('remarks', 'like', '%' . $request->keyword . '%')
+                        ->orWhereIn('subtracted_by', function ($sub) use ($request) {
+                            $sub->select('userid')
+                                ->from('dohdtr.users')  // fully qualified table name
+                                ->where(function($q) use ($request) {
+                                    $q->where('fname', 'like', '%' . $request->keyword . '%')
+                                    ->orWhere('lname', 'like', '%' . $request->keyword . '%')
+                                    ->orWhere('mname', 'like', '%' . $request->keyword . '%');
+                                });
+                        });
+                });
+            })
+            ->with('user:userid,fname,lname,mname')
+            ->orderBy('id', 'desc')
+            ->get()
+            ->map(function ($item) {
+                $item->type = 'Subtracted';
+                return $item;
+            });
+        if(!$request->viewAll && $request->type == "supplemental"){
+            $data = $data1->sortByDesc('proponent')
+                ->values();
+        }elseif(!$request->viewAll && $request->type == "subtracted"){
+            $data = $data2->sortByDesc('proponent')
+                ->values();
+        }else{
+            $data = $data1->merge($data2)
+                ->sortByDesc('proponent')
+                ->values();
+        }
+            
+        return view('proponents.adjustments', [
+            'results' => $data,
+            'keyword' => $request->viewAll ? '' : $request->keyword,
+            'type' => $request->viewAll ? '' : $request->type
+        ]);
+    }
+
+    public function removeAdjustments(Request $request){
+        if($request->type == "Supplemental"){
+            $supplemental = SupplementalFunds::where('id', $request->id)->delete();
+        }else if($request->type == "Subtracted"){
+            $subtracted = SubtractedFunds::where('id', $request->id)->delete();
+        }
+        return "success";
+    }
+
+    public function updateRemarks(Request $request){
+        if($request->type == "Supplemental"){
+            $supplemental = SupplementalFunds::where('id', $request->id)->first();
+            if($supplemental){
+                $supplemental->remarks = $request->remarks;
+                $supplemental->save();
+            }
+        }else if($request->type == "Subtracted"){
+            $subtracted = SubtractedFunds::where('id', $request->id)->first();
+            if($subtracted){
+                $subtracted->remarks = $request->remarks;
+                $subtracted->save();
+            }
+        }
+        return redirect()->back()->with('manage_funds', true);
+    }
+
+    public function updateAdjustments(Request $request){
+        if($request->type == "Supplemental"){
+            $supplemental = SupplementalFunds::where('id', $request->id)->first();
+            if($supplemental){
+                $supplemental->amount = (float) str_replace(',', '', $request->amount);
+                $supplemental->save();
+            }
+        }else if($request->type == "Subtracted"){
+            $subtracted = SubtractedFunds::where('id', $request->id)->first();
+            if($subtracted){
+                $subtracted->amount = (float) str_replace(',', '', $request->amount);
+                $subtracted->save();
+            }
+        }
+        return redirect()->back()->with('manage_funds', true);
+    }
     
     public function manageFunds(Request $request){
         if($request->funds_type == 1){

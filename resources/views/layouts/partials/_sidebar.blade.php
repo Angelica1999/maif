@@ -613,6 +613,16 @@
                             </a>
                         </li>
                     </ul>
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('funds.adjustments') }}">
+                                <span class="menu-icon">
+                                    <img src="\maif\public\images\proponents_16.png">
+                                </span>
+                                <span class="menu-title">Funds Adjustments</span>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
             </ul>
             <!-- Patients Section -->

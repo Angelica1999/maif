@@ -145,10 +145,12 @@
                                         <option value="6" {{ $filter_keyword == 6 ? 'selected' : ''}}>Negative Amount</option>
                                         <option value="7" {{ $filter_keyword == 7 ? 'selected' : ''}}>Remaining Funds</option>
                                     </select>
-                                    <button  class="btn btn-sm btn-success text-white" style="height:40px" value="{{ $sort }}" type="submit" name="sorting_btn"><i class="typcn typcn-filter menu-icon"></i>Sort</button>
+                                    <button  class="btn btn-sm btn-success text-white sort_btn" style="height:40px; display:none" value="{{ $sort }}" type="submit" name="sorting_btn"><i class="typcn typcn-filter menu-icon"></i>Sort</button>
                                     <button  class="btn btn-sm btn-warning text-white" style="height:40px" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View</button>
                                     <a href="{{ route('excel.proponent_summary') }}" style= "color: white; height:40px" type="button" class="btn btn-sum">
-                                        <img src="\maif\public\images\excel-file.png" style="width: 15px; height: auto;">Summary</a>    
+                                        <img src="\maif\public\images\excel-file.png" style="width: 15px; height: auto;">Summary</a>   
+                                    <a href="#multi_funds" data-toggle="modal" style="color: white; height:40px; background-color:#417524; border-radius:0;" type="button" class="btn mul_funds">
+                                        <i class="fa fa-coins"></i> Mng. Multi Funds</a> 
                                 </div>
                             </div>
                         </form>
@@ -369,6 +371,67 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="multi_funds" role="dialog">
+    <div class="modal-dialog" role="document" style="max-width: 800px">
+        <div class="modal-content" style="border-radius:0px;">
+            <div class="modal-header" style="text-align:center">
+                <h4 class="text-success modal-title">
+                    <i style="font-size:15px" class="typcn typcn-location-arrow menu-icon"></i>
+                    MANAGE FUNDSOURCES
+                </h4>
+            </div>
+            <form id="contractForm" method="POST" action="{{ route('manage.multi_funds') }}">
+                @csrf
+                <div class="modal-body" style="padding:20px">
+                    <div class="clone-group">
+                        <div class="clone row mb-3">
+                            <div class="col-md-12 hr_div" style="padding:1px">
+                            </div>
+                            <div class="col-md-4">
+                                <label>PROPONENT:</label>
+                                <select class="form-control pro_mul" name="proponent_id[]" required>
+                                    <option value=""></option>
+                                    @foreach($proponents as $item)
+                                        <option value="{{ $item[0]->id }}">{{ $item[0]->proponent }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label>AMOUNT:</label>
+                                <input type="text" class="form-control amount_mul" name="amount_mul[]" onkeyup= "validateAmount(this)" placeholder="0.00" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label>REMARKS:</label>
+                                <textarea class="form-control remarks_mul" style="height:41px" name="remarks_mul[]"></textarea>
+                            </div>
+                            <div class="col-md-4 mt-2">
+                                <label>OPTION:</label>
+                                <select class="form-control options" name="option[]" required>
+                                    <option value=""></option>
+                                    <option value="1">Supplemental Funds</option>
+                                    <option value="2">Negative Funds</option>
+                                </select>
+                            </div>
+                            <div class="col-md-8 text-right mt-2">
+                                <br><br>
+                                <button type="button" class="btn btn-success btn-xs addRow">
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                                <button type="button" class="btn btn-danger btn-xs removeRow">
+                                    <i class="fa fa-minus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @include('modal')
 @endsection
 @section('js')
@@ -376,6 +439,58 @@
     function supp(){
         $('.funds_type').val(1);
     }
+
+    var cloneIndex = 1;
+
+    var cleanClone = $('.clone').first().prop('outerHTML');
+
+    $(document).on('click', '.addRow', function () {
+
+        cloneIndex++;
+
+        var clone = $(cleanClone);
+
+        clone.attr('id', 'clone_' + cloneIndex);
+
+        clone.find('input').val('');
+        clone.find('textarea').val('');
+        clone.find('select').val('');
+
+        clone.find('.pro_mul')
+            .attr('id', 'pro_mul_' + cloneIndex);
+
+        clone.find('.options')
+            .attr('id', 'options_' + cloneIndex);
+
+        clone.find('.hr_div').html('<hr>');
+
+        $('.clone-group').append(clone);
+
+        $('#pro_mul_' + cloneIndex).select2({
+            placeholder: "Select Proponents",
+            width: '100%',
+            dropdownParent: $('#multi_funds')
+        });
+
+        $('#options_' + cloneIndex).select2({
+            placeholder: "Select Options",
+            width: '100%',
+            dropdownParent: $('#multi_funds')
+        });
+
+    });
+
+    $('#lddap_modal').hide();
+
+    $(document).on('click', '.removeRow', function () {
+        if ($('.clone').length > 1) {
+            $(this).closest('.clone').remove();
+        }
+    });
+
+    $('.data_sorting').on('change', function(){
+        $('.sort_btn').trigger('click');
+    });
 
     function cleanAndInitSelect2() {
         
@@ -392,6 +507,18 @@
         });
 
         $('.facility_2').each(function () {
+            if ($(this).hasClass("select2-hidden-accessible")) {
+                $(this).select2('destroy');
+            }
+        });
+
+        $('.pro_mul').each(function () {
+            if ($(this).hasClass("select2-hidden-accessible")) {
+                $(this).select2('destroy');
+            }
+        });
+
+        $('.options').each(function () {
             if ($(this).hasClass("select2-hidden-accessible")) {
                 $(this).select2('destroy');
             }
@@ -418,6 +545,18 @@
         $('.facility_2').select2({
             placeholder: 'Select Facility',
             width: '100%'
+        });
+
+        $('.pro_mul').select2({
+            placeholder: "Select Proponents",
+            width: '100%',
+            dropdownParent: $('#multi_funds') 
+        });
+
+        $('.options').select2({
+            placeholder: "Select Options",
+            width: '100%',
+            dropdownParent: $('#multi_funds') 
         });
         
     }
@@ -731,7 +870,6 @@
             element.value = '';
         }
     }
-    
     
     var pro_code;
     function disUtil(code) {

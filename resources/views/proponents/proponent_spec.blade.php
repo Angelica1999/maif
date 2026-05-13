@@ -16,7 +16,7 @@
             </thead>
             <tbody>
                 @foreach($data as $row)
-                    <tr id="">
+                    <tr id="" @if(in_array('702', $row['facility_ids'])) style="color:green" @endif>
                         <td style="text-align:margin-left;">
                             @foreach($row['facilities'] as $item)
                                 {{ $item }}

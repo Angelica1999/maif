@@ -1114,7 +1114,7 @@ class HomeController extends Controller
         );
         
         $facilities = cache()->remember('included_facilities_data', 600, fn() => 
-            Facility::whereIn('id', $includedIds)->get()
+            Facility::whereIn('id', $includedIds)->whereNotIn('id', [251,776,851,250,253])->get()
         );
         
         $proponentsCode = cache()->remember('proponents_code', 3600, fn() => 
