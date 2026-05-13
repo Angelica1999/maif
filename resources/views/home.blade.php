@@ -58,6 +58,20 @@
         width: 100px;
         border-radius: 0;
     }
+    .select2-container--default .select2-selection--multiple {
+        min-height: 41px !important;
+        border-radius: 0 !important;
+    }
+
+    .select2-container--default .select2-selection--single {
+        height: 41px !important;
+        display: flex;
+        align-items: center;
+    }
+
+    .select2-container .select2-selection--multiple .select2-selection__rendered {
+        line-height: 41px !important;
+    }
 </style>
 @extends('layouts.app')
 @section('content')
@@ -79,7 +93,15 @@
                             </div>  
                         </div>
                         <div class="input-group">
-                            <input type="text" style="text-align:center" class="form-control" id="filter_dates" value="{{ ($generate_dates)?$generate_dates:'' }}" name="filter_dates" />
+                            <select class="form-control note_filter" name="note_filter[]" style="display:none" multiple>
+                                <option val=''></option>
+                                @foreach($notes_filter as $filter)
+                                    <option val="{{ $filter }}">
+                                        {{ strlen($filter) > 30 ? substr($filter, 0, 30) . '...' : $filter }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <input type="text" style="text-align:center; height:40px" class="form-control" id="filter_dates" value="{{ ($generate_dates)?$generate_dates:'' }}" name="filter_dates" />
                             <button type="submit" id="gen_btn" style="background-color:teal; color:white; height:40px; border-radius:0;" class="btn set_width"><i class="typcn typcn-calendar-outline menu-icon"></i> Range</button>
                         </div>
                         <input type="hidden" name="filter_date" id="filter_date" value="{{ implode(',', $filter_date) }}"></input>
@@ -135,7 +157,7 @@
                             <th></th>
                             <th><span class="text-info select_all" title="Select/Unselect All"><i class="fa fa-check"></i>All</span></th>
                             <th style="min-width:115px">
-                                    @sortablelink('remarks', 'Mail Status')
+                                @sortablelink('remarks', 'Mail Status')
                             </th>
                             <th style="min-width:115px">
                                 <a href="{{ route('home', ['sort' => 'syst_stat','order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">Sys Status ⇅</a>
@@ -795,6 +817,40 @@
 <script src="{{ asset('admin/vendors/x-editable/bootstrap-editable.min.js?v=1') }}"></script>
 @include('maif.editable_js')
 <script>
+    $('.note_filter').select2();
+    $('.note_filter').on('change', function(){
+        console.log('sample');
+        $('#filter_col').css('display', 'block');
+    });
+    function cleanAndInitSelect2() {
+        
+        $('.note_filter').each(function () {
+            if ($(this).hasClass("select2-hidden-accessible")) {
+                $(this).select2('destroy');
+            }
+        });
+
+        $('.note_filter').each(function () {
+            if ($(this).hasClass("select2-hidden-accessible")) {
+                $(this).select2('destroy');
+            }
+        });
+
+        // $('.select2-container').remove();
+
+        // Re-initialize all
+        $('.note_filter').select2({
+            placeholder: "Filter Notes",
+            allowClear: true,
+            closeOnSelect: false,
+            width: '200px'
+        });
+    }
+
+    // Run on page load
+    $(window).on('load', function() {
+        cleanAndInitSelect2();
+    });
 
     $('#update_form').on('keypress', function(e) {
         if (e.key === 'Enter' && $('#update_pat_btn').css('display') === 'none') {
@@ -1039,6 +1095,7 @@
     });
 
     $('.filter').on('click', function(){
+        console.log('sample');
         $('#filter_col').css('display', 'block');
     });
 

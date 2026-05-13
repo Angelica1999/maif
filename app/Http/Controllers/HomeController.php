@@ -962,10 +962,13 @@ class HomeController extends Controller
 
         $this->applySorting($baseQuery, $request);
 
-        $patients = $baseQuery->orderBy('updated_at', 'desc')->paginate(50);
         $filter_type = 1;
         $filterData = $this->getFilterData($request, $filter_type);
 
+        $notes_filter = $baseQuery->distinct()->pluck('notes');
+
+        $patients = $baseQuery->orderBy('updated_at', 'desc')->paginate(50);
+        return $request->note_filter;
         return view('home', array_merge([
             'patients' => $patients,
             'keyword' => $request->keyword,
@@ -974,6 +977,7 @@ class HomeController extends Controller
             'gen' => $request->gen,
             'order' => $order,
             'id_pat' => '',
+            'notes_filter' => $notes_filter,
             'active_facility' => OnlineUser::where('user_type', 2)->pluck('type_identity')->toArray()
         ], $filterData));
     }

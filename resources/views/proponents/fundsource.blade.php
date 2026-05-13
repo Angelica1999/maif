@@ -377,7 +377,6 @@
         $('.funds_type').val(1);
     }
 
-// Function to safely destroy and re-initialize Select2
     function cleanAndInitSelect2() {
         
         $('.data_filtering').each(function () {
