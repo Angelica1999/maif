@@ -502,7 +502,21 @@
 				timerProgressBar: true,
 				showConfirmButton: false,
 				didOpen: () => {
-				Swal.showLoading();
+					Swal.showLoading();
+				}
+			});
+		@endif
+		@if(session('manage_multiple'))
+			<?php session()->forget('manage_multiple'); ?>
+			Swal.fire({
+				icon: 'success',
+				title: 'Success!',
+				text: 'Successfully manage multiple funds!',
+				timer: 2000,
+				timerProgressBar: true,
+				showConfirmButton: false,
+				didOpen: () => {
+					Swal.showLoading();
 				}
 			});
 		@endif

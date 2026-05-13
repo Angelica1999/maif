@@ -28,30 +28,43 @@
     }
 
 </style>
-<div class="container-fluid col-lg-12 grid-margin stretch-card">
+<div class="col-md-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-            <form method="GET" action="">
-                <div class="input-group float-right w-50" style="min-width: 600px;">
-                    <input type="text" class="form-control" name="keyword" placeholder="Control No." value="{{ $keyword }}">
-                    <div class="input-group-append">
-                        <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
-                        <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
-                    </div>
+            <div class="float-right">
+                <div class="input-group">
+                    <form method="GET" action="">
+                        <div class="input-group" >
+                            <input type="text" class="form-control" style="width:445px" name="keyword" placeholder="Control No." value="{{ $keyword }}">
+                            <div class="input-group-append">
+                                <button class="btn btn-sm btn-info" type="submit"><img src="\maif\public\images\icons8_search_16.png">Search</button>
+                                <button class="btn btn-sm btn-warning text-white" type="submit" name="viewAll" value="viewAll" style="width:95px;"><img src="\maif\public\images\icons8_eye_16.png">View All</button>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" title="Note: Data generated are based on the date when the transmittal was accepted, with records stored starting May 12, 2026."
+                                style="text-align:center;" class="form-control" id="date_range" value="{{ $generated_dates }}" name="date_range" />
+                            <button type="submit" id="gen_btn" name="generate_data" value="gen" style="background-color:teal; color:white; width:95px;font-size:11px" class="btn btn-xs"><i class="typcn typcn-calendar-outline menu-icon"></i>Generate</button>
+                        </div>
+                        <button id="filter_btn" name="facility_data[]" class="btn btn-sm btn-info" type="submit" style="display:none;"></button>
+                        <button id="status_btn" name="status_data[]" class="btn btn-sm btn-info" type="submit" style="display:none;"></button>
+                        <button id="dates_btn" name="selected_dates[]" class="btn btn-sm btn-info" type="submit" style="display:none;"></button>
+                        <input type="hidden" id="generate" name="generate" value="{{ $generate }}"></input>
+                    </form>
                 </div>
-                <button id="filter_btn" name="facility_data[]" class="btn btn-sm btn-info" type="submit" style="display:none;"></button>
-                <button id="status_btn" name="status_data[]" class="btn btn-sm btn-info" type="submit" style="display:none;"></button>
-            </form>
+            </div>
             <h1 class="card-title">TRANSMITTAL : ACCEPTED</h1>
             <p class="card-description">
                 MAIF-IPP
             </p>
+            <p><i class="text-info">Note: Data generated for date range are based on the date when the transmittal was accepted, with records stored starting May 12, 2026.</i></p>
             @if(count($transmittal) > 0)
                 <div class="table-responsive" id="details_table">
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th style="min-width:120px;"></th>
+                                <th style="min-width:200px;"></th>
+                                <th style="min-width:70px;">Remarks</th>
                                 <th style="min-width:120px;">Control No @sortablelink('control', '⇅')</th>
                                 <th style="min-width:150px;">
                                     <select id="status_filter" class="select2" style="width: 100px; border: none; background: transparent; display:none" multiple>
@@ -72,7 +85,15 @@
                                     </select>
                                     @sortablelink('name', '⇅')
                                 </th>
-                                <th style="min-width:160px;">Prepared Date @sortablelink('prepared', '⇅')</th>
+                                <th style="min-width:250px;">
+                                    <select id="dates_filter" class="select2" style="width: 200px; border: none; background: transparent; display:none" multiple>
+                                        <option value="">Prepared Date</option>
+                                        @foreach($dates as $row)
+                                            <option value="{{ $row }}" {{ in_array( $row, $selected_dates) ? 'selected' : '' }}>{{ date('F j, Y', strtotime($row)) }}</option>
+                                        @endforeach
+                                    </select>
+                                    @sortablelink('prepared', '⇅')
+                                </th>
                                 <th style="min-width:150px;">Total Amount @sortablelink('total', '⇅')</th>
                                 <th style="min-width:120px;">Created On @sortablelink('on', '⇅')</th>
                                 <th style="min-width:120px;">Created By @sortablelink('by', '⇅')</th>
@@ -92,6 +113,7 @@
                                             </button>
                                         @endif
                                     </td>
+                                    <td>{{ $item->route_no }}</td>
                                     <td><a onclick="displaySum({{ $item->id }})" href="#summary_display" data-toggle="modal" data-backdrop="static">{{ $item->control_no }}</a></td>
                                     <td>
                                          {!!  $item->remarks == 1 ? 'In transit to MPU': ($item->remarks == 2 ? 'Received by MPU' : 
@@ -114,7 +136,7 @@
                     </table>
                 </div>
             @else
-                <div class="alert alert-danger" role="alert" style="width: 100%;">
+                <div class="alert alert-danger" role="alert" style="width: 100%; margin-top:40px">
                     <i class="typcn typcn-times menu-icon"></i>
                     <strong>No bills found!</strong>
                 </div>
@@ -209,6 +231,9 @@
     $('#summary_display, #return, #trans_tracking, #trans_remarks').on('hide.bs.modal', function () {
         $(this).find('input, select, textarea, button').blur();
     });
+    $('#date_range').daterangepicker({
+        opens: 'left'
+    });
 
     function returnTrans(id){
         Swal.fire({
@@ -247,7 +272,9 @@
             }
         });
     }
-
+    $('#gen_btn').on('click', function(){
+        $('#generate').val(1);
+    });
     $(document).ready(function() {
         $('.fa-sort').hide();
         $('#facility_filter').select2({
@@ -287,6 +314,26 @@
         $('#status_filter').on('change', function() {
             $('#status_btn').val(JSON.stringify($(this).val()));
             $('#status_btn').click();
+        });
+
+        //
+        $('#dates_filter').select2({
+            placeholder: 'Prepared Date',
+            allowClear: true,
+            width: 'resolve',
+            dropdownAutoWidth: true
+        });
+
+        $('#dates_filter').next('.select2').find('.select2-selection').css({
+            'border': 'none',
+            'background': 'transparent',
+            'height': 'auto',
+            'min-height': '0',
+            'padding': '0px'
+        });
+        $('#dates_filter').on('change', function() {
+            $('#dates_btn').val(JSON.stringify($(this).val()));
+            $('#dates_btn').click();
         });
     });
 

@@ -617,7 +617,7 @@ class FacilityController extends Controller
     } 
 
     public function acceptTrans($id){
-        Transmittal::where('id', $id)->update(['status' => 5, 'remarks' => 5, 'accepted_by' => Auth::user()->userid]);
+        Transmittal::where('id', $id)->update(['status' => 5, 'remarks' => 5, 'accepted_by' => Auth::user()->userid, 'accepted_on' => now()]);
         $token = $this->getToken();
         
         if ($token != 1) {
@@ -663,6 +663,17 @@ class FacilityController extends Controller
             $transmittalQuery->where('control_no', 'LIKE', "%{$keyword}%");
         }
 
+        $gen_date = $req->date_range;
+        
+        if ($req->generate && !$req->viewAll) {
+            $dateRange = explode(' - ', $gen_date);
+            $start_date = date('Y-m-d', strtotime($dateRange[0]));
+            $end_date = date('Y-m-d', strtotime($dateRange[1]));
+            $transmittalQuery->whereBetween('accepted_on', [$start_date, $end_date]);
+        } else {
+            $gen_date = '';
+        }
+    
         if ($req->facility_data) {
             $transmittalQuery->whereIn('facility_id', $facs);
         }
@@ -680,6 +691,17 @@ class FacilityController extends Controller
             }
         }
 
+        $selected_dates = $req->has('viewAll')? [0]
+            : (
+                $req->selected_dates
+                ? (json_decode($req->selected_dates[0] ?? '[]', true) ?: $req->selected_dates)
+                : [0]
+            );
+
+        if ($req->selected_dates) {
+            $transmittalQuery->whereIn('prepared_date', $selected_dates);
+        }
+
         $facilities = Facility::whereIn('id', $facilityIds)->select('id', 'name')->get();
 
         $stats = (clone $transmittalQuery)
@@ -688,6 +710,11 @@ class FacilityController extends Controller
 
         $total = $stats->total_count ?? 0;
         $amount = $stats->total_amount ?? 0;
+
+        $patients = DB::table('transmittal_patients as tp')
+            ->join('transmittal_details as td', 'tp.transmittal_details', '=', 'td.id')
+            ->whereIn('td.transmittal_id', $transmittalQuery->pluck('id'))
+            ->count();
 
         if ($req->sort == "name" && $req->direction){
             $f_order = Facility::orderBy('name', $req->direction)->pluck('id')->toArray();    
@@ -729,10 +756,11 @@ class FacilityController extends Controller
             ->paginate(50);
         }
 
-        $patients = DB::table('transmittal_patients as tp')
-            ->join('transmittal_details as td', 'tp.transmittal_details', '=', 'td.id')
-            ->whereIn('td.transmittal_id', $transmittal->pluck('id'))
-            ->count();
+        $dates = (clone $transmittalQuery)
+            ->orderBy('prepared_date', 'desc')
+            ->select('prepared_date')
+            ->distinct()
+            ->pluck('prepared_date');
 
         return view('facility.accepted', [
             'transmittal' => $transmittal,
@@ -743,6 +771,10 @@ class FacilityController extends Controller
             'amount' => $amount,
             'facs' => $facs ?? '',
             'status' => $status ?? '',
+            'dates' => $dates,
+            'selected_dates' => $selected_dates,
+            'generated_dates' => $gen_date,
+            'generate' => $req->generate,
         ]);
     }
 
