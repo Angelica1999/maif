@@ -258,7 +258,7 @@
                                             <button style="background-color:#0b6e4f; color:white; width:70px; font-size:11px; margin-top:1px"
                                                 title="Retrieve GL" class="btn btn-xs" onclick="retrieveGL({{ $patient->id }},
                                                 {{ (!in_array($patient->fc_status, ['retrieved', 'returned'])
-                                                    && in_array($patient->fc_status, ['referred', 'accepted']) 
+                                                    && in_array($patient->fc_status, ['referred']) 
                                                     && $patient->transd_id == null) ? 0 : 1 }}
                                                 )">
                                                 <i class="fa fa-undo"></i> Rtrv
