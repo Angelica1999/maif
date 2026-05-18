@@ -81,7 +81,8 @@
         <div class="card-body">
             <div class="float-right">
                 <div class="input-group">
-                    <form method="GET" action="{{ route('home') }}">
+                    <form method="POST" id="main_form" action="{{ route('home') }}">
+                        @csrf
                         <div class="input-group">
                             <input type="hidden" class="form-control" name="key">
                             <input type="text" class="form-control" name="keyword" id="search_patient" placeholder="Search..." value="{{ $keyword }}" style="width:400px;">
@@ -94,9 +95,9 @@
                         </div>
                         <div class="input-group">
                             <select class="form-control note_filter" name="note_filter[]" style="display:none" multiple>
-                                <option val=''></option>
+                                <option value=''></option>
                                 @foreach($notes_filter as $filter)
-                                    <option val="{{ $filter }}">
+                                    <option value="{{ $filter }}">
                                         {{ strlen($filter) > 30 ? substr($filter, 0, 30) . '...' : $filter }}
                                     </option>
                                 @endforeach
@@ -162,7 +163,7 @@
                             <th style="min-width:115px">
                                 <a href="{{ route('home', ['sort' => 'syst_stat','order' => ($order == 'asc' ? 'desc' : 'asc')]) }}">Sys Status ⇅</a>
                             </th>
-                            <th>Remarks</th>
+                            <th>Remarks/Notes</th>
                             <th style="min-width:10px; text-align:center;">Group</th>
                             <th style="min-width:140px">Actual Amount</th>
                             <th style="min-width:100px">Guaranteed </th>
@@ -312,7 +313,11 @@
                                         @if($patient->pat_rem == "Retrieved")
                                             {{ $patient->pat_rem }} - {{ $patient->rtrv_remarks }}
                                         @else
-                                            {{ $patient->pat_rem }}   
+                                            {{ $patient->pat_rem }} 
+                                            @if($patient->notes)
+                                                <br>
+                                                Note :  {{ $patient->notes }}
+                                            @endif
                                         @endif
                                     @endif
                                 </td>
@@ -866,8 +871,9 @@
     });
 
     $('form').on('submit', function () {
-        $(this).find('button[type="submit"]').prop('disabled', true).text('Submitting...');
+        $(this).find('button[type="submit"][name!="viewAll"]').prop('disabled', true);
     });
+
     function sendGL(status, forwardUrl) {
         if (status == 1) {
             Swal.fire({
@@ -1449,20 +1455,6 @@
 
     });
 
-    // function validateAmount(element) {
-    //     if (event.keyCode === 32) {
-    //         event.preventDefault();
-    //     }
-    //     var cleanedValue = element.value.replace(/[^\d.]/g, '');
-    //     var numericValue = parseFloat(cleanedValue);
-
-    //     if ((!isNaN(numericValue) || cleanedValue === '' || cleanedValue === '.') &&
-    //         !(cleanedValue.length === 1 && cleanedValue[0] === '0')) {
-    //             element.value = cleanedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    //     }else{
-    //         element.value = '';
-    //     }
-    // }
     function validateAmount(element) {
         if (event.keyCode === 32) {
             event.preventDefault();

@@ -26,7 +26,7 @@ Route::match(['get', 'post'],'/', function () {
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::match(['get', 'post'], '/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/returned-gl', [App\Http\Controllers\HomeController::class, 'returnedPatients'])->name('returned.patients');
 Route::get('/expired-gl', [App\Http\Controllers\HomeController::class, 'expiredPatients'])->name('expired.patients');
 Route::get('/get-names/{type}', [App\Http\Controllers\HomeController::class, 'getNames'])->name('get.names');

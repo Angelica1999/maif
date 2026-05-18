@@ -966,9 +966,7 @@ class HomeController extends Controller
         $filterData = $this->getFilterData($request, $filter_type);
 
         $notes_filter = $baseQuery->distinct()->pluck('notes');
-
         $patients = $baseQuery->orderBy('updated_at', 'desc')->paginate(50);
-        return $request->note_filter;
         return view('home', array_merge([
             'patients' => $patients,
             'keyword' => $request->keyword,
@@ -982,8 +980,8 @@ class HomeController extends Controller
         ], $filterData));
     }
 
-    private function applyColumnFilters($query, $request)
-        {
+    private function applyColumnFilters($query, $request){
+    
         $filters = [
             'filter_date' => 'date_guarantee_letter',
             'filter_fname' => 'fname',
@@ -1033,6 +1031,10 @@ class HomeController extends Controller
 
         if ($request->filter_stat) {
             $query->whereIn('sent_type', explode(',', $request->filter_stat));
+        }
+
+        if ($request->note_filter) {
+            $query->whereIn('notes', $request->note_filter);
         }
     }
 
