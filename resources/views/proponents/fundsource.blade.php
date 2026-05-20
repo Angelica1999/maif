@@ -145,7 +145,7 @@
                                         <option value="6" {{ $filter_keyword == 6 ? 'selected' : ''}}>Negative Amount</option>
                                         <option value="7" {{ $filter_keyword == 7 ? 'selected' : ''}}>Remaining Funds</option>
                                     </select>
-                                    <button  class="btn btn-sm btn-success text-white sort_btn" style="height:40px; display:none" value="{{ $sort }}" type="submit" name="sorting_btn"><i class="typcn typcn-filter menu-icon"></i>Sort</button>
+                                    <button  class="btn btn-sm btn-success text-white sort_btn" style="height:40px;" value="{{ $sort }}" type="submit" name="sorting_btn"><i class="typcn typcn-filter menu-icon"></i>Sort</button>
                                     <button  class="btn btn-sm btn-warning text-white" style="height:40px" type="submit" name="viewAll" value="viewAll"><img src="\maif\public\images\icons8_eye_16.png">View</button>
                                     <a href="{{ route('excel.proponent_summary') }}" style= "color: white; height:40px" type="button" class="btn btn-sum">
                                         <img src="\maif\public\images\excel-file.png" style="width: 15px; height: auto;">Summary</a>   
@@ -488,9 +488,9 @@
         }
     });
 
-    $('.data_sorting').on('change', function(){
-        $('.sort_btn').trigger('click');
-    });
+    // $('.data_sorting').on('change', function(){
+    //     $('.sort_btn').trigger('click');
+    // });
 
     function cleanAndInitSelect2() {
         
